@@ -362,7 +362,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     public function userDevices()
     {
-        return $this->hasMany(UserDevice::class);
+        return $this->hasOne(UserDevice::class, 'user_id');
     }
 
     /**
