@@ -16,7 +16,6 @@ use App\Utils\UI\Button;
                 <el-form ref="noticeForm" :model="notice" label-width="80px">
                     <div>
                         <el-form-item label="可见范围" style="margin-bottom: 3px;">
-                            <div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
 
                             <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showOrganizationsSelectorFlag=true">管理可见范围</el-button>
                         </el-form-item>

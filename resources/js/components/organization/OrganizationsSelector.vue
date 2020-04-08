@@ -96,7 +96,7 @@
             },
             _loadData: function(a, b){
                 this.loadingOrganizations = true;
-                return loadOrganizationsByParent(a, b,'', schoolId);
+                return loadOrganizationsByParent(a, b, schoolId);
             },
             init: function(){
                 this._loadData(null, null)
