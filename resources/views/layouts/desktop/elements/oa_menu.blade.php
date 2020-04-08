@@ -1,6 +1,6 @@
 <li class="nav-item">
     <a href="javascript:void(0);" class="nav-link nav-toggle">
-        <i class="material-icons">event_seat</i>
+        <i class="material-icons">work</i>
         <span class="title">办公</span>
         <span class="arrow"></span>
     </a>
@@ -36,11 +36,11 @@
                 <span class="title">考勤管理</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{{ route('school_manager.oa.approval-manager',['uuid'=>session('school.uuid')]) }}" class="nav-link">
-                <span class="title">选修课程审批</span>
-            </a>
-        </li>
+        {{--<li class="nav-item">--}}
+            {{--<a href="{{ route('school_manager.oa.approval-manager',['uuid'=>session('school.uuid')]) }}" class="nav-link">--}}
+                {{--<span class="title">选修课程审批</span>--}}
+            {{--</a>--}}
+        {{--</li>--}}
         <li class="nav-item">
             <a href="{{ route('school_manager.students.applications-manager',['uuid'=>session('school.uuid'), 'position' => 1]) }}" class="nav-link">
                 <span class="title">申请管理</span>

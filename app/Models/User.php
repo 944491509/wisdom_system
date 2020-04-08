@@ -63,6 +63,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
 
     const DEFAULT_USER_AVATAR = '/assets/img/dp.jpg';
+    const DEFAULT_USER_GIRL_AVATAR = '/assets/img/dp_girl.png';
 
     /**
      * The attributes that are mass assignable.
@@ -196,15 +197,15 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
             if(!$gradeUser){
                 // 如果还没有创建对应的记录, 那么就创建一条
             }
-            return 1;
+            return $gradeUser->school_id;
         }
         elseif($this->isTeacher() || $this->isEmployee()){
             $gus = $this->gradeUser;
             if(count($gus) > 0){
                 return $gus[0]->school_id;
             }
-        } else {
-             return $this->gradeUser->school_id;
+        }elseif ($this->isRegisteredUsers()) {
+            return $this->gradeUser->school_id;
         }
     }
 

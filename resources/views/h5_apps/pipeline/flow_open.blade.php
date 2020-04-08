@@ -188,10 +188,13 @@
             </div>
             <div class="myRadio myNode" v-if="item.type == 'node'">
                 <van-field disabled
-                           v-model="item.title"
-                           type="textarea"
                            name="说明文字"
                            label="说明文字"/>
+                    <template #input>
+                          <pre v-html="item.title"></pre>
+                    </template>
+                 </van-field>
+
             </div>
             <div v-if="item.type == 'department'">
                 <van-field
@@ -250,8 +253,8 @@
     </div>
 
 
-          <div style="width: 100%;background: white;text-align: center;margin-top:10px;padding-top:40px">
-                    <van-button style="width: 160px;margin: 0 auto" round block type="info" native-type="submit">
+          <div style="width: 100%;background: white;text-align: center;margin-top:10px;padding-top:10px;padding-bottom:10px">
+                    <van-button class="flowSub" style=" background-image: linear-gradient(to right, #66D9FF, #4EA5FE); border: none;height: 35px;line-height: 35px;width: 238px;margin: 0 auto" round block type="info" native-type="submit">
                          提交
                     </van-button>
           </div>

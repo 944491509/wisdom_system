@@ -3,6 +3,7 @@ namespace App\Http\Controllers\H5\Banner;
 
 use App\Dao\Banners\BannerDao;
 use App\Dao\Misc\SystemNotificationDao;
+use App\Dao\Version\VersionDao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -42,4 +43,49 @@ class IndexController extends Controller
       $this->dataForView['data'] = $data;
       return view('h5_apps.banner.notification_info', $this->dataForView);
     }
+
+    /**
+     * 分享下载url
+     * @param app 是 类型(1:学生端,2:教师端)
+     *
+     * @return page
+     */
+    public function app_info(Request $request)
+    {
+        $app = (Int)$request->get('app');
+        $app = in_array($app, [1, 2]) ? $app : 1;
+
+
+        // 检索条件
+        $condition[] = ['user_apptype', '=', $app];
+        $condition[] = ['typeid', '=', $this->get_device_type() == 'ios'?2:1 ]; // 类型(1:安卓,2:IOS)
+        $condition[] = ['status', '=', 1];
+        $data = (new VersionDao())->getVersionOneInfo($condition);
+
+        $this->dataForView['app'] = $app;
+        $this->dataForView['data'] = $data;
+
+        return view('h5_apps.banner.app_info', $this->dataForView);
+    }
+
+    /**
+     * 获取当前手机类型
+     */
+	private function get_device_type()
+	{
+		 //全部变成小写字母
+		 $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
+		 $type = 'other';
+		 //分别进行判断
+		 if(strpos($agent, 'iphone') || strpos($agent, 'ipad'))
+		 {
+			$type = 'ios';
+		 } 
+		  
+		 if(strpos($agent, 'android'))
+		 {
+			$type = 'android';
+		 }
+		 return $type;
+	}
 }

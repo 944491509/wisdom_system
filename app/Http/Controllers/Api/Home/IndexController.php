@@ -92,7 +92,7 @@ class IndexController extends Controller
     /**
      * 获取资源位 Banner 的接口
      * @param BannerRequest $request
-     * @return string
+     * @return string 
      */
     public function banner(BannerRequest $request)
     {
@@ -265,7 +265,7 @@ class IndexController extends Controller
             'group_name'     => $profile->group_name,
             'gender'         => $profile->gender,
             'birthday'       => $profile->birthday,
-            'education'      => $profile->education,
+            'education'      => $profile->final_education,
             'degree'         => $profile->degree,
             'political_name' => $profile->political_name,
             'title'          => $profile->title,
