@@ -30,8 +30,11 @@ if (document.getElementById('teacher-oa-logs-app')) {
                 sendTitle: '发送至',
                 sendSearch: true,
                 log: {
+                    id: '',
                     title: "",
-                    content: ""
+                    content: "",
+                    created_at : '',
+
                 },
                 keyword: "",
                 logList: [],
@@ -40,7 +43,11 @@ if (document.getElementById('teacher-oa-logs-app')) {
                 teachterList: [],
                 organizationList:[],
                 sendTeacherCheckedList:[],
-                teacherKeyword:""
+                teacherKeyword:"",
+                drawerTitle: '添加日志',
+                isDisabled: false,
+                isEdit: false,
+                isFromEdit: ''
             }
         },
         created() {
@@ -67,6 +74,34 @@ if (document.getElementById('teacher-oa-logs-app')) {
             }
         },
         methods: {
+            add() {
+                this.isFromEdit = 'add'
+                this.drawer = true
+            },
+            turnDetailDrawer(item) {
+                if(this.show === 2 || this.show === 3) {
+                    axios.post('/api/Oa/work-log-info', {id: item.id}).then(res => {
+                        if (Util.isAjaxResOk(res)) {
+                            if (res.data.data.type === 2) {
+                                this.log.created_at = res.data.data.created_at
+                                this.log.updated_at = res.data.data.updated_at
+                                this.log.collect_user_name = res.data.data.collect_user_name
+                            } else if (res.data.data.type === 1) {
+                                this.log.updated_at = res.data.data.updated_at
+                                this.log.send_user_name = res.data.data.send_user_name
+                            }
+                        }
+                    })
+                }
+                this.isFromEdit = 'edit'
+                this.drawer = true
+                this.log.title = item.title
+                this.log.content = item.content
+                this.log.id = item.id
+                this.drawerTitle = '日志详情'
+                this.isDisabled = true
+                this.isEdit = true
+            },
             handleCheckAllChange() {
                 this.check = !this.check;
                 if (this.check) {
@@ -94,7 +129,7 @@ if (document.getElementById('teacher-oa-logs-app')) {
             getlogList(tab) {
                 axios.post(
                     '/api/Oa/list-work-log',
-                    { page: 1, type: tab, keyword: this.keyword }
+                    { page: 1, type: tab, keyword: this.keyword}
                 ).then(res => {
                     if (Util.isAjaxResOk(res)) {
                         this.logList = res.data.data.map((item, index) => {
@@ -106,29 +141,53 @@ if (document.getElementById('teacher-oa-logs-app')) {
             },
             // 添加日志
             addlog() {
-                if (this.log.title !== '' || this.log.content !== '') {
-                    axios.post(
-                        '/api/Oa/add-work-log',
-                        { title: this.log.title, content: this.log.content }
-                    ).then(res => {
-                        if (Util.isAjaxResOk(res)) {
-                            this.$message({
-                                message: res.data.message,
-                                type: 'success'
-                            });
-                            this.drawer = false
-                        }
-                    })
+                // !this.isEdit
+                if (this.isEdit) {
+                    this.isEdit = false
+                    this.isDisabled = false
                 } else {
-                    this.$message({
-                        message: "标题和内容不得为空",
-                        type: 'error'
-                    });
+                    if (this.log.title !== '' || this.log.content !== '') {
+                        let url = ''
+                        let params = {}
+                        if (this.isFromEdit === 'add') {
+                            url = '/api/Oa/add-work-log'
+                            params = {
+                                title: this.log.title,
+                                content: this.log.content
+                            }
+                        } else {
+                            url = '/api/Oa/update-work-log'
+                            params = {
+                                data: {
+                                    title: this.log.title,
+                                    content: this.log.content
+                                },
+                                id: this.log.id
+                            }
+                        }
+                        axios.post(
+                            url,params
+                        ).then(res => {
+                            if (Util.isAjaxResOk(res)) {
+                                this.$message({
+                                    message: res.data.message,
+                                    type: 'success'
+                                });
+                                this.getlogList(this.show);
+                                this.drawer = false
+                            }
+                        })
+                    } else {
+                        this.$message({
+                            message: "标题和内容不得为空",
+                            type: 'error'
+                        });
+                    }
                 }
             },
             // 添加日志---关闭按钮
             handleClose(done) {
-              // this.getlogList(3);
+              this.getlogList(this.show);
               done()
             },
             startFlow: function (flowId) {
