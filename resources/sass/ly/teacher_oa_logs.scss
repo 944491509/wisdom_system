@@ -86,6 +86,19 @@
                             height: 37px;
                         }
                     }
+                    .el-textarea.is-disabled .el-textarea__inner {
+                        background-color: #fff;
+                        border: none;
+                        color: #9199A6;
+                        cursor: auto;
+                        padding-top: 9px;
+                    }
+                    .el-input.is-disabled .el-input__inner {
+                        background-color: #FFF;
+                        color: #9199A6;
+                        cursor: auto;
+                        border: none;
+                    }
                 }
             }
         }
