@@ -20,7 +20,7 @@ export function loadOrganizationsByRoles(schoolId, userUuid, roles, affix) {
     );
 }
 
-export function loadOrganizationsByParent(parentId, keyword, affix, schoolId) {
+export function loadOrganizationsByParent(parentId, keyword, schoolId,affix) {
     const url = Util.buildUrl(Constants.API.ORGANIZATION.LOAD_BY_PARENT);
     if(Util.isDevEnv()){
         return axios.get(url, affix);
