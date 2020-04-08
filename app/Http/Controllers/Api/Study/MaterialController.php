@@ -188,7 +188,11 @@ class MaterialController extends Controller
         $all = $request->all();
         $all['user_id'] = $user->id;
         $dao = new LectureDao();
-        $result = $dao->addMaterial($all);
+        if(!empty($all['lecture_id'])) {
+            $result = $dao->updMaterial($all);
+        } else {
+            $result = $dao->addMaterial($all);
+        }
         $msg = $result->getMessage();
         if($result->isSuccess()) {
             return JsonBuilder::Success($msg);
@@ -245,6 +249,44 @@ class MaterialController extends Controller
             }
         }
         return JsonBuilder::Success($result);
+    }
+
+
+    /**
+     * 查看课节资料
+     * @param MaterialRequest $request
+     * @return string
+     */
+    public function getMaterials(MaterialRequest $request) {
+        $courseId = $request->getCourseId();
+        $idx = $request->get('idx');
+        $userId = $request->user()->id;
+        $dao = new LectureDao();
+        $lecture = $dao->getMaterialByCourseAndIdx($userId, $courseId, $idx);
+
+        if(is_null($lecture)) {
+            return JsonBuilder::Success('当前课程的课节没有教学资料');
+        }
+        $materials = $lecture->lectureMaterials;
+        $gradeId = array_unique($materials->pluck('grade_id')->toArray());
+
+        $material = [];
+        foreach ($materials as $key => $val) {
+            $material[$val->type]['type_id'] = $val->type;
+            $material[$val->type]['desc'] = $val->description;
+            $material[$val->type]['list'][] = [
+                'url' => $val->url,
+                'media_id' => $val->media_id,
+            ];
+        }
+        $data = [
+            'lecture_id' => $lecture->id,
+            'title' => $lecture->title,
+            'idx' => $materials[0]->idx,
+            'grade' => $gradeId,
+            'material' => array_merge($material),
+        ];
+        return JsonBuilder::Success($data);
     }
 
 }
