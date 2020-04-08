@@ -93,6 +93,6 @@ class InternalMessage
             Log::alert('创建系统消息失败',['msg'=>$exception->getMessage()]);
         }
 
-        Push::dispatch($this->title, $this->content, $this->appExtra, $this->from, $this->to, $this->organizationIdArray);
+        Push::dispatch($this->title, $this->content, $this->appExtra, $this->schoolId, $this->to, $this->organizationIdArray);
     }
 }
