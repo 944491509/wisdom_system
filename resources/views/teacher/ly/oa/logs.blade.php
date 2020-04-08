@@ -16,7 +16,7 @@
                         <el-form-item label="内容">
                             <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" placeholder="请输入日志内容..." v-model="log.content" :disabled="isDisabled"></el-input>
                         </el-form-item>
-                        <div v-if="show === 2">
+                        <div v-if="show === 2 && isFromEdit!='add'">
                             <el-form-item label="保存时间">
                                 <el-input v-model="log.created_at" autocomplete="off" :disabled="isDisabled"></el-input>
                             </el-form-item>
@@ -27,7 +27,7 @@
                                 <el-input v-model="log.collect_user_name" autocomplete="off" :disabled="isDisabled"></el-input>
                             </el-form-item>
                         </div>
-                        <div v-if="show === 1">
+                        <div v-if="show === 1 && isFromEdit!='add'">
                             <el-form-item label="接收时间">
                                 <el-input v-model="log.updated_at" autocomplete="off" :disabled="isDisabled"></el-input>
                             </el-form-item>
@@ -37,7 +37,7 @@
                         </div>
                     </el-form>
                     <div class="demo-drawer__footer">
-                        <el-button type="primary" @click="addlog" v-if="show === 3">@{{isEdit ? '编辑' : '保存'}}</el-button>
+                        <el-button type="primary" @click="addlog" v-if="show === 3 || isFromEdit == 'add'">@{{isEdit ? '编辑' : '保存'}}</el-button>
                     </div>
                 </div>
             </el-drawer>

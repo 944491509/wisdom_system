@@ -88,11 +88,11 @@ if (document.getElementById("teacher-oa-logs-app")) {
         if (this.show === 2 || this.show === 3) {
           axios.post("/api/Oa/work-log-info", { id: item.id }).then(res => {
             if (Util.isAjaxResOk(res)) {
-              if (res.data.data.type === 2) {
+              if (res.data.data.type == 2) {
                 this.log.created_at = res.data.data.created_at;
                 this.log.updated_at = res.data.data.updated_at;
                 this.log.collect_user_name = res.data.data.collect_user_name;
-              } else if (res.data.data.type === 1) {
+              } else if (res.data.data.type == 1) {
                 this.log.updated_at = res.data.data.updated_at;
                 this.log.send_user_name = res.data.data.send_user_name;
               }
@@ -192,10 +192,20 @@ if (document.getElementById("teacher-oa-logs-app")) {
           }
         }
       },
-      // 添加日志---关闭按钮
+      // ---关闭drawer按钮
       handleClose(done) {
         this.getlogList(this.show);
         done();
+        this.log= {
+          id: "",
+          title: "",
+          content: "",
+          created_at: ""
+        };
+        this.drawerTitle= "添加日志";
+        this.isDisabled=false;
+        this.isEdit= false;
+        this.isFromEdit= ""
       },
       startFlow: function(flowId) {
         const url =
