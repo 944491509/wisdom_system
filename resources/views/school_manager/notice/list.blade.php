@@ -11,10 +11,13 @@ use App\Utils\UI\Button;
             <div class="card-head">
                 <h4 class="text-center">通知申请表 <i class="el-icon-loading" v-if="isLoading"></i></h4>
             </div>
+
             <div class="card-body p-3">
                 <el-form ref="noticeForm" :model="notice" label-width="80px">
                     <div>
                         <el-form-item label="可见范围" style="margin-bottom: 3px;">
+                            <div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
+
                             <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showOrganizationsSelectorFlag=true">管理可见范围</el-button>
                         </el-form-item>
                         <el-form-item v-if="notice.selectedOrganizations.length > 0">
