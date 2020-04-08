@@ -30,4 +30,9 @@ class UserDeviceDao
         }
     }
 
+    public function unlinkPushId($userId)
+    {
+        return UserDevice::where('user_id', $userId)->update(['push_id' => '']);
+    }
+
 }

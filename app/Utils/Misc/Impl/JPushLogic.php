@@ -26,26 +26,27 @@ class JPushLogic implements JPushSender
             return false;
         }
 
-        foreach ($result as $key => $val) {
-            if (!empty($val)) {
-
-                $iosNotification     = ['sound' => '', 'extras' => $extras];
-                $androidNotification = ['title' => $title, 'extras' => $extras];
-                $options             = ['apns_production' => 'False'];
-                $client              = new JPush($val['key']['appKey'], $val['key']['masterSecret'], null, null, 'BJ');
-                try {
-                    $push     = $client->push();
-                    $response = $push
-                        ->setPlatform('all') // 推送平台
-                        ->addRegistrationId($val['regId']) // 极光ID
-                        ->setNotificationAlert($title) // 消息标题
-                        ->iosNotification($content, $iosNotification)
-                        ->androidNotification($content, $androidNotification)
-                        ->options($options)
-                        ->send();
-                } catch (\JPush\Exceptions\APIRequestException $e) {
-                    $error[] = ['message' => $e->getMessage(), 'code' => $e->getCode()];
-                    Log::alert('push推送失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
+        foreach ($result as $key => $vals) {
+            if (!empty($vals)) {
+                foreach ($vals as $val) {
+                    $iosNotification     = ['sound' => '', 'extras' => $extras];
+                    $androidNotification = ['title' => $title, 'extras' => $extras];
+                    $options             = ['apns_production' => strval($val['key']['production'])];
+                    $client              = new JPush($val['key']['appKey'], $val['key']['masterSecret'], null, null, 'BJ');
+                    try {
+                        $push     = $client->push();
+                        $response = $push
+                            ->setPlatform('all') // 推送平台
+                            ->addRegistrationId($val['regId']) // 极光ID
+                            ->setNotificationAlert($title) // 消息标题
+                            ->iosNotification($content, $iosNotification)
+                            ->androidNotification($content, $androidNotification)
+                            ->options($options)
+                            ->send();
+                    } catch (\JPush\Exceptions\APIRequestException $e) {
+                        $error[] = ['message' => $e->getMessage(), 'code' => $e->getCode()];
+                        Log::alert('push推送失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
+                    }
                 }
             }
         }

@@ -92,5 +92,7 @@ class InternalMessage
         }catch (\Exception $exception){
             Log::alert('创建系统消息失败',['msg'=>$exception->getMessage()]);
         }
+
+        Push::dispatch($this->title, $this->content, $this->appExtra, $this->from, $this->to, $this->organizationIdArray);
     }
 }
