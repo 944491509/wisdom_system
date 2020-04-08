@@ -23,7 +23,7 @@ class JPushLogic implements JPushSender
         if (is_array($users)) {
             $result = $this->setKeyAndRegId($users);
         } else {
-            return false;
+            return new MessageBag(JsonBuilder::CODE_SUCCESS, '推送成功');
         }
 
         foreach ($result as $key => $vals) {
