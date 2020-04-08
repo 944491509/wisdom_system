@@ -49,29 +49,47 @@
                 <el-button @click="handleCheckAllChange">@{{btnText}}</el-button>
                 <el-button type="primary" @click="openSendDrawer">发送至</el-button>
             </div>
-            <el-drawer :title="sendTitle" :before-close="handleClose" :visible.sync="sendDrawer" custom-class="demo-drawer" ref="drawer">
+            <el-drawer :title="sendDrawerType == 1?'发送至':'确认接收人'" :before-close="handleClose"  :visible.sync="sendDrawer" custom-class="demo-drawer" ref="sendDrawer">
                 <div class="demo-drawer__send">
-                  <el-form :model="log" >
+                  <el-form :model="log" v-if="sendDrawerType == 1">
                     <el-form-item class="form-item-send">
                       <el-input placeholder="请输入关键字" class="teacher-oa-logs-card_send" v-model="teacherKeyword">
                         <el-button slot="append" @click="teatherSearch()">搜索</el-button>
                       </el-input>
                     </el-form-item>
                   </el-form>
-                  <ul class="checked_send_teacher_area">
-                        <el-checkbox-group v-model="sendTeacherCheckedList">
-                            <li v-for="item in teachterList" :key="item.id">
-                                <el-checkbox class="d-block"  :label="item.id">
+                    <div class="checked_send_organ_area" v-if="sendDrawerType == 1">
+                        <div class="organ_item" v-for="(organ,index) in organizationList" :key="index" >
+                            <el-radio-group  v-model="sendOrganChecked[index]" @change="changeOrgan(index)">
+                                <el-radio-button class="label-send-drawer" v-for="item in organ" :key="item.id" :label="item.id">
                                     <template>
-                                        <img :src="item.avatar" />
                                         <span class="t_name">@{{item.name}} </span>
                                     </template>
-                                </el-checkbox>
+                                </el-radio-button>
+                            </el-radio-group>
+                        </div>
+                        <div class="organ_item"  >
+                            <el-checkbox-group v-model="memberCheckedList">
+                                <el-checkbox-button class="label-send-drawer" v-for="item in memberList" :label="item.id" :key="item.id">
+                                    <template>
+                                        <span class="t_name">@{{item.name}} </span>
+                                    </template>
+                                </el-checkbox-button>
+                            </el-checkbox-group>
+                        </div>
+                    </div>
+                    <ul class="checked_send_teacher_area" v-if="sendDrawerType == 2">
+                        <template v-for="item in memberCheckedList" >
+                            <li v-if="item == c.id" v-for="c in memberList" :key="c.id" >
+                                <img :src="c.avatar"/>
+                                <span class="t_name">@{{c.name}}</span>
+                                <span class="t_title">（@{{c.title}}）</span>
                             </li>
-                        </el-checkbox-group>
+                        </template>
                     </ul>
+
                     <div class="demo-drawer_send_footer">
-                        <el-button type="primary" @click="sendlog">确定</el-button>
+                        <el-button type="primary" @click="sendlog">@{{sendDrawerType == 1?'确认':'发送'}}</el-button>
                     </div>
                   </div>
                 </div>

@@ -39,8 +39,12 @@ if (document.getElementById('teacher-oa-logs-app')) {
                 btnText: "全选",
                 teachterList: [],
                 organizationList:[],
+                memberList:[],
                 sendTeacherCheckedList:[],
-                teacherKeyword:""
+                memberCheckedList:[],
+                memberChecked:'',
+                teacherKeyword:"",
+                sendDrawerType: 1,
             }
         },
         created() {
@@ -52,6 +56,7 @@ if (document.getElementById('teacher-oa-logs-app')) {
             this.loadFlowsWaitingForMe();
             this.getlogList(3);
         },
+
         watch: {
             logList: {
                 deep: true,
@@ -158,17 +163,31 @@ if (document.getElementById('teacher-oa-logs-app')) {
                 Util.reloadCurrentPage(this);
             },
             async openSendDrawer(){
+              let log_ids = this.logList.filter(e=>e.sele).map(e=>e.id)
+              if(!log_ids.length){
+                this.$alert('请选择日志', '提示', {
+                  confirmButtonText: '确定',
+                  callback: action => {
+
+                  }
+                });
+                return;
+              }
+              this.sendDrawerType = 1;
               this.sendDrawer = true;
-              this.getTeachers();
-              this.organizationList = await this.getOrganization();
-              console.log('organizationList',this.organizationList);
+              // this.getTeachers();
+              let organList= await this.getOrganization();
+              console.log('organizationList',organList);
+              this.organizationList = [];
+              this.sendOrganChecked = []
+              this.organizationList.push(organList.organ);
+              this.memberList = organList.members || []
             },
-            async getOrganization(praras={},){
+            async getOrganization(params={},){
               let res =  await axios.post(
                 '/Oa/tissue/getOrganization',
-                praras
+                {...params,school_id:this.schoolId}
               )
-              console.log(res);
               if (Util.isAjaxResOk(res)) {
                 return res.data.data || []
               }
@@ -185,51 +204,58 @@ if (document.getElementById('teacher-oa-logs-app')) {
               })
             },
             sendlog(){
-              let log_ids = this.logList.filter(e=>e.sele).map(e=>e.id)
-              if(!this.sendTeacherCheckedList.length){
-                this.$alert('提示', '请选择收件人', {
-                  confirmButtonText: '确定',
-                  callback: action => {
+              if(this.sendDrawerType == 2){
+                let log_ids = this.logList.filter(e=>e.sele).map(e=>e.id)
 
+                let t_names = this.memberList.filter(e=>this.memberCheckedList.includes(e.id)).map(e=>e.name);
+                axios.post(
+                  '/api/Oa/work-log-send',{
+                    id:log_ids.join(','),
+                    user_id:this.memberCheckedList.join(','),
+                    user_name: t_names.join(','),
                   }
-                });
-                return;
-              }
-              if(!log_ids.length){
-                this.$alert('提示', '请选择日志', {
-                  confirmButtonText: '确定',
-                  callback: action => {
+                ).then(res => {
+                  if (Util.isAjaxResOk(res)) {
+                    if(res.data.code==1000){
+                      this.$message({
+                        type: 'success',
+                        message: `发送成功！`
+                      });
+                      this.$refs.sendDrawer.closeDrawer()
 
+                      //出发数据更新
+                      // todo
+                    }
                   }
-                });
-                return;
-              }
-              let t_names = this.teachterList.filter(e=>this.sendTeacherCheckedList.includes(e.id)).map(e=>e.name);
-              axios.post(
-                '/api/Oa/work-log-send',{
-                  id:log_ids.join(','),
-                  user_id:this.sendTeacherCheckedList.join(','),
-                  user_name: t_names.join(','),
+                })
+              }else{
+                if(!this.memberCheckedList.length){
+                  this.$alert('请选择收件人', '提示', {
+                    confirmButtonText: '确定',
+                  });
+                  return;
+                }else{
+                  this.sendDrawerType++;
                 }
-              ).then(res => {
-                if (Util.isAjaxResOk(res)) {
-                  if(res.data.code==1000){
-                    this.$message({
-                      type: 'success',
-                      message: `发送成功！`
-                    });
-                    this.drawer = false;
-
-                    //出发数据更新
-                    // todo
-                  }
-                }
-              })
+              }
             },
             async teatherSearch(){
-              console.log(this.teacherKeyword)
+              // console.log(this.teacherKeyword)
               let params = { keyword: this.teacherKeyword,type :2}
-              console.log(await this.getOrganization(params));
+              let organList = await this.getOrganization(params)
+              this.memberList = organList.members || [];
+              this.organizationList = [organList.organ];
+              this.memberCheckedList = [];
+            },
+            async changeOrgan(index){
+              // console.log(index,this.sendOrganChecked[index])
+              let organList =  await this.getOrganization({parent_id:this.sendOrganChecked[index]});
+              if(organList.organ.length){
+                this.organizationList = this.organizationList.slice(0,index+1)
+                this.organizationList.push(organList.organ);
+              }
+              this.memberList = organList.members || []
+              this.memberCheckedList = [];
             }
         }
     });

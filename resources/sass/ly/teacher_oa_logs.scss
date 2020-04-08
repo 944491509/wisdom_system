@@ -188,14 +188,50 @@
                 margin-bottom: 30px;
             }
         }
-        ul.checked_send_teacher_area{
+        .checked_send_organ_area{
             padding: 0 30px 0 30px;
+            height: 60vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            .organ_item{
+                border-bottom: 1px solid #ddd;
+                margin-bottom: 28px;
+                padding-bottom: 20px;
+                &:last-child{
+                    border-bottom: none;
+                }
+                .t_name{
+                    width: 120px;
+                    display: inline-block;
+                }
+            }
+        }
+        .label-send-drawer .el-radio-button__inner, .label-send-drawer .el-checkbox-button__inner{
+            border: none;
+            border-radius: 5px;
+            margin-right: 27px;
+            background-color: #f6f6f6;
+            transition: none;
+            box-shadow:none;
+        }
+        .is-active.label-send-drawer .el-radio-button__inner,
+        .is-checked.label-send-drawer .el-checkbox-button__inner{
+            border: 2px solid rgba(67, 138, 230, 0.71);
+            background-color: rgba(128, 157, 240, 0.21);
+            color: rgba(67, 138, 230, 0.71);
+            transition: none;
+            box-shadow:none;
+        }
+        ul.checked_send_teacher_area{
+            padding: 30px 30px 0 30px;
             height: 60vh;
             overflow-x: hidden;
             overflow-y: auto;
             li{
                 border-bottom: 1px solid #ddd;
                 margin-bottom: 10px;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
                 .t_name{
                     font-size: 18px;
                     margin-left: 5px;
