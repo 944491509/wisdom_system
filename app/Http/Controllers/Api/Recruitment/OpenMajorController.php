@@ -177,6 +177,13 @@ class OpenMajorController extends Controller
             return JsonBuilder::Error($validator->errors()->first());
         }
 
+        // 验证手机号是否存在
+        $userObj = new UserDao();
+        $userInfo = $userObj->getUserByEmail($formData['email']);
+        if(!empty($userInfo) && $userInfo->email && ($user->email != $userInfo->email)) {
+            return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
+        }
+
         // 获取专业信息
         $plan = $request->getPlan();
 
