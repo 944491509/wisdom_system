@@ -24,7 +24,11 @@ if (document.getElementById('teacher-oa-logs-app')) {
                     { tit: "已接收", type: 1 },
                 ],
                 show: 3,
-                drawer: false, // 侧边栏
+                drawer: false, // 添加和编辑侧边栏
+                sendDrawer: false, // 发送至侧边栏
+                detailDrawer: false, // 日志详情侧边栏
+                sendTitle: '发送至',
+                sendSearch: true,
                 log: {
                     title: "",
                     content: ""
@@ -32,7 +36,11 @@ if (document.getElementById('teacher-oa-logs-app')) {
                 keyword: "",
                 logList: [],
                 check: false,
-                btnText: "全选"
+                btnText: "全选",
+                teachterList: [],
+                organizationList:[],
+                sendTeacherCheckedList:[],
+                teacherKeyword:""
             }
         },
         created() {
@@ -120,7 +128,8 @@ if (document.getElementById('teacher-oa-logs-app')) {
             },
             // 添加日志---关闭按钮
             handleClose(done) {
-                done()
+              // this.getlogList(3);
+              done()
             },
             startFlow: function (flowId) {
                 const url = this.url.flowOpen + '?flow=' + flowId + '&uuid=' + this.userUuid;
@@ -148,7 +157,80 @@ if (document.getElementById('teacher-oa-logs-app')) {
             reloadThisPage: function () {
                 Util.reloadCurrentPage(this);
             },
+            async openSendDrawer(){
+              this.sendDrawer = true;
+              this.getTeachers();
+              this.organizationList = await this.getOrganization();
+              console.log('organizationList',this.organizationList);
+            },
+            async getOrganization(praras={},){
+              let res =  await axios.post(
+                '/Oa/tissue/getOrganization',
+                praras
+              )
+              console.log(res);
+              if (Util.isAjaxResOk(res)) {
+                return res.data.data || []
+              }
+              return []
 
+            },
+            getTeachers(){
+              axios.post(
+                '/api/Oa/get-teachers'
+              ).then(res => {
+                if (Util.isAjaxResOk(res)) {
+                    this.teachterList = res.data.data || []
+                }
+              })
+            },
+            sendlog(){
+              let log_ids = this.logList.filter(e=>e.sele).map(e=>e.id)
+              if(!this.sendTeacherCheckedList.length){
+                this.$alert('提示', '请选择收件人', {
+                  confirmButtonText: '确定',
+                  callback: action => {
+
+                  }
+                });
+                return;
+              }
+              if(!log_ids.length){
+                this.$alert('提示', '请选择日志', {
+                  confirmButtonText: '确定',
+                  callback: action => {
+
+                  }
+                });
+                return;
+              }
+              let t_names = this.teachterList.filter(e=>this.sendTeacherCheckedList.includes(e.id)).map(e=>e.name);
+              axios.post(
+                '/api/Oa/work-log-send',{
+                  id:log_ids.join(','),
+                  user_id:this.sendTeacherCheckedList.join(','),
+                  user_name: t_names.join(','),
+                }
+              ).then(res => {
+                if (Util.isAjaxResOk(res)) {
+                  if(res.data.code==1000){
+                    this.$message({
+                      type: 'success',
+                      message: `发送成功！`
+                    });
+                    this.drawer = false;
+
+                    //出发数据更新
+                    // todo
+                  }
+                }
+              })
+            },
+            async teatherSearch(){
+              console.log(this.teacherKeyword)
+              let params = { keyword: this.teacherKeyword,type :2}
+              console.log(await this.getOrganization(params));
+            }
         }
     });
 }

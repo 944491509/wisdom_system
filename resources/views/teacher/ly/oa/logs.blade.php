@@ -47,8 +47,35 @@
             <!-- list -->
             <div v-show="nav[2].type == 1" class="teacher-oa-logs-card-button">
                 <el-button @click="handleCheckAllChange">@{{btnText}}</el-button>
-                <el-button type="primary">发送至</el-button>
+                <el-button type="primary" @click="openSendDrawer">发送至</el-button>
             </div>
+            <el-drawer :title="sendTitle" :before-close="handleClose" :visible.sync="sendDrawer" custom-class="demo-drawer" ref="drawer">
+                <div class="demo-drawer__send">
+                  <el-form :model="log" >
+                    <el-form-item class="form-item-send">
+                      <el-input placeholder="请输入关键字" class="teacher-oa-logs-card_send" v-model="teacherKeyword">
+                        <el-button slot="append" @click="teatherSearch()">搜索</el-button>
+                      </el-input>
+                    </el-form-item>
+                  </el-form>
+                  <ul class="checked_send_teacher_area">
+                        <el-checkbox-group v-model="sendTeacherCheckedList">
+                            <li v-for="item in teachterList" :key="item.id">
+                                <el-checkbox class="d-block"  :label="item.id">
+                                    <template>
+                                        <img :src="item.avatar" />
+                                        <span class="t_name">@{{item.name}} </span>
+                                    </template>
+                                </el-checkbox>
+                            </li>
+                        </el-checkbox-group>
+                    </ul>
+                    <div class="demo-drawer_send_footer">
+                        <el-button type="primary" @click="sendlog">确定</el-button>
+                    </div>
+                  </div>
+                </div>
+            </el-drawer>
         </div>
     </div>
 </div>
