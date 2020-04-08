@@ -20,9 +20,11 @@ class JPushLogic implements JPushSender
 
     public function send($users, $title, $content, $extras): IMessageBag
     {
+        Log::alert('【极光推送】开始');
         if (!empty($users)) {
             $result = $this->setKeyAndRegId($users);
         } else {
+            Log::alert('【极光推送】未找到对应user');
             return new MessageBag(JsonBuilder::CODE_SUCCESS, '推送成功');
         }
 
@@ -43,11 +45,14 @@ class JPushLogic implements JPushSender
                             ->androidNotification($content, $androidNotification)
                             ->options($options)
                             ->send();
+                        Log::alert('【极光推送】收到返回值', $response);
                     } catch (\JPush\Exceptions\APIRequestException $e) {
                         $error[] = ['message' => $e->getMessage(), 'code' => $e->getCode()];
-                        Log::alert('push推送失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
+                        Log::alert('【极光推送】失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
                     }
                 }
+            }else {
+                Log::alert('【极光推送】未找到对应regId['.$key.']');
             }
         }
         if (!empty($error)) {
