@@ -21,6 +21,9 @@ trait PushUserRole
         $shopI = 0;
         foreach ($users as $user) {
             $user = $user->user;
+            if (empty($user)) {
+                continue;
+            }
             if ($user->isStudent()) {
                 // 学生端
                 $this->appKey       = env('PUSH_STUDENT_KEY');
