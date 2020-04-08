@@ -43,7 +43,7 @@ trait PushUserRole
                     $teacher['regId'][ceil($teacherI / 999)][] = $user->userDevices->push_id;
                 }
 
-            } elseif ($user->type == Role::COMPANY || $user->type == Role::DELIVERY || $user->type == Role::BUSINESS_INNER || $users == BUSINESS_OUTER) {
+            } elseif ($user->type == Role::COMPANY || $user->type == Role::DELIVERY || $user->type == Role::BUSINESS_INNER || $user->type == Role::BUSINESS_OUTER) {
                 // TODO :: 以后实现
                 continue;
 

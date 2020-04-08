@@ -21,7 +21,9 @@ class UserDeviceDao
     public function updateOrCreate($userId, $data = [])
     {
         $device = $this->getUserDeviceByUserId($userId);
-
+        if (!empty($data['push_id'])) {
+            UserDevice::where('push_id', $data['push_id'])->update(['push_id' => '']);
+        }
         if (empty($device)) {
             $data['user_id'] = $userId;
             return $user = UserDevice::create($data);
