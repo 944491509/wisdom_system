@@ -20,24 +20,24 @@ class JPushLogic implements JPushSender
 
     public function send($users, $title, $content, $extras): IMessageBag
     {
-        if (is_array($users)) {
+        if (!empty($users)) {
             $result = $this->setKeyAndRegId($users);
         } else {
             return new MessageBag(JsonBuilder::CODE_SUCCESS, '推送成功');
         }
 
         foreach ($result as $key => $vals) {
-            if (!empty($vals)) {
-                foreach ($vals as $val) {
+            if (!empty($vals['regId'])) {
+                foreach ($vals['regId'] as $val) {
                     $iosNotification     = ['sound' => '', 'extras' => $extras];
                     $androidNotification = ['title' => $title, 'extras' => $extras];
-                    $options             = ['apns_production' => strval($val['key']['production'])];
-                    $client              = new JPush($val['key']['appKey'], $val['key']['masterSecret'], null, null, 'BJ');
+                    $options             = ['apns_production' => strval($vals['key']['production'])];
+                    $client              = new JPush($vals['key']['appKey'], $vals['key']['masterSecret'], null, null, 'BJ');
                     try {
                         $push     = $client->push();
                         $response = $push
                             ->setPlatform('all') // 推送平台
-                            ->addRegistrationId($val['regId']) // 极光ID
+                            ->addRegistrationId($val) // 极光ID
                             ->setNotificationAlert($title) // 消息标题
                             ->iosNotification($content, $iosNotification)
                             ->androidNotification($content, $androidNotification)
