@@ -345,6 +345,13 @@ if (document.getElementById("teacher-oa-logs-app")) {
 
         })
         console.log(this.memberCheckedDetailList)
+      },
+      deleteMember(id){
+        let index = this.memberCheckedList.indexOf(id);
+        // console.log('deleteMember',id,index)
+        if(index>-1){
+          this.memberCheckedList.splice(index,1)
+        }
       }
     }
   });

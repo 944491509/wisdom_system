@@ -103,11 +103,13 @@
                                 <img  class="t_avatar":src="value.avatar"/>
                                 <span class="t_name">@{{value.name}}</span>
                                 <span class="t_title">（@{{value.title}}）</span>
+                                <span class="t_toash" @click="deleteMember(item)">删除</span>
                             </li>
                         </template>
                     </ul>
 
                     <div class="demo-drawer_send_footer">
+                        <el-button type="primary" @click="sendDrawerType=1" v-if="sendDrawerType == 2">上一步</el-button>
                         <el-button type="primary" @click="sendlog">@{{sendDrawerType == 1?'确认':'发送'}}</el-button>
                     </div>
                   </div>
