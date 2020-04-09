@@ -37,7 +37,7 @@
                         </div>
                     </el-form>
                     <div class="demo-drawer__footer">
-                        <el-button type="primary" @click="addlog" v-if="show === 3 || isFromEdit == 'add'">@{{isEdit ? '编辑' : '保存'}}</el-button>
+                        <el-button type="primary" @click="addlog" v-if="show === 3 || isFromEdit == 'add'" :style="{backgroundColor: (isEdit? 'rgb(255,102,0)' : '')}">@{{isEdit ? '编辑' : '保存'}}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -54,7 +54,7 @@
                     <div class="teacher-oa-logs-card-list-top">
                         <img :src="item.avatar" alt="">
                         <div class="teacher-oa-logs-card-list-top-right">
-                            <p @click="turnDetailDrawer(item, 2)">@{{ item.title }}</p>
+                            <p @click="turnDetailDrawer(item, 2)" style="cursor: pointer;">@{{ item.title }}</p>
                             <p>@{{ item.created_at }}</p>
                         </div>
                     </div>
