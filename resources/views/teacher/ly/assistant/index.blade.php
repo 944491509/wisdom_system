@@ -6,10 +6,10 @@
         <div class="card">
             <div class="card-body clearfix">
                 <div class="banner-item clearfix" v-for="(item2, i2) in item.helper_page">
-                    <a :href="item2.url" style="color: rgba(65, 74, 90, 1)">
+                    <a :href="item2.url">
                         <dl>
                             <dt><img :src="item2.icon" alt=""></dt>
-                            <dd v-html="item2.name"></dd>
+                            <dd v-html="item2.name" style="color: #414a5a"></dd>
                         </dl>
                     </a>
                     <div class="bunner-line" v-if="i2+1 != item.helper_page.length">
@@ -31,11 +31,11 @@
         </div>
         <div class="card-body" v-cloak>
             <el-input placeholder="请输入内容" v-model="input">
-                <el-button slot="append" @click="serach">搜索</el-button>
+                <el-button slot="append" @click="serach" style="background-color: #4ea5fe;">搜索</el-button>
             </el-input>
             <div class="bottom-table" v-if="tableData.length > 0">
                 <div class="table-item" v-for="item in tableData" :key="item.id">
-                    <img :src="item.avatar" alt="" width="50px" style="border-radius: 50%">
+                    <img :src="item.avatar" alt="" width="50px" style="height: 50px;border-radius: 50%">
                     <span style="color: #313B4C;" class="type">@{{ item.flow.name }}</span>
                     <span style="color: #99A0AD;">申请人：@{{ item.user_name }}</span>
                     <span style="color: #D5D7E0;">申请日期：@{{ item.created_at }}</span>

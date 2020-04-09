@@ -67,6 +67,12 @@
 
     .card-body {
         padding-top: 20px;
+        .el-input-group__append {
+            font-size: 14px;
+            font-family: MicrosoftYaHei;
+            color: rgba(255, 255, 255, 1);
+            background-color: #4ea5fe;
+        }
     }
 
     .banner-item {
@@ -108,7 +114,7 @@
 
     .bottom-card {
         width: 728px;
-        height: 445px;
+        min-height: 445px;
 
         .card-head {
             height: 50px;
@@ -123,31 +129,6 @@
         height: 50px;
         line-height: 50px;
         font-size: 16px;
-    }
-
-    .bottom-search {
-        width: 100%;
-        padding: 0 24px;
-
-        .el-button {
-            width: 84px;
-            height: 40px;
-            border-tadus: 3px;
-            border-bottom-left-radius: 0;
-            border-top-left-radius: 0;
-            font-size: 14px;
-        }
-
-        .el-input {
-            width: calc(100% - 84px);
-            margin-right: 0;
-
-            input {
-                border-tadus: 3px;
-                border-bottom-right-radius: 0;
-                border-top-right-radius: 0;
-            }
-        }
     }
 
     .bottom-table {
@@ -174,24 +155,6 @@
             padding: 20px 0;
         }
     }
-    // .bottom-table {
-    //     padding: 0 24px;
-    //     font-size: 14px;
-
-    //     .blade_listImage {
-    //         width: 28px;
-    //         height: 28px;
-    //     }
-
-    //     .el-table--striped .el-table__body tr.el-table__row--striped td {
-    //         background: #f5f6ff;
-    //     }
-
-    //     .icon-image {
-    //         width: 34px;
-    //         height: 24px;
-    //     }
-    // }
 
     .bottom-List {
         list-style: none;
