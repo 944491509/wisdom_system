@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="row table-padding">
                             <div class="col-md-6 col-sm-6 col-6">
-                                <a href="{{ route('school_manager.evaluate-teacher.grade') }}" class="btn btn-primary">
+                                 <a href="{{ route('school_manager.evaluate-teacher.grade') }}" class="btn btn-primary">
                                     创建 <i class="fa fa-plus"></i>
                                 </a>
                             </div>
@@ -49,7 +49,6 @@
                             </table>
                         </div>
                         {{ $list->links() }}
-
                     </div>
                 </div>
             </div>

@@ -34,6 +34,9 @@
     import ClickToSelect from './ClickToSelect';
     import SelectedOrg from './SelectedOrg';
 
+    const dom = document.getElementById('app-init-data-holder');
+    const schoolId = dom.dataset.school;
+
     export default {
         name: "OrganizationsSelector",
         props:['userUuid','schoolId','roles','existedOrganizations'],
@@ -93,7 +96,7 @@
             },
             _loadData: function(a, b){
                 this.loadingOrganizations = true;
-                return loadOrganizationsByParent(a, b);
+                return loadOrganizationsByParent(a, b, schoolId);
             },
             init: function(){
                 this._loadData(null, null)
