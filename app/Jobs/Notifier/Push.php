@@ -76,7 +76,7 @@ class Push implements ShouldQueue
             }elseif ($this->to > 0) {
                 $users = GradeUser::where('user_id', '=', $this->to);
             }else {
-                if (!empty($this->organizations)) {
+                if (!empty($this->organizations) && !(count($this->organizations) == 1 && $this->organizations[0] == 0)) {
                     $organizationUserId = UserOrganization::whereIn('organization_id', $this->organizations)->pluck('user_id')->toArray();
                     $users = GradeUser::whereIn('user_id', $organizationUserId);
                 }else {
