@@ -69,7 +69,7 @@ class Push implements ShouldQueue
         }
         else{
             if ($this->to == SystemNotification::TO_STUDENT) {
-                $users = GradeUser::whereIn('user_type', [Role::VERIFIED_USER_STUDENT_SLUG, Role::VERIFIED_USER_CLASS_LEADER_SLUG, Role::VERIFIED_USER_CLASS_SECRETARY_SLUG]);
+                $users = GradeUser::whereIn('user_type', [Role::VERIFIED_USER_STUDENT, Role::REGISTERED_USER]);
             }elseif ($this->to == SystemNotification::TO_TEACHER) {
                 $users = GradeUser::where('user_type', '=', Role::TEACHER);
             }elseif ($this->to > 0) {
