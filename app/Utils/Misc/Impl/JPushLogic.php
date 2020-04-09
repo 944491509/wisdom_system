@@ -45,10 +45,10 @@ class JPushLogic implements JPushSender
                             ->androidNotification($content, $androidNotification)
                             ->options($options)
                             ->send();
-                        Log::alert('【极光推送】收到返回值', $response);
+                        Log::alert('【极光推送】收到返回值['.$key.']', $response);
                     } catch (\JPush\Exceptions\APIRequestException $e) {
                         $error[] = ['message' => $e->getMessage(), 'code' => $e->getCode()];
-                        Log::alert('【极光推送】失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
+                        Log::alert('【极光推送】失败['.$key.']:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
                     }
                 }
             }else {

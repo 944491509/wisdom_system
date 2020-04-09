@@ -35,7 +35,7 @@ trait PushUserRole
                     $student['regId'][ceil($studentI / 999)][] = $user->userDevices->push_id;
                 }
 
-            } elseif ($user->isTeacher() || $user->isEmployee()) {
+            } elseif ($user->isTeacher() || $user->isEmployee() || $user->isSchoolManager()) {
                 // 教师端
                 $this->appKey       = env('PUSH_TEACHER_KEY');
                 $this->masterSecret = env('PUSH_TEACHER_SECRET');
