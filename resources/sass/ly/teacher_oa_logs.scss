@@ -140,6 +140,9 @@
 
             .el-checkbox {
                 margin-right: 30px;
+                .el-checkbox__inner {
+                  border-radius: 50%;
+                }
             }
 
             .teacher-oa-logs-card-list-top {
