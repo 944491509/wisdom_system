@@ -28,7 +28,7 @@
                                         <td>{{ $key +1 }}</td>
                                         <td>{{ $val->user->name }}</td>
                                         <td>{{ $val->user->profile->getGenderTextAttribute()}}</td>
-                                        <td>{{ $val->grade->name }}</td>
+                                        <td>{{ $val->grade->name ?? '' }}</td>
                                         <td>{{ $val->score }}</td>
                                         <td>{{ $val->created_at }}</td>
                                     </tr>

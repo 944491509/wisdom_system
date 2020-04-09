@@ -574,7 +574,7 @@ Route::prefix('school_manager')->group(function () {
         // 评教列表
         Route::get('evaluate-teacher/list','Evaluate\EvaluateTeacherController@list')
             ->name('school_manager.evaluate.teacher-list');
-        // 评教详情
+         // 评教详情
         Route::get('evaluate-record/list','Evaluate\EvaluateRecordController@list')
             ->name('school_manager.evaluate.record-list');
         // 班级列表
@@ -597,7 +597,11 @@ Route::prefix('school_manager')->group(function () {
         Route::any('evaluate-student-edit','Evaluate\EvaluateController@evaluateStudentEdit')
             ->name('school_manager.evaluate.student.edit');
         // 评学删除
-        Route::get('evaluate-student-delete','Evaluate\EvaluateController@evaluateStudentDelete')
+        Route::get('evaluate-student-delete','Evaluate\EvaluateTeacherController@list')
+            ->name('school_manager.evaluate.teacher.list');
+
+        // 评教列表
+        Route::get('evaluate-teacher-list','Evaluate\EvaluateController@evaluateStudentDelete')
             ->name('school_manager.evaluate.student.delete');
     });
     Route::prefix('importer')->group(function(){
