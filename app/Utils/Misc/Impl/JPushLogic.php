@@ -41,7 +41,7 @@ class JPushLogic implements JPushSender
                             ->setPlatform('all') // 推送平台
                             ->addRegistrationId($val) // 极光ID
                             ->setNotificationAlert($title) // 消息标题
-                            ->iosNotification($content, $iosNotification)
+                            ->iosNotification(['title' => $title, 'body' => $content], $iosNotification)
                             ->androidNotification($content, $androidNotification)
                             ->options($options)
                             ->send();
