@@ -167,6 +167,9 @@ use App\Utils\UI\Button;
       .el-cascader-panel .el-cascader-node__label{
         margin-left:5px;
       }
+      #redactor-modal{
+          z-index:9999;
+      }
     </style>
     <div id="app-init-data-holder" data-school="{{ session('school.id') }}" data-newflow="1"></div>
     <script>
