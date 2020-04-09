@@ -1159,5 +1159,3 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
     Route::get('/assess', 'Api\OA\WorkController@assess')
         ->name('api.work.assess');
 });
-
-
