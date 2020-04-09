@@ -20,7 +20,7 @@ class JPushLogic implements JPushSender
 
     public function send($users, $title, $content, $extras): IMessageBag
     {
-        Log::alert('【极光推送】开始');
+        Log::alert('【极光推送】开始', ['title' => $title, 'content' => $content, 'users' => $users]);
         if (!empty($users)) {
             $result = $this->setKeyAndRegId($users);
         } else {
