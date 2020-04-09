@@ -29,7 +29,7 @@ class JPushLogic implements JPushSender
         }
 
         foreach ($result as $key => $vals) {
-            Log::alert('【极光推送】获取conf', $result);
+            Log::alert('【极光推送】获取conf', $vals);
             if (!empty($vals['regId'])) {
                 foreach ($vals['regId'] as $val) {
                     $iosNotification     = ['sound' => '', 'extras' => $extras];
