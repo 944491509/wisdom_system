@@ -397,7 +397,7 @@ class FlowsController extends Controller
                 ];
                 $baseInfo[] = [
                     'name' => '出生年月',
-                    'value' => substr($startUserAction->userFlow->user->profile->birthday) ?? '',
+                    'value' => substr($startUserAction->userFlow->user->profile->birthday, 0, 16) ?? '',
                 ];
                 $baseInfo[] = [
                     'name' => '民族',
@@ -456,7 +456,7 @@ class FlowsController extends Controller
                 'options' => $optionReList,
                 'copys' => $flowInfo['copy'],
                 'showActionEditForm' => $showActionEditForm,
-                'autoProcessed' => $flowInfo->auto_processed,
+                'autoProcessed' => $flow->auto_processed,
                 'startInfo' => $startInfo,
                 'cancelInfo' => $cancelInfo,
                 'handlers' => $handlers,
