@@ -34,7 +34,8 @@ if (document.getElementById('teacher-oa-index-app')) {
                 statusMap: {
                     0: '审核中',
                     1: '已通过',
-                    2: '未通过'
+                    2: '未通过',
+                    3: '已撤回'
                 }, // 审批状态
                 tableData: [], // 审批列表
             }
@@ -71,7 +72,7 @@ if (document.getElementById('teacher-oa-index-app')) {
             },
             // 每个申请的点击事件
             goCreateFlow(flow) {
-                this.$refs.flowForm.init(flow)
+                this.$refs.flowForm.init(flow);
             },
             // tab切换
             list_click(tab) {

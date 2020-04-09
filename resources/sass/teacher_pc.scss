@@ -18,16 +18,16 @@
     overflow-y: auto;
 }
 
-.status_red {
-    color: #fd1b1b;
+.status_orange {
+    color: #fe7b1c;
 }
 
 .status_green {
     color: #6dcc58;
 }
 
-.status_yellow {
-    color: #fe7b1c;
+.status_red {
+    color: #fd1b1b;
 }
 
 .status_gray {
@@ -36,10 +36,6 @@
 
 .status_blue {
     color: #4ea5fe !important;
-}
-
-.status_black {
-    //color: black;
 }
 
 // 无数据占位符
@@ -155,23 +151,47 @@
     }
 
     .bottom-table {
-        padding: 0 24px;
-        font-size: 14px;
-
-        .blade_listImage {
-            width: 28px;
-            height: 28px;
+        width: 100%;
+        margin-top: 10px;
+        .table-item {
+            height: 55px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .type {
+                width: 10%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                margin-left: -30px;
+            }
         }
-
-        .el-table--striped .el-table__body tr.el-table__row--striped td {
-            background: #f5f6ff;
+        .table-item:nth-child(even) {
+            background-color: #f4f7fe;
         }
-
-        .icon-image {
-            width: 34px;
-            height: 24px;
+        .el-pagination {
+            float: right;
+            padding: 20px 0;
         }
     }
+    // .bottom-table {
+    //     padding: 0 24px;
+    //     font-size: 14px;
+
+    //     .blade_listImage {
+    //         width: 28px;
+    //         height: 28px;
+    //     }
+
+    //     .el-table--striped .el-table__body tr.el-table__row--striped td {
+    //         background: #f5f6ff;
+    //     }
+
+    //     .icon-image {
+    //         width: 34px;
+    //         height: 24px;
+    //     }
+    // }
 
     .bottom-List {
         list-style: none;
