@@ -33,7 +33,9 @@ if (document.getElementById("teacher-oa-logs-app")) {
           id: "",
           title: "",
           content: "",
-          created_at: ""
+          created_at: "",
+          send_user_name:"",
+          updated_at:""
         },
         keyword: "",
         logList: [],
@@ -45,6 +47,7 @@ if (document.getElementById("teacher-oa-logs-app")) {
         sendTeacherCheckedList: [],
 
         memberCheckedList: [],
+        memberCheckedDetailList:{},
         memberChecked: "",
         teacherKeyword: "",
         sendDrawerType: 1,
@@ -85,7 +88,7 @@ if (document.getElementById("teacher-oa-logs-app")) {
         this.drawer = true;
       },
       turnDetailDrawer(item) {
-        if (this.show === 2 || this.show === 3) {
+        if (this.show === 2 || this.show === 1) {
           axios.post("/api/Oa/work-log-info", { id: item.id }).then(res => {
             if (Util.isAjaxResOk(res)) {
               if (res.data.data.type == 2) {
@@ -200,7 +203,9 @@ if (document.getElementById("teacher-oa-logs-app")) {
           id: "",
           title: "",
           content: "",
-          created_at: ""
+          created_at: "",
+          send_user_name:"",
+          updated_at:""
         };
         this.drawerTitle= "添加日志";
         this.isDisabled=false;
@@ -275,9 +280,10 @@ if (document.getElementById("teacher-oa-logs-app")) {
         if (this.sendDrawerType == 2) {
           let log_ids = this.logList.filter(e => e.sele).map(e => e.id);
 
-          let t_names = this.memberList
-            .filter(e => this.memberCheckedList.includes(e.id))
-            .map(e => e.name);
+          let t_names = Object.entries(this.memberCheckedDetailList)
+            .filter(([k,v]) => this.memberCheckedList.includes(Number(k)))
+            .map(([k,v]) => v.name);
+            // console.log(t_names)
           axios
             .post("/api/Oa/work-log-send", {
               id: log_ids.join(","),
@@ -326,7 +332,19 @@ if (document.getElementById("teacher-oa-logs-app")) {
           this.organizationList.push(organList.organ);
         }
         this.memberList = organList.members || [];
-        this.memberCheckedList = [];
+      },
+      changeMember(val){
+        console.log(val)
+        this.memberCheckedList.forEach(e=>{
+          console.log(e)
+          let re = this.memberList.find(a =>a.id == e);
+          if(re)
+          {
+            this.memberCheckedDetailList[e] = re
+          }
+
+        })
+        console.log(this.memberCheckedDetailList)
       }
     }
   });

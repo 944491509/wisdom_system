@@ -88,8 +88,8 @@
                             </el-radio-group>
                         </div>
                         <div class="organ_item"  >
-                            <el-checkbox-group v-model="memberCheckedList">
-                                <el-checkbox-button class="label-send-drawer" v-for="item in memberList" :label="item.id" :key="item.id">
+                            <el-checkbox-group v-model="memberCheckedList" @change="changeMember">
+                                <el-checkbox-button class="label-send-drawer"  v-for="item in memberList" :label="item.id" :key="item.id">
                                     <template>
                                         <span class="t_name">@{{item.name}} </span>
                                     </template>
@@ -99,10 +99,10 @@
                     </div>
                     <ul class="checked_send_teacher_area" v-if="sendDrawerType == 2">
                         <template v-for="item in memberCheckedList" >
-                            <li v-if="item == c.id" v-for="c in memberList" :key="c.id" >
-                                <img :src="c.avatar"/>
-                                <span class="t_name">@{{c.name}}</span>
-                                <span class="t_title">（@{{c.title}}）</span>
+                            <li v-if="item == key" v-for="(value,key) in memberCheckedDetailList" :key="key" >
+                                <img  class="t_avatar":src="value.avatar"/>
+                                <span class="t_name">@{{value.name}}</span>
+                                <span class="t_title">（@{{value.title}}）</span>
                             </li>
                         </template>
                     </ul>

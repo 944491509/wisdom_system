@@ -217,6 +217,11 @@
                     width: 120px;
                     display: inline-block;
                 }
+                .t_avatar{
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 50%;
+                }
             }
         }
         .label-send-drawer .el-radio-button__inner, .label-send-drawer .el-checkbox-button__inner{
@@ -248,6 +253,11 @@
                 .t_name{
                     font-size: 18px;
                     margin-left: 5px;
+                }
+                .t_avatar{
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 50%;
                 }
             }
             li:not(:frist-child){
