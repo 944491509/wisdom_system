@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Utils\Misc\JPushFactory;
 
@@ -76,7 +77,7 @@ class Push implements ShouldQueue
                 $users = GradeUser::where('user_id', '=', $this->to);
             }else {
                 if (!empty($this->organizations)) {
-                    $organizationUserId = UserOrganization::whereIn('id', $this->organizations)->pluck('id')->toArray();
+                    $organizationUserId = UserOrganization::whereIn('organization_id', $this->organizations)->pluck('user_id')->toArray();
                     $users = GradeUser::whereIn('user_id', $organizationUserId);
                 }else {
                     // 直接$users = GradeUser;报错
