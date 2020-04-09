@@ -224,6 +224,7 @@ class RegistrationInformaticsDao
 
         if ($user) {
             $userProfile = $data;
+            $userProfile['origin'] = $data['origin']; // 数据来源
             $userProfile['uuid'] = $data['uuid'];
             $userProfile['api_token'] = $data['uuid'];
             $userProfile['user_id'] = $user->id;
@@ -271,8 +272,8 @@ class RegistrationInformaticsDao
             $userSave['name'] = $data['name']; // 姓名
             $userSave['email'] = $data['email']; // 邮箱
             User::where('id',$user->id)->update($userSave);
-
             // 更新基础信息
+            $userProfile['origin'] = $data['origin']; // 数据来源
             $userProfile['uuid'] = Uuid::uuid4()->toString();
             $userProfile['user_id'] = $user->id;
             $userProfile['year'] = $plan->year; // 这个应该是从招生中的入学年级来
