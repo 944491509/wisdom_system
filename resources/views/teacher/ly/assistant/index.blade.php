@@ -6,10 +6,12 @@
         <div class="card">
             <div class="card-body clearfix">
                 <div class="banner-item clearfix" v-for="(item2, i2) in item.helper_page">
-                    <dl>
-                        <dt><img :src="item2.icon" alt=""></dt>
-                        <dd v-html="item2.name"></dd>
-                    </dl>
+                    <a :href="item2.url">
+                        <dl>
+                            <dt><img :src="item2.icon" alt=""></dt>
+                            <dd v-html="item2.name"></dd>
+                        </dl>
+                    </a>
                     <div class="bunner-line" v-if="i2+1 != item.helper_page.length">
                     </div>
                 </div>
