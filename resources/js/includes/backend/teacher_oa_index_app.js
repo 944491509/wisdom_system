@@ -2,7 +2,7 @@
  * 教师办公 app
  */
 import { Util } from "../../common/utils";
-import { startedByMe, waitingForMe, cancelApplicationByUser, waitingByMe, processedByMe, copyByMe } from "../../common/flow";
+import { startedByMe, waitingByMe, processedByMe, copyByMe } from "../../common/flow";
 import Axios from "axios";
 import FlowForm from './auto-flow/flow-form'
 
