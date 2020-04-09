@@ -15,13 +15,16 @@ use App\Events\Pipeline\Flow\FlowRejected;
 use App\Events\Pipeline\Flow\FlowStarted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pipeline\FlowRequest;
+use App\Models\NetworkDisk\Media;
 use App\Models\Pipeline\Flow\Action;
+use App\Models\Pipeline\Flow\ActionOption;
 use App\Models\Pipeline\Flow\Flow;
 use App\Models\Pipeline\Flow\Node;
 use App\User;
 use App\Utils\JsonBuilder;
 use App\Utils\Pipeline\IAction;
 use App\Utils\Pipeline\IFlow;
+use App\Utils\Pipeline\IUserFlow;
 use Psy\Util\Json;
 
 class FlowsController extends Controller
@@ -248,22 +251,221 @@ class FlowsController extends Controller
      * @return string
      */
     public function view_action(FlowRequest $request){
-        $actionId = $request->getActionId();
-        $userFlowId = $request->getUserFlowId();
+        $user = $request->user();
+        $userFlowId = $request->get('user_flow_id', null);
+        if($user && $userFlowId){
+            $dao = new ActionDao();
+            //发布者action
+            $startUserAction = $dao->getFirstActionByUserFlow($userFlowId);
+            //当前用户action
+            $nowUserAction = $dao->getActionByUserFlowAndUserId($userFlowId, $user->id);
+            $showActionEditForm = !empty($nowUserAction)
+            && empty($request->get('readonly', '0'))
+            && $nowUserAction->result == IAction::RESULT_PENDING
+            && $startUserAction->userFlow->done == IUserFlow::IN_PROGRESS  ? true : false;
 
-        $actionDao = new ActionDao();
-        $userFlowDao = new UserFlowDao();
+            $flowDao = new FlowDao();
+            //流程信息
+            $flow = $flowDao->getById($startUserAction->flow_id);
+            $flowInfo = $flow->getSimpleLinkedNodes();
+            $handlers = [];
+            //审批结果
+            $actionResult = $dao->getHistoryByUserFlow($startUserAction->userFlow->id, true);
+            $actionReList = [];
+            foreach ($actionResult as $actRet) {
+                $actionReList[$actRet->node_id . '_' .$actRet->user_id] = $actRet;
+            }
+            $handlersIcon = [];
+            //审批人与结果关联
+            foreach ($flowInfo['handler'] as $handler) {
+                $icon = '';
+                $userList = $flowDao->transTitlesToUser($handler->titles, $handler->organizations, $startUserAction->userFlow->user);
+                $retUserList = [];
+                foreach ($userList as $key => $item) {
+                    foreach ($item as $im) {
+                        if (isset($actionReList[$handler->node_id.'_'.$im->id])) {
+                            $im->result = $actionReList[$handler->node_id.'_'.$im->id];
+                            //如果有人拒绝整个流程都是拒绝
+                            if ($im->result->result == IAction::RESULT_TERMINATE) {
+                                $icon = 'error';
+                            }
+                            if ($im->result->result == IAction::RESULT_REJECT) {
+                                $icon = 'error';
+                            }
+                            //如果有人等待 整个流程都是等待
+                            if (empty($icon) && $im->result->result == IAction::RESULT_PENDING) {
+                                $icon = 'pending';
+                            }
+                        }else {
+                            //如果还没轮到 整个流程都是等待
+                            if (empty($icon)) {
+                                $icon = 'wait';
+                            }
+                            $im->result = [];
+                        }
 
-        if($userFlowId){
-            $flow = $userFlowDao->getFlowHistory($userFlowId);
+                        $retUserList[$key][] = [
+                            'avatar' => $im->profile->avatar ?? '',
+                            'name' => $im->profile->name ?? '',
+                            'result' => $im->result
+                        ];
+                    }
+                }
+                if (empty($icon)) {
+                    $icon = 'success';
+                }
+                $handlers[] = ['icon' => $icon, 'list' => $retUserList];
+            }
+
+            //表单信息
+            $optionReList = [];
+            foreach ($flowInfo['options'] as $option) {
+                if ($option['type'] == 'node') {
+                    continue;
+                }
+                $optionRet = ActionOption::where('action_id', $startUserAction->id)->where('option_id', $option['id'])->value('value');
+                $value = '';
+                switch ($option['type']) {
+                    case 'date-date':
+                        if ($optionRet) {
+                            $optionRet = explode('~', $optionRet);
+                            $value = $optionRet[0];
+                            if (!empty($optionRet[1])) {
+                                $optionReList[] = [
+                                    'type' => $option['type'],
+                                    'name' => $option['name'],
+                                    'title' => $option['title'],
+                                    'value' => $value
+                                ];
+
+                                $option['title'] = $option['extra']['title2'];
+                                $value = $optionRet[1];
+                            }
+                        }
+                        break;
+                    case 'radio':
+                        if ($optionRet) {
+                            $optionRet = json_decode($optionRet, true);
+                            if (!empty($optionRet)) {
+                                $value = $optionRet['itemText'];
+                            }
+                        }
+                        break;
+                    case 'checkbox':
+                        if ($optionRet) {
+                            $optionRet = json_decode($optionRet, true);
+                            if (!empty($optionRet)) {
+                                foreach ($optionRet as $ret) {
+                                    $value .= ' ' . $ret['itemText'];
+                                }
+                            }
+                        }
+                        break;
+
+                    case 'image':
+                        if ($optionRet) {
+                            $value = explode(',', $optionRet);
+                        }
+                        break;
+                    case 'files':
+                        if ($optionRet) {
+                            $value = Media::whereIn('id', explode(',', $optionRet))->select(['file_name','url'])->get()->toArray();
+                        }
+                        break;
+                    default:
+                        $value = $optionRet;
+                        break;
+                }
+
+                $optionReList[] = [
+                    'type' => $option['type'],
+                    'name' => $option['name'],
+                    'title' => $option['title'],
+                    'value' => $value
+                ];
+            }
+
+            $baseInfo  = [];
+            if ($startUserAction->userFlow->user->isStudent()) {
+                $baseInfo[] = [
+                    'name' => '姓名',
+                    'value' => $startUserAction->userFlow->user->name,
+                ];
+                $baseInfo[] = [
+                    'name' => '性别',
+                    'value' => $startUserAction->userFlow->user->profile->gender == 1 ? '男' : '女',
+                ];
+                $baseInfo[] = [
+                    'name' => '出生年月',
+                    'value' => substr($startUserAction->userFlow->user->profile->birthday) ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '民族',
+                    'value' => $startUserAction->userFlow->user->profile->nation_name ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '政治面貌',
+                    'value' => $startUserAction->userFlow->user->profile->political_name ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '入学时间',
+                    'value' => $startUserAction->userFlow->user->profile->year ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '身份证号',
+                    'value' => $startUserAction->userFlow->user->profile->id_number ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '学院',
+                    'value' => $startUserAction->userFlow->user->gradeUser->institute->name ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '专业',
+                    'value' => $startUserAction->userFlow->user->gradeUser->major->name ?? '',
+                ];
+                $baseInfo[] = [
+                    'name' => '班级',
+                    'value' => $startUserAction->userFlow->user->gradeUser->grade->name ?? '',
+                ];
+            }
+            $initData = [
+                'school' => $user->getSchoolId(),
+                'useruuid' => $user->uuid,
+                'apitoken' => $user->api_token,
+                'flowid' => $startUserAction->userFlow->id,
+                'actionid' => $nowUserAction ? $nowUserAction->id : null,
+                'theaction' => $nowUserAction
+            ];
+            $startInfo = [
+                'avatar' => $startUserAction->userFlow->user->profile->avatar ?? '',
+                'name' => $startUserAction->userFlow->user->name ?? '',
+                'time' => substr($startUserAction->created_at, 0, 16),
+            ];
+            $cancelInfo = [];
+            if ($startUserAction->userFlow->done == IUserFlow::REVOKE) {
+                $cancelInfo = [
+                    'avatar' => $startUserAction->userFlow->user->profile->avatar ?? '',
+                    'name' => $startUserAction->userFlow->user->name ?? '',
+                    'time' => substr($startUserAction->updated_at, 0, 16),
+                ];
+            }
+
+            $return = [
+                'baseInfo' => $baseInfo,
+                'initData' => $initData,
+                'options' => $optionReList,
+                'copys' => $flowInfo['copy'],
+                'showActionEditForm' => $showActionEditForm,
+                'autoProcessed' => $flowInfo->auto_processed,
+                'startInfo' => $startInfo,
+                'cancelInfo' => $cancelInfo,
+                'handlers' => $handlers,
+            ];
+            return JsonBuilder::Success($return);
         }
-        else{
-            $action = $actionDao->getByActionId($actionId);
-            $flow = $userFlowDao->getFlowHistory($action->getTransactionId());
+        else {
+            return JsonBuilder::Error('您无权使用本功能');
         }
-
-        return $flow ? JsonBuilder::Success(['flow'=>$flow])
-            : JsonBuilder::Error('您没有权限执行此操作');
     }
 
     /**
