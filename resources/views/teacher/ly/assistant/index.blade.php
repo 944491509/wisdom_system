@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body clearfix">
                 <div class="banner-item clearfix" v-for="(item2, i2) in item.helper_page">
-                    <a :href="item2.url">
+                    <a :href="item2.url" style="color: rgba(65, 74, 90, 1)">
                         <dl>
                             <dt><img :src="item2.icon" alt=""></dt>
                             <dd v-html="item2.name"></dd>
@@ -46,43 +46,11 @@
                                 'status_gray': item.done == 3
                             }">
                         @{{statusMap[item.done]}}</span>
-                    <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
+                    <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image" style="cursor: pointer;">
                 </div>
                 <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange"></el-pagination>
             </div>
             <div v-else style="color: #D5D7E0;text-align: center;padding-top: 20px;background: #fff;">暂无数据~</div>
-            <!-- <div class="bottom-table">
-                <el-table :show-header="false" :data="tableData" stripe style="width: 100%">
-                    <el-table-column prop="state" width="60">
-                        <template slot-scope="scope">
-                            <img class="blade_listImage" v-if="scope.row.iconState" src="{{asset('assets/img/teacher_blade/qingjia@2x.png')}}" alt="">
-                            <img class="blade_listImage" v-if="!scope.row.iconState" src="{{asset('assets/img/teacher_blade/tingzhi@2x.png')}}" alt="">
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="state" label="状态" width="110">
-                    </el-table-column>
-                    <el-table-column prop="name" label="姓名">
-                    </el-table-column>
-                    <el-table-column prop="date" label="日期" width="200">
-                    </el-table-column>
-                    <el-table-column prop="status" width="80px">
-                        <template slot-scope="scope">
-                            <span v-bind:class="{
-                                'status_red': scope.row.status == 0,
-                                'status_green': scope.row.status == 1,
-                                'status_yellow': scope.row.status == 2,
-                                'status_gray': scope.row.status == 3,
-                                'status_black': scope.row.status == 4
-                            }">
-                                @{{statusMap[scope.row.status]}}
-                            </span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column width="80px">
-                        <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
-                    </el-table-column>
-                </el-table>
-            </div> -->
         </div>
     </div>
 </div>

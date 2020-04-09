@@ -16,44 +16,12 @@ if (document.getElementById('teacher-assistant-index-app')) {
                 size: 10, // 条数
                 total: '', // 总条数
                 statusMap: {
-                    0: '未通过',
+                    0: '审核中',
                     1: '已通过',
-                    2: '待审批',
-                    3: '已通过',
-                    5: '已撤回'
+                    2: '未通过',
+                    3: '已撤回'
                 },
-                tableData: [],
-                // tableData: [{
-                //     iconState: 1,
-                //     state: '请假',
-                //     name: '王小虎',
-                //     date: '2016-05-02',
-                //     status: 0,
-                // }, {
-                //     iconState: 0,
-                //     state: '休学',
-                //     name: '王小虎',
-                //     date: '2016-05-02',
-                //     status: 1,
-                // }, {
-                //     iconState: 0,
-                //     state: '休学',
-                //     name: '王小虎',
-                //     date: '2016-05-02',
-                //     status: 2,
-                // }, {
-                //     iconState: 1,
-                //     state: '请假',
-                //     name: '王小虎',
-                //     date: '2016-05-02',
-                //     status: 3,
-                // }, {
-                //     iconState: 1,
-                //     state: '请假',
-                //     name: '王小虎',
-                //     date: '2016-05-02',
-                //     status: 5,
-                // }]
+                tableData: []
             }
         },
         created() {
