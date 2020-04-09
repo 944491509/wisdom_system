@@ -1150,6 +1150,9 @@ Route::prefix('material')->middleware('auth:api')->group(function(){
     // 教材资料
     Route::any('/materials', 'Api\Study\MaterialController@materials')
         ->name('api.material.materials');
+    // 查询当节课的教学资料
+    Route::post('/get-materials', 'Api\Study\MaterialController@getMaterials')
+        ->name('api.material.get-materials');
 });
 
 
@@ -1159,5 +1162,3 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
     Route::get('/assess', 'Api\OA\WorkController@assess')
         ->name('api.work.assess');
 });
-
-

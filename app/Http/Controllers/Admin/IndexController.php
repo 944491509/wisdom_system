@@ -62,19 +62,71 @@ class IndexController extends Controller
         $data = [
             ['name' => '教学助手', 'helper_page' =>
                [
+<<<<<<< HEAD
                     [ 'name'=> '课表', 'icon' => asset('assets/img/teacher/ass-icon4.png') ],
                     [ 'name'=> '教学资料', 'icon' => asset('assets/img/teacher/ass-icon7.png') ],
                     [ 'name'=> '签到', 'icon' => asset('assets/img/teacher/ass-icon9.png') ],
                     [ 'name'=> '评分', 'icon' => asset('assets/img/teacher/ass-icon8.png') ],
                     [ 'name'=> '选课', 'icon' => asset('assets/img/teacher/ass9.png') ],
+=======
+                    [
+                        'name'=> '课表',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'course',
+                    ],
+                    [
+                        'name'=> '教学资料',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'material',
+
+                    ],
+                    [
+                        'name'=> '签到',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'check-in',
+                    ],
+                    [
+                        'name'=> '评分',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'evaluation',
+                    ],
+                    [
+                        'name'=> '选课',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'electives',
+                    ],
+>>>>>>> b9bb65397ddaa194eb085f29d2435471acb0618e
                ]
             ],
             ['name' => '班主任助手', 'helper_page' =>
                [
+<<<<<<< HEAD
                     [ 'name'=> '班级管理', 'icon' => asset('assets/img/teacher/ass10.png') ],
                     [ 'name'=> '学生信息', 'icon' => asset('assets/img/teacher/ass-icon12.png') ],
                     [ 'name'=> '班级签到', 'icon' => asset('assets/img/teacher/ass-icon10.png') ],
                     [ 'name'=> '班级评分', 'icon' => asset('assets/img/teacher/ass-icon11.png') ],
+=======
+                    [
+                        'name'=> '班级管理',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'grades-manager',
+                    ],
+                    [
+                        'name'=> '学生信息',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'students-manager',
+                    ],
+                    [
+                        'name'=> '班级签到',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'grades-check-in',
+                    ],
+                    [
+                        'name'=> '班级评分',
+                        'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                        'url' => 'grades-evaluations'
+                    ],
+>>>>>>> b9bb65397ddaa194eb085f29d2435471acb0618e
                ]
             ]
         ];

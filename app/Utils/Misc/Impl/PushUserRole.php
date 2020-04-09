@@ -20,7 +20,10 @@ trait PushUserRole
         $teacherI = 0;
         $shopI = 0;
         foreach ($users as $user) {
-
+            $user = $user->user;
+            if (empty($user)) {
+                continue;
+            }
             if ($user->isStudent()) {
                 // 学生端
                 $this->appKey       = env('PUSH_STUDENT_KEY');
@@ -32,7 +35,7 @@ trait PushUserRole
                     $student['regId'][ceil($studentI / 999)][] = $user->userDevices->push_id;
                 }
 
-            } elseif ($user->isTeacher() || $user->isEmployee()) {
+            } elseif ($user->isTeacher() || $user->isEmployee() || $user->isSchoolManager()) {
                 // 教师端
                 $this->appKey       = env('PUSH_TEACHER_KEY');
                 $this->masterSecret = env('PUSH_TEACHER_SECRET');
@@ -43,7 +46,7 @@ trait PushUserRole
                     $teacher['regId'][ceil($teacherI / 999)][] = $user->userDevices->push_id;
                 }
 
-            } elseif ($user->type == Role::COMPANY || $user->type == Role::DELIVERY || $user->type == Role::BUSINESS_INNER || $users == BUSINESS_OUTER) {
+            } elseif ($user->type == Role::COMPANY || $user->type == Role::DELIVERY || $user->type == Role::BUSINESS_INNER || $user->type == Role::BUSINESS_OUTER) {
                 // TODO :: 以后实现
                 continue;
 

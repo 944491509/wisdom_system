@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Utils\Misc\JPushFactory;
 
@@ -69,14 +70,14 @@ class Push implements ShouldQueue
         }
         else{
             if ($this->to == SystemNotification::TO_STUDENT) {
-                $users = GradeUser::whereIn('user_type', [Role::VERIFIED_USER_STUDENT_SLUG, Role::VERIFIED_USER_CLASS_LEADER_SLUG, Role::VERIFIED_USER_CLASS_SECRETARY_SLUG]);
+                $users = GradeUser::whereIn('user_type', [Role::VERIFIED_USER_STUDENT, Role::REGISTERED_USER]);
             }elseif ($this->to == SystemNotification::TO_TEACHER) {
                 $users = GradeUser::where('user_type', '=', Role::TEACHER);
             }elseif ($this->to > 0) {
                 $users = GradeUser::where('user_id', '=', $this->to);
             }else {
-                if (!empty($this->organizations)) {
-                    $organizationUserId = UserOrganization::whereIn('id', $this->organizations)->pluck('id')->toArray();
+                if (!empty($this->organizations) && !(count($this->organizations) == 1 && $this->organizations[0] == 0)) {
+                    $organizationUserId = UserOrganization::whereIn('organization_id', $this->organizations)->pluck('user_id')->toArray();
                     $users = GradeUser::whereIn('user_id', $organizationUserId);
                 }else {
                     // 直接$users = GradeUser;报错

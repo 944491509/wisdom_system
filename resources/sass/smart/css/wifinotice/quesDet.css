@@ -1,0 +1,20 @@
+@charset "utf-8";
+.quesTit{
+    height:50px;
+    line-height:50px;
+    font-family: PingFangSC-Regular;
+    font-size: 16px;
+    color: #808080;
+    border-bottom: 1px solid #F7F7F7;;
+    padding: 0 16px;
+}
+.helpDet{
+    font-family: PingFangSC-Regular;
+    font-size: 16px;
+    color: #404040;
+    line-height: 30px;
+    padding: 0 16px;
+}
+
+
+

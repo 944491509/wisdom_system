@@ -18,28 +18,24 @@
     overflow-y: auto;
 }
 
-.status_red {
-    color: #FD1B1B;
+.status_orange {
+    color: #fe7b1c;
 }
 
 .status_green {
-    color: #6DCC58;
+    color: #6dcc58;
 }
 
-.status_yellow {
-    color: #FE7B1C;
+.status_red {
+    color: #fd1b1b;
 }
 
 .status_gray {
-    color: #ABABAB;
+    color: #ababab;
 }
 
 .status_blue {
-    color: #4EA5FE !important;
-}
-
-.status_black {
-    //color: black;
+    color: #4ea5fe !important;
 }
 
 // 无数据占位符
@@ -54,13 +50,17 @@
     }
 
     p {
-        color: #AFACB0;
+        color: #afacb0;
         text-align: center;
     }
 }
 
 // 助手首页
 #teacher-assistant-index-app {
+    [v-cloak] {
+        display: none;
+    }
+
     .card {
         width: fit-content;
     }
@@ -73,6 +73,7 @@
         float: left;
         text-align: center;
         font-size: 16px;
+        cursor: pointer;
     }
 
     .banner-item dl {
@@ -97,7 +98,7 @@
         height: 100px;
         width: 1px;
         border: none;
-        border-right: 1px solid #EAEDF2;
+        border-right: 1px solid #eaedf2;
     }
 
     .banner-item img {
@@ -113,7 +114,7 @@
             height: 50px;
             line-height: 50px;
             padding: 0;
-            border-bottom: 1px solid #EAEDF2;
+            border-bottom: 1px solid #eaedf2;
             width: 100%;
         }
     }
@@ -150,24 +151,47 @@
     }
 
     .bottom-table {
-        padding: 0 24px;
-        font-size: 14px;
-
-        .blade_listImage {
-            width: 28px;
-            height: 28px;
+        width: 100%;
+        margin-top: 10px;
+        .table-item {
+            height: 55px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .type {
+                width: 10%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                margin-left: -30px;
+            }
         }
-
-        .el-table--striped .el-table__body tr.el-table__row--striped td {
-            background: #F5F6FF;
+        .table-item:nth-child(even) {
+            background-color: #f4f7fe;
         }
-
-        .icon-image {
-            width: 34px;
-            height: 24px;
+        .el-pagination {
+            float: right;
+            padding: 20px 0;
         }
-
     }
+    // .bottom-table {
+    //     padding: 0 24px;
+    //     font-size: 14px;
+
+    //     .blade_listImage {
+    //         width: 28px;
+    //         height: 28px;
+    //     }
+
+    //     .el-table--striped .el-table__body tr.el-table__row--striped td {
+    //         background: #f5f6ff;
+    //     }
+
+    //     .icon-image {
+    //         width: 34px;
+    //         height: 24px;
+    //     }
+    // }
 
     .bottom-List {
         list-style: none;
@@ -197,20 +221,20 @@
             .blade_listUser {
                 width: 160px;
                 text-align: center;
-                color: #99A0AD;
+                color: #99a0ad;
                 margin-right: 20px;
             }
 
             .blade_listDate {
                 width: 200px;
-                color: #D5D7E0;
+                color: #d5d7e0;
                 margin-right: 20px;
                 text-align: center;
             }
         }
 
         li:nth-child(2n) {
-            background: #F5F6FF;
+            background: #f5f6ff;
         }
     }
 }
@@ -274,7 +298,7 @@
 
     .el-tree-node {
         text-indent: 20px;
-        border-top: 1px solid #EAEDF2;
+        border-top: 1px solid #eaedf2;
     }
 
     .el-tree-node__content {
@@ -299,7 +323,7 @@
         .el-tree-node__content {
             min-height: 49px;
             line-height: 49px;
-            background: #EEEFF8;
+            background: #eeeff8;
         }
     }
 
@@ -322,18 +346,18 @@
     }
 
     .el-table {
-        border-top: 1px solid #EAEDF2;
+        border-top: 1px solid #eaedf2;
     }
 
     .eva_note {
         margin-top: 10px;
         min-height: 70px;
-        border-bottom: 1px solid #CCCCCC;
+        border-bottom: 1px solid #cccccc;
         line-height: 20px;
         padding: 0 20px;
 
         .eva_noteTitle {
-            color: #8A93A1;
+            color: #8a93a1;
             margin-top: 5px;
         }
 
@@ -343,9 +367,7 @@
             margin-top: 5px;
             overflow: hidden;
         }
-
     }
-
 }
 
 #teacher-assistant-grades-check-in-app,
@@ -361,19 +383,17 @@
 }
 
 #teacher-assistant-check-in-app {
-
     .el-table__row td:nth-child(2) {
-        color: #6DCC58;
+        color: #6dcc58;
     }
 
     .el-table__row td:nth-child(3) {
-        color: #FE7B1C;
+        color: #fe7b1c;
     }
 
     .el-table__row td:nth-child(4) {
-        color: #FD1B1B;
+        color: #fd1b1b;
     }
-
 }
 
 #teacher-assistant-grades-evaluations-app,
@@ -407,8 +427,8 @@
     .stu-edit {
         width: 140px;
         height: 38px;
-        background: #FE7C1A;
-        color: #FFF;
+        background: #fe7c1a;
+        color: #fff;
     }
 
     .el-dialog {
@@ -429,22 +449,22 @@
             margin-bottom: 0;
             padding: 5px 25px;
             border-bottom: 1px solid #ccc;
-            color: #475B6D;
+            color: #475b6d;
 
             label {
                 margin-bottom: 0;
                 text-align: left;
-                color: #B1B7C0;
+                color: #b1b7c0;
             }
         }
 
         .can-edit {
-            color: #B1B7C0;
+            color: #b1b7c0;
             border: none;
 
             label {
                 width: 130px !important;
-                color: #475B6D
+                color: #475b6d;
             }
 
             .el-form-item__content {
@@ -584,7 +604,7 @@
         }
 
         .el-input.is-disabled .el-input__inner {
-            background: white
+            background: white;
         }
 
         .ipt-textarea .el-input__inner {
@@ -674,7 +694,7 @@
         height: 115px;
         vertical-align: top;
         box-sizing: border-box;
-        border: 1px dashed #CCCCCC;
+        border: 1px dashed #cccccc;
         img {
             width: 100%;
             height: 100%;
@@ -686,5 +706,4 @@
             top: -5px;
         }
     }
-
 }

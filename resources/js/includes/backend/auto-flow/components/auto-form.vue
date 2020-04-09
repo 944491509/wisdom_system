@@ -159,6 +159,7 @@ export default {
           .then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$emit("created");
+              location.reload()
             }
           });
       } catch (e) {

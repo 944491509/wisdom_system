@@ -177,6 +177,13 @@ class OpenMajorController extends Controller
             return JsonBuilder::Error($validator->errors()->first());
         }
 
+        // 验证手机号是否存在
+        $userObj = new UserDao();
+        $userInfo = $userObj->getUserByEmail($formData['email']);
+        if(!empty($userInfo) && $userInfo->email && ($user->email != $userInfo->email)) {
+            return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
+        }
+
         // 获取专业信息
         $plan = $request->getPlan();
 
@@ -240,11 +247,11 @@ class OpenMajorController extends Controller
             $dao = new RegistrationInformaticsDao();
             if($request->isApprovedAction()){
                 $bag = $dao->approve($form['currentId'],$manager,$form['note']??null);
-                //event(new ApproveOpenMajorEvent($bag->getData()));
+                event(new ApproveOpenMajorEvent($bag->getData()));
                 //event(new ApproveRegistrationEvent($bag->getData()));
             }else{
                 $bag = $dao->refuse($form['currentId'],$manager,$form['note']??null);
-                //event(new ApproveOpenMajorEvent($bag->getData()));
+                event(new ApproveOpenMajorEvent($bag->getData()));
                 //event(new RefuseRegistrationEvent($bag->getData()));
             }
             if($bag->isSuccess()){
