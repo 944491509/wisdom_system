@@ -79,7 +79,7 @@
                         </li>
                         @endif
                         <li>
-                            <a href="#">
+                            <a href="{{ route('teacher.manual.list',['teacher'=>\Illuminate\Support\Facades\Auth::user()->id]) }}">
                                 <i class="icon-directions"></i> 用户使用手册
                             </a>
                         </li>

@@ -9,7 +9,6 @@
 
                 <div class="card-body">
                     <div class="row">
-
                         <div class="table-responsive">
                             <table
                                     class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
@@ -43,7 +42,6 @@
                             </table>
                         </div>
                         {{ $list->links() }}
-
                     </div>
                 </div>
             </div>

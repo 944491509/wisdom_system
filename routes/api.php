@@ -509,8 +509,8 @@ Route::prefix('pipeline')->middleware('auth:api')->group(function (){
     Route::post('/flow/cancel-action', 'Api\Pipeline\FlowsController@cancel_action')
         ->name('api.pipeline.flow.cancel-action');
 
-    /*Route::post('/flow/view-action', 'Api\Pipeline\FlowsController@view_action')
-        ->name('api.pipeline.flow.view-action');*/
+    Route::post('/flow/view-action', 'Api\Pipeline\FlowsController@view_action')
+        ->name('api.pipeline.flow.view-action');
 });
 
 Route::prefix('notification')->middleware('auth:api')->group(function () {
@@ -1162,5 +1162,3 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
     Route::get('/assess', 'Api\OA\WorkController@assess')
         ->name('api.work.assess');
 });
-
-

@@ -42,3 +42,8 @@ mix.copyDirectory(
     'resources/redactor',
     'public/redactor'
 );
+
+mix.copyDirectory(
+    'resources/sass/manual',
+    'public/assets/manual'
+);
