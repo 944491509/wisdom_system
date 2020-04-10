@@ -23,10 +23,7 @@ if (app) {
     },
     watch: {
       'activeName': function (val) {
-        if (!inited[val] && this.$refs[val]) {
-          this.$refs[val][0].getMessageList()
-          inited[val] = true
-        }
+        this.$refs[val][0].getMessageList()
       }
     },
     computed: {

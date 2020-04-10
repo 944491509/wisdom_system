@@ -167,6 +167,9 @@ export default {
         };
         formdata.isRelay = 0;
         formdata.isFile = this.filelist.length > 0 ? 1 : 0;
+        if(this.filelist.length>0){
+          formdata.image = this.filelist
+        }
         // formdata.relayId = this.messageId;
         formdata.type = isTemp ? 4 : 3; // 是否存草稿
         formdata.collectId = this.message.user_id;

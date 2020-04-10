@@ -178,10 +178,12 @@ export default {
         this.list.forEach(item => {
           item.checked = false;
         });
+        this.checked = false
       } else {
         this.list.forEach(item => {
           item.checked = true;
         });
+        this.checked = true
       }
     },
     deleteMessage() {
@@ -197,9 +199,16 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        MessageApi.excute("deleteMessage", {
-          ids: ids.toString()
-        }).then(res => {
+        const pros = [];
+        ids.forEach(id => {
+          pros.push(
+            MessageApi.excute("updateTag", {
+              id,
+              type: 1
+            })
+          );
+        });
+        Promise.all(pros).then(() => {
           this.getMessageList();
         });
       });
@@ -212,9 +221,16 @@ export default {
       let ids = checkedList.map(message => {
         return message.id;
       });
-      MessageApi.excute("readMessage", {
-        ids: ids.toString()
-      }).then(res => {
+      const pros = [];
+      ids.forEach(id => {
+        pros.push(
+          MessageApi.excute("updateTag", {
+            id,
+            type: 2
+          })
+        );
+      });
+      Promise.all(pros).then(() => {
         this.getMessageList();
       });
     },
