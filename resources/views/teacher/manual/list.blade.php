@@ -1,15 +1,9 @@
 @extends('layouts.app')
 @section('content')
     <div class="col-sm-6">
-        <div class="card card-topline-green">
+        <div class="card card-topline-lightblue">
             <div class="card-head">
                 <header>手册列表</header>
-                {{--<div class="tools">--}}
-                    {{--<a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>--}}
-                    {{--<a class="t-collapse btn-color fa fa-chevron-down"--}}
-                       {{--href="javascript:;"></a>--}}
-                    {{--<a class="t-close btn-color fa fa-times" href="javascript:;"></a>--}}
-                {{--</div>--}}
             </div>
             <div class="card-body ">
                 <div class="table-scrollable">
@@ -25,11 +19,11 @@
                             @foreach($manual as $key => $item)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item['name'] }}</td>
+                                    <td>{{ $item['filename'] }}</td>
                                     <td>
                                         <button type="button"
-                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-circle btn-success"
-                                                disabled><a href="{{ $item['url'] }}" download="{{ $item['val'] }}">下载</a></button>
+                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-circle btn-primary">
+                                            <a href=" {{route('teacher.manual.download',['manual_id'=>$key])}} "><div style="color: #FFFFFF"> 下   载 </div></a></button>
                                     </td>
                                 </tr>
                             @endforeach

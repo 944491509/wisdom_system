@@ -8,13 +8,15 @@
  */
 return [
     [
-        'name'=>'学生版使用说明.pdf',
+        'id' => 1,
+        'filename'=>'学生版使用说明.pdf',
         'url' => '/assets/manual/student.pdf',
-        'val' => 'student.pdf'
+
     ],
     [
-        'name'=>'教师版使用说明.pdf',
+        'id' => 2,
+        'filename'=>'教师版使用说明.pdf',
         'url' => '/assets/manual/teacher.pdf',
-        'val' => 'teacher.pdf',
+
     ],
 ];
