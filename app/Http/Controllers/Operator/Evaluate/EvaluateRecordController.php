@@ -11,9 +11,10 @@ use App\Http\Requests\Evaluate\EvaluateTeacherRecordRequest;
 class EvaluateRecordController extends Controller
 {
     public function list(EvaluateTeacherRecordRequest $request){
-        $id = $request->get('id');
+        $evaluateStudentId = $request->get('evaluate_student_id');
+
         $dao = new EvaluateTeacherRecordDao();
-        $list = $dao->getRecordByEvalTeacherId($id);
+        $list = $dao->getRecordByEvalStudentId($evaluateStudentId);
         $this->dataForView['list'] = $list;
         return view('school_manager.evaluate.record.list',$this->dataForView);
     }

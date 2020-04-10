@@ -107,6 +107,8 @@ class LoginController extends Controller
         $token  = Uuid::uuid4()->toString();
         $result = $dao->updateApiToken($user->id, $token);
         if ($result) {
+            $userDeviceDao = new UserDeviceDao;
+            $userDeviceDao->unlinkPushId($user->id);
             return JsonBuilder::Success('退出成功');
         } else {
             return JsonBuilder::Error('系统错误,请稍后再试~');

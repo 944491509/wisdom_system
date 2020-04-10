@@ -32,6 +32,7 @@ return [
     'delete' => '删除',
     'update' => '更新',
     'school-manager' => '学校管理员',
+    'manual' => '用户使用手册',
 
     //风采管理
     'scenery' => '风采管理',
@@ -82,6 +83,7 @@ return [
     'banner' => '资源位',
 
     'oa' => '办公系统',
+    'logs' => '日志',
     'projects-manager' => '项目管理',
     'projects-view' => '项目详情',
     'tasks-manager' => '任务管理',

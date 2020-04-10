@@ -200,34 +200,34 @@ Route::prefix('teacher')->group(function () {
             // 首页
             Route::get('index','LY\AssistantController@index')
                 ->name('teacher.ly.assistant.index');
-
+            // 课程表
             Route::get('course','LY\AssistantController@course')
                 ->name('teacher.ly.assistant.course');
-
-          Route::get('material','LY\AssistantController@material')
+            // 教学资料
+            Route::get('material','LY\AssistantController@material')
             ->name('teacher.ly.assistant.material');
 
             Route::get('material','LY\AssistantController@material')
                 ->name('teacher.ly.assistant.material');
-
+            // 签到
             Route::get('check-in','LY\AssistantController@check_in')
                 ->name('teacher.ly.assistant.check-in');
-
+            // 评分
             Route::get('evaluation','LY\AssistantController@evaluation')
                 ->name('teacher.ly.assistant.evaluation');
-
+            // 班级管理
             Route::get('grades-manager','LY\AssistantController@grades_manager')
                 ->name('teacher.ly.assistant.grades-manager');
-
+            // 选课
             Route::get('electives','LY\AssistantController@electives')
                 ->name('teacher.ly.assistant.electives');
-
+            // 学生信息
             Route::get('students-manager','LY\AssistantController@students_manager')
                 ->name('teacher.ly.assistant.students-manager');
-
+            // 班级签到
             Route::get('grades-check-in','LY\AssistantController@grades_check_in')
                 ->name('teacher.ly.assistant.grades-check-in');
-
+            // 班级评分
             Route::get('grades-evaluations','LY\AssistantController@grades_evaluations')
                 ->name('teacher.ly.assistant.grades-evaluations');
         });
@@ -262,4 +262,11 @@ Route::prefix('teacher')->group(function () {
                 ->name('teacher.ly.oa.approvals');
         });
     });
+
+    // 用户使用手册
+    Route::get('manual','ManualController@index')
+        ->name('teacher.manual.list');
+    Route::get('manual-download','ManualController@download')
+        ->name('teacher.manual.download');
+
 });

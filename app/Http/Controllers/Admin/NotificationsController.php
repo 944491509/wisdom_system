@@ -5,6 +5,7 @@ use App\Dao\Misc\SystemNotificationDao;
 
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Version\VersionDao;
+use App\Jobs\Notifier\Push;
 use App\Models\Misc\SystemNotification;
 use App\Models\School;
 use App\Http\Controllers\Controller;
@@ -81,6 +82,8 @@ class NotificationsController extends Controller
         $systemNotificationDao = new SystemNotificationDao();
         $result = $systemNotificationDao->create($addData,[]);
         if($result) {
+            //为什么不用InternalMessage操作
+            Push::dispatch($addData['title'], $addData['content'], $addData['app_extra'], $addData['school_id'], $addData['to'], []);
           FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,'添加成功');
           return redirect()->route('admin.notifications.list')->withInput();
         } else {

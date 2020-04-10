@@ -324,7 +324,12 @@ class LectureDao
         $messageBag = new MessageBag();
 
         // 查询当前课节是否已上传
-        $info = $this->getMaterialByCourseIdAndIdxAndTeacherId($data['course_id'], $data['idx'], $data['user_id']);
+        $info = $this->getMaterialByCourseAndIdx($data['user_id'],$data['course_id'], $data['idx']);
+
+        if(!empty($info)) {
+            $messageBag->setMessage('该课程资料已经上传');
+            return $messageBag;
+        }
 
         $lecture = [
             'course_id' => $data['course_id'],
@@ -336,24 +341,26 @@ class LectureDao
         try{
             DB::beginTransaction();
 
-            if(is_null($info)) {
-                $info = Lecture::create($lecture);
-            }
+            $info = Lecture::create($lecture);
+
             foreach ($data['grade_id'] as $k => $val) {
                 foreach ($data['material'] as $key => $item) {
-                    $material = [
-                        'lecture_id' => $info->id,
-                        'teacher_id' => $data['user_id'],
-                        'course_id' => $data['course_id'],
-                        'media_id' => $item['media_id']??0,
-                        'type' => $item['type_id'],
-                        'description' => $item['desc'],
-                        'url' => $item['url'],
-                        'grade_id' => $val,
-                        'idx' => $data['idx'],
-                    ];
+                    foreach ($item['media'] as $value) {
+                        $material = [
+                            'lecture_id' => $info->id,
+                            'teacher_id' => $data['user_id'],
+                            'course_id' => $data['course_id'],
+                            'media_id' => $value['media_id'],
+                            'url' => $value['url'],
+                            'type' => $item['type_id'],
+                            'description' => $item['desc'],
+                            'grade_id' => $val,
+                            'idx' => $data['idx'],
+                        ];
 
-                    LectureMaterial::create($material);
+                        LectureMaterial::create($material);
+                    }
+
                 }
 
             }
@@ -373,15 +380,95 @@ class LectureDao
 
 
     /**
-     * 根据课节查询
+     * 编辑课程教学资料
+     * @param $data
+     * @return MessageBag
+     */
+    public function updMaterial($data){
+        $messageBag = new MessageBag();
+
+        // 查询当前课节资料是否已上传
+        $info = Lecture::where('id', $data['lecture_id'])->first();
+        if(empty($info)) {
+            $messageBag->setCode(JsonBuilder::CODE_ERROR);
+            $messageBag->setMessage('该课程资料不存在');
+            return $messageBag;
+        }
+
+        // 判断课节是否已经存在 判断是否修改了课节
+        $re = $this->getMaterialByCourseAndIdx($data['user_id'],$data['course_id'], $data['idx'], $data['lecture_id']);
+        if(!empty($re)) {
+            $messageBag->setMessage(JsonBuilder::CODE_ERROR);
+            $messageBag->setMessage('当前课节已经存在');
+            return $messageBag;
+        }
+
+        $lecture = [
+            'course_id' => $data['course_id'],
+            'teacher_id' => $data['user_id'],
+            'idx' => $data['idx'],
+            'title' => $data['title'],
+        ];
+
+        try {
+            DB::beginTransaction();
+            Lecture::where('id',$data['lecture_id'])->update($lecture);
+            LectureMaterial::where('lecture_id', $data['lecture_id'])->delete();
+
+            foreach ($data['grade_id'] as $k => $val) {
+                foreach ($data['material'] as $key => $item) {
+                    foreach ($item['media'] as $value) {
+                        $material = [
+                            'lecture_id' => $info->id,
+                            'teacher_id' => $data['user_id'],
+                            'course_id' => $data['course_id'],
+                            'media_id' => $value['media_id'],
+                            'url' => $value['url'],
+                            'type' => $item['type_id'],
+                            'description' => $item['desc'],
+                            'grade_id' => $val,
+                            'idx' => $data['idx'],
+                        ];
+                        LectureMaterial::create($material);
+                    }
+
+                }
+
+            }
+
+            DB::commit();
+            $messageBag->setMessage('上传成功');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $messageBag->setCode(JsonBuilder::CODE_ERROR);
+            $messageBag->setMessage($msg);
+        }
+
+        return $messageBag;
+
+    }
+
+
+    /**
+     * 查询老师当前课程和课节的教学资料
+     * @param $userId
      * @param $courseId
      * @param $idx
-     * @param $teacherId
+     * @param null $lectureId
      * @return mixed
      */
-    public function getMaterialByCourseIdAndIdxAndTeacherId($courseId, $idx, $teacherId) {
-        $map = ['idx'=>$idx, 'course_id'=>$courseId, 'teacher_id'=>$teacherId];
-        return Lecture::where($map)->first();
+    public function getMaterialByCourseAndIdx($userId, $courseId, $idx, $lectureId = null ) {
+        $map = [
+            'teacher_id'=>$userId,
+            'course_id' => $courseId,
+            'idx'=>$idx
+        ];
+        $result = Lecture::where($map);
+        if(!is_null($lectureId)) {
+            $result = $result->where('id','<>',$lectureId);
+        }
+        return $result->first();
     }
 
 

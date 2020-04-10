@@ -73,5 +73,16 @@ function showLocation(province , city , town) {
     } else {
         loc.fillOption('cityid' , '0');
     }
-
 }
+$('#version-typeid').change(function(){
+	var typeid = $(this).val();
+	if(typeid == 1)
+	{
+		$('#azfiels').show();$('#iosfiels').hide();
+	}
+	if(typeid == 2)
+	{
+		$('#azfiels').hide();$('#iosfiels').show();
+	}
+	
+})

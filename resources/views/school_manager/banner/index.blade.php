@@ -154,6 +154,15 @@ use App\Utils\UI\Button;
     </div>
     <style>
       #school-campus-intro-app {height: 100%;}
+      .el-drawer {
+        overflow: auto;
+      }
+      .redactor-box.redactor-styles-on {
+        padding-bottom: 20px;
+      }
+      .redactor-styles {
+        max-height: 200px;
+      }
      .el-cascader-panel .el-radio {
         left: -3px;
         width: 100%;
@@ -166,6 +175,9 @@ use App\Utils\UI\Button;
       }
       .el-cascader-panel .el-cascader-node__label{
         margin-left:5px;
+      }
+      #redactor-modal{
+          z-index:9999;
       }
     </style>
     <div id="app-init-data-holder" data-school="{{ session('school.id') }}" data-newflow="1"></div>

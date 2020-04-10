@@ -122,11 +122,13 @@ class TeacherApplyElectiveCourseDao
         if ($enrollList2) {
             foreach ($enrollList2 as $enroll2) {
                 $encourse = $courseDao->getCourseById($enroll2->course_id);
-                foreach ($encourse->arrangements as $arrangement2) {
-                  $checkKey = 'w_' . $arrangement2->week . '_d_' . $arrangement2->day_index . '_t_' . $arrangement2->time_slot_id;
-                  if (in_array($checkKey, $valList)) {
-                      return ['week' => $arrangement2->week, 'day' => $arrangement2->day_index, 'time' => $arrangement2->time_slot_id];
-                  }
+                if (!empty($encourse)) {
+                    foreach ($encourse->arrangements as $arrangement2) {
+                        $checkKey = 'w_' . $arrangement2->week . '_d_' . $arrangement2->day_index . '_t_' . $arrangement2->time_slot_id;
+                        if (in_array($checkKey, $valList)) {
+                            return ['week' => $arrangement2->week, 'day' => $arrangement2->day_index, 'time' => $arrangement2->time_slot_id];
+                        }
+                    }
                 }
             }
         }
