@@ -264,8 +264,9 @@ Route::prefix('teacher')->group(function () {
     });
 
     // 用户使用手册
-    Route::any('manual','ManualController@index')
+    Route::get('manual','ManualController@index')
         ->name('teacher.manual.list');
-
+    Route::get('manual-download','ManualController@download')
+        ->name('teacher.manual.download');
 
 });

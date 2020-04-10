@@ -25,11 +25,9 @@
                             @foreach($manual as $key => $item)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item['name'] }}</td>
+                                    <td>{{ $item['filename'] }}</td>
                                     <td>
-                                        <button type="button"
-                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-circle btn-success"
-                                                disabled><a href="{{ $item['url'] }}" download="{{ $item['val'] }}">下载</a></button>
+                                        {{ \App\Utils\UI\Anchor::Print(['text'=>'下载','class'=>'btn-edit-evaluate','href'=>route('teacher.manual.download',['manual_id'=>$key])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
                                     </td>
                                 </tr>
                             @endforeach
