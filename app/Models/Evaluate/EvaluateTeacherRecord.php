@@ -20,4 +20,9 @@ class EvaluateTeacherRecord extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    public function evaluate() {
+        return $this->belongsTo(Evaluate::class);
+    }
+
 }

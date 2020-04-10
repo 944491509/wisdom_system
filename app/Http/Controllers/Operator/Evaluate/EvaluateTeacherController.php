@@ -4,11 +4,11 @@
 namespace App\Http\Controllers\Operator\Evaluate;
 
 
-use App\Dao\Schools\GradeDao;
 use App\Dao\Users\GradeUserDao;
 use App\Utils\FlashMessageBuilder;
 use App\Http\Controllers\Controller;
 use App\Dao\Timetable\TimetableItemDao;
+use App\Dao\Evaluate\EvaluateStudentDao;
 use App\Dao\Evaluate\EvaluateTeacherDao;
 use App\Models\Evaluate\EvaluateTeacher;
 use App\Http\Requests\Evaluate\EvaluateTeacherRequest;
@@ -62,16 +62,18 @@ class EvaluateTeacherController extends Controller
     }
 
 
-    /**
-     * 班级列表
-     * @param EvaluateTeacherRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function grade(EvaluateTeacherRequest $request) {
-        $schoolId = $request->getSchoolId();
-        $dao = new GradeDao($request->user());
-        $this->dataForView['grades'] = $dao->getBySchool($schoolId);
-        $this->dataForView['pageTitle'] = '班级管理';
+
+
+
+    // 评教的班级列表
+    public function evaluateGradeList(EvaluateTeacherRequest $request) {
+        $evaluateTeacherId = $request->get('evaluate_teacher_id');
+        $dao = new EvaluateStudentDao();
+        $grades = $dao->getEvaluateGradeListByEvaluateTeacherId($evaluateTeacherId);
+
+        $this->dataForView['grades'] = $grades;
+        $this->dataForView['evaluate_teacher_id'] = $evaluateTeacherId;
+        $this->dataForView['pageTitle'] = '班级列表';
         return view('school_manager.evaluate.evaluate_teacher.grades', $this->dataForView);
     }
 
@@ -81,14 +83,12 @@ class EvaluateTeacherController extends Controller
      * @param EvaluateTeacherRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function student(EvaluateTeacherRequest $request) {
-        $model = new EvaluateTeacher();
-        $gradeId = $request->get('grade_id');
-        $gradeUserDao = new GradeUserDao();
-        $students = $gradeUserDao->getByGradeForApp($gradeId);
-        $this->dataForView['year'] = $model->year();
-        $this->dataForView['type'] = $model->allType();
-        $this->dataForView['grade_id'] = $gradeId;
+    public function evaluateStudentList(EvaluateTeacherRequest $request) {
+        $gradeId = $request->getGradeId();
+        $evaluateTeacherId = $request->get('evaluate_teacher_id');
+        $dao = new EvaluateStudentDao();
+        $students = $dao->getStudentByGradeIdAndEvaluateTeacherId($gradeId, $evaluateTeacherId);
+        $this->dataForView['pageTitle'] = '评分学生列表';
         $this->dataForView['students'] = $students;
         return view('school_manager.evaluate.evaluate_teacher.student', $this->dataForView);
     }
