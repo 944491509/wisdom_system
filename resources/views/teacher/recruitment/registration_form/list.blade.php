@@ -76,7 +76,7 @@ use App\User;
                                         <td>{{ $form->profile->id_number}}</td>
                                         <td>{{ $form->profile->source_place }}</td>
                                         <td>
-                                            <p>学生电话: {{ $form->user->mobile }}</p>
+                                            <p>学生电话: {{ $form->mobile }}</p>
                                             <p>电子邮件: <a href="mailto:{{$form->user->email}}">{{ $form->user->email }}</a></p>
                                             <p>家长电话: {{ $form->profile->parent_name }} {{ $form->profile->parent_mobile }}</p>
                                         </td>

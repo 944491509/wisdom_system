@@ -15,11 +15,11 @@ class EvaluateTeacherRecordDao
 {
     /**
      * 获取评教记录
-     * @param $evalTeacherId
+     * @param $evalStudentId
      * @return mixed
      */
-    public function getRecordByEvalTeacherId($evalTeacherId) {
-        $map = ['evaluate_teacher_id'=>$evalTeacherId];
+    public function getRecordByEvalStudentId($evalStudentId) {
+        $map = ['evaluate_student_id'=>$evalStudentId];
         $list = EvaluateTeacherRecord::where($map)->get();
         return $list;
     }

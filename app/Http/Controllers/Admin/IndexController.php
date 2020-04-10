@@ -19,32 +19,32 @@ class IndexController extends Controller
         $data = [
             [
                 'name' => '通知公告',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass6.png'),
                 'url' => 'notices-center'
             ],
             [
                 'name' => '日志',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass1.png'),
                 'url' => 'logs',
             ],
             [
                 'name' => '内部信',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass2.png'),
                 'url' => 'internal-messages',
             ],
             [
                 'name' => '会议',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass3.png'),
                 'url' => 'meetings',
             ],
             [
                 'name' => '公文',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass4.png'),
                 'url' => 'applications',
             ],
             [
                 'name' => '任务',
-                'icon' => asset('assets/img/teacher/ass-icon3.png'),
+                'icon' => asset('assets/img/teacher/ass5.png'),
                 'url' => 'tasks',
             ],
         ];
@@ -62,19 +62,56 @@ class IndexController extends Controller
         $data = [
             ['name' => '教学助手', 'helper_page' =>
                [
-                    [ 'name'=> '课表', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '教学资料', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '签到', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '评分', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '选课', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
+                    [
+                        'name'=> '课表',
+                        'icon' => asset('assets/img/teacher/ass-icon4.png'),
+                        'url' => 'course',
+                    ],
+                    [
+                        'name'=> '教学资料',
+                        'icon' => asset('assets/img/teacher/ass-icon7.png'),
+                        'url' => 'material',
+
+                    ],
+                    [
+                        'name'=> '签到',
+                        'icon' => asset('assets/img/teacher/ass-icon9.png'),
+                        'url' => 'check-in',
+                    ],
+                    [
+                        'name'=> '评分',
+                        'icon' => asset('assets/img/teacher/ass-icon8.png'),
+                        'url' => 'evaluation',
+                    ],
+                    [
+                        'name'=> '选课',
+                        'icon' => asset('assets/img/teacher/ass9.png'),
+                        'url' => 'electives',
+                    ],
                ]
             ],
             ['name' => '班主任助手', 'helper_page' =>
                [
-                    [ 'name'=> '班级管理', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '学生信息', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '班级签到', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
-                    [ 'name'=> '班级评分', 'icon' => asset('assets/img/teacher/ass-icon3.png') ],
+                    [
+                        'name'=> '班级管理',
+                        'icon' => asset('assets/img/teacher/ass10.png'),
+                        'url' => 'grades-manager',
+                    ],
+                    [
+                        'name'=> '学生信息',
+                        'icon' => asset('assets/img/teacher/ass-icon12.png'),
+                        'url' => 'students-manager',
+                    ],
+                    [
+                        'name'=> '班级签到',
+                        'icon' => asset('assets/img/teacher/ass-icon10.png'),
+                        'url' => 'grades-check-in',
+                    ],
+                    [
+                        'name'=> '班级评分',
+                        'icon' => asset('assets/img/teacher/ass-icon11.png'),
+                        'url' => 'grades-evaluations'
+                    ],
                ]
             ]
         ];

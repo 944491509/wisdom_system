@@ -64,6 +64,7 @@ class StudentProfile extends Model
         'resident_suburb', //
         'resident_village', //
         'comments', //
+        'origin', // 来源(0:未知,1:后台导入,2:后台添加,3:app招生添加)
     ];
 
     public $dates = ['birthday'];
