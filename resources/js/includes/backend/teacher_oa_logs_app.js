@@ -184,6 +184,14 @@ if (document.getElementById("teacher-oa-logs-app")) {
                   type: "success"
                 });
                 this.getlogList(this.show);
+                this.log= {
+                  id: "",
+                  title: "",
+                  content: "",
+                  created_at: "",
+                  send_user_name:"",
+                  updated_at:""
+                };
                 this.drawer = false;
               }
             });
@@ -207,6 +215,7 @@ if (document.getElementById("teacher-oa-logs-app")) {
           send_user_name:"",
           updated_at:""
         };
+        this.memberCheckedList = []
         this.drawerTitle= "添加日志";
         this.isDisabled=false;
         this.isEdit= false;
@@ -297,6 +306,14 @@ if (document.getElementById("teacher-oa-logs-app")) {
                     type: "success",
                     message: `发送成功！`
                   });
+                  this.log= {
+                    id: "",
+                    title: "",
+                    content: "",
+                    created_at: "",
+                    send_user_name:"",
+                    updated_at:""
+                  };
                   this.$refs.sendDrawer.closeDrawer();
                   this.getlogList(3);
                 }
