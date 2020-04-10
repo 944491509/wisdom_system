@@ -262,4 +262,10 @@ Route::prefix('teacher')->group(function () {
                 ->name('teacher.ly.oa.approvals');
         });
     });
+
+    // 用户使用手册
+    Route::any('manual','ManualController@index')
+        ->name('teacher.manual.list');
+
+
 });

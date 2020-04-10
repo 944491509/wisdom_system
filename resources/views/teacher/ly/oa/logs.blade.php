@@ -113,7 +113,6 @@
                         <el-button type="primary" @click="sendlog">@{{sendDrawerType == 1?'确认':'发送'}}</el-button>
                     </div>
                   </div>
-                </div>
             </el-drawer>
         </div>
     </div>
