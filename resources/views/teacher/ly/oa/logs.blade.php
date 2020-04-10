@@ -4,7 +4,7 @@
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="teacher-oa-logs-card">
             <div class="teacher-oa-logs-card_title">
-                <p>日志</p>
+                <p><img class="img" src="{{asset('assets/img/teacher_blade/logs.png')}}" alt="">日志</p>
                 <p @click="add" type="primary">添加</p>
             </div>
             <el-drawer :title="drawerTitle" :before-close="handleClose" :visible.sync="drawer" custom-class="demo-drawer" ref="drawer">
