@@ -47,13 +47,17 @@
   </div>
 </template>
 <script>
-import { TaskApi } from "../common/api";
+import { MessageApi } from "../common/api";
 import { Util } from "../../../../common/utils";
 import { searchMemberDebounce } from "../common/utils";
 export default {
   name: "dispatch-form",
   props: {
     disabledList: {
+      type: Array,
+      default: Array
+    },
+    selectedInit: {
       type: Array,
       default: Array
     }
@@ -66,6 +70,13 @@ export default {
           this.filtBy = "search";
         }
       });
+    },
+    selectedInit: {
+      deep: true,
+      immediate: true,
+      handler(list) {
+        this.chosenList = list;
+      }
     }
   },
   computed: {
@@ -83,7 +94,8 @@ export default {
         "onSelect",
         this.chosenList.map(member => {
           return member.id.toString();
-        })
+        }),
+        this.chosenList
       );
     },
     onNodeChange(val) {
@@ -120,7 +132,7 @@ export default {
           if (!Util.isEmpty(node.data)) {
             parentId = node.data.id;
           }
-          TaskApi.excute("getOrganization", {
+          MessageApi.excute("getOrganization", {
             parent_id: parentId
           }).then(res => {
             resolve(res.data.data.organ);

@@ -1,0 +1,57 @@
+#teacher-oa-message-app {
+  .el-tabs__nav {
+    width: 100%;
+    display: flex;
+    .el-tabs__item {
+      text-align: center;
+      flex: 1;
+    }
+  }
+  .title {
+    display: flex;
+    .h-title {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      .icon{
+        display: inline-block;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        margin-right: 5px;
+      }
+      .icon.unread{
+        background-image: url(../assets/unread.png);
+      }
+      .icon.read{
+        background-image: url(../assets/read.png);
+      }
+      .icon.sent{
+        background-image: url(../assets/sent.png);
+      }
+      .icon.temp{
+        background-image: url(../assets/temp.png);
+      }
+    }
+    .el-button {
+      flex: none;
+    }
+  }
+
+  .add-message-title{
+    display: flex;
+    align-items: center;
+  }
+  .title-icon {
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 5px;
+    background-image: url(../assets/write.png);
+  }
+}
