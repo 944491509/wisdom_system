@@ -21,11 +21,6 @@
                         <span class="title">分类列表</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('teacher.community.communities',['uuid'=>session('school.uuid')]) }}" class="nav-link">
-                        <span class="title">社团列表</span>
-                    </a>
-                </li>
             </ul>
         </li>
         <li class="nav-item">
@@ -53,7 +48,7 @@
         </li>
         <li class="nav-item">
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="fa fa-group"></i>社群管理
+                <i class="fa fa-group"></i> 社团管理
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">

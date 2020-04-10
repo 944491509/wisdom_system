@@ -20,7 +20,9 @@ class JPushLogic implements JPushSender
 
     public function send($users, $title, $content, $extras): IMessageBag
     {
-        Log::alert('【极光推送】开始');
+        $content = $title;
+        $title = '';
+        Log::alert('【极光推送】开始', ['title' => $title, 'content' => $content, 'users' => count($users)]);
         if (!empty($users)) {
             $result = $this->setKeyAndRegId($users);
         } else {
@@ -29,6 +31,7 @@ class JPushLogic implements JPushSender
         }
 
         foreach ($result as $key => $vals) {
+            Log::alert('【极光推送】获取conf', $vals);
             if (!empty($vals['regId'])) {
                 foreach ($vals['regId'] as $val) {
                     $iosNotification     = ['sound' => '', 'extras' => $extras];
@@ -41,14 +44,14 @@ class JPushLogic implements JPushSender
                             ->setPlatform('all') // 推送平台
                             ->addRegistrationId($val) // 极光ID
                             ->setNotificationAlert($title) // 消息标题
-                            ->iosNotification($content, $iosNotification)
+                            ->iosNotification(['title' => $title, 'body' => $content], $iosNotification)
                             ->androidNotification($content, $androidNotification)
                             ->options($options)
                             ->send();
-                        Log::alert('【极光推送】收到返回值', $response);
+                        Log::alert('【极光推送】收到返回值['.$key.']', $response);
                     } catch (\JPush\Exceptions\APIRequestException $e) {
                         $error[] = ['message' => $e->getMessage(), 'code' => $e->getCode()];
-                        Log::alert('【极光推送】失败:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
+                        Log::alert('【极光推送】失败['.$key.']:  ' . 'message:' . $e->getMessage() . '   ,code:' . $e->getCode());
                     }
                 }
             }else {

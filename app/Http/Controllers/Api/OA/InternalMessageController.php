@@ -97,7 +97,7 @@ class InternalMessageController extends Controller
             'code' => JsonBuilder::CODE_SUCCESS,
             'message' => "ok",
             'data' => $result,
-            'lastPage'    => $data->lastPage(),
+            'lastPage' => $data->lastPage(),
         ];
     }
 

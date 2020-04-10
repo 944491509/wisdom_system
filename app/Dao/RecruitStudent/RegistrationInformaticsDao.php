@@ -6,6 +6,7 @@ namespace App\Dao\RecruitStudent;
 use App\Dao\Schools\GradeDao;
 use App\Dao\RecruitmentPlan\RecruitmentPlanDao;
 use App\Dao\Users\GradeUserDao;
+use App\User;
 use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\Schools\Grade;
 use App\Models\Schools\RecruitmentPlan;
@@ -21,7 +22,6 @@ use App\Models\Users\GradeUser;
 use App\Models\Students\StudentProfile;
 use Illuminate\Support\Facades\DB;
 use App\Models\Acl\Role;
-use App\User;
 use Illuminate\Support\Facades\Hash;
 
 class RegistrationInformaticsDao
@@ -224,6 +224,7 @@ class RegistrationInformaticsDao
 
         if ($user) {
             $userProfile = $data;
+            $userProfile['origin'] = $data['origin']; // 数据来源
             $userProfile['uuid'] = $data['uuid'];
             $userProfile['api_token'] = $data['uuid'];
             $userProfile['user_id'] = $user->id;
@@ -271,8 +272,8 @@ class RegistrationInformaticsDao
             $userSave['name'] = $data['name']; // 姓名
             $userSave['email'] = $data['email']; // 邮箱
             User::where('id',$user->id)->update($userSave);
-
             // 更新基础信息
+            $userProfile['origin'] = $data['origin']; // 数据来源
             $userProfile['uuid'] = Uuid::uuid4()->toString();
             $userProfile['user_id'] = $user->id;
             $userProfile['year'] = $plan->year; // 这个应该是从招生中的入学年级来
@@ -673,7 +674,12 @@ class RegistrationInformaticsDao
                     $addData['created_at'] = Carbon::now()->format('Y-m-d H:i:s'); // 添加时间
                     GradeUser::insert($addData);
                 }
+
+                // 更新用户为审核通过
+                User::where('id', $dataInfo->user_id)->update(['status' => 3]);
+
                 DB::commit();
+
                 $bag->setMessage('操作成功');
                 $bag->setCode(1000);
                 $bag->setData([]);

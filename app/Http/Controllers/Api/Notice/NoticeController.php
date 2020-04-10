@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\Notice;
 
 
+use App\Events\SystemNotification\NoticeSendEvent;
 use App\Utils\JsonBuilder;
 use App\Dao\Notice\NoticeDao;
 use App\Models\Notices\Notice;
@@ -88,6 +89,7 @@ class NoticeController extends Controller
         $msg = $result->getMessage();
         if($result->isSuccess()) {
             $data = $result->getData();
+            event(new NoticeSendEvent(Notice::find($data['id'])));
             return JsonBuilder::Success($data, $msg);
         } else {
             return JsonBuilder::Error($msg);
