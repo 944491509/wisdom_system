@@ -84,7 +84,7 @@ class Attendance extends Model
     public function getTerm() {
         $configuration = new SchoolConfiguration();
         $term = $configuration->getAllTerm();
-        return $term[$this->term];
+        return $term[$this->term] ?? '';
     }
 
     public function getCreatedAtAttribute($value)
