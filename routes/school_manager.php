@@ -574,15 +574,9 @@ Route::prefix('school_manager')->group(function () {
         // 评教列表
         Route::get('evaluate-teacher/list','Evaluate\EvaluateTeacherController@list')
             ->name('school_manager.evaluate.teacher-list');
-         // 评教详情
-        Route::get('evaluate-record/list','Evaluate\EvaluateRecordController@list')
-            ->name('school_manager.evaluate.record-list');
-        // 班级列表
-        Route::get('evaluate-teacher/grade','Evaluate\EvaluateTeacherController@grade')
-            ->name('school_manager.evaluate-teacher.grade');
-        // 学生列表
-        Route::get('evaluate-teacher/student','Evaluate\EvaluateTeacherController@student')
-            ->name('school_manager.evaluate.student-list');
+
+
+
         // 创建
         Route::post('evaluate-teacher/create','Evaluate\EvaluateTeacherController@create')
             ->name('school_manager.evaluate.evaluate-teacher.create');
@@ -597,13 +591,25 @@ Route::prefix('school_manager')->group(function () {
         Route::any('evaluate-student-edit','Evaluate\EvaluateController@evaluateStudentEdit')
             ->name('school_manager.evaluate.student.edit');
         // 评学删除
-        Route::get('evaluate-student-delete','Evaluate\EvaluateTeacherController@list')
-            ->name('school_manager.evaluate.teacher.list');
+        Route::get('evaluate-student-delete', 'Evaluate\EvaluateController@evaluateStudentDelete')
+            ->name('school_manager.evaluate.student.delete');
 
         // 评教列表
-        Route::get('evaluate-teacher-list','Evaluate\EvaluateController@evaluateStudentDelete')
-            ->name('school_manager.evaluate.student.delete');
+        Route::get('evaluate-teacher-list','Evaluate\EvaluateTeacherController@list')
+            ->name('school_manager.evaluate.teacher.list');
+        // 评教班级列表
+        Route::get('evaluate-grade-list','Evaluate\EvaluateTeacherController@evaluateGradeList')
+            ->name('school_manager.evaluate.grade.list');
+        // 评教学生列表
+        Route::get('evaluate-teacher/student-list','Evaluate\EvaluateTeacherController@evaluateStudentList')
+            ->name('school_manager.evaluate-teacher.student-list');
+        // 评教详情
+        Route::get('evaluate-record/list','Evaluate\EvaluateRecordController@list')
+            ->name('school_manager.evaluate.record-list');
     });
+
+
+
     Route::prefix('importer')->group(function(){
         Route::any('manager', 'ImporterController@manager')->name('school_manager.importer.manager');
         Route::any('update', 'ImporterController@update')->name('school_manager.importer.update');

@@ -34,7 +34,7 @@
                                             <td>{{ $val->score }}</td>
                                             <td>{{ $val->created_at }}</td>
                                             <td>
-                                                {{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.record-list',['id'=>$val->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                                {{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.grade.list',['evaluate_teacher_id'=>$val->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
 
                                             </td>
                                         </tr>
