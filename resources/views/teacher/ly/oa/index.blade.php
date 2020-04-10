@@ -41,18 +41,18 @@
                     </el-input>
                     <div class="bottom-table" v-if="tableData.length > 0">
                         <div class="table-item" v-for="item in tableData" :key="item.id">
-                            <img :src="item.avatar" alt="" width="50px" style="border-radius: 50%">
+                            <img :src="item.avatar" alt="" width="50px" style="height: 50px;border-radius: 50%">
+                            <span style="color: #313B4C;" class="type">@{{ item.flow.name }}</span>
                             <span style="color: #99A0AD;">申请人：@{{ item.user_name }}</span>
                             <span style="color: #D5D7E0;">申请日期：@{{ item.created_at }}</span>
                             <span v-bind:class="{
-                                'status_red': item.done == 0,
+                                'status_orange': item.done == 0,
                                 'status_green': item.done == 1,
-                                'status_yellow': item.done == 2,
-                                'status_gray': item.done == 3,
-                                'status_black': item.done == 4
+                                'status_red': item.done == 2,
+                                'status_gray': item.done == 3
                             }">
                                 @{{statusMap[item.done]}}</span>
-                            <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
+                            <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image" style="cursor: pointer;">
                         </div>
                         <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange"></el-pagination>
                     </div>

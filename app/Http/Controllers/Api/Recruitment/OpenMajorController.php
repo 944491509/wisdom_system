@@ -15,8 +15,10 @@ use App\Dao\Users\UserDao;
 use App\Dao\Schools\GradeDao;
 use App\Dao\RecruitStudent\RegistrationInformaticsDao;
 use App\Dao\Students\StudentProfileDao;
+use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -119,7 +121,6 @@ class OpenMajorController extends Controller
      */
     public function signUp(PlanRecruitRequest $request)
     {
-        $user = $request->user();
         $formData = $request->getSignUpFormData();
         //验证提交的数据
         $rules = [
@@ -177,46 +178,69 @@ class OpenMajorController extends Controller
             return JsonBuilder::Error($validator->errors()->first());
         }
 
+        $formData['origin'] =3; // 数据来源
+
+        // 验证手机号是否存在
+        $userObj = new UserDao();
+        $userInfo1 = $userObj->getUserByMobile($formData['mobile']);
+        $userInfo2 = $userObj->getUserByEmail($formData['email']);
+
         // 获取专业信息
         $plan = $request->getPlan();
 
-        // 获取我是否可以报名
-        $regDao = new RegistrationInformaticsDao();
-        $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
-        if ($statusMessageArr['status'] != 100) {
-            return JsonBuilder::Error($statusMessageArr['message']);
-        }
-
-        // 修改学生档案基础信息
-        $dao = new RegistrationInformaticsDao;
-        $returnData = $dao->eidtUser($user, $formData, $plan);
-        if ($returnData['status'] == true) {
-            $user = $returnData['data']['user'];
-        } else {
-            return JsonBuilder::Error($returnData['message']);
-        }
-        /*
-         $profileDao = new StudentProfileDao();
-            $userId = $profileDao->getUserIdByIdNumberOrMobile($formData['id_number'],$formData['mobile']);
-            if (!$userId) {
-                $msgBag = $dao->addUser($formData, $plan);
-                if ($msgBag->isSuccess()) {
-                    $user = $msgBag->getData()['user'];
-                } else {
-                    return JsonBuilder::Error($msgBag->getMessage());
+        // 外部提交
+        if (isset($formData['is_reg']) && $formData['is_reg'] == 1) {
+            // 验证邮箱是否被使用
+            if (!empty($userInfo1)) {
+                return JsonBuilder::Error('手机号已存在,请更换其他手机号');
+            }
+            // 验证邮箱是否被使用
+            if (!empty($userInfo2)) {
+                return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
+            }
+            // 注册账号信息
+            $dao = new RegistrationInformaticsDao;
+            $msgBag = $dao->addUser($formData, $plan);
+            if ($msgBag->isSuccess()) {
+                $user = $msgBag->getData()['user'];
+                // 获取我是否可以报名
+                $regDao = new RegistrationInformaticsDao();
+                $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
+                if ($statusMessageArr['status'] != 100) {
+                    return JsonBuilder::Error($statusMessageArr['message']);
                 }
             } else {
-                $userDao = new UserDao();
-                $user = $userDao->getUserByIdOrUuid($userId);
-            }*/
-
-        /**
-         * signUp 中会执行包括报名总人数更新, 消息通知发布的功能
-         */
+                return JsonBuilder::Error($msgBag->getMessage());
+            }
+        } else {
+            $user = $request->user();
+            // 验证邮件是否被注册
+            if (!empty($userInfo1) && ($user->email != $userInfo1->email)) {
+                return JsonBuilder::Error('手机号已存在,请更换其他手机号');
+            }
+            // 验证邮件是否被注册
+            if (!empty($userInfo2) && ($user->email != $userInfo2->email)) {
+                return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
+            }
+            // 获取我是否可以报名
+            $regDao = new RegistrationInformaticsDao();
+            $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
+            if ($statusMessageArr['status'] != 100) {
+                return JsonBuilder::Error($statusMessageArr['message']);
+            }
+            // 修改学生档案基础信息
+            $dao = new RegistrationInformaticsDao;
+            $returnData = $dao->eidtUser($user, $formData, $plan);
+            if ($returnData['status'] == true) {
+                $user = $returnData['data']['user'];
+            } else {
+                return JsonBuilder::Error($returnData['message']);
+            }
+        }
+        // 保存报名计划
         $result = $user ? $dao->signUp($formData, $user) : false;
-
-          if ($result && $result->isSuccess()) {
-            // 通知老师, 有个新报名的学生
+        if ($result && $result->isSuccess()) {
+              // 通知老师, 有个新报名的学生
             event(new ApplyRecruitmentPlanEvent($result->getData()));
             return JsonBuilder::Success('报名成功');
         } else {
@@ -234,17 +258,34 @@ class OpenMajorController extends Controller
         $form = $request->getApprovalForm();
         $userUuid = $request->uuid();
         $userDao = new UserDao();
+
         $manager = $userDao->getUserByUuid($userUuid);
         if($manager && ($manager->isSchoolAdminOrAbove() || $manager->isTeacher())){
             // 操作者至少应该是学校的员工
             $dao = new RegistrationInformaticsDao();
-            if($request->isApprovedAction()){
+            if($request->isApprovedAction()) {
+                // 验证当前手机号是否被注册
+                $registrationInformaticsInfo = RegistrationInformatics::find($form['currentId']);
+
+                $getUserByMobile = $userDao->getUserByMobile($registrationInformaticsInfo->mobile);
+                if(!empty($getUserByMobile) && $getUserByMobile->id != $registrationInformaticsInfo->user_id){
+                    return JsonBuilder::Error('学生电话已被占用');
+                }
+
+                // 更新操作
                 $bag = $dao->approve($form['currentId'],$manager,$form['note']??null);
-                //event(new ApproveOpenMajorEvent($bag->getData()));
+
+                // 更新手机号为通过的手机号
+                $getUserById = $userDao->getUserById($registrationInformaticsInfo->user_id);
+                if(!empty($getUserById) && $getUserById->id){
+                    $userDao->updateUserInfo($getUserById->id, ['mobile'=>$registrationInformaticsInfo->mobile]);
+                }
+
+                event(new ApproveOpenMajorEvent($bag->getData()));
                 //event(new ApproveRegistrationEvent($bag->getData()));
             }else{
                 $bag = $dao->refuse($form['currentId'],$manager,$form['note']??null);
-                //event(new ApproveOpenMajorEvent($bag->getData()));
+                event(new ApproveOpenMajorEvent($bag->getData()));
                 //event(new RefuseRegistrationEvent($bag->getData()));
             }
             if($bag->isSuccess()){

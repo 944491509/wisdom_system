@@ -93,7 +93,12 @@ class InternalMessageController extends Controller
             $result[$key]['user_pics']         = $profile->avatar;
         }
 
-        return JsonBuilder::Success($result);
+        return [
+            'code' => JsonBuilder::CODE_SUCCESS,
+            'message' => "ok",
+            'data' => $result,
+            'lastPage' => $data->lastPage(),
+        ];
     }
 
     /**
