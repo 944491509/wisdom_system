@@ -70,18 +70,17 @@ class Push implements ShouldQueue
         }
         else{
             if ($this->to == SystemNotification::TO_STUDENT) {
-                $users = GradeUser::whereIn('user_type', [Role::VERIFIED_USER_STUDENT, Role::REGISTERED_USER]);
+                $users = GradeUser::with('user.userDevices')->whereIn('user_type', [Role::VERIFIED_USER_STUDENT, Role::REGISTERED_USER]);
             }elseif ($this->to == SystemNotification::TO_TEACHER) {
-                $users = GradeUser::where('user_type', '=', Role::TEACHER);
+                $users = GradeUser::with('user.userDevices')->where('user_type', '=', Role::TEACHER);
             }elseif ($this->to > 0) {
-                $users = GradeUser::where('user_id', '=', $this->to);
+                $users = GradeUser::with('user.userDevices')->where('user_id', '=', $this->to);
             }else {
                 if (!empty($this->organizations) && !(count($this->organizations) == 1 && $this->organizations[0] == 0)) {
                     $organizationUserId = UserOrganization::whereIn('organization_id', $this->organizations)->pluck('user_id')->toArray();
-                    $users = GradeUser::whereIn('user_id', $organizationUserId);
+                    $users = GradeUser::with('user.userDevices')->whereIn('user_id', $organizationUserId);
                 }else {
-                    // 直接$users = GradeUser;报错
-                    $users = GradeUser::where('id', '>', 0);
+                    $users = GradeUser::with('user.userDevices');
                 }
             }
             if ($this->from != SystemNotification::SCHOOL_EMPTY) {
