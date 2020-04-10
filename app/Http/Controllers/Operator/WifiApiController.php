@@ -18,6 +18,7 @@
        */
       public function get_school_campus(Request $request)
       {
+	header("content-type:text/javascript; charset=uft-8");
          $oneCategory = DB::table('schools')->get ( ['id','name'])->toArray ();
 
          $oneCategoryIds = array();
@@ -51,6 +52,7 @@
        */
       public function get_issue_types(Request $request)
       {
+	header("content-type:text/javascript; charset=uft-8");
          $oneCategory = DB::table('wifi_issue_types')
                           ->where([['type_pid','=',0],['purpose','=',2]])
                           ->get ( ['typeid as id','type_name as name'])
