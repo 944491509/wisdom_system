@@ -32,51 +32,44 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($grades as $index=>$grade)
+                                @foreach($grades as $index=>$item)
                                     <tr>
-                                        <td>{{ $index+1 }}</td>
-                                        <td>{{ $grade->year }} 年</td>
+                                        <td>{{ $index +1 }}</td>
+                                        <td> {{ $item->grade->year }}</td>
+                                        <td> {{ $item->grade->name }}</td>
                                         <td>
-                                            {{ $grade->name }}
-                                        </td>
-                                        <td>
-                                            @if($grade->gradeManager)
-                                                {{ $grade->gradeManager->adviser_name }}
+                                            @if($item->grade->gradeManager)
+                                                {{ $item->grade->gradeManager->adviser_name }}
                                                 @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())
-                                                    <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$grade->id]) }}">(编辑)</a>
+                                                    <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$item->grade_id]) }}">(编辑)</a>
                                                 @endif
                                             @else
                                                 @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())
-                                                    <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$grade->id]) }}">设置班主任</a>
+                                                    <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$item->grade_id]) }}">设置班主任</a>
                                                 @endif
                                             @endif
                                         </td>
                                         <td>
-                                            @if($grade->gradeManager)
-                                                {{ $grade->gradeManager->monitor_name }}
+                                            @if($item->grade->gradeManager)
+                                                {{ $item->grade->gradeManager->monitor_name }}
                                                 @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove() || \Illuminate\Support\Facades\Auth::user()->isTeacher())
-                                                    <a href="{{ route('teacher.grade.set-monitor',['grade'=>$grade->id]) }}">(编辑)</a>
+                                                    <a href="{{ route('teacher.grade.set-monitor',['grade'=>$item->grade_id]) }}">(编辑)</a>
                                                 @endif
                                             @else
                                                 @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove() || \Illuminate\Support\Facades\Auth::user()->isTeacher())
-                                                    <a href="{{ route('teacher.grade.set-monitor',['grade'=>$grade->id]) }}">设置班长</a>
+                                                    <a href="{{ route('teacher.grade.set-monitor',['grade'=>$item->grade_id]) }}">设置班长</a>
                                                 @endif
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <a class="students-counter" href="{{ route('teacher.grade.users',['type'=>User::TYPE_STUDENT,'by'=>'grade','uuid'=>$grade->id]) }}">{{ $grade->studentsCount() }}</a>
-                                        </td>
+                                            <a class="students-counter" href="{{ route('teacher.grade.users',['type'=>\App\User::TYPE_STUDENT,'by'=>'grade','uuid'=>$item->grade_id]) }}">{{ $item->grade->studentsCount() }}</a></td>
                                         <td class="text-center">
-                                            <a  href="{{ route('school_manager.evaluate.student-list',['grade_id'=>$grade->id]) }}" class="btn btn-round btn-primary btn-view-timetable">
-                                                <i class="fa ">查看学生</i></a>
+                                            {{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate-teacher.student-list',['evaluate_teacher_id'=>$evaluate_teacher_id,'grade_id'=>$item->grade_id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
                                         </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
                             </table>
-                            @if(!isset($parent))
-                                {{ $grades->links() }}
-                            @endif
                         </div>
                     </div>
                 </div>

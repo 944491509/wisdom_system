@@ -64,7 +64,7 @@
                 </div>
             </div>
             <!-- list -->
-            <div v-show="show == 3" class="teacher-oa-logs-card-button">
+            <div v-show="show == 3 && logList.length > 0" class="teacher-oa-logs-card-button">
                 <el-button @click="handleCheckAllChange">@{{btnText}}</el-button>
                 <el-button type="primary" @click="openSendDrawer">发送至</el-button>
             </div>
