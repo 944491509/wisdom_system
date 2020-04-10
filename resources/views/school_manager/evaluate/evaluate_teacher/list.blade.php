@@ -9,13 +9,7 @@
 
                 <div class="card-body">
                     <div class="row">
-                        <div class="row table-padding">
-                            <div class="col-md-6 col-sm-6 col-6">
-                                <a href="{{ route('school_manager.evaluate-teacher.grade') }}" class="btn btn-primary">
-                                    创建 <i class="fa fa-plus"></i>
-                                </a>
-                            </div>
-                        </div>
+
                         <div class="table-responsive">
                             <table
                                     class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
@@ -40,7 +34,7 @@
                                             <td>{{ $val->score }}</td>
                                             <td>{{ $val->created_at }}</td>
                                             <td>
-                                                {{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.record-list',['id'=>$val->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                                {{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.grade.list',['evaluate_teacher_id'=>$val->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
 
                                             </td>
                                         </tr>

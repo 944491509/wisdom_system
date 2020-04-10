@@ -82,6 +82,7 @@ return [
     'banner' => '资源位',
 
     'oa' => '办公系统',
+    'logs' => '日志',
     'projects-manager' => '项目管理',
     'projects-view' => '项目详情',
     'tasks-manager' => '任务管理',

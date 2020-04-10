@@ -32,6 +32,9 @@ class OrganizationController extends Controller
     public function getOrganization(MyStandardRequest $request) {
         $user = $request->user();
         $schoolId = $user->getSchoolId();
+        if(is_null($schoolId)) {
+            $schoolId = $request->get('school_id');
+        }
         $parentId = $request->get('parent_id');
         $keyword = $request->get('keyword');
         $type = $request->get('type', 1); // type 1:搜索部门 2:搜索人员

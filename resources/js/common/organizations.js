@@ -20,13 +20,16 @@ export function loadOrganizationsByRoles(schoolId, userUuid, roles, affix) {
     );
 }
 
-export function loadOrganizationsByParent(parentId, keyword, affix) {
+export function loadOrganizationsByParent(parentId, keyword,affix) {
     const url = Util.buildUrl(Constants.API.ORGANIZATION.LOAD_BY_PARENT);
+    const dom = document.getElementById('app-init-data-holder');
+    const schoolId = dom.dataset.school;
+    console.log(schoolId);
     if(Util.isDevEnv()){
         return axios.get(url, affix);
     }
     return axios.post(
         url,
-        {parent_id: parentId, keyword: keyword, type: 1, version:Constants.VERSION}
+        {parent_id: parentId, keyword: keyword, type: 1, version:Constants.VERSION,school_id:schoolId}
     );
 }
