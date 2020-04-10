@@ -37,7 +37,7 @@
                         </div>
                     </el-form>
                     <div class="demo-drawer__footer">
-                        <el-button type="primary" @click="addlog" v-if="show === 3 || isFromEdit == 'add'">@{{isEdit ? '编辑' : '保存'}}</el-button>
+                        <el-button type="primary" @click="addlog" v-if="show === 3 || isFromEdit == 'add'" :style="{backgroundColor: (isEdit? 'rgb(255,102,0)' : '')}">@{{isEdit ? '编辑' : '保存'}}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -54,7 +54,7 @@
                     <div class="teacher-oa-logs-card-list-top">
                         <img :src="item.avatar" alt="">
                         <div class="teacher-oa-logs-card-list-top-right">
-                            <p @click="turnDetailDrawer(item, 2)">@{{ item.title }}</p>
+                            <p @click="turnDetailDrawer(item, 2)" style="cursor: pointer;">@{{ item.title }}</p>
                             <p>@{{ item.created_at }}</p>
                         </div>
                     </div>
@@ -88,8 +88,8 @@
                             </el-radio-group>
                         </div>
                         <div class="organ_item"  >
-                            <el-checkbox-group v-model="memberCheckedList">
-                                <el-checkbox-button class="label-send-drawer" v-for="item in memberList" :label="item.id" :key="item.id">
+                            <el-checkbox-group v-model="memberCheckedList" @change="changeMember">
+                                <el-checkbox-button class="label-send-drawer"  v-for="item in memberList" :label="item.id" :key="item.id">
                                     <template>
                                         <span class="t_name">@{{item.name}} </span>
                                     </template>
@@ -99,15 +99,17 @@
                     </div>
                     <ul class="checked_send_teacher_area" v-if="sendDrawerType == 2">
                         <template v-for="item in memberCheckedList" >
-                            <li v-if="item == c.id" v-for="c in memberList" :key="c.id" >
-                                <img :src="c.avatar"/>
-                                <span class="t_name">@{{c.name}}</span>
-                                <span class="t_title">（@{{c.title}}）</span>
+                            <li v-if="item == key" v-for="(value,key) in memberCheckedDetailList" :key="key" >
+                                <img  class="t_avatar":src="value.avatar"/>
+                                <span class="t_name">@{{value.name}}</span>
+                                <span class="t_title">（@{{value.title}}）</span>
+                                <span class="t_toash" @click="deleteMember(item)">删除</span>
                             </li>
                         </template>
                     </ul>
 
                     <div class="demo-drawer_send_footer">
+                        <el-button type="primary" @click="sendDrawerType=1" v-if="sendDrawerType == 2">上一步</el-button>
                         <el-button type="primary" @click="sendlog">@{{sendDrawerType == 1?'确认':'发送'}}</el-button>
                     </div>
                   </div>

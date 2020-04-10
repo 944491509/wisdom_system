@@ -24,7 +24,7 @@ trait PushUserRole
             if (empty($user)) {
                 continue;
             }
-            if ($user->isStudent()) {
+            if ($user->isStudent() || $user->isRegisteredUsers()) {
                 // 学生端
                 $this->appKey       = env('PUSH_STUDENT_KEY');
                 $this->masterSecret = env('PUSH_STUDENT_SECRET');

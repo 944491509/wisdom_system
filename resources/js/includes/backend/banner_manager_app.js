@@ -13,17 +13,7 @@ $(document).ready(function(){
                 isshow1: false, // url id
                 isshow1Lable: "名称", // 名称
                 isshow1Placeholder: "请填写值", // 文本框名称
-                configOptions:{
-                  lang:'zh_cn',
-                  plugins: [
-                      'fontsize',
-                      'fontcolor',
-                      'alignment',
-                      'fontfamily',
-                      'table',
-                      'specialchars',
-                  ],
-                },
+
                 isshow2: false, // 内容
                 minHeight: "300px", // 内容
                 fileList: [], // 文件列表
@@ -41,9 +31,26 @@ $(document).ready(function(){
                   public : true, // 浏览权限
                   status: true, // 发布状态
                 },
+                bannerFormInfoType:0
               }
           },
           computed: {
+            configOptions(){
+              return {
+                lang:'zh_cn',
+                plugins: [
+                    'fontsize',
+                    'fontcolor',
+                    'alignment',
+                    'fontfamily',
+                    'table',
+                    'specialchars',
+                    'imagemanager'
+                ],
+                imageUpload: `/api/wysiwyg/images/upload?uuid=${this.school_id}`, // 图片上传的 Action
+                imageManagerJson: `/api/wysiwyg/images/view?uuid=${this.school_id}`, // 已存在的图片的资源 URL, 返回为 json 格式
+              }
+            },
           },
           created(){
             const dom = document.getElementById('app-init-data-holder');
@@ -113,6 +120,7 @@ $(document).ready(function(){
               this.bannerFormInfo.app = !Util.isEmpty(value[0]) ? value[0] : 0;
               this.bannerFormInfo.posit = !Util.isEmpty(value[1]) ? value[1] : 0;
               let bannerFormInfoType = !Util.isEmpty(value[2]) ? value[2] : 0;
+              this.bannerFormInfoType = bannerFormInfoType;
               if ( bannerFormInfoType > 0) {
                 if (bannerFormInfoType == 1) { // 1 => '无跳转'
                   this.isshow1=false;
@@ -187,7 +195,11 @@ $(document).ready(function(){
           saveBannerInfo: function () {
             let _that_ =  this;
             this.bannerFormInfo.school_id = this.school_id;
-            axios.post(Constants.API.BANNER.POST_SAVE_BANNER, this.bannerFormInfo).then((res) => {
+
+            let params = {...this.bannerFormInfo}
+            params.id = '';
+            params.type = this.bannerFormInfoType;
+            axios.post(Constants.API.BANNER.POST_SAVE_BANNER, params).then((res) => {
               if (Util.isAjaxResOk(res)) {
                 this.$message({
                   type:'success',
