@@ -5,6 +5,8 @@ namespace App\Models\AttendanceSchedules;
 
 use App\User;
 use Carbon\Carbon;
+use App\Models\Course;
+use App\Utils\Time\CalendarDay;
 use App\Models\Timetable\TimetableItem;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +14,8 @@ class AttendancesDetail extends Model
 {
     protected $fillable = ['attendance_id', 'course_id', 'timetable_id',
         'student_id', 'year', 'term', 'type', 'week', 'mold', 'status',
-        'reason', 'weekday_index', 'score', 'remark', 'signin_time'
+        'reason', 'weekday_index', 'score', 'remark', 'signin_time',
+        'grade_id',
     ];
 
     // 签到类型
@@ -78,5 +81,14 @@ class AttendancesDetail extends Model
 
     public function getTeacherSignInTimeAttribute($value) {
         return Carbon::parse($value)->format('Y-m-d H:i');
+    }
+
+
+    public function course() {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function getWeekIndex() {
+        return CalendarDay::GetWeekDayIndex($this->weekday_index);
     }
 }

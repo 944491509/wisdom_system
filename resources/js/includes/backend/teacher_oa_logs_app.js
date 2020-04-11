@@ -96,7 +96,7 @@ if (document.getElementById("teacher-oa-logs-app")) {
                 this.log.updated_at = res.data.data.updated_at.substring(0, res.data.data.updated_at.lastIndexOf(":"));
                 this.log.collect_user_name = res.data.data.collect_user_name;
               } else if (res.data.data.type == 1) {
-                this.log.updated_at = res.data.data.updated_at.substring(0, res.data.data.updated_at.lastIndexOf(":"));
+                this.log.created_at = res.data.data.created_at;
                 this.log.send_user_name = res.data.data.send_user_name;
               }
             }

@@ -110,6 +110,7 @@
             </h3>
             <div class="block" style="padding: 0 15px;">
                 <el-timeline>
+                    
                     <el-timeline-item key="0" icon="el-icon-circle-check" type='success'>
                         <div style="display: flex;justify-content: space-between;align-items: center;">
                             <img src="@if ($startUser->profile){{ $startUser->profile->avatar }} @endif" alt="" style="width: 40px; height: 40px;border-radius: 50%;vertical-align: middle;">
@@ -132,6 +133,7 @@
                         </div>
                     </el-timeline-item>
                     @endif
+
                     @foreach($handlers as $key => $handler)
                     @switch($handlerIcon[$key])
                     @case("success")

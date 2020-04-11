@@ -4,12 +4,12 @@
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="teacher-oa-logs-card">
             <div class="teacher-oa-logs-card_title">
-                <p>日志</p>
+                <p><img class="img" src="{{asset('assets/img/teacher_blade/logs.png')}}" alt="">日志</p>
                 <p @click="add" type="primary">添加</p>
             </div>
             <el-drawer :title="drawerTitle" :before-close="handleClose" :visible.sync="drawer" custom-class="demo-drawer" ref="drawer">
                 <div class="demo-drawer__content">
-                    <el-form :model="log" label-position="left" label-width="70px">
+                    <el-form :model="log" label-position="left" label-width="80px">
                         <el-form-item label="标题">
                             <el-input v-model="log.title" placeholder="请输入标题" autocomplete="off" :disabled="isDisabled"></el-input>
                         </el-form-item>
@@ -29,7 +29,7 @@
                         </div>
                         <div v-if="show === 1 && isFromEdit!='add'">
                             <el-form-item label="接收时间">
-                                <el-input v-model="log.updated_at" autocomplete="off" :disabled="isDisabled"></el-input>
+                                <el-input v-model="log.created_at" autocomplete="off" :disabled="isDisabled"></el-input>
                             </el-form-item>
                             <el-form-item label="发送人">
                                 <el-input v-model="log.send_user_name" autocomplete="off" :disabled="isDisabled"></el-input>
@@ -113,7 +113,6 @@
                         <el-button type="primary" @click="sendlog">@{{sendDrawerType == 1?'确认':'发送'}}</el-button>
                     </div>
                   </div>
-                </div>
             </el-drawer>
         </div>
     </div>

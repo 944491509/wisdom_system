@@ -32,6 +32,7 @@ return [
     'delete' => '删除',
     'update' => '更新',
     'school-manager' => '学校管理员',
+    'manual' => '用户使用手册',
 
     //风采管理
     'scenery' => '风采管理',
@@ -162,8 +163,8 @@ return [
     'result' => '结果',
     'consult' => '招生咨询',
     'note' => '报名须知',
-    'evaluation-score-index'=>'评分管理',
-    'evaluation-details-list'=>'评分详情列表',
+    'attend' => '签到评分',
+    'details-list'=> '详情列表',
 
     // 课件
     'materials'=>'课件',

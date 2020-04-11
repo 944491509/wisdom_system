@@ -279,4 +279,23 @@ class AttendancesDao
     }
 
 
+    /**
+     * 根据学年和学期获取签到班级
+     * @param $schoolId
+     * @param $year
+     * @param $term
+     * @return mixed
+     */
+    public function gradeListByYearAndTerm($schoolId,$year, $term) {
+        $map = [
+            'school_id' =>$schoolId,
+            'year' => $year,
+            'term' => $term
+        ];
+        return Attendance::where($map)
+            ->select('grade_id')
+            ->distinct('grade_id')
+            ->get();
+    }
+
 }
