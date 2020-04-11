@@ -13,7 +13,7 @@ use App\Models\Users\GradeUser;
 class Grade extends Model
 {
     protected $fillable = [
-        'school_id', 'major_id', 'name', 'description',
+        'school_id', 'major_id', 'name', 'category_code','description',
         'year', // 代表哪一届的学生
     ];
 

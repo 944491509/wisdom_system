@@ -441,6 +441,8 @@ class RegistrationInformaticsDao
                 }
                 else{
                     $bag->setMessage($form->name.'已经被录取');
+                    $bag->setCode(JsonBuilder::CODE_SUCCESS);
+                    $bag->setData($form);
                 }
             }
         }

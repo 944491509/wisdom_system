@@ -122,7 +122,7 @@
                                 <el-row>
                                     <el-col :span="12">
                                         <el-form-item label="职务"  label-width="70px">
-                                            <el-select v-model="currentMember.title_id" placeholder=""  style="width: 90%;">
+                                            <el-select v-model="currentMember.title_id_name" placeholder=""  style="width: 90%;">
                                               <el-option :key="role" :label="roleName" :value="role" v-for="(roleName, role) in organizationLevels"></el-option>
                                             </el-select>
                                         </el-form-item>

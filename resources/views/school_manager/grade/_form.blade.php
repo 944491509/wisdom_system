@@ -24,6 +24,10 @@ $years = range(2014, $currentYear+1);
     <input required type="text" class="form-control" id="grade-name-input" value="{{ $grade->name }}" placeholder="班级名称" name="grade[name]">
 </div>
 <div class="form-group">
+    <label for="grade-name-input">班级编码</label>
+    <input required type="text" class="form-control" id="grade-name-input" value="{{ $grade->category_code }}" placeholder="例如：1" name="grade[category_code]">
+</div>
+<div class="form-group">
     <label for="grade-desc-input">简介</label>
     <textarea required class="form-control" name="grade[description]" id="grade-desc-input" cols="30" rows="10" placeholder="班级简介">{{ $grade->description }}</textarea>
 </div>

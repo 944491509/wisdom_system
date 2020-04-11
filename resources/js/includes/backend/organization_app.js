@@ -29,6 +29,7 @@ if(document.getElementById('organization-app')){
                     user_id:'',
                     title:'',
                     title_id:'',
+                    title_id_name:'',
                     school_id: '',
                     organization_id: '',
                     id: '',
@@ -51,16 +52,21 @@ if(document.getElementById('organization-app')){
         },
         methods: {
             editMember: function(member){
-              this.currentMember.title_id = member.title_id;
                 const keys = Object.keys(member);
                 keys.forEach(k => {
                     this.currentMember[k] = member[k];
                 });
-				this.loadParents();
-              console.log(this.currentMember);
+              this.currentMember.title_id_name = this.organizationLevels[member.title_id];
             },
             // 把成员加入到当前的组织中
             addToOrg: function(){
+              console.log('1111111')
+              console.log(this.currentMember);
+                if(parseFloat(this.currentMember.title_id_name).toString() != "NaN"){
+                  this.currentMember.title_id = this.currentMember.title_id_name;
+                }
+                delete this.currentMember.title_id_name;
+                console.log(this.currentMember);
                 // 检查是否选定了机构
                 if(Util.isEmpty(this.form.id)){
                     this.$message.error('请指定用户所在的部门');
@@ -227,7 +233,13 @@ if(document.getElementById('organization-app')){
                 this.currentMember.title_id = '';
                 this.currentMember.organization_id = '';
                 this.currentMember.id = '';
-            }
+            },
+          // 通过名称获取key
+          getTitleKey:function(obj,value){
+            return Object.keys(obj).find((k)=>{
+              return obj[k]==value
+            })
+          }
         }
-    });
+    })
 }
