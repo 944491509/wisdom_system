@@ -122,6 +122,7 @@ class GradeUser extends Model
 
     /**
      * 当前记录的user是否为学生
+     * Desc 通过班级Id 获取学号
      * @return bool
      */
     public function isStudent(){
@@ -153,4 +154,5 @@ class GradeUser extends Model
         $gradeStr = $this->grade_id > 0 ? $this->grade->name . ' / ' : '';
         return $instituteStr.$deptStr.$majorStr.$gradeStr;
     }
+
 }

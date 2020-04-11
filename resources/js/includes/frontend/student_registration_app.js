@@ -43,6 +43,7 @@ if(document.getElementById('student_registration_app')){
                     district:'',
                     address:'',
                     postcode:'',
+                    is_reg:'',
                 },
                 // 应用于单个报名报的显示
                 planId:'',
@@ -57,9 +58,11 @@ if(document.getElementById('student_registration_app')){
             if(!Util.isEmpty(this.studentMobile) || !Util.isEmpty(this.studentIdNumber)){
                 this.registrationForm = Util.getObjFromLocalStorage(Constants.STUDENT_PROFILE);
             }
+
             this.schoolId = document.getElementById('current-school-id').dataset.id;
             this.planName = document.getElementById('current-school-id').dataset.planname;
             this.planId = document.getElementById('current-school-id').dataset.planid;
+            this.registrationForm.is_reg = document.getElementById('current-school-id').dataset.is_reg;
 
         },
         mounted() {

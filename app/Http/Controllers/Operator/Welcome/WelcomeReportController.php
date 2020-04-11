@@ -1,6 +1,7 @@
 <?php
    namespace App\Http\Controllers\Operator\Welcome;
 
+   use App\User;
    use App\Dao\Schools\SchoolDao;
    use App\Dao\Welcome\Backstage\WelcomeUserReportDao;
    use App\Models\Welcome\WelcomeUserReportsProject;
@@ -292,6 +293,9 @@
                // 更新状态
                $welcomeUserReportObj = new WelcomeUserReportDao();
                $welcomeUserReportObj->editWelcomeUserReportsInfo(['status'=>1,'complete_date1'=>date('Y-m-d H:i:s')],$dataOne['configid']);
+
+               // 迎新通过后，更新用户的状态是已认证通过.
+               User::where('id', $dataOne['user_id'])->update(['status' => 3]);
 
                $schoolObj = new SchoolDao();
                $school = $schoolObj->getSchoolByIdOrUuid($dataOne['school_id']);

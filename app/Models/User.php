@@ -37,11 +37,11 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     // 描述用户状态的常量
     const STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED = 1;
-    const STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT = '手机待验证';
+    const STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT = '新用户待认证';
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED = 2;
-    const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT = '等待验证身份证';
+    const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT = '认证中';
     const STATUS_VERIFIED = 3;
-    const STATUS_VERIFIED_TEXT = '身份已验证';
+    const STATUS_VERIFIED_TEXT = '已认证';
 
     const TYPE_STUDENT  = 1;
     const TYPE_EMPLOYEE = 2;
