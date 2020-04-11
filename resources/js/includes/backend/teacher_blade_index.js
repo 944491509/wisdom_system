@@ -106,8 +106,8 @@ if (document.getElementById('teacher-assistant-index-app')) {
                 }
             },
             // 点击眼睛查看详情
-            viewAction(id) {
-                this.$refs.showAction.getAction(id)
+            viewAction(id,show) {
+                this.$refs.showAction.getAction(id,this.show)
             }
         }
     });

@@ -23,7 +23,7 @@
     </div>
     <div class="card bottom-card">
         <div class="card-head">
-            <el-tabs style="width: 830px;" :stretch="true" @tab-click="handleClick">
+            <el-tabs style="width: 100%;" :stretch="true" @tab-click="handleClick">
                 <el-tab-pane label="待审批" name="first"></el-tab-pane>
                 <el-tab-pane label="已审批" name="second"></el-tab-pane>
                 <el-tab-pane label="我抄送的" name="third"></el-tab-pane>

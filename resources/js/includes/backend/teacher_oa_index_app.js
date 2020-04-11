@@ -161,8 +161,8 @@ if (document.getElementById('teacher-oa-index-app')) {
                 });
             },
             // 点击眼睛查看详情
-            viewAction(id) {
-                this.$refs.showAction.getAction(id)
+            viewAction(id, show) {
+                this.$refs.showAction.getAction(id, this.show)
             },
             // startFlow: function (flowId) {
             //     const url = this.url.flowOpen + '?flow=' + flowId + '&uuid=' + this.userUuid;
