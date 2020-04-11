@@ -90,7 +90,7 @@ class CloudController extends Controller
             return JsonBuilder::Success('暂无课程');
         }
 
-        $manager   = $item->grade->gradeManager;
+
         $gradeUser = $item->grade->gradeUser;
         $userIds   = $gradeUser->pluck('user_id');
 
@@ -98,18 +98,19 @@ class CloudController extends Controller
 
         $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
         $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
-
+        $photo = [];
         $data = [
-            'class_name'    => $item->grade->name,
-            'class_teacher' => $manager->name,
-            'class_number'  => [
+            'grade'    => [
+                'name' => $item->grade->name,
+                'teacher' => $item->grade->gradeManager->adviser_name ?? '未位置班主任',
+                'monitor' => $item->grade->gradeManager->monitor_name ?? '未设置班长',
+            ],
+            'number'  => [
                 'total' => $man + $woman,
                 'man'   => $man,
                 'woman' => $woman
             ],
-            'class_img'     => [
-                'class_img' => ''
-            ]
+            'photo' => $photo
         ];
 
         return JsonBuilder::Success($data);
@@ -143,13 +144,13 @@ class CloudController extends Controller
 
         $data = [];
         foreach ($items as $key => $item) {
-            $data[$key]['number']         = $item->timeslot->name;
-            $data[$key]['course_time']    = $item->timeslot->from. ' - ' .$item->timeslot->to;
-            $data[$key]['course_place']   = $item->room->name;
+            $data[$key]['course_number']   = $item->timeslot->name;
+            $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
+            $data[$key]['course_room']     = $item->room->name;
             foreach ($item->course->teachers as $teacher) {
                 $data[$key]['course_teacher'] = $teacher->name;
             }
-            $data[$key]['course_name']    = $item->course->name;
+            $data[$key]['course_name']   = $item->course->name;
         }
 
         return JsonBuilder::Success($data);
