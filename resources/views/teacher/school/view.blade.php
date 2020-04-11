@@ -48,7 +48,7 @@ use App\Utils\Misc\ConfigurationTool;
                 <div style="height: calc(100% - 100px)" v-cloak>
                     <ul>
                         <li @click="prevMonth"><i class="el-icon-arrow-left"></i></li>
-                        <li><span style="color: #333;">@{{ yyyy }}年</span><span style="color: #949CA9">@{{mm < 9 ? '0'+(mm+1) : mm+1}}月</span></li>
+                        <li><span style="color: #333;">@{{ yyyy }}年</span><span style="color: #949CA9">@{{mm < 9 ? '0'+mm : mm}}月</span></li>
                         <li @click="nextMonth"><i class="el-icon-arrow-right"></i></li>
                     </ul>
                     <table>
@@ -62,7 +62,7 @@ use App\Utils\Misc\ConfigurationTool;
                             <tr v-for="(item,index) in tableDay" :key="index">
                                 <th style="width: 75px;">@{{tableWeek[index].name}}</th>
                                 <td v-for="(i,index) in item" :key="index" style="width: 45px;">
-                                    <span :class="i.name.split('-')[1] == dd ? 'current' : ''">@{{ i.name.split('-')[1] }}</span>
+                                    <span :class="i.name.split('-')[1] == dd&&i.name.split('-')[0] == mm ? 'current' : ''">@{{ i.name.split('-')[1] }}</span>
                                     <span v-if="i.events.length > 0" style="display: inline-block;width: 3px;height: 3px;background-color: red;border-radius: 50%;position: relative;top: 10px;left: -15px;"></span>
                                 </td>
                             </tr>
@@ -72,17 +72,17 @@ use App\Utils\Misc\ConfigurationTool;
             </div>
             <div class="bottom_second_plan">
                 <div class="bottom_title bottom_title_span">校园安排<span @click="drawer = true" style="cursor: pointer">历史安排 ></span></div>
-                <p v-for="item in schooleventsList" v-cloak>
-                    <span>@{{ item.event_time}}</span>
-                    <span>@{{ item.week_idx }}</span>
-                    <span>@{{ item.content }}</span>
-                </p>
+                <div v-for="item in schooleventsList" :key="item.event_time" v-cloak>
+                    <p style="width: 90px" v-cloak>@{{ item.event_time}}</p>
+                    <p style="width: 60px;" v-cloak>@{{ item.week_idx }}</p>
+                    <p style="width: 270px" v-cloak>@{{ item.content }}</p>
+                </div>
             </div>
             <el-drawer title="校历安排" :before-close="handleClose" :visible.sync="drawer" custom-class="demo-drawer" ref="drawer" v-cloak>
                 <div class="demo-drawer__content" v-for="item in schoolalleventsList">
-                    <span>@{{ item.event_time}}</span>
-                    <span>@{{ item.week_idx }}</span>
-                    <span>@{{ item.content }}</span>
+                    <p style="width: 90px">@{{ item.event_time}}</p>
+                    <p style="width: 60px;">@{{ item.week_idx }}</p>
+                    <p style="width: 270px">@{{ item.content }}</p>
                 </div>
             </el-drawer>
         </div>
@@ -96,8 +96,8 @@ use App\Utils\Misc\ConfigurationTool;
                         <p style="padding: 10px 0;"><span>值周班级：</span><span>@{{ item.grade_name }}</span></p>
                         <p><span>值周人员：</span>
                             <span>
-                                <span style="background-color: #E8F4FF;color: #4FA5FE;padding: 1px 5px;">@{{ item.high_level }}</span>&nbsp;&nbsp;&nbsp; 
-                                <span style="background-color: #E8F4FF;color: #4FA5FE;padding: 1px 5px;">@{{ item.middle_level }}</span> &nbsp;&nbsp;&nbsp; 
+                                <span style="background-color: #E8F4FF;color: #4FA5FE;padding: 1px 5px;">@{{ item.high_level }}</span>&nbsp;&nbsp;&nbsp;
+                                <span style="background-color: #E8F4FF;color: #4FA5FE;padding: 1px 5px;">@{{ item.middle_level }}</span> &nbsp;&nbsp;&nbsp;
                                 <span style="background-color: #E8F4FF;color: #4FA5FE;padding: 1px 5px;">@{{ item.teacher_level }}</span>
                             </span>
                         </p>
