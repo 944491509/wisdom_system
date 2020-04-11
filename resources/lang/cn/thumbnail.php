@@ -164,6 +164,7 @@ return [
     'consult' => '招生咨询',
     'note' => '报名须知',
     'attend' => '签到评分',
+    'details-list'=> '详情列表',
 
     // 课件
     'materials'=>'课件',

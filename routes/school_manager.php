@@ -332,12 +332,15 @@ Route::prefix('school_manager')->group(function () {
         Route::get('performances-manager','ElectiveCoursesController@management')
             ->name('school_manager.students.performances-manager');
         // 签到评分班级列表
-        Route::any('attend-grade-list','Attendance\AttendanceController@gradeList')
+        Route::get('attend-grade-list','Attendance\AttendanceController@gradeList')
             ->name('school_manager.students.attend.grade-list');
+        // 签到评分学生列表
+        Route::get('attend-student-list','Attendance\AttendanceController@studentList')
+            ->name('school_manager.students.attend.student-list');
 
-        // 评分详情列表
-        Route::any('details-list','Evaluate\EvaluationScoreController@details')
-            ->name('school_manager.students.evaluation-details-list');
+        // 评分详情详情
+        Route::any('details-list','Attendance\AttendanceController@details')
+            ->name('school_manager.students.attend.details-list');
 
     });
 

@@ -48,12 +48,12 @@
                                         <tr>
                                             <td>{{ $key +1 }}</td>
                                             <td>{{ $year }}学年</td>
-                                            <td>{{ $term }}</td>
+                                            <td>{{ $term_text }}</td>
                                             <td>{{ $item->grade->name }}</td>
                                             <td>@if($item->grade->gradeManager)
                                                     {{ $item->grade->gradeManager->adviser_name }}
                                             @endif </td>
-                                            <td>{{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.grade.list',[])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                            <td>{{ \App\Utils\UI\Anchor::Print(['text'=>'查看','class'=>'btn-edit-evaluate','href'=>route('school_manager.students.attend.student-list',['year'=>$year,'term'=>$term, 'grade_id'=>$item->grade_id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
                                             </td>
                                         </tr>
                                     @endforeach
