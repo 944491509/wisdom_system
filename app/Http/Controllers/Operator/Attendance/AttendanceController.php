@@ -44,7 +44,6 @@ class AttendanceController extends Controller
         $attendDao = new AttendancesDao();
         $gradeList = $attendDao->gradeListByYearAndTerm($schoolId, $year, $term);
 
-
         $allTerm = $configuration->getAllTerm();
         $data = [];
         for ($i = 0; $i<=1; $i++) {
@@ -122,6 +121,9 @@ class AttendanceController extends Controller
         $detailsDao = new AttendancesDetailsDao();
         $result = $detailsDao->getPageSignDetailByYearAndTerm($userId,$year, $term);
         $this->dataForView['pageTitle'] = '签到详情列表';
+        $this->dataForView['year'] = $year;
+        $this->dataForView['term'] = $term;
+        $this->dataForView['user_id'] = $userId;
         $this->dataForView['list'] = $result;
         return view('school_manager.attend.details_list',$this->dataForView);
     }

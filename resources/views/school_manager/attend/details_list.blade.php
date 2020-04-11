@@ -43,7 +43,7 @@
 
                                 </tbody>
                             </table>
-                            {{ $list->links()}}
+                            {{ $list->appends(['year'=>$year,'term'=>$term,'user_id'=>$user_id])->links()}}
                         </div>
                     </div>
                 </div>
