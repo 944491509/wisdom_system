@@ -56,6 +56,7 @@ if(document.getElementById('organization-app')){
                 keys.forEach(k => {
                     this.currentMember[k] = member[k];
                 });
+				this.loadParents();
               console.log(this.currentMember);
             },
             // 把成员加入到当前的组织中

@@ -54,7 +54,7 @@ class PagesController extends Controller
 
         return view('h5_apps.student.school_campus_intro', $this->dataForView);
     }
-    
+
     /**
      * 报名须知页面
      * @param Request $request
@@ -112,6 +112,7 @@ class PagesController extends Controller
         $this->dataForView['pageTitle'] = ''; // 报名
         $this->dataForView['appName'] = 'student_registration_app';
         $this->dataForView['api_token'] = $request->get('api_token',null);
+        $this->dataForView['is_reg'] = $request->get('is_reg',0);
         return view('h5_apps.student.registration_form_app', $this->dataForView);
     }
 

@@ -278,7 +278,10 @@ class OpenMajorController extends Controller
                 // 更新手机号为通过的手机号
                 $getUserById = $userDao->getUserById($registrationInformaticsInfo->user_id);
                 if(!empty($getUserById) && $getUserById->id){
-                    $userDao->updateUserInfo($getUserById->id, ['mobile'=>$registrationInformaticsInfo->mobile]);
+                    $userDao->updateUserInfo($getUserById->id, [
+                        'type'=> 5, // 已注册的手机号
+                        'mobile'=>$registrationInformaticsInfo->mobile
+                    ]);
                 }
 
                 event(new ApproveOpenMajorEvent($bag->getData()));
