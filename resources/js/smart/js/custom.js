@@ -61,3 +61,14 @@ $('#facility-building-select').change(function () {
             }
     });
 });
+
+// 选择学年学期
+$('#year_term').change(function () {
+    var year= $('#year_term option:selected').attr('year');
+    var term= $('#year_term option:selected').attr('term');
+    // console.log(year);
+    // console.log(term);
+    $('#year').val(year);
+    $('#term').val(term);
+
+});
