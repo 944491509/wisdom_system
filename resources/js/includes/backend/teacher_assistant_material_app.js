@@ -128,6 +128,21 @@ $(document).ready(function(){
         },
         deleteRow(row) {
           console.log(row)
+          axios.post(
+            '/api/study/delete-material',
+            { material_id: row.material_id }
+          ).then(res => {
+            if (Util.isAjaxResOk(res)) {
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              });
+              window.location.reload();
+            }
+            else {
+              this.$message.error('删除操作失败');
+            }
+          });
         },
         // activeTable: function (tab) {
         //   console.log('AAAAAAAAAAAAAAAAAA')
