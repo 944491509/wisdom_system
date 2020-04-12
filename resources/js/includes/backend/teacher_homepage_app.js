@@ -65,6 +65,15 @@ if (document.getElementById('teacher-homepage-app')) {
                     }
                 })
             },
+            // 轮播图点击事件 
+            imgDetail(item) {
+                if(item.type == 3 || item.type == 13){
+                    window.open(item.external)
+                }
+                if(item.type == 2 || item.type == 12){
+                    window.location.href = item.external
+                }
+            },
             // 获取首页校园新闻
             getnewsPage() {
                 axios.post(
@@ -144,7 +153,7 @@ if (document.getElementById('teacher-homepage-app')) {
                     { page: this.current_page }
                 ).then(res => {
                     if (Util.isAjaxResOk(res)) {
-                        this.attendanceList = [...this.attendanceList,...res.data.data.data];
+                        this.attendanceList = [...this.attendanceList, ...res.data.data.data];
                         this.last_page = res.data.data.last_page; // 总页数
                         this.current_page = res.data.data.current_page; // 当前页数
                     }
