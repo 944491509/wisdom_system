@@ -18,7 +18,7 @@ $(document).ready(function(){
           // 计划日志
           showEditor: false, // 是否显示富文本编辑器
           showMaterialForm: true, // 是否显示富文本编辑器
-          course: [], // {id:134}
+          course: {}, // {id:134}
           teacher: null, // {id:234}
           notes: {
             teacher_notes: ''
