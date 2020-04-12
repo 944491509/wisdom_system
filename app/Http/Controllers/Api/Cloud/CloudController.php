@@ -42,6 +42,10 @@ class CloudController extends Controller
          * @var Facility $facility
          */
         $school = $facility->school;
+        $type = '';
+        if (!is_null($school->video)) {
+             $type = substr($school->video,-3);
+        }
         $data   = [
             'school' => [
                 'name'  => $school->name,
@@ -54,7 +58,7 @@ class CloudController extends Controller
                 'area'  => [
                     'video' => $school->video,
                     'size'  => '',
-                    'type'  => '',
+                    'type'  => $type,
                 ]
             ]
         ];
@@ -170,7 +174,7 @@ class CloudController extends Controller
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
         if (empty($facility)) {
-            return JsonBuilder::Success('设备码错误,或设备已关闭');
+            return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
         /**
          * @var  Facility $facility
@@ -180,10 +184,10 @@ class CloudController extends Controller
 
         $item = $timeSlotDao->getItemByRoomForNow($room);
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
 
-        //二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID
+        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID
         $codeStr = base64_encode(json_encode(['app' => 'cloud',
                                               'school_id' => $item->school_id,
                                               'grade_id' => $item->grade_id,
@@ -191,13 +195,14 @@ class CloudController extends Controller
                                               'timetable_id' => $item->id,
                                               'course_id' => $item->course_id,
                                               'time' => time()]));
+        $codeStr = 123213;
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
         $qrCode->setLogoPath(public_path('assets/img/logo.png'));
         $qrCode->setLogoSize(60, 60);
         $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success($code,'生成二维码');
+        return JsonBuilder::Success('生成二维码', ['code' => $code, 'status' => true]);
     }
 
     /**
@@ -222,7 +227,7 @@ class CloudController extends Controller
 
         $item = $timeSlotDao->getItemByRoomForNow($room);
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
         $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
         $week = $item->school->configuration->getScheduleWeek($now)->getScheduleWeekIndex();
