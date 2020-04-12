@@ -195,14 +195,13 @@ class CloudController extends Controller
                                               'timetable_id' => $item->id,
                                               'course_id' => $item->course_id,
                                               'time' => time()]));
-        $codeStr = 123213;
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
         $qrCode->setLogoPath(public_path('assets/img/logo.png'));
         $qrCode->setLogoSize(60, 60);
         $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success('生成二维码', ['code' => $code, 'status' => true]);
+        return JsonBuilder::Success(['code' => $code, 'status' => true],'签到二维码');
     }
 
     /**
