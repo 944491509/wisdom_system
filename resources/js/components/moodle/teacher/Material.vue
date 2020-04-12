@@ -25,7 +25,7 @@
 
                             <el-form-item label="班级">
                                 <el-checkbox-group v-model="formCourseInfo.grade_id">
-                                    <el-checkbox-button v-for="item in gradesClass" :label="item.grade_name" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
+                                    <el-checkbox-button v-for="item in gradesClass" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-form>
