@@ -216,7 +216,6 @@ class MaterialController extends Controller
         $lectureDao = new LectureDao();
         $types = $lectureDao->getMaterialType($schoolId);
         $return = $dao->getMaterialByUser($user->id)->toArray();
-
         $list = [];
         foreach ($return as $key => $item) {
             $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['media_id']);
@@ -227,6 +226,7 @@ class MaterialController extends Controller
                     'grade_name' => $value->grade->name,
                 ];
                 $list[$value->lecture_id.'_'.$value->media_id] = [
+                    'material_id' => $value->id,
                     'desc'=>$value->description,
                     'url' => $value->url,
                     'type' => $value->type,
@@ -234,7 +234,6 @@ class MaterialController extends Controller
                 ];
             }
         }
-
         $result = [];
         foreach ($types as $key => $item) {
             $result[$key] = [
