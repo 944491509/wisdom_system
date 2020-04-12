@@ -77,6 +77,7 @@ class MaterialController extends Controller
         foreach ($return as $key => $item) {
             $idx = $item->lecture->idx;
             $result[] = [
+                'material_id' => $item->id,
                 'desc' => $item->description,
                 'url' => $item->url,
                 'lecture' => '第'.$idx.'节',
