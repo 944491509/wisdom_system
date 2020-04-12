@@ -24,7 +24,7 @@ $(document).ready(function(){
             teacher_notes: ''
           },
           logs: [], // 当前课程的教学日志
-          configOptions: {},
+         
           types: [],
           courseMaterialModel: {
             id: null,
@@ -73,6 +73,24 @@ $(document).ready(function(){
         this.getMyMaterialsListInfo(); // 教学资料数据
         // this.myMaterialsListDataInfo(0); // 教学资料默认展示数据
         
+      },
+      computed:{
+        configOptions(){
+          return {
+            lang:'zh_cn',
+            plugins: [
+                'fontsize',
+                'fontcolor',
+                'alignment',
+                'fontfamily',
+                'table',
+                'specialchars',
+                'imagemanager'
+            ],
+            imageUpload: `/api/wysiwyg/images/upload?uuid=${this.schoolId}`, // 图片上传的 Action
+            imageManagerJson: `/api/wysiwyg/images/view?uuid=${this.schoolId}`, // 已存在的图片的资源 URL, 返回为 json 格式
+          }
+        },
       },
       methods: {
         changeMeans: function (val, param = {}) {
@@ -137,7 +155,8 @@ $(document).ready(function(){
                 type: 'success',
                 message: '删除成功'
               });
-              window.location.reload();
+              this.getMyMaterialsListInfo()
+              // window.location.reload();
             }
             else {
               this.$message.error('删除操作失败');
