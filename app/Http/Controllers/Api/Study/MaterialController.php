@@ -268,7 +268,7 @@ class MaterialController extends Controller
             return JsonBuilder::Success('当前课程的课节没有教学资料');
         }
         $materials = $lecture->lectureMaterials;
-        $gradeId = array_unique($materials->pluck('grade_id')->toArray());
+        $gradeId = array_merge(array_unique($materials->pluck('grade_id')->toArray()));
 
         $material = [];
         foreach ($materials as $key => $val) {
