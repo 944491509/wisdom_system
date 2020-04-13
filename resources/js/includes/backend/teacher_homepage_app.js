@@ -71,7 +71,7 @@ if (document.getElementById('teacher-homepage-app')) {
                     window.open(item.external)
                 }
                 if(item.type == 2 || item.type == 12){
-                    window.location.href = item.external
+                    window.open(item.external,'_self')
                 }
             },
             // 获取首页校园新闻
