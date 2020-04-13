@@ -119,7 +119,7 @@ class CloudController extends Controller
         $data = [
             'grade'    => [
                 'name' => $item->grade->name,
-                'teacher' => $item->grade->gradeManager->adviser_name ?? '未位置班主任',
+                'teacher' => $item->grade->gradeManager->adviser_name ?? '未设置班主任',
                 'monitor' => $item->grade->gradeManager->monitor_name ?? '未设置班长',
             ],
             'number'  => [
