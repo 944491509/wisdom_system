@@ -684,6 +684,9 @@ class RegistrationInformaticsDao
                 }
                 DB::commit();
 
+                // 更新学生为已认证学生
+                User::where('id', $dataInfo['user_id'])->update(['type' => 6]);
+
                 // 更新学号
                 StudentProfile::where('user_id', $dataInfo['user_id'])->update(['student_number' => $getStudentID]);
 
