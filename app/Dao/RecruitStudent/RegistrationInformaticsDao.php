@@ -441,6 +441,8 @@ class RegistrationInformaticsDao
                 }
                 else{
                     $bag->setMessage($form->name.'已经被录取');
+                    $bag->setCode(JsonBuilder::CODE_SUCCESS);
+                    $bag->setData($form);
                 }
             }
         }
@@ -681,6 +683,9 @@ class RegistrationInformaticsDao
                     GradeUser::insert($addData);
                 }
                 DB::commit();
+
+                // 更新学生为已认证学生
+                User::where('id', $dataInfo['user_id'])->update(['type' => 6]);
 
                 // 更新学号
                 StudentProfile::where('user_id', $dataInfo['user_id'])->update(['student_number' => $getStudentID]);
