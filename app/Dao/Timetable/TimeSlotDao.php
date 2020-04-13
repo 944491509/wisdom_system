@@ -147,7 +147,9 @@ class TimeSlotDao
                 $currentTimeSlot = $timeSlot;
             }
         }
-
+        if (is_null($currentTimeSlot)) {
+            return  false;
+        }
         $timeSlots = TimetableItem::where('room_id',$room->id)
             ->where('year', $year)
             ->where('term', $term)

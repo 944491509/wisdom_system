@@ -34,7 +34,7 @@
                             </template>
                         </el-table-column>
                     </el-table>
-                    {{ $newsList->links() }}
+                    {{ $newsList->appends(['type'=>$type])->links() }}
                 </div>
             </div>
         </div>
@@ -149,6 +149,6 @@
     <div id="app-init-data-holder"
          data-school="{{ session('school.id') }}"
          data-type="{{ $type }}"
-         data-news='{!! $newsList->toJson() !!}'
+         data-news='{{$newsList->toJson()}}'
     ></div>
 @endsection

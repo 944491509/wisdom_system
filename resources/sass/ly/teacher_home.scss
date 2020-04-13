@@ -211,7 +211,7 @@
         background: rgba(255, 255, 255, 1);
         border-radius: 4px;
         margin-top: 15px;
-        p {
+        div {
           height: 40px;
           padding: 0 20px;
           font-size: 14px;
@@ -219,17 +219,11 @@
           color: rgba(51, 51, 51, 1);
           line-height: 40px;
           border-bottom: 1px solid #eaedf2;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          span {
-            display: inline-block;
-          }
-          span:first-child {
-            width: 90px;
-          }
-          span {
-            width: 50px;
+          display: flex;
+          p {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
         }
       }
@@ -251,19 +245,13 @@
             font-size: 14px;
             font-family: MicrosoftYaHei;
             color: rgba(51, 51, 51, 1);
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
             padding: 17px 20px;
             border-bottom: 1px solid #eaedf2;
-            span {
-              display: inline-block;
-            }
-            span:first-child {
-              width: 90px;
-            }
-            span:nth-child(2) {
-              width: 50px;
+            display: flex;
+            p {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
             }
           }
         }
