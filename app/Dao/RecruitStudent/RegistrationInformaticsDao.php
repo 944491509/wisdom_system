@@ -683,13 +683,10 @@ class RegistrationInformaticsDao
                     GradeUser::insert($addData);
                 }
                 DB::commit();
-
                 // 更新学生为已认证学生
                 User::where('id', $dataInfo['user_id'])->update(['type' => 6]);
-
                 // 更新学号
                 StudentProfile::where('user_id', $dataInfo['user_id'])->update(['student_number' => $getStudentID]);
-
                 $bag->setMessage('操作成功');
                 $bag->setCode(1000);
                 $bag->setData([]);

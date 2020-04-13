@@ -96,7 +96,7 @@ class IndexController extends Controller
         $getWelcomeUserReportOneInfo = $WelcomeUserReportDao->getWelcomeUserReportOneInfo($user_id,$getWelcomeUserReportOneInfoField);
 
         // 获取迎新配置信息
-        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $campus_id, $user_id);
+        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $school_id, $user_id);
         // 获取学生是否有班级
         $checkGradesInfo = $WelcomeUserReportDao->checkGradesInfo($user);
 
