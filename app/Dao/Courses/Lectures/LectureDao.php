@@ -268,7 +268,7 @@ class LectureDao
      */
     public function getMaterialByCourseId($courseId, $type, $teacherId, $isPage = true) {
         $map = ['course_id'=>$courseId, 'type'=>$type, 'teacher_id'=>$teacherId];
-        $result = LectureMaterial::where($map);
+        $result = LectureMaterial::where($map)->where('media_id','<>', 0);
 
         if($isPage) {
             return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
@@ -513,7 +513,7 @@ class LectureDao
             'course_id'=>$courseId, 'teacher_id'=>$teacherId,
             'grade_id'=>$gradeId
         ];
-        return LectureMaterial::where($map)
+        return LectureMaterial::where($map)->where('media_id','<>', 0)
             ->orderBy('idx', 'asc')
             ->get();
     }
@@ -531,7 +531,7 @@ class LectureDao
             'course_id'=>$courseId, 'teacher_id'=>$teacherId,
             'grade_id'=>$gradeId
         ];
-        return LectureMaterial::where($map)
+        return LectureMaterial::where($map)->where('media_id','<>',0)
             ->select('type')
             ->distinct('type')
             ->get();
