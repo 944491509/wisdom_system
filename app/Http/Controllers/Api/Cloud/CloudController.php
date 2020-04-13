@@ -12,8 +12,10 @@ use App\Dao\Timetable\TimetableItemDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudRequest;
 use App\Models\AttendanceSchedules\AttendancesDetail;
+use App\Models\School;
 use App\Models\Schools\Facility;
 use App\Models\Students\StudentProfile;
+use App\Models\Users\UserCodeRecord;
 use App\ThirdParty\CloudOpenApi;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
@@ -91,7 +93,7 @@ class CloudController extends Controller
         $item = $timeSlotDao->getItemByRoomForNow($room);
 
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
 
 
@@ -142,18 +144,19 @@ class CloudController extends Controller
         $timeSlotDao = new TimeSlotDao;
 
         $items = $timeSlotDao->getTimeSlotByRoom($room);
-        if (empty($items)) {
-            return JsonBuilder::Success('暂无课程');
+        if (!$items) {
+             return JsonBuilder::Error('现在是休息时间');
         }
 
+        if ($items->isEmpty()) {
+            return JsonBuilder::Error('暂无课程');
+        }
         $data = [];
         foreach ($items as $key => $item) {
             $data[$key]['course_number']   = $item->timeslot->name;
             $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
             $data[$key]['course_room']     = $item->room->name;
-            foreach ($item->course->teachers as $teacher) {
-                $data[$key]['course_teacher'] = $teacher->name;
-            }
+            $data[$key]['course_teacher'] = $item->teacher->name;
             $data[$key]['course_name']   = $item->course->name;
         }
 
@@ -187,13 +190,14 @@ class CloudController extends Controller
             return JsonBuilder::Error('暂无课程');
         }
 
-        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID
-        $codeStr = base64_encode(json_encode(['app' => 'cloud',
+        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
+        $codeStr = base64_encode(json_encode(['app' => UserCodeRecord::IDENTIFICATION_CLOUD,
                                               'school_id' => $item->school_id,
                                               'grade_id' => $item->grade_id,
                                               'teacher_id' => $item->teacher_id,
                                               'timetable_id' => $item->id,
                                               'course_id' => $item->course_id,
+                                              'term' => $item->term,
                                               'time' => time()]));
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
@@ -208,6 +212,7 @@ class CloudController extends Controller
      * 签到统计
      * @param CloudRequest $request
      * @return string
+     * @throws \Exception
      */
     public function getAttendanceStatistic(CloudRequest $request)
     {
@@ -228,14 +233,23 @@ class CloudController extends Controller
         if (empty($item)) {
             return JsonBuilder::Error('暂无课程');
         }
+
+        /**
+         * @var School $school
+         */
+        $configuration = $item->school->configuration;
         $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
-        $week = $item->school->configuration->getScheduleWeek($now)->getScheduleWeekIndex();
+        $month = Carbon::parse($now)->month;
+        $term = $configuration->guessTerm($month);
+        $weeks = $configuration->getScheduleWeek($now, null, $term);
+        if (is_null($weeks)) {
+              return JsonBuilder::Error('暂无课程');
+        }
+
+        $week = $weeks->getScheduleWeekIndex();
 
         $dao = new AttendancesDao;
-        $attendanceInfo = $dao->getAttendanceByTimeTableId($item->id, $week);
-        if (empty($attendanceInfo)) {
-            return  JsonBuilder::Error('未找到签到数据');
-        }
+        $attendanceInfo = $dao->isAttendanceByTimetableAndWeek($item, $week);
 
         $data = [
             'sign'    => $attendanceInfo->actual_number,

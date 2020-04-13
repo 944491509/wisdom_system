@@ -44,8 +44,11 @@ class AttendancesDao
         $month = Carbon::parse($now)->month;
         $term = $configuration->guessTerm($month);
         $weeks = $configuration->getScheduleWeek($now, null, $term);
-        $week = $weeks->getScheduleWeekIndex();
+        if (is_null($weeks)) {
+              return false;
+        }
 
+        $week = $weeks->getScheduleWeekIndex();
         $attendance = $this->isAttendanceByTimetableAndWeek($item,$week,$user,$type);
         return $attendance;
 
