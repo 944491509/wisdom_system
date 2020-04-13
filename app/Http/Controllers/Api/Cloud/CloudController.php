@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Cloud;
 use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
 use App\Dao\FacilityManage\FacilityDao;
+use App\Dao\Schools\GradeResourceDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Dao\Timetable\TimetableItemDao;
@@ -101,10 +102,20 @@ class CloudController extends Controller
         $userIds   = $gradeUser->pluck('user_id');
 
         $studentProfileDao = new  StudentProfileDao;
-
+        $gradeRes = new GradeResourceDao;
         $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
         $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
+        $gradeResource = $gradeRes->getResourceByGradeId($item->grade_id);
+
         $photo = [];
+        foreach ($gradeResource as $key => $value) {
+            $photo[$key]['path'] = $value->path;
+            $photo[$key]['name'] = $value->name;
+            $photo[$key]['type'] = $value->type;
+            $photo[$key]['size'] = $value->size;
+        }
+
+
         $data = [
             'grade'    => [
                 'name' => $item->grade->name,
