@@ -19,10 +19,11 @@
           <div v-if="item.type=='image'">
             <h5>
               <p>{{ item.title }}</p>
+              <p v-if="item.value == '无'">{{ item.value }}</p>
             </h5>
             <div
               class="imageBox"
-              v-if="item.type=='image' && item.value != 'null' && item.value != '无'"
+              v-if="item.type=='image' && item.value != 'null'"
             >
               <div
                 v-for="(img,index) in item.value"
@@ -176,11 +177,11 @@
           </figure>
         </div>
       </div>
-      <p class="infobtn" @click="tips = true" v-if="showBtn == '待审批' &&baseInfo.length > 0">撤销</p>
+      <p class="infobtn" @click="tips = true" v-if="showBtn == 2">撤销</p>
       <p
         class="infobtn"
         @click="dialogVisible = true"
-        v-if="showBtn == 0 && baseInfo.length == 0"
+        v-if="showBtn == 0 || showBtn == '待审批'"
       >审批</p>
       <el-dialog title="审批" :visible.sync="dialogVisible" width="25%" center v-cloak>
         <el-input
@@ -196,8 +197,8 @@
           <el-button style="border-radius: 40px;width: 80px;" type="primary" @click="button(3)">同 意</el-button>
         </span>
       </el-dialog>
-      <el-dialog title="提示" :visible.sync="tips" width="30%" center v-cloak>
-        <span style="padding: 20px 0;display: inline-block;">您确认撤销此申请吗?</span>
+      <el-dialog title="提示" :visible.sync="tips" width="24%" center v-cloak>
+        <span style="display: inline-block;">您确认撤销此申请吗?</span>
         <span slot="footer" class="dialog-footer">
           <el-button @click="tips = false">取 消</el-button>
           <el-button type="primary" @click="cancelAction">确 定</el-button>
