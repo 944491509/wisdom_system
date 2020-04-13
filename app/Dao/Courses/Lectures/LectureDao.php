@@ -206,9 +206,13 @@ class LectureDao
      * @return mixed
      */
     public function getMaterialsByType($courseId, $gradeId, $teacherId, $type, $keyword=null){
-        $map = ['course_id'=>$courseId, 'grade_id'=>$gradeId,
-            'teacher_id'=>$teacherId, 'type'=>$type];
-        $result = LectureMaterial::where($map);
+        $map = [
+            'course_id'=>$courseId,
+            'grade_id'=>$gradeId,
+            'teacher_id'=>$teacherId,
+            'type'=>$type,
+        ];
+        $result = LectureMaterial::where($map)->where('media_id','<>', 0);
         if(!is_null($keyword)) {
 
             $result = $result->where('description', 'like', '%'.$keyword.'%');
