@@ -41,8 +41,8 @@
                 </el-table-column>
                 <el-table-column>
                   <template slot-scope="scope">
-                  <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit"></el-button>
-                  <el-button type="primary" size="mini">下载</el-button>
+                  <!-- <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit"></el-button> -->
+                  <el-button type="primary" size="mini"><a :href="scope.row.url" download style="color: #fff">下载</a></el-button>
                   <el-button size="mini" type="danger" @click="deleteRow(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
@@ -84,7 +84,9 @@
         <el-drawer
           :title="drawerTitle"
           :visible.sync="drawer"
-          :before-close="handleClose">
+          :before-close="handleClose"
+          custom-class="drawerClass"
+        >
             <el-table :data="drawerList" style="width: 100%" :show-header="false">
               <el-table-column>
                 <template slot-scope="scope">
@@ -292,6 +294,9 @@
   .redactor-box .redactor-styles{
     height: 400px;
     overflow-y: auto;
+  }
+  .drawerClass {
+    width: 50% !important;
   }
 </style>
 
