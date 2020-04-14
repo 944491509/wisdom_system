@@ -47,6 +47,7 @@ export default new Vuex.Store({
     isCreated:false,
     teacherName:'',
     exceptiondays:[],//节假日数据
+    isShowRecord: false
   },
   mutations: {
     SETOPTIONS(state, res) {

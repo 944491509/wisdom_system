@@ -8,6 +8,7 @@ import AttendanceList from "./components/AttendanceList";
 import AttendanceForm from "./components/AttendanceForm";
 import AttendanceClockSet from "./components/AttendanceClockSet";
 import AttendanceHolidaySet from "./components/AttendanceHolidaySet";
+import AttendanceRecord from "./components/AttendanceRecord";
 import "./index.css";
 const teacherAttendanceManager = document.getElementById(
     "teacherAttendanceManager"
@@ -24,6 +25,7 @@ if (teacherAttendanceManager) {
           <AttendanceForm />
           <AttendanceClockSet />
           <AttendanceHolidaySet/>
+          <AttendanceRecord  v-if='isShowRecord'/>
         </div>`,
         created() {
             this._initData();
