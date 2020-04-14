@@ -42,10 +42,14 @@ class MaterialController extends Controller
         $courses = [];
         foreach ($courseTeacher as $key => $item) {
             $course = $item->course;
+            $type = [];
             foreach ($types as $k => $val) {
                 $re = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id, $course->id);
-
-                $types[$key]['num'] = count($re);
+                $type[] = [
+                    'type_id' => $val->type_id,
+                    'name' => $val->name,
+                    'num' => count($re),
+                ];
             }
 
             $courses[] = [
