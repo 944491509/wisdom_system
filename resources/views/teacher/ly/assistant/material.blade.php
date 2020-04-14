@@ -75,7 +75,7 @@
             <h4 class="title">@{{ item.course_name }}（@{{ item.duration }}课时）</h4>
             <p class="content">@{{ item.desc }}</p>
             <div class="tags">
-              <el-tag v-for="(item1,key1) in item.types" @click="showDrawer(key, key1)">@{{ item1.name }}@{{ item1.num }}</el-tag>
+              <el-tag v-for="(item1,key1) in item.types" @click="showDrawer(item, item1)">@{{ item1.name }}@{{ item1.num }}</el-tag>
             </div>
             <el-row class="button">
               <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button>
@@ -97,13 +97,13 @@
               </el-table-column>
               <el-table-column>
                 <template slot-scope="scope">
-                  <span class="cloumn-a">@{{ scope.row.idx }}</span>
+                  <span class="cloumn-a">@{{ scope.row.lecture }}</span>
                 </template>
               </el-table-column>
               <el-table-column>
                 <template slot-scope="scope">
                     <div slot="reference" class="name-wrapper">
-                      <el-tag v-for="(item,key) in scope.row.grades">@{{ item.grade_name }}</el-tag>
+                      <el-tag v-for="(item,key) in scope.row.grade">@{{ item.grade_name }}</el-tag>
                     </div>
                 </template>
               </el-table-column>

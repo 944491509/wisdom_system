@@ -274,7 +274,11 @@ class LectureDao
      * @return mixed
      */
     public function getMaterialByCourseId($courseId, $type, $teacherId, $isPage = true) {
-        $map = ['course_id'=>$courseId, 'type'=>$type, 'teacher_id'=>$teacherId];
+        $map = [
+            'course_id'=>$courseId,
+            'type'=>$type,
+            'teacher_id'=>$teacherId
+        ];
         $result = LectureMaterial::where($map)->where('media_id','<>', 0);
 
         if($isPage) {
