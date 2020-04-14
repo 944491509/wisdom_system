@@ -216,41 +216,30 @@ class MaterialController extends Controller
         $schoolId = $user->getSchoolId();
         $lectureDao = new LectureDao();
         $types = $lectureDao->getMaterialType($schoolId);
-        $return = $dao->getMaterialByUser($user->id)->toArray();
-        $list = [];
-        foreach ($return as $key => $item) {
-            $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['type']);
-            $grades = [];
-            foreach ($re as $k => $value) {
-                $grades[] = [
-                    'grade_id' =>$value->grade->id,
-                    'grade_name' => $value->grade->name,
-                ];
-                $list[$value->lecture_id.'_'.$value->media_id] = [
-                    'lecture_id' => $value->lecture_id,
-                    'type_id'=>$value->type,
-                    'material_id' => $value->id,
-                    'desc'=>$value->description,
-                    'url' => $value->url,
-                    'type' => $value->type,
-                    'grades' => $grades,
-                ];
+        $lecture = $dao->getMaterialByUser($user->id);
+
+        $materials = [];
+        foreach ($lecture as $key => $val) {
+            $materials[] = $val->lectureMaterials;
+        }
+
+        $lectureMaterials = [];
+        foreach ($materials as $key => $value) {
+            foreach ($value as $k => $val) {
+
+                $lectureMaterials[$val->type][] = $val;
             }
         }
         $result = [];
         foreach ($types as $key => $item) {
-            $result[$key] = [
+            $list = $lectureMaterials[$item->type_id] ?? [];
+            $result[] = [
                 'name' => $item->name,
-                'num' => 0,
-                'list' => [],
+                'num' => count($list),
+                'list' => $list
             ];
-            foreach ($list as $k => $val) {
-                if($val['type'] == $item['type_id']) {
-                    $result[$key]['num'] += 1;
-                    $result[$key]['list'][] = $val;
-                }
-            }
         }
+
         return JsonBuilder::Success($result);
     }
 
