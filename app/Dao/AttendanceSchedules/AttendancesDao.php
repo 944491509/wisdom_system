@@ -44,8 +44,11 @@ class AttendancesDao
         $month = Carbon::parse($now)->month;
         $term = $configuration->guessTerm($month);
         $weeks = $configuration->getScheduleWeek($now, null, $term);
-        $week = $weeks->getScheduleWeekIndex();
+        if (is_null($weeks)) {
+              return false;
+        }
 
+        $week = $weeks->getScheduleWeekIndex();
         $attendance = $this->isAttendanceByTimetableAndWeek($item,$week,$user,$type);
         return $attendance;
 
@@ -278,5 +281,24 @@ class AttendancesDao
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
+
+    /**
+     * 根据学年和学期获取签到班级
+     * @param $schoolId
+     * @param $year
+     * @param $term
+     * @return mixed
+     */
+    public function gradeListByYearAndTerm($schoolId,$year, $term) {
+        $map = [
+            'school_id' =>$schoolId,
+            'year' => $year,
+            'term' => $term
+        ];
+        return Attendance::where($map)
+            ->select('grade_id')
+            ->distinct('grade_id')
+            ->get();
+    }
 
 }

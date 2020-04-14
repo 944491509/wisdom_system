@@ -297,7 +297,6 @@ if (document.getElementById('pipeline-flows-manager_form-app')) {
                 params.node_option = this.formList;
                 axios.post(url, params).then((res) => {
                     if (Util.isAjaxResOk(res)) {
-                        // console.log(res)
                         this.$message({
                             message: '保存成功',
                             type: 'success'
@@ -305,7 +304,7 @@ if (document.getElementById('pipeline-flows-manager_form-app')) {
                         window.history.back(-1);
                     } else {
                         this.$message({
-                            message: '保存失败',
+                            message: res.data.message,
                             type: 'warning'
                         });
                     }

@@ -23,7 +23,7 @@
     </div>
     <div class="card bottom-card">
         <div class="card-head">
-            <el-tabs style="width: 726px;" :stretch="true" @tab-click="handleClick">
+            <el-tabs style="width: 100%;" :stretch="true" @tab-click="handleClick">
                 <el-tab-pane label="待审批" name="first"></el-tab-pane>
                 <el-tab-pane label="已审批" name="second"></el-tab-pane>
                 <el-tab-pane label="我抄送的" name="third"></el-tab-pane>
@@ -35,10 +35,10 @@
             </el-input>
             <div class="bottom-table" v-if="tableData.length > 0">
                 <div class="table-item" v-for="item in tableData" :key="item.id">
-                    <img :src="item.avatar" alt="" width="50px" style="height: 50px;border-radius: 50%">
+                    <img :src="item.avatar" alt="" width="45px" style="height: 45px;border-radius: 50%">
                     <span style="color: #313B4C;" class="type">@{{ item.flow.name }}</span>
                     <span style="color: #99A0AD;">申请人：@{{ item.user_name }}</span>
-                    <span style="color: #D5D7E0;">申请日期：@{{ item.created_at }}</span>
+                    <span style="color: #D5D7E0;">申请日期：@{{ item.created_at.substr(0,16) }}</span>
                     <span v-bind:class="{
                                 'status_orange': item.done == 0,
                                 'status_green': item.done == 1,
@@ -46,13 +46,14 @@
                                 'status_gray': item.done == 3
                             }">
                         @{{statusMap[item.done]}}</span>
-                    <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image" style="cursor: pointer;">
+                    <img src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image" style="cursor: pointer;" @click="viewAction(item.id)">
                 </div>
                 <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange"></el-pagination>
             </div>
             <div v-else style="color: #D5D7E0;text-align: center;padding-top: 20px;background: #fff;">暂无数据~</div>
         </div>
     </div>
+    <view-action ref="showAction" />
 </div>
 
 

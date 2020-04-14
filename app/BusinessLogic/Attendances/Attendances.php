@@ -86,6 +86,7 @@ class Attendances
                     'week'=>$attendance->week,
                     'mold'=> $mold,
                     'weekday_index'=>$attendance->timeTable->weekday_index,
+                    'grade_id' => $attendance->grade_id,
                 ];
                 // 添加签到默认初始数据
                 AttendancesDetail::create($details);

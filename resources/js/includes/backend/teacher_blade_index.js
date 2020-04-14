@@ -1,10 +1,14 @@
 import { Util } from "../../common/utils";
 import { startedByMe, waitingByMe, processedByMe, copyByMe } from "../../common/flow";
 import { Constants } from "../../common/constants";
+import ViewAction from './auto-flow/view-action'
 
 if (document.getElementById('teacher-assistant-index-app')) {
     new Vue({
         el: '#teacher-assistant-index-app',
+        components: {
+            ViewAction
+        },
         data() {
             return {
                 schoolId: null,
@@ -101,6 +105,10 @@ if (document.getElementById('teacher-assistant-index-app')) {
                     this.loadFlowsCopyByMe();
                 }
             },
+            // 点击眼睛查看详情
+            viewAction(id,show) {
+                this.$refs.showAction.getAction(id,this.show)
+            }
         }
     });
 }

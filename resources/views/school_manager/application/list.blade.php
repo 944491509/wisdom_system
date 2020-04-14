@@ -46,9 +46,9 @@
                                         <td>@if($val->user->profile->gender == 1)男@endif
                                             @if($val->user->profile->gender == 2)女@endif</td>
 
-                                        <td>{{ $val->user->gradeUser->institute->name }}</td>
-                                        <td>{{ $val->user->gradeUser->major->name }}</td>
-                                        <td>{{ $val->user->gradeUser->grade->name }}</td>
+                                        <td>{{ $val->user->gradeUser->institute->name ?? '' }}</td>
+                                        <td>{{ $val->user->gradeUser->major->name ?? '' }}</td>
+                                        <td>{{ $val->user->gradeUser->grade->name ?? '' }}</td>
                                         <td>{{ $val->flow->name }}</td>
                                         <td>{{ $val->created_at }}</td>
                                         <td>

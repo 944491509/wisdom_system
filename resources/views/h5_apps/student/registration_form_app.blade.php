@@ -1,6 +1,6 @@
 @extends('layouts.h5_app')
 @section('content')
-<div id="current-school-id" data-id="{{ $school->uuid }}" data-planid="{{ isset($plan)?$plan->id:null }}" data-planname="{{ isset($plan)?$plan->major_name:null }}"></div>
+<div id="current-school-id" data-id="{{ $school->uuid }}" data-is_reg="{{ $is_reg }}" data-planid="{{ isset($plan)?$plan->id:null }}" data-planname="{{ isset($plan)?$plan->major_name:null }}"></div>
 <div id="{{ $appName }}" class="school-intro-container">
     <div class="header">
         <h2 class="title">{{ $pageTitle }}</h2>

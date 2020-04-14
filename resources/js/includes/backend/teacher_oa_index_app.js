@@ -5,12 +5,14 @@ import { Util } from "../../common/utils";
 import { startedByMe, waitingByMe, processedByMe, copyByMe } from "../../common/flow";
 import Axios from "axios";
 import FlowForm from './auto-flow/flow-form'
+import ViewAction from './auto-flow/view-action'
 
 if (document.getElementById('teacher-oa-index-app')) {
     new Vue({
         el: '#teacher-oa-index-app',
         components: {
-            FlowForm
+            FlowForm,
+            ViewAction
         },
         data() {
             return {
@@ -37,7 +39,7 @@ if (document.getElementById('teacher-oa-index-app')) {
                     2: '未通过',
                     3: '已撤回'
                 }, // 审批状态
-                tableData: [], // 审批列表
+                tableData: [] // 审批列表
             }
         },
         created() {
@@ -158,7 +160,10 @@ if (document.getElementById('teacher-oa-index-app')) {
                     this.isLoading = false;
                 });
             },
-
+            // 点击眼睛查看详情
+            viewAction(id, show) {
+                this.$refs.showAction.getAction(id, this.show)
+            },
             // startFlow: function (flowId) {
             //     const url = this.url.flowOpen + '?flow=' + flowId + '&uuid=' + this.userUuid;
             //     window.open(url, '_blank');
