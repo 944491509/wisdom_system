@@ -226,8 +226,7 @@ class MaterialController extends Controller
         $lectureMaterials = [];
         foreach ($materials as $key => $value) {
             foreach ($value as $k => $val) {
-
-                $lectureMaterials[$val->type][] = $val;
+                $lectureMaterials[$val->type][$val->lecture_id] = $val;
             }
         }
         $result = [];
