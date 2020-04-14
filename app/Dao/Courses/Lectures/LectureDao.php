@@ -7,6 +7,7 @@
 namespace App\Dao\Courses\Lectures;
 
 
+use App\Models\NetworkDisk\Media;
 use App\User;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
@@ -68,13 +69,19 @@ class LectureDao
             ->get();
     }
 
+
     /**
      * 根据课节的id获取其所有课件附件的记录
      * @param $lectureId
-     * @return Collection
+     * @param null $type
+     * @return mixed
      */
-    public function getLectureMaterials($lectureId){
-        return LectureMaterial::where('lecture_id',$lectureId)
+    public function getLectureMaterials($lectureId, $type = null){
+        $map = ['lecture_id'=>$lectureId];
+        if(!is_null($type)) {
+            $map['type'] = $type;
+        }
+        return LectureMaterial::where($map)
             ->orderBy('type','asc')
             ->get();
     }
@@ -368,6 +375,11 @@ class LectureDao
             foreach ($data['grade_id'] as $k => $val) {
                 foreach ($data['material'] as $key => $item) {
                     foreach ($item['media'] as $value) {
+                        $media = Media::where('id', $value['media_id'])->first();
+                        $desc = '';
+                        if(!is_null($media)) {
+                            $desc = $media->description;
+                        }
                         $material = [
                             'lecture_id' => $info->id,
                             'teacher_id' => $data['user_id'],
@@ -375,7 +387,7 @@ class LectureDao
                             'media_id' => $value['media_id'],
                             'url' => $value['url'],
                             'type' => $item['type_id'],
-                            'description' => $item['desc'],
+                            'description' => $desc,
                             'grade_id' => $val,
                             'idx' => $data['idx'],
                         ];
