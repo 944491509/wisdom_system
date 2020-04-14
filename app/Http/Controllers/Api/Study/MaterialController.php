@@ -81,14 +81,27 @@ class MaterialController extends Controller
         $lectureDao = new LectureDao();
 
         $return = $lectureDao->getMaterialByCourseId($courseId, $typeId, $user->id, false);
-        $result = [];
+
+        $material = [];
+        $grade = [];
         foreach ($return as $key => $item) {
+            $material[$item->lecture_id] = $item;
+            $grade[$item->lecture_id][] = [
+                'grade_id' => $item->grade->id,
+                'grade_name' => $item->grade->name,
+            ];
+        }
+
+
+        $result = [];
+        foreach ($material as $key => $item) {
             $idx = $item->lecture->idx;
             $result[] = [
                 'material_id' => $item->id,
                 'desc' => $item->description,
                 'url' => $item->url,
                 'lecture' => '第'.$idx.'节',
+                'grade' => $grade[$item->lecture_id],
             ];
         }
         return JsonBuilder::Success($result);
