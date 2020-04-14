@@ -182,16 +182,30 @@ class AttendancesDetailsDao
                 $re = AttendancesDetail::where($map)->first();
                 if(is_null($re)) {
                     // 添加
-                    $add = ['attendance_id'=>$attendanceId, 'course_id'=>$info['course_id'],
-                        'timetable_id'=>$info['timetable_id'], 'student_id'=>$item['user_id'],
-                        'year'=>$info['year'], 'term'=>$info['term'], 'type'=>AttendancesDetail::TYPE_MANUAL,
-                        'week'=>$info['week'], 'mold'=>$item['mold'], 'weekday_index'=>$info->timeTable->weekday_index,
+                    $add = [
+                        'attendance_id'=>$attendanceId,
+                        'course_id'=>$info['course_id'],
+                        'timetable_id'=>$info['timetable_id'],
+                        'student_id'=>$item['user_id'],
+                        'year'=>$info['year'],
+                        'term'=>$info['term'],
+                        'type'=>AttendancesDetail::TYPE_MANUAL,
+                        'week'=>$info['week'],
+                        'mold'=>$item['mold'],
+                        'weekday_index'=>$info->timeTable->weekday_index,
+                        'grade_id' => $info->grade_id
                         ];
+                    if($item['mold'] == AttendancesDetail::MOLD_SIGN_IN) {
+                        $add['signin_time'] = Carbon::now();
+                    }
                     AttendancesDetail::create($add);
 
                 } else {
                     // 编辑
                     $save = ['mold'=>$item['mold']];
+                    if($item['mold'] == AttendancesDetail::MOLD_SIGN_IN) {
+                        $save['signin_time'] = Carbon::now();
+                    }
                     AttendancesDetail::where($map)->update($save);
                 }
                 // 修改主表
@@ -331,4 +345,24 @@ class AttendancesDetailsDao
 
         return AttendancesDetail::where($map)->first();
     }
+
+
+    /**
+     * 获取用户的签到详情列表
+     * @param $userId
+     * @param $year
+     * @param $term
+     * @return mixed
+     */
+    public function getPageSignDetailByYearAndTerm($userId, $year, $term) {
+        $map = [
+            'student_id' => $userId,
+            'year' => $year,
+            'term' => $term
+        ];
+        return AttendancesDetail::where($map)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
 }

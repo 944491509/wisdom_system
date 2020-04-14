@@ -152,6 +152,7 @@ export default {
         border: 1px solid #409eff;
         margin: 6px;
         border-radius: 4px;
+        cursor: pointer;
       }
       .item.disabled {
         color: #cccccc;

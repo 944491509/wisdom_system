@@ -74,7 +74,7 @@
                 <header>选择抄送人</header>
             </div>
             <div class="card-body" style="margin-top: 20px;">
-                <search-bar :school-id="{{ session('school.id') }}" full-tip="输入教职工名字" scope="employee" class="ml-4" :init-query="teacher" v-on:result-item-selected="selectMember"></search-bar>
+                <search-bar style="margin-bottom: 5px;" :school-id="{{ session('school.id') }}" full-tip="输入教职工名字" scope="employee" :init-query="teacher" v-on:result-item-selected="selectMember"></search-bar>
                 <el-tag :key="idx" v-for="(member, idx) in members" class="mr-2" closable :disable-transitions="false" @close="removeFromOrg(idx)">
                     @{{ member }}
                 </el-tag>
