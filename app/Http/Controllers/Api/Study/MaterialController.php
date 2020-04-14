@@ -235,7 +235,7 @@ class MaterialController extends Controller
             $result[] = [
                 'name' => $item->name,
                 'num' => count($list),
-                'list' => $list
+                'list' => array_merge($list),
             ];
         }
 
