@@ -35,16 +35,17 @@ class MaterialController extends Controller
             return JsonBuilder::Success('您没有课程');
         }
         $lectureDao = new LectureDao();
+
+
+
         $types = $lectureDao->getMaterialType($schoolId);
-
-
         $courses = [];
         foreach ($courseTeacher as $key => $item) {
             $course = $item->course;
             foreach ($types as $k => $val) {
                 $re = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id, $course->id);
 
-                $val->num = count($re);
+                $types[$key]['num'] = count($re);
             }
 
             $courses[] = [
