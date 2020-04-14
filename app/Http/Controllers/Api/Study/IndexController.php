@@ -297,7 +297,9 @@ class IndexController extends Controller
         foreach ($result['list'] as $key => $item) {
             $result['list'][$key] = [
                 'id' => $item->id,
+                'lecture_id' => $item->lecture_id,
                 'type' => $item->media->getTypeText(),
+                'type_id' => $item->type,
                 'file_name' => $item->media->file_name,
                 'url' => $item->url,
             ];
@@ -313,7 +315,8 @@ class IndexController extends Controller
      * @return string
      */
     public function deleteMaterial(MyStandardRequest $request) {
-        $materialId = $request->get('material_id');
+        $lectureId = $request->get('lecture_id');
+        $type = $request->get('type_id');
         $user = $request->user();
 
         if($user->isStudent()) {
@@ -321,11 +324,11 @@ class IndexController extends Controller
         }
 
 
-        if(is_null($materialId)) {
+        if(is_null($lectureId) || is_null($type)) {
             return JsonBuilder::Error('缺少参数');
         }
         $dao = new LectureDao();
-        $result = $dao->deleteMaterial($user, $materialId);
+        $result = $dao->deleteMaterial($user, $lectureId, $type);
 
         if($result->isSuccess()) {
             return JsonBuilder::Success($result->getMessage());

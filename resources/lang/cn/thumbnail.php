@@ -172,7 +172,7 @@ return [
     'home'=>'首页',
     'message-center'=>'消息中心',
     'school-news'=>'校园新闻',
-
+    'material' =>'教学资料',
     'assistant'=>'助手',
     'check-in'=>'签到',
 ];

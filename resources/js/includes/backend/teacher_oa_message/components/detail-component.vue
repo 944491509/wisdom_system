@@ -19,7 +19,7 @@
           <span class="content">{{msg.title}}</span>
         </div>
         <div class="detail-item">
-          <span class="title"></span>
+          <span class="title">内容</span>
           <span class="content">{{msg.content}}</span>
         </div>
         <div class="detail-item" v-if="msg.file && msg.file.length > 0">
@@ -63,6 +63,10 @@
         <span class="title">主题</span>
         <span class="content">{{message.title}}</span>
       </div>
+      <div class="detail-item">
+        <span class="title">内容</span>
+        <span class="content">{{message.content}}</span>
+      </div>
       <div class="detail-item" v-if="message.file && message.file.length > 0">
         <span class="title">附件</span>
         <span class="content">
@@ -83,6 +87,7 @@
   </div>
 </template>
 <script>
+import { DownLoadUtil } from "../common/utils";
 export default {
   name: "msg-detail",
   props: {
@@ -112,6 +117,12 @@ export default {
         })
         .then(response => {
           DownLoadUtil.download(new Blob([response.data]), file.name);
+        }).catch(e=>{
+          if(e.response.status === 404){
+            this.$message.error('附件不存在');
+          }else{
+            this.$message.error('附件下载失败');
+          }
         });
     }
   }

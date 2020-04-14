@@ -35,21 +35,29 @@ class MaterialController extends Controller
             return JsonBuilder::Success('您没有课程');
         }
         $lectureDao = new LectureDao();
-        $types = $lectureDao->getMaterialType($schoolId);
 
-        foreach ($types as $key => $val) {
-            $num = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id);
-            $val->num = $num;
-        }
+
+
+        $types = $lectureDao->getMaterialType($schoolId);
         $courses = [];
         foreach ($courseTeacher as $key => $item) {
             $course = $item->course;
+            $type = [];
+            foreach ($types as $k => $val) {
+                $re = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id, $course->id);
+                $type[] = [
+                    'type_id' => $val->type_id,
+                    'name' => $val->name,
+                    'num' => count($re),
+                ];
+            }
+
             $courses[] = [
                 'course_id' => $course->id,
                 'course_name' => $course->name,
                 'duration' => $course->duration,
                 'desc' => $course->desc,
-                'types' => $types
+                'types' => $type
             ];
         }
 
@@ -73,14 +81,27 @@ class MaterialController extends Controller
         $lectureDao = new LectureDao();
 
         $return = $lectureDao->getMaterialByCourseId($courseId, $typeId, $user->id, false);
-        $result = [];
+
+        $material = [];
+        $grade = [];
         foreach ($return as $key => $item) {
+            $material[$item->lecture_id] = $item;
+            $grade[$item->lecture_id][] = [
+                'grade_id' => $item->grade->id,
+                'grade_name' => $item->grade->name,
+            ];
+        }
+
+
+        $result = [];
+        foreach ($material as $key => $item) {
             $idx = $item->lecture->idx;
             $result[] = [
                 'material_id' => $item->id,
                 'desc' => $item->description,
                 'url' => $item->url,
                 'lecture' => '第'.$idx.'节',
+                'grade' => $grade[$item->lecture_id],
             ];
         }
         return JsonBuilder::Success($result);
@@ -215,39 +236,49 @@ class MaterialController extends Controller
         $schoolId = $user->getSchoolId();
         $lectureDao = new LectureDao();
         $types = $lectureDao->getMaterialType($schoolId);
-        $return = $dao->getMaterialByUser($user->id)->toArray();
-        $list = [];
-        foreach ($return as $key => $item) {
-            $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['media_id']);
-            $grades = [];
-            foreach ($re as $k => $value) {
-                $grades[] = [
-                    'grade_id' =>$value->grade->id,
-                    'grade_name' => $value->grade->name,
-                ];
-                $list[$value->lecture_id.'_'.$value->media_id] = [
-                    'material_id' => $value->id,
-                    'desc'=>$value->description,
-                    'url' => $value->url,
-                    'type' => $value->type,
-                    'grades' => $grades,
-                ];
+        $lecture = $dao->getMaterialByUser($user->id);
+
+        $materials = [];
+        foreach ($lecture as $key => $val) {
+            $materials[] = $val->lectureMaterials;
+        }
+
+        $lectureMaterials = [];
+        foreach ($materials as $key => $value) {
+            foreach ($value as $k => $val) {
+                $lectureMaterials[$val->type][$val->lecture_id] = $val;
             }
         }
         $result = [];
         foreach ($types as $key => $item) {
-            $result[$key] = [
-                'name' => $item->name,
-                'num' => 0,
-                'list' => [],
-            ];
-            foreach ($list as $k => $val) {
-                if($val['type'] == $item['type_id']) {
-                    $result[$key]['num'] += 1;
-                    $result[$key]['list'][] = $val;
+            $re = $lectureMaterials[$item->type_id] ?? [];
+            $list = [];
+            foreach ($re as $k => $val) {
+                $lecture_materials = $dao->getLectureMaterials($val->lecture_id, $val->type);
+                $grades = [];
+                foreach ($lecture_materials as $v) {
+                    $grades[] = [
+                        'grade_id' => $v->grade_id,
+                        'grade_name' => $v->grade->name,
+                    ];
                 }
+                $idx = '第'. $val->lecture->idx .'节';
+                $list[] = [
+                    'lecture_id' =>$val->lecture_id,
+                    'type_id' => $val->type,
+                    'desc' => $val->description,
+                    'url' => $val->url,
+                    'idx' => $idx,
+                    'grades' => $grades,
+                ];
             }
+            $result[] = [
+                'name' => $item->name,
+                'num' => count($list),
+                'list' => array_merge($list),
+            ];
         }
+
         return JsonBuilder::Success($result);
     }
 

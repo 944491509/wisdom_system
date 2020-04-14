@@ -166,7 +166,7 @@ class CloudController extends Controller
         foreach ($items as $key => $item) {
             $data[$key]['course_number']   = $item->timeslot->name;
             $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
-            $data[$key]['course_room']     = $item->room->name;
+            $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
             $data[$key]['course_teacher'] = $item->teacher->name;
             $data[$key]['course_name']   = $item->course->name;
         }
