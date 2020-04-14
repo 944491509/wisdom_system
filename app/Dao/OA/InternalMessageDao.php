@@ -5,22 +5,26 @@ namespace App\Dao\OA;
 use App\Events\SystemNotification\OaMessageEvent;
 use App\Models\OA\InternalMessage;
 use App\Models\OA\InternalMessageFile;
+use App\Utils\JsonBuilder;
 use App\Utils\Misc\ConfigurationTool;
+use App\Utils\ReturnData\MessageBag;
 use Illuminate\Support\Facades\DB;
 
 class InternalMessageDao
 {
+
     /**
      * 添加信件
      * @param $data
      * @param $files
-     * @return bool
+     * @return MessageBag
      */
     public function create($data, $files)
     {
-        DB::beginTransaction();
+        $messageBag = new MessageBag(JsonBuilder::CODE_ERROR);
         try{
 
+            DB::beginTransaction();
             $message = InternalMessage::create($data);
             $messageIds = $message->id; // 用于转发
 
@@ -62,13 +66,15 @@ class InternalMessageDao
                 }
             }
             DB::commit();
-            $result = true;
+            $messageBag->setCode(JsonBuilder::CODE_SUCCESS);
+            $messageBag->setMessage('添加成功');
         }catch (\Exception $e) {
             DB::rollBack();
-            $result = false;
+            $msg = $e->getMessage();
+            $messageBag->setMessage($msg);
         }
 
-        return $result;
+        return $messageBag;
     }
 
 
