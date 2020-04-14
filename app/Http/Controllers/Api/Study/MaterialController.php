@@ -57,7 +57,7 @@ class MaterialController extends Controller
                 'course_name' => $course->name,
                 'duration' => $course->duration,
                 'desc' => $course->desc,
-                'types' => $types
+                'types' => $type
             ];
         }
 
