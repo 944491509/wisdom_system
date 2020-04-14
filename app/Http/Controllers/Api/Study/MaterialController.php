@@ -231,7 +231,27 @@ class MaterialController extends Controller
         }
         $result = [];
         foreach ($types as $key => $item) {
-            $list = $lectureMaterials[$item->type_id] ?? [];
+            $re = $lectureMaterials[$item->type_id] ?? [];
+            $list = [];
+            foreach ($re as $k => $val) {
+                $lecture_materials = $dao->getLectureMaterials($val->lecture_id, $val->type);
+                $grades = [];
+                foreach ($lecture_materials as $v) {
+                    $grades[] = [
+                        'grade_id' => $v->grade_id,
+                        'grade_name' => $v->grade->name,
+                    ];
+                }
+                $idx = '第'. $val->lecture->idx .'节';
+                $list[] = [
+                    'lecture_id' =>$val->lecture_id,
+                    'type_id' => $val->type,
+                    'desc' => $val->description,
+                    'url' => $val->url,
+                    'idx' => $idx,
+                    'grades' => $grades,
+                ];
+            }
             $result[] = [
                 'name' => $item->name,
                 'num' => count($list),
