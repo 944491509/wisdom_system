@@ -206,9 +206,13 @@ class LectureDao
      * @return mixed
      */
     public function getMaterialsByType($courseId, $gradeId, $teacherId, $type, $keyword=null){
-        $map = ['course_id'=>$courseId, 'grade_id'=>$gradeId,
-            'teacher_id'=>$teacherId, 'type'=>$type];
-        $result = LectureMaterial::where($map);
+        $map = [
+            'course_id'=>$courseId,
+            'grade_id'=>$gradeId,
+            'teacher_id'=>$teacherId,
+            'type'=>$type,
+        ];
+        $result = LectureMaterial::where($map)->where('media_id','<>', 0);
         if(!is_null($keyword)) {
 
             $result = $result->where('description', 'like', '%'.$keyword.'%');
@@ -264,7 +268,7 @@ class LectureDao
      */
     public function getMaterialByCourseId($courseId, $type, $teacherId, $isPage = true) {
         $map = ['course_id'=>$courseId, 'type'=>$type, 'teacher_id'=>$teacherId];
-        $result = LectureMaterial::where($map);
+        $result = LectureMaterial::where($map)->where('media_id','<>', 0);
 
         if($isPage) {
             return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
@@ -276,12 +280,13 @@ class LectureDao
     /**
      * 删除学习资料
      * @param User $user
-     * @param $materialId
+     * @param $lectureId 主表ID
+     * @param $type
      * @return MessageBag
      */
-    public function deleteMaterial(User $user,$materialId) {
+    public function deleteMaterial(User $user,$lectureId, $type) {
         $messageBag = new MessageBag();
-        $info = LectureMaterial::where('id', $materialId)->first();
+        $info = Lecture::where('id', $lectureId)->first();
         if(is_null($info)) {
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
             $messageBag->setMessage('该资料不存在');
@@ -292,13 +297,27 @@ class LectureDao
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
             return $messageBag;
         }
-        $re = LectureMaterial::where('id', $materialId)->delete();
-        if($re) {
+        try{
+            DB::beginTransaction();
+            $map = ['lecture_id'=>$lectureId, 'type'=>$type];
+            $re = LectureMaterial::where($map)->delete();
+            // 判断还有当前课程资料是否还有其他类型
+            $materials = LectureMaterial::where('lecture_id',$lectureId)->get();
+            if(count($materials) == 0) {
+                // 删除主表
+                $info->delete();
+            }
+
+            DB::commit();
             $messageBag->setMessage('删除成功');
-        } else {
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
-            $messageBag->setMessage('删除失败');
+            $messageBag->setMessage($msg);
         }
+
         return $messageBag;
     }
 
@@ -311,7 +330,10 @@ class LectureDao
      */
     public function getMaterialNumByUserAndType($teacherId, $type) {
         $map = ['teacher_id'=>$teacherId, 'type'=>$type];
-        return LectureMaterial::where($map)->count();
+        return LectureMaterial::where($map)
+            ->select('lecture_id')
+            ->distinct('lecture_id')
+            ->get()->toArray();
     }
 
 
@@ -479,22 +501,21 @@ class LectureDao
      */
     public function getMaterialByUser($userId) {
         $map = ['teacher_id'=>$userId];
-        return LectureMaterial::where($map)
-            ->select(['lecture_id', 'media_id'])
-            ->distinct(['lecture_id', 'media_id'])
-            ->get();
+        return Lecture::where($map)->get();
     }
 
 
     /**
      * 根据课节和资料获取信息
      * @param $lectureId
-     * @param $mediaId
+     * @param $type
      * @return mixed
      */
-    public function getMaterialByLectureIdAndMediaId($lectureId, $mediaId) {
-        $map = ['lecture_id'=>$lectureId, 'media_id'=>$mediaId];
-        return LectureMaterial::where($map)->get();
+    public function getMaterialByLectureIdAndMediaId(User $user, $lectureId, $type) {
+        $map = ['teacher_id'=>$user->id, 'type'=>$type];
+        return LectureMaterial::where($map)
+            ->distinct(['lecture_id', 'type'])
+            ->get();
     }
 
 
@@ -509,7 +530,7 @@ class LectureDao
             'course_id'=>$courseId, 'teacher_id'=>$teacherId,
             'grade_id'=>$gradeId
         ];
-        return LectureMaterial::where($map)
+        return LectureMaterial::where($map)->where('media_id','<>', 0)
             ->orderBy('idx', 'asc')
             ->get();
     }
@@ -527,7 +548,7 @@ class LectureDao
             'course_id'=>$courseId, 'teacher_id'=>$teacherId,
             'grade_id'=>$gradeId
         ];
-        return LectureMaterial::where($map)
+        return LectureMaterial::where($map)->where('media_id','<>',0)
             ->select('type')
             ->distinct('type')
             ->get();

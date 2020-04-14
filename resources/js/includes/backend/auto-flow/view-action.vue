@@ -19,8 +19,12 @@
           <div v-if="item.type=='image'">
             <h5>
               <p>{{ item.title }}</p>
+              <p v-if="item.value == '无'">{{ item.value }}</p>
             </h5>
-            <div class="imageBox" v-if="item.type=='image' && item.value != 'null'">
+            <div
+              class="imageBox"
+              v-if="item.type=='image' && item.value != 'null'"
+            >
               <div
                 v-for="(img,index) in item.value"
                 :key="index"
@@ -37,13 +41,13 @@
             <div v-if="item.type='files'">
               <div class="reason option" v-for="(file,index) in item.value" :key="index">
                 <span>{{ file.file_name }}</span>
-                <span>下载</span>
+                <span @click="download(file.url)">下载</span>
               </div>
             </div>
           </div>
           <h5 v-else>
             <p>{{ item.title }}</p>
-            <p>{{ item.value == "null" ? '' : item.value }}</p>
+            <p>{{ (item.value == "null" || item.value == "无") ? '' : item.value }}</p>
           </h5>
           <el-divider></el-divider>
         </div>
@@ -53,51 +57,118 @@
           <span>审批人</span>
           <span style="font-size: 14px; font-weight: 100;" v-if="autoProcessed == 1">自动同意</span>
         </h4>
-        <div class="block" style="padding: 0 15px;">
+        <div class="block" style="padding: 0 20px;">
           <el-timeline>
             <!-- key="0" -->
             <el-timeline-item key="0" icon="el-icon-circle-check" type="success" v-if="startInfo">
-              <div style="display: flex;justify-content: space-between;align-items: center;">
-                <img
-                  :src="startInfo.avatar"
-                  alt
-                  style="width: 40px; height: 40px;border-radius: 50%;vertical-align: middle;"
-                />
+              <div class="flexBox">
+                <img :src="startInfo.avatar" alt class="avatar" />
                 <div style="flex: 1;margin-left: 20px;">
                   <p style="margin: 0;">{{ startInfo.name }}</p>
                   <p style="margin: 0;">{{ startInfoTime.substr(0, 16) }}</p>
                 </div>
-                <span
-                  style="text-align: right;font-size: 13px;color: #4FA8FE;"
-                  v-if="startInfo"
-                >发起审批</span>
+                <span style="color: #4FA8FE;" class="status" v-if="startInfo">发起审批</span>
               </div>
             </el-timeline-item>
             <el-timeline-item key="0" icon="el-icon-refresh-left" v-if="cancelInfo.length > 0">
-              <div style="display: flex;justify-content: space-between;align-items: center;">
-                <img
-                  :src="startInfo.avatar"
-                  alt
-                  style="width: 40px; height: 40px;border-radius: 50%;vertical-align: middle;"
-                />
+              <div class="flexBox">
+                <img :src="startInfo.avatar" alt class="avatar" />
                 <div style="flex: 1;margin-left: 20px;">
                   <p style="margin: 0;">{{ startInfo.name }}</p>
                   <p style="margin: 0;">{{ startInfoTime.substr(0, 16) }}</p>
                 </div>
-                <span
-                  style="text-align: right;font-size: 13px;color: #ababab;"
-                  v-if="cancelInfo.length > 0"
-                >已撤回</span>
+                <span style="color: #ababab;" class="status" v-if="cancelInfo.length > 0">已撤回</span>
               </div>
             </el-timeline-item>
             <!-- key="0" -->
             <!-- shengyu -->
-            
+
+            <el-timeline-item
+              v-for="(item,index) in handlers_success"
+              :key="index+1"
+              icon="el-icon-circle-check"
+              type="success"
+            >
+              <div v-for="(val,ind) in item.list" :key="ind+1">
+                <div v-for="(v,i) in val" :key="i">
+                  <div class="flexBox">
+                    <img :src="v.avatar" alt class="avatar" />
+                    <div style="flex: 1;margin-left: 20px;">
+                      <p>{{ v.name }}</p>
+                      <p v-if="v.result.created_at">{{ v.result.created_at.substr(0,16) }}</p>
+                    </div>
+                    <span style="color: #6DCC58;" class="status">已通过</span>
+                  </div>
+                  <p style="color: #FD1B1B;" v-if="v.result.content">原因：{{ v.result.content }}</p>
+                </div>
+              </div>
+            </el-timeline-item>
+
+            <el-timeline-item
+              v-for="(item,index) in handlers_error"
+              :key="index+2"
+              icon="el-icon-circle-close"
+              type="danger"
+            >
+              <div v-for="(val,ind) in item.list" :key="ind+2">
+                <div v-for="(v,i) in val" :key="i">
+                  <div class="flexBox">
+                    <img :src="v.avatar" alt class="avatar" />
+                    <div style="flex: 1;margin-left: 20px;">
+                      <p>{{ v.name }}</p>
+                      <p v-if="v.result.created_at">{{ v.result.created_at.substr(0,16) }}</p>
+                    </div>
+                    <span style="color: #FD1B1B;" class="status">未通过</span>
+                  </div>
+                  <p style="color: #FD1B1B;" v-if="v.result.content">原因：{{ v.result.content }}</p>
+                </div>
+              </div>
+            </el-timeline-item>
+
+            <el-timeline-item
+              v-for="(item,index) in handlers_pending"
+              :key="index+3"
+              icon="el-icon-time"
+              type="warning"
+            >
+              <div v-for="(val,ind) in item.list" :key="ind+3">
+                <div v-for="(v,i) in val" :key="i">
+                  <div class="flexBox">
+                    <img :src="v.avatar" alt class="avatar" />
+                    <div style="flex: 1;margin-left: 20px;">
+                      <p>{{ v.name }}</p>
+                      <p v-if="v.result.created_at">{{ v.result.created_at.substr(0,16) }}</p>
+                    </div>
+                    <span style="color: #FE7B1C;" class="status">审批中</span>
+                  </div>
+                </div>
+              </div>
+            </el-timeline-item>
+
+            <el-timeline-item
+              v-for="(item,index) in handlers_wait"
+              :key="index+4"
+              icon="el-icon-more"
+            >
+              <div v-for="(val,ind) in item.list" :key="ind+4">
+                <div v-for="(v,i) in val" :key="i">
+                  <div class="flexBox">
+                    <img :src="v.avatar" alt class="avatar" />
+                    <div style="flex: 1;margin-left: 20px;">
+                      <p>{{ v.name }}</p>
+                      <p v-if="v.result.created_at">{{ v.result.created_at.substr(0,16) }}</p>
+                    </div>
+                    <!-- <span style="color: #FE7B1C;" class="status">审批中</span> -->
+                  </div>
+                </div>
+              </div>
+            </el-timeline-item>
+
             <!-- shengyu -->
           </el-timeline>
         </div>
       </div>
-      <div class="information">
+      <div class="information" v-if="copys.length > 0">
         <h4>抄送人（{{copys.length}}人）</h4>
         <div class="sendBox">
           <figure v-for="item in copys" :key="item.user_id">
@@ -106,8 +177,12 @@
           </figure>
         </div>
       </div>
-      <p class="infobtn" @click="tips = true" v-if="baseInfo.length > 0">撤销</p>
-      <p class="infobtn" @click="dialogVisible = true" v-else>审批</p>
+      <p class="infobtn" @click="tips = true" v-if="showBtn == 2">撤销</p>
+      <p
+        class="infobtn"
+        @click="dialogVisible = true"
+        v-if="showBtn == 0 || showBtn == '待审批'"
+      >审批</p>
       <el-dialog title="审批" :visible.sync="dialogVisible" width="25%" center v-cloak>
         <el-input
           type="textarea"
@@ -122,8 +197,8 @@
           <el-button style="border-radius: 40px;width: 80px;" type="primary" @click="button(3)">同 意</el-button>
         </span>
       </el-dialog>
-      <el-dialog title="提示" :visible.sync="tips" width="30%" center v-cloak>
-        <span style="padding: 20px 0;display: inline-block;">您确认撤销此申请吗?</span>
+      <el-dialog title="提示" :visible.sync="tips" width="24%" center v-cloak>
+        <span style="display: inline-block;">您确认撤销此申请吗?</span>
         <span slot="footer" class="dialog-footer">
           <el-button @click="tips = false">取 消</el-button>
           <el-button type="primary" @click="cancelAction">确 定</el-button>
@@ -153,16 +228,50 @@ export default {
       dialogVisible: false, // 审批
       tips: false, // 撤回
       user_flow_id: "",
-      actionid: ""
+      actionid: "",
+      showBtn: ""
     };
   },
   computed: {
     countLength() {
       return this.textarea.length >= 100;
+    },
+    handlers_success() {
+      let successList = this.handlers.filter(item => {
+        if (item.icon == "success" && item.list != "") {
+          return item;
+        }
+      });
+      return successList;
+    },
+    handlers_error() {
+      let errorList = this.handlers.filter(item => {
+        if (item.icon == "error" && item.list != "") {
+          return item;
+        }
+      });
+      return errorList;
+    },
+    handlers_pending() {
+      let pendingList = this.handlers.filter(item => {
+        if (item.icon == "pending" && item.list != "") {
+          return item;
+        }
+      });
+      return pendingList;
+    },
+    handlers_wait() {
+      let waitList = this.handlers.filter(item => {
+        if (item.icon == "wait" && item.list != "") {
+          return item;
+        }
+      });
+      return waitList;
     }
   },
   methods: {
-    getAction(id) {
+    getAction(id, show) {
+      this.showBtn = show;
       this.user_flow_id = id;
       axios
         .post("/api/pipeline/flow/view-action", { user_flow_id: id })
@@ -185,6 +294,10 @@ export default {
           console.log(err);
         });
     },
+    // 下载
+    download(url) {
+      window.open(window.origin + url);
+    },
     // 审批详情关闭按钮
     handleClose(done) {
       done();
@@ -206,6 +319,7 @@ export default {
           .then(res => {
             if (Util.isAjaxResOk(res)) {
               this.dialogVisible = false;
+              this.$message.info("审批成功");
             } else {
               this.$message.info(res.data.message);
               this.dialogVisible = false;
@@ -339,6 +453,25 @@ export default {
     }
     .el-timeline-item {
       padding-bottom: 10px;
+    }
+    .flexBox {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        vertical-align: middle;
+      }
+      p {
+        margin: 0;
+      }
+      .status {
+        text-align: right;
+        font-size: 13px;
+      }
     }
   }
   .el-dialog {

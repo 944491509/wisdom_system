@@ -213,13 +213,15 @@ class RegistrationInformaticsDao
     public function addUser($data, $plan)
     {
         $data['uuid'] = Uuid::uuid4()->toString();
-        $data['password'] = Hash::make('000000');
-        $data['type'] = Role::VISITOR;
+        $data['password'] = Hash::make(substr($data['id_number'], -6));
+        $data['type'] = Role::VISITOR; // 未注册用户
+        $data['status'] = User::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED; // 认证中
+
         DB::beginTransaction();
 
         $user =  User::create($data);
-
         $bag = new MessageBag();
+
         $profile = false;
 
         if ($user) {
@@ -266,7 +268,6 @@ class RegistrationInformaticsDao
     public function eidtUser($user , $data, $plan)
     {
         if (empty($user)) return false;
-
         try{
             // 更新用户信息
             $userSave['name'] = $data['name']; // 姓名
@@ -440,6 +441,8 @@ class RegistrationInformaticsDao
                 }
                 else{
                     $bag->setMessage($form->name.'已经被录取');
+                    $bag->setCode(JsonBuilder::CODE_SUCCESS);
+                    $bag->setData($form);
                 }
             }
         }
@@ -638,6 +641,11 @@ class RegistrationInformaticsDao
             return $bag->setMessage('班级信息不存在');
         }
 
+        $getStudentID = $gradeObj->getStudentID($gradeInfo->id);
+        if($getStudentID == false){
+            return $bag->setMessage('学号获取失败,请联系管理员');
+        }
+
         // 必须确保用户和招生简章, 是同一个学校的
         if($manager->isOperatorOrAbove() || $dataInfo->plan->school_id === $manager->getSchoolId()){
             // 该申请是被批准
@@ -674,12 +682,11 @@ class RegistrationInformaticsDao
                     $addData['created_at'] = Carbon::now()->format('Y-m-d H:i:s'); // 添加时间
                     GradeUser::insert($addData);
                 }
-
-                // 更新用户为审核通过
-                User::where('id', $dataInfo->user_id)->update(['status' => 3]);
-
                 DB::commit();
-
+                // 更新学生为已认证学生
+                User::where('id', $dataInfo['user_id'])->update(['type' => 6]);
+                // 更新学号
+                StudentProfile::where('user_id', $dataInfo['user_id'])->update(['student_number' => $getStudentID]);
                 $bag->setMessage('操作成功');
                 $bag->setCode(1000);
                 $bag->setData([]);

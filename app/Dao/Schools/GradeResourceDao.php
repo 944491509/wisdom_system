@@ -26,4 +26,15 @@ class GradeResourceDao
     {
         return GradeResource::where('id', $id)->delete();
     }
+
+    /**
+     * 根据 班级ID 获取
+     * @param $gradeId
+     * @return mixed
+     */
+    public function getResourceByGradeId($gradeId)
+    {
+        return GradeResource::where('grade_id', $gradeId)->orderBy('created_at', 'desc')->get();
+    }
+
 }

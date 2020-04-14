@@ -81,4 +81,11 @@ class EnrolRegistrationEvent extends AbstractRegistrationEvent
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getAction(): int
+    {
+        // TODO: Implement getAction() method.
+    }
 }

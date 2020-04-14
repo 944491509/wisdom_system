@@ -48,6 +48,7 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                     <th>#</th>
                                     <th>入学年份</th>
                                     <th>班级名称</th>
+                                    <th>班级编码</th>
                                     <th>班主任</th>
                                     <th>班长</th>
                                     <th class="text-center">学生数</th>
@@ -61,6 +62,9 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                         <td>{{ $grade->year }} 年</td>
                                         <td>
                                             {{ $grade->name }}
+                                        </td>
+                                        <td>
+                                            {{ $grade->category_code }}
                                         </td>
                                         <td>
                                             @if($grade->gradeManager)

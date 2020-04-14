@@ -23,7 +23,7 @@
     </div>
     <div class="card bottom-card">
         <div class="card-head">
-            <el-tabs style="width: 830px;" :stretch="true" @tab-click="handleClick">
+            <el-tabs style="width: 100%;" :stretch="true" @tab-click="handleClick">
                 <el-tab-pane label="待审批" name="first"></el-tab-pane>
                 <el-tab-pane label="已审批" name="second"></el-tab-pane>
                 <el-tab-pane label="我抄送的" name="third"></el-tab-pane>
@@ -38,7 +38,7 @@
                     <img :src="item.avatar" alt="" width="45px" style="height: 45px;border-radius: 50%">
                     <span style="color: #313B4C;" class="type">@{{ item.flow.name }}</span>
                     <span style="color: #99A0AD;">申请人：@{{ item.user_name }}</span>
-                    <span style="color: #D5D7E0;">申请日期：@{{ item.created_at }}</span>
+                    <span style="color: #D5D7E0;">申请日期：@{{ item.created_at.substr(0,16) }}</span>
                     <span v-bind:class="{
                                 'status_orange': item.done == 0,
                                 'status_green': item.done == 1,

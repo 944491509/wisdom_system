@@ -96,7 +96,7 @@ class IndexController extends Controller
         $getWelcomeUserReportOneInfo = $WelcomeUserReportDao->getWelcomeUserReportOneInfo($user_id,$getWelcomeUserReportOneInfoField);
 
         // 获取迎新配置信息
-        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $campus_id, $user_id);
+        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $school_id, $user_id);
         // 获取学生是否有班级
         $checkGradesInfo = $WelcomeUserReportDao->checkGradesInfo($user);
 
@@ -300,7 +300,7 @@ class IndexController extends Controller
         $WelcomeUserReportDao = new WelcomeUserReportDao();
 
         // 验证是否有权限操作迎新
-        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $campus_id, $user_id);
+        $checkUserIsWelcomeInfo = $WelcomeUserReportDao->checkUserIsWelcomeInfo( $school_id, $user_id);
         if($checkUserIsWelcomeInfo['status'] != true)
         {
             return JsonBuilder::Error($checkUserIsWelcomeInfo['message']);
@@ -527,7 +527,7 @@ class IndexController extends Controller
      */
     public function page_info(\Illuminate\Http\Request $request)
     {
-        // 校区
+        $school_id = $user->gradeUser->school_id;
         $campus_id = $request->input('campus_id', 0);
 
         // 类型(1:报到流程内容,2:迎新指南内容)
@@ -542,7 +542,7 @@ class IndexController extends Controller
 
             $WelcomeConfigDao = new WelcomeConfigDao();
 
-            $getWelcomeConfigOneInfo = $WelcomeConfigDao->getWelcomeConfigOneInfo( $campus_id , $fieldArr[$typeid] );
+            $getWelcomeConfigOneInfo = $WelcomeConfigDao->getWelcomeConfigOneInfo( $school_id , $fieldArr[$typeid] );
 
             $content = $getWelcomeConfigOneInfo->content;
         }

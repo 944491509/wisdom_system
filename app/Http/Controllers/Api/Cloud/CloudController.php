@@ -6,14 +6,17 @@ namespace App\Http\Controllers\Api\Cloud;
 use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
 use App\Dao\FacilityManage\FacilityDao;
+use App\Dao\Schools\GradeResourceDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Dao\Timetable\TimetableItemDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudRequest;
 use App\Models\AttendanceSchedules\AttendancesDetail;
+use App\Models\School;
 use App\Models\Schools\Facility;
 use App\Models\Students\StudentProfile;
+use App\Models\Users\UserCodeRecord;
 use App\ThirdParty\CloudOpenApi;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
@@ -42,6 +45,10 @@ class CloudController extends Controller
          * @var Facility $facility
          */
         $school = $facility->school;
+        $type = '';
+        if (!is_null($school->video)) {
+             $type = substr($school->video,-3);
+        }
         $data   = [
             'school' => [
                 'name'  => $school->name,
@@ -54,7 +61,7 @@ class CloudController extends Controller
                 'area'  => [
                     'video' => $school->video,
                     'size'  => '',
-                    'type'  => '',
+                    'type'  => $type,
                 ]
             ]
         ];
@@ -87,29 +94,40 @@ class CloudController extends Controller
         $item = $timeSlotDao->getItemByRoomForNow($room);
 
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
 
-        $manager   = $item->grade->gradeManager;
+
         $gradeUser = $item->grade->gradeUser;
         $userIds   = $gradeUser->pluck('user_id');
 
         $studentProfileDao = new  StudentProfileDao;
-
+        $gradeRes = new GradeResourceDao;
         $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
         $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
+        $gradeResource = $gradeRes->getResourceByGradeId($item->grade_id);
+
+        $photo = [];
+        foreach ($gradeResource as $key => $value) {
+            $photo[$key]['path'] = $value->path;
+            $photo[$key]['name'] = $value->name;
+            $photo[$key]['type'] = $value->type;
+            $photo[$key]['size'] = $value->size;
+        }
+
 
         $data = [
-            'class_name'    => $item->grade->name,
-            'class_teacher' => $manager->name,
-            'class_number'  => [
+            'grade'    => [
+                'name' => $item->grade->name,
+                'teacher' => $item->grade->gradeManager->adviser_name ?? '未设置班主任',
+                'monitor' => $item->grade->gradeManager->monitor_name ?? '未设置班长',
+            ],
+            'number'  => [
                 'total' => $man + $woman,
                 'man'   => $man,
                 'woman' => $woman
             ],
-            'class_img'     => [
-                'class_img' => ''
-            ]
+            'photo' => $photo
         ];
 
         return JsonBuilder::Success($data);
@@ -137,19 +155,20 @@ class CloudController extends Controller
         $timeSlotDao = new TimeSlotDao;
 
         $items = $timeSlotDao->getTimeSlotByRoom($room);
-        if (empty($items)) {
-            return JsonBuilder::Success('暂无课程');
+        if (!$items) {
+             return JsonBuilder::Error('现在是休息时间');
         }
 
+        if ($items->isEmpty()) {
+            return JsonBuilder::Error('暂无课程');
+        }
         $data = [];
         foreach ($items as $key => $item) {
-            $data[$key]['number']         = $item->timeslot->name;
-            $data[$key]['course_time']    = $item->timeslot->from. ' - ' .$item->timeslot->to;
-            $data[$key]['course_place']   = $item->room->name;
-            foreach ($item->course->teachers as $teacher) {
-                $data[$key]['course_teacher'] = $teacher->name;
-            }
-            $data[$key]['course_name']    = $item->course->name;
+            $data[$key]['course_number']   = $item->timeslot->name;
+            $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
+            $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
+            $data[$key]['course_teacher'] = $item->teacher->name;
+            $data[$key]['course_name']   = $item->course->name;
         }
 
         return JsonBuilder::Success($data);
@@ -169,7 +188,7 @@ class CloudController extends Controller
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
         if (empty($facility)) {
-            return JsonBuilder::Success('设备码错误,或设备已关闭');
+            return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
         /**
          * @var  Facility $facility
@@ -179,16 +198,17 @@ class CloudController extends Controller
 
         $item = $timeSlotDao->getItemByRoomForNow($room);
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
 
-        //二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID
-        $codeStr = base64_encode(json_encode(['app' => 'cloud',
+        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
+        $codeStr = base64_encode(json_encode(['app' => UserCodeRecord::IDENTIFICATION_CLOUD,
                                               'school_id' => $item->school_id,
                                               'grade_id' => $item->grade_id,
                                               'teacher_id' => $item->teacher_id,
                                               'timetable_id' => $item->id,
                                               'course_id' => $item->course_id,
+                                              'term' => $item->term,
                                               'time' => time()]));
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
@@ -196,13 +216,14 @@ class CloudController extends Controller
         $qrCode->setLogoSize(60, 60);
         $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success($code,'生成二维码');
+        return JsonBuilder::Success(['code' => $code, 'status' => true],'签到二维码');
     }
 
     /**
      * 签到统计
      * @param CloudRequest $request
      * @return string
+     * @throws \Exception
      */
     public function getAttendanceStatistic(CloudRequest $request)
     {
@@ -221,16 +242,25 @@ class CloudController extends Controller
 
         $item = $timeSlotDao->getItemByRoomForNow($room);
         if (empty($item)) {
-            return JsonBuilder::Success('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
+
+        /**
+         * @var School $school
+         */
+        $configuration = $item->school->configuration;
         $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
-        $week = $item->school->configuration->getScheduleWeek($now)->getScheduleWeekIndex();
+        $month = Carbon::parse($now)->month;
+        $term = $configuration->guessTerm($month);
+        $weeks = $configuration->getScheduleWeek($now, null, $term);
+        if (is_null($weeks)) {
+              return JsonBuilder::Error('暂无课程');
+        }
+
+        $week = $weeks->getScheduleWeekIndex();
 
         $dao = new AttendancesDao;
-        $attendanceInfo = $dao->getAttendanceByTimeTableId($item->id, $week);
-        if (empty($attendanceInfo)) {
-            return  JsonBuilder::Error('未找到签到数据');
-        }
+        $attendanceInfo = $dao->isAttendanceByTimetableAndWeek($item, $week);
 
         $data = [
             'sign'    => $attendanceInfo->actual_number,
