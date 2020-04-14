@@ -502,8 +502,8 @@ class LectureDao
     public function getMaterialByUser($userId) {
         $map = ['teacher_id'=>$userId];
         return LectureMaterial::where($map)
-            ->select(['lecture_id', 'media_id'])
-            ->distinct(['lecture_id', 'media_id'])
+            ->select(['lecture_id', 'type'])
+            ->distinct(['lecture_id', 'type'])
             ->get();
     }
 
@@ -511,11 +511,11 @@ class LectureDao
     /**
      * 根据课节和资料获取信息
      * @param $lectureId
-     * @param $mediaId
+     * @param $type
      * @return mixed
      */
-    public function getMaterialByLectureIdAndMediaId($lectureId, $mediaId) {
-        $map = ['lecture_id'=>$lectureId, 'media_id'=>$mediaId];
+    public function getMaterialByLectureIdAndMediaId($lectureId, $type) {
+        $map = ['lecture_id'=>$lectureId, 'type'=>$type];
         return LectureMaterial::where($map)->get();
     }
 
