@@ -20,7 +20,7 @@
           </div>
           <div class="content">{{message.content}}</div>
           <div class="message-footer">
-            <span class="files">
+            <span class="files" v-if="message.is_file">
               <i class="el-icon-paperclip"></i> 含附件
             </span>
             <span class="time">{{message.create_time}}</span>

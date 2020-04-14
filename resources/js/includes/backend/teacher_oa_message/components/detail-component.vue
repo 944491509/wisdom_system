@@ -83,6 +83,7 @@
   </div>
 </template>
 <script>
+import { DownLoadUtil } from "../common/utils";
 export default {
   name: "msg-detail",
   props: {
@@ -112,6 +113,12 @@ export default {
         })
         .then(response => {
           DownLoadUtil.download(new Blob([response.data]), file.name);
+        }).catch(e=>{
+          if(e.response.status === 404){
+            this.$message.error('附件不存在');
+          }else{
+            this.$message.error('附件下载失败');
+          }
         });
     }
   }
