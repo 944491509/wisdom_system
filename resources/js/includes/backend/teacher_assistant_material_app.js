@@ -160,7 +160,7 @@ $(document).ready(function(){
           console.log(row)
           axios.post(
             '/api/study/delete-material',
-            { lecture_id: row.lecture_id, type_id: row.type_id }
+            { lecture_id: row.lecture_id, type_id: row.type }
           ).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
