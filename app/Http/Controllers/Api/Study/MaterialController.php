@@ -38,8 +38,9 @@ class MaterialController extends Controller
         $types = $lectureDao->getMaterialType($schoolId);
 
         foreach ($types as $key => $val) {
-            $num = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id);
-            $val->num = $num;
+            $re = $lectureDao->getMaterialNumByUserAndType($user->id, $val->type_id);
+
+            $val->num = count($re);
         }
         $courses = [];
         foreach ($courseTeacher as $key => $item) {
@@ -226,6 +227,8 @@ class MaterialController extends Controller
                     'grade_name' => $value->grade->name,
                 ];
                 $list[$value->lecture_id.'_'.$value->media_id] = [
+                    'lecture_id' => $value->lecture_id,
+                    'type_id'=>$value->type,
                     'material_id' => $value->id,
                     'desc'=>$value->description,
                     'url' => $value->url,

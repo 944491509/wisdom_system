@@ -60,7 +60,9 @@ $(document).ready(function(){
           // 所有该教师教授的当前的课程的班级集合
           grades: [],
           currentGradeId: null, // 当前选中的班级
-  
+          drawer: false,
+          drawerTitle: '', // 抽屉的标题
+          drawerList: [],
         }
       },
       created() {
@@ -130,6 +132,16 @@ $(document).ready(function(){
               _that_.myCourseList = res.data.data;
             }
           });
+        },
+        handleClose() {
+          this.drawer = false
+          this.drawerList = []
+        },
+        showDrawer(key, key1) {
+          console.log(key, key1)
+          this.drawerTitle = this.myCourseList[key].course_name + '-' + this.myMaterialsList[key1].name
+          this.drawerList =  this.myMaterialsList[key1].list
+          this.drawer = true
         },
         // 教学资料
         getMyMaterialsListInfo: function () {

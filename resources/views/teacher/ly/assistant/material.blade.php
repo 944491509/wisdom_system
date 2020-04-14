@@ -41,8 +41,8 @@
                 </el-table-column>
                 <el-table-column>
                   <template slot-scope="scope">
-                  <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit"></el-button>
-                  <el-button type="primary" size="mini">下载</el-button>
+                  <!-- <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit"></el-button> -->
+                  <el-button type="primary" size="mini"><a :href="scope.row.url" download style="color: #fff">下载</a></el-button>
                   <el-button size="mini" type="danger" @click="deleteRow(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
@@ -73,7 +73,7 @@
             <h4 class="title">@{{ item.course_name }}（@{{ item.duration }}课时）</h4>
             <p class="content">@{{ item.desc }}</p>
             <div class="tags">
-              <el-tag v-for="(item1,key1) in item.types">@{{ item1.name }}@{{ item1.num }}</el-tag>
+              <el-tag v-for="(item1,key1) in item.types" @click="showDrawer(key, key1)">@{{ item1.name }}@{{ item1.num }}</el-tag>
             </div>
             <el-row class="button">
               <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button>
@@ -81,6 +81,30 @@
             </el-row>
           </div>
         </el-row>
+        <el-drawer
+          :title="drawerTitle"
+          :visible.sync="drawer"
+          :before-close="handleClose"
+          custom-class="drawerClass"
+        >
+            <el-table :data="drawerList" style="width: 100%" :show-header="false">
+              <el-table-column>
+                <template slot-scope="scope">
+                  <span class="cloumn-a">@{{ scope.row.desc }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column>
+                <span class="cloumn-b">第25节课课前预习需要</span>
+              </el-table-column>
+              <el-table-column>
+                <template slot-scope="scope">
+                    <div slot="reference" class="name-wrapper">
+                      <el-tag v-for="(item,key) in scope.row.grades">@{{ item.grade_name }}</el-tag>
+                    </div>
+                </template>
+              </el-table-column>
+            </el-table>
+        </el-drawer>
         <!--我的课程-->
         <!-- <el-row class="blade_container_box" v-show="activeIndex === 2">
          <el-table :data="myMaterialsListData" style="width: 100%">
@@ -119,7 +143,7 @@
               <hr>
               <Redactor v-model="notes.teacher_notes" placeholder="请输入内容" :config="configOptions" ></Redactor>
               <div class="mt-3" >
-                <el-button type="primary" @click="saveNotes">保存/关闭</el-button>
+                <el-button type="primary" @click="saveNotes">保存</el-button>
               </div>
               <hr>
             </div>
@@ -135,7 +159,7 @@
                   <el-form-item label="标题">
                     <el-input placeholder="必填: 标题" v-model="logModel.title"></el-input>
                   </el-form-item>
-                  <el-form-item label="标题">
+                  <el-form-item label="内容">
                     <el-input placeholder="必填: 日志内容" type="textarea" v-model="logModel.content"></el-input>
                   </el-form-item>
                   <el-button style="margin-left: 10px;" size="small" type="success" @click="saveLog">保存</el-button>
@@ -270,6 +294,9 @@
   .redactor-box .redactor-styles{
     height: 400px;
     overflow-y: auto;
+  }
+  .drawerClass {
+    width: 50% !important;
   }
 </style>
 

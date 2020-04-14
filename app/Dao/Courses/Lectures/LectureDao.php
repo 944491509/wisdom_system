@@ -280,12 +280,13 @@ class LectureDao
     /**
      * 删除学习资料
      * @param User $user
-     * @param $materialId
+     * @param $lectureId 主表ID
+     * @param $type
      * @return MessageBag
      */
-    public function deleteMaterial(User $user,$materialId) {
+    public function deleteMaterial(User $user,$lectureId, $type) {
         $messageBag = new MessageBag();
-        $info = LectureMaterial::where('id', $materialId)->first();
+        $info = Lecture::where('id', $lectureId)->first();
         if(is_null($info)) {
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
             $messageBag->setMessage('该资料不存在');
@@ -296,13 +297,27 @@ class LectureDao
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
             return $messageBag;
         }
-        $re = LectureMaterial::where('id', $materialId)->delete();
-        if($re) {
+        try{
+            DB::beginTransaction();
+            $map = ['lecture_id'=>$lectureId, 'type'=>$type];
+            $re = LectureMaterial::where($map)->delete();
+            // 判断还有当前课程资料是否还有其他类型
+            $materials = LectureMaterial::where('lecture_id',$lectureId)->get();
+            if(count($materials) == 0) {
+                // 删除主表
+                $info->delete();
+            }
+
+            DB::commit();
             $messageBag->setMessage('删除成功');
-        } else {
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
             $messageBag->setCode(JsonBuilder::CODE_ERROR);
-            $messageBag->setMessage('删除失败');
+            $messageBag->setMessage($msg);
         }
+
         return $messageBag;
     }
 
@@ -315,7 +330,10 @@ class LectureDao
      */
     public function getMaterialNumByUserAndType($teacherId, $type) {
         $map = ['teacher_id'=>$teacherId, 'type'=>$type];
-        return LectureMaterial::where($map)->count();
+        return LectureMaterial::where($map)
+            ->select('lecture_id')
+            ->distinct('lecture_id')
+            ->get()->toArray();
     }
 
 
