@@ -219,7 +219,7 @@ class MaterialController extends Controller
         $return = $dao->getMaterialByUser($user->id)->toArray();
         $list = [];
         foreach ($return as $key => $item) {
-            $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['media_id']);
+            $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['type']);
             $grades = [];
             foreach ($re as $k => $value) {
                 $grades[] = [
