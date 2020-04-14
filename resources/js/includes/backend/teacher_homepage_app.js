@@ -14,7 +14,6 @@ if (document.getElementById('teacher-homepage-app')) {
                 url: {
                     flowOpen: ''
                 },
-
                 bannerList: [], // 获取首页banner
                 newsList: [], // 获取首页校园新闻
                 showNewInfo: false, // 校园新闻详情侧边栏
@@ -38,13 +37,6 @@ if (document.getElementById('teacher-homepage-app')) {
                 current_page: 1, // 值周第一页
                 attendanceList: [], // 获取首页值周内容
                 last_page: '', // 值周总页数 
-
-                // num: 4,
-                // isLoading: false,
-                // flowsStartedByMe: [],
-                // flowsWaitingForMe: [],
-                // dataLength: 0,
-                // loading: false,
             }
         },
         created() {
@@ -52,13 +44,14 @@ if (document.getElementById('teacher-homepage-app')) {
             this.schoolId = dom.dataset.school;
             this.userUuid = dom.dataset.useruuid;
             this.url.flowOpen = dom.dataset.flowopen;
-            // this.loadFlowsStartedByMe();
-            // this.loadFlowsWaitingForMe();
             this.getBanner(); // 获取首页banner
             this.getnewsPage(); // 获取首页校园新闻
             this.getCalendar(); // 获取首页校历
             this.getAllevents(); // 获取首页校园安排
             this.getAttendanceList(); // 获取首页值周内容
+            this.yyyy = this.calendar.getFullYear();
+            this.mm = this.calendar.getMonth() + 1;
+            this.dd = this.calendar.getDate();
         },
         methods: {
             // 获取首页banner
@@ -71,6 +64,15 @@ if (document.getElementById('teacher-homepage-app')) {
                         this.bannerList = res.data.data
                     }
                 })
+            },
+            // 轮播图点击事件 
+            imgDetail(item) {
+                if(item.type == 3 || item.type == 13){
+                    window.open(item.external)
+                }
+                if(item.type == 2 || item.type == 12){
+                    window.open(item.external,'_self')
+                }
             },
             // 获取首页校园新闻
             getnewsPage() {
@@ -96,14 +98,10 @@ if (document.getElementById('teacher-homepage-app')) {
             },
             // 获取首页校历
             getCalendar() {
-                axios.post(
-                    '/api/school/calendar'
-                ).then(res => {
+                axios.post('/api/school/calendar', { month: this.mm, year: this.yyyy }).then(res => {
                     if (Util.isAjaxResOk(res)) {
-                        this.yyyy = this.calendar.getFullYear();
-                        this.mm = this.calendar.getMonth();
-                        this.dd = this.calendar.getDate();
                         this.tableWeek = res.data.data.weeks;
+                        this.tableDay = [];
                         let arr = res.data.data.days;
                         const times = Math.ceil(1000 / 7)
                         for (let i = 0; i <= times; i++) {
@@ -117,11 +115,21 @@ if (document.getElementById('teacher-homepage-app')) {
             },
             // 上一个月
             prevMonth() {
-                console.log(this.mm)
+                this.mm--;
+                if (this.mm === 0) {
+                    this.yyyy--;
+                    this.mm = 12;
+                }
+                this.getCalendar()
             },
             // 下一个月
             nextMonth() {
-                console.log(this.yyyy)
+                this.mm++;
+                if (this.mm === 13) {
+                    this.yyyy++;
+                    this.mm = 1;
+                }
+                this.getCalendar()
             },
             // 获取首页校园安排
             getAllevents() {
@@ -145,7 +153,7 @@ if (document.getElementById('teacher-homepage-app')) {
                     { page: this.current_page }
                 ).then(res => {
                     if (Util.isAjaxResOk(res)) {
-                        this.attendanceList = res.data.data.data;
+                        this.attendanceList = [...this.attendanceList, ...res.data.data.data];
                         this.last_page = res.data.data.last_page; // 总页数
                         this.current_page = res.data.data.current_page; // 当前页数
                     }
@@ -153,9 +161,9 @@ if (document.getElementById('teacher-homepage-app')) {
             },
             // 滚动事件
             handleScroll() {
-                let scrollTop = this.$refs.scrollTopList.scrollTop, // 2772.800048828125
-                    clientHeight = this.$refs.scrollTopList.clientHeight, // 675
-                    scrollHeight = this.$refs.scrollTopList.scrollHeight, // 3448
+                let scrollTop = this.$refs.scrollTopList.scrollTop, // 滚动条的垂直偏移
+                    clientHeight = this.$refs.scrollTopList.clientHeight, // height+padding，不包含边框，网页可见区域高度
+                    scrollHeight = this.$refs.scrollTopList.scrollHeight, // 内容的实际高度+上下padding
                     height = 675; //根据项目实际定义
                 if (scrollTop + clientHeight >= scrollHeight - height) {
                     if (Number(this.current_page) >= Number(this.last_page)) {

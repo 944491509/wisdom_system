@@ -325,7 +325,7 @@ class IndexController extends Controller
             return JsonBuilder::Error('缺少参数');
         }
         $dao = new LectureDao();
-        $result = $dao->deleteMaterial($materialId, $user);
+        $result = $dao->deleteMaterial($user, $materialId);
 
         if($result->isSuccess()) {
             return JsonBuilder::Success($result->getMessage());

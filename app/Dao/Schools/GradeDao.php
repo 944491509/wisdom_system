@@ -157,4 +157,27 @@ class GradeDao
     {
         return Grade::whereIn('id', $ids)->get();
     }
+
+    /**
+     * Func 招生的学生生成一个新的学号
+     * Desc 通过一个班级ID获取学号信息
+     * 规则 （19：年级；03：学院；01：专业；4：学制；1：班级；24：班号）
+     * @return String|false
+     */
+    public function getStudentID($id)
+    {
+        $data = Grade::find($id);
+
+        if (empty($data)) return false;
+
+        // 统计班级数
+        $number = strlen($data->studentsCount()) <= 1 ? '0' . strval($data->studentsCount() + 1) : $data->studentsCount() + 1;
+
+        return substr($data->year, 0. - 2)
+            . $data->major->institute->category_code
+            . $data->major->category_code
+            . $data->major->period
+            . $data->category_code
+            . $number;
+    }
 }

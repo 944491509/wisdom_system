@@ -13,7 +13,7 @@
                                 <el-input placeholder="必填: 标题" v-model="formCourseInfo.title"></el-input>
                             </el-form-item>
                             <el-form-item label="课节">
-                                <el-select v-model="formCourseInfo.idx" placeholder="请选择" style="width: 100%">
+                                <el-select v-model="formCourseInfo.idx" placeholder="请选择" style="width: 100%" @change="getCourseGradeList">
                                     <el-option
                                         v-for="item in durations"
                                         :key="item.idx"
@@ -25,7 +25,7 @@
 
                             <el-form-item label="班级">
                                 <el-checkbox-group v-model="formCourseInfo.grade_id">
-                                    <el-checkbox-button v-for="item in gradesClass" :label="item.grade_name" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
+                                    <el-checkbox-button v-for="item in grades" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-form>
@@ -41,19 +41,23 @@
                                     icon="el-icon-folder-opened"
                             >
                             <el-card>
-                                <div v-for="material in materials" :key="material.id">
-                                    <div v-if="isTypeOf(material.type, typeIdx)">
+                                <div v-for="material in materials" :key="material.type_id">
+                                    <div v-if="isTypeOf(material.type_id, key)">
                                         <p>
-                                            <el-tag size="small" v-if="material.media_id === 0">
+                                            <el-tag size="small" v-if="material.list[0].media_id === 0">
                                                 外部链接
+                                                <span>
+                                                    <a :href="material.url" target="_blank">
+                                                        {{ material.list[0].url}}
+                                                    </a>
+                                                </span>
                                             </el-tag>
-                                            <span>
-                                        <a :href="material.url" target="_blank">
-                                            {{ material.description }}
-                                        </a>
-                                    </span>
+                                            <span v-else>
+                                                <span v-if="material.media">{{ material.list[0].file_name }}</span>
+                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].url}}</a>
+                                            </span>
                                         </p>
-                                        <p style="font-size: 10px;color: #cccccc;" class="text-right">
+                                        <!-- <p style="font-size: 10px;color: #cccccc;" class="text-right">
                                             上传于{{ material.created_at }} &nbsp;
                                             <el-button type="text" @click="deleteMaterial(material)">
                                                 <span class="text-danger">删除</span>
@@ -61,7 +65,7 @@
                                             <el-button type="text" @click="editMaterial(material)">
                                                 <span>修改</span>
                                             </el-button>
-                                        </p>
+                                        </p> -->
                                         <hr style="margin-top: 3px;">
                                     </div>
                                 </div>
@@ -71,7 +75,7 @@
                             </el-card>
                         </el-timeline-item>
                     </el-timeline>
-                    <el-button style="margin-left: 10px;" size="small" type="success" @click="saveLecture">保存</el-button>
+                    <el-button style="margin-left: 10px;" size="small" type="success" @click="saveMaterials">保存</el-button>
                 </div>
             </div>
         </div>
@@ -141,7 +145,7 @@
         },
         props:{
             course:{
-                type: Array,
+                type: Object,
                 required: true
             },
             lecture:{
@@ -155,10 +159,14 @@
                 type: String,
                 required: true
             },
-            grades:{
-                type: Array,
-                required: true
-            }
+            // grades:{
+            //     type: Array,
+            //     required: true
+            // },
+            // courseId: {
+            //     type: String,
+            //     // required: true
+            // }
         },
         watch: {
             'lecture.id': function(val){
@@ -186,97 +194,9 @@
         },
         data(){
             return {
-                gradesClass:[
-                    {
-                        "grade_id": 72,
-                        "grade_name": "世界史1班"
-                    },
-                    {
-                        "grade_id": 118,
-                        "grade_name": "网球教育1班"
-                    }
+                grades:[
                 ], // 班级列表
                 durations:[
-                    {
-                        "idx": 1,
-                        "name": "第1节"
-                    },
-                    {
-                        "idx": 2,
-                        "name": "第2节"
-                    },
-                    {
-                        "idx": 3,
-                        "name": "第3节"
-                    },
-                    {
-                        "idx": 4,
-                        "name": "第4节"
-                    },
-                    {
-                        "idx": 5,
-                        "name": "第5节"
-                    },
-                    {
-                        "idx": 6,
-                        "name": "第6节"
-                    },
-                    {
-                        "idx": 7,
-                        "name": "第7节"
-                    },
-                    {
-                        "idx": 8,
-                        "name": "第8节"
-                    },
-                    {
-                        "idx": 9,
-                        "name": "第9节"
-                    },
-                    {
-                        "idx": 10,
-                        "name": "第10节"
-                    },
-                    {
-                        "idx": 11,
-                        "name": "第11节"
-                    },
-                    {
-                        "idx": 12,
-                        "name": "第12节"
-                    },
-                    {
-                        "idx": 13,
-                        "name": "第13节"
-                    },
-                    {
-                        "idx": 14,
-                        "name": "第14节"
-                    },
-                    {
-                        "idx": 15,
-                        "name": "第15节"
-                    },
-                    {
-                        "idx": 16,
-                        "name": "第16节"
-                    },
-                    {
-                        "idx": 17,
-                        "name": "第17节"
-                    },
-                    {
-                        "idx": 18,
-                        "name": "第18节"
-                    },
-                    {
-                        "idx": 19,
-                        "name": "第19节"
-                    },
-                    {
-                        "idx": 20,
-                        "name": "第20节"
-                    }
                 ], // 课节列表
 
                 materials:[],
@@ -326,11 +246,25 @@
             }
         },
         created(){
+            this.getGrades()
             this.getMaterialTypes(); // 获取类型
-            this.getCourseGradeList(); // 获取 班级 和 课节
+            // this.getCourseGradeList(); // 获取 班级 和 课节
             this.lectureModel = this.lecture;
         },
         methods: {
+            // 获取课程班级列表和课节列表
+            getGrades() {
+                console.log('this.courseId',this.course.id)
+                axios.post(
+                    '/api/material/getCourseGradeList',
+                    { course_id: this.course.id }
+                ).then(res => {
+                    if (Util.isAjaxResOk(res)) {
+                        this.grades = res.data.data.grades;
+                        this.durations = res.data.data.durations;
+                    }
+                });
+            },
             // 获取类型
             getMaterialTypes: function(){
                 let _that_ = this;
@@ -343,32 +277,40 @@
                     }
                 });
             },
-            // 获取默认数据
-            getCourseGradeList: function(){
-                /*let _that_ = this;
+            // 获取列表数据
+            getCourseGradeList: function(val){
                 axios.post(
-                    '/api/material/getCourseGradeList',
-                    {course_id: 123}
+                    '/api/material/get-materials',
+                    { idx: val, course_id: this.course.id }
                 ).then(res => {
-                    if(Util.isAjaxResOk(res)){
-                        console.log(res.data.data.grades);
-                        console.log(res.data.data.durations);
-                        _that_.grades = res.data.data.grades;
-                        _that_.durations = res.data.data.durations;
+                    if (Util.isAjaxResOk(res)) {
+                        if(res.data.data.idx){
+                            this.formCourseInfo.lecture_id = res.data.data.lecture_id
+                            this.formCourseInfo.title = res.data.data.title
+                            this.formCourseInfo.idx = res.data.data.idx
+                            this.formCourseInfo.grade_id = res.data.data.grade || []
+                            this.materials = res.data.data.material || []
+                        }else{
+                            this.formCourseInfo.lecture_id =null;
+                            this.formCourseInfo.title = '';
+                            this.formCourseInfo.grade_id = [];
+                             this.materials = [];
+                        }
                     }
-                });*/
+                });
             },
             getLectureMaterials: function(){
-                this.loadingData = true;
-                loadLectureMaterials(this.lecture.id).then(res => {
-                    if(Util.isAjaxResOk(res)){
-                        this.materials = res.data.data.materials;
-                    }
-                    else{
-                        this.materials = [];
-                    }
-                    this.loadingData = false;
-                })
+                // this.loadingData = true;
+                // loadLectureMaterials(this.lecture.id).then(res => {
+                //     if(Util.isAjaxResOk(res)){
+                //         this.materials = res.data.data.materials;
+                //         console.log('CCCCC',this.materials)
+                //     }
+                //     else{
+                //         this.materials = [];
+                //     }
+                //     this.loadingData = false;
+                // })
             },
             isTypeOf: function(typeId, typeIdx){
                 return typeId === typeIdx+1;
@@ -376,11 +318,34 @@
 
             // 显示添加的课件信息
             addMaterial: function(val){
+                if (!this.formCourseInfo.idx) {
+                    this.$message.error('请选择课节');
+                    return
+                }
+                let materialsByTypeId = this.materials.find(e=>e.type_id== val.type_id);
+               
                 this.courseMaterialModel.index = val.type_id;
-                this.courseMaterialModel.type = !Util.isEmpty(this.formCourseInfo.materialArr[val.type_id])?this.formCourseInfo.materialArr[val.type_id].type:0;
-                this.courseMaterialModel.description = !Util.isEmpty(this.formCourseInfo.materialArr[val.type_id])?this.formCourseInfo.materialArr[val.type_id].description:'';
-                this.courseMaterialModel.url = !Util.isEmpty(this.formCourseInfo.materialArr[val.type_id])?this.formCourseInfo.materialArr[val.type_id].url:'';
                 this.selectedFile = null;
+                this.courseMaterialModel.type = 0;
+                this.courseMaterialModel.description = '';
+                 this.courseMaterialModel.url =''
+                if(materialsByTypeId){
+                   
+                    this.courseMaterialModel.type = materialsByTypeId.type || 0;
+                    this.courseMaterialModel.description = materialsByTypeId.desc || '';
+                    if(materialsByTypeId.list[0].media_id === 0){
+                        this.courseMaterialModel.url =  materialsByTypeId.list[0].url || '';
+                    }else{
+                        this.selectedFile = {
+                            url: materialsByTypeId.list[0].url,
+                            description: materialsByTypeId.list[0].url
+                        }
+                    }
+               
+                }
+               
+                 console.log('materialsByTypeId', materialsByTypeId,this.courseMaterialModel)
+              
                 this.showMaterialForm = true;
                 this.typeName = val.name; // 分类名称
             },
@@ -400,32 +365,73 @@
             },
             // 确认保存到缓存中
             saveInfo: function(index){
-                this.formCourseInfo.materialArr[index] = JSON.parse(JSON.stringify(this.courseMaterialModel));
-            },
-            _startSaving: function(){
-                saveMaterial(this.courseMaterialModel).then(res => {
-                    if(Util.isAjaxResOk(res)){
-                        this.$message({
-                            type:'success',
-                            message:'保存成功'
-                        });
-                        // 隐藏表单
-                        this.showMaterialForm = false;
-                        // 从新加载materials
-                        this.getLectureMaterials();
+                // this.formCourseInfo.materialArr[index] = JSON.parse(JSON.stringify(this.courseMaterialModel));
+                // console.log(index, this.formCourseInfo.materialArr[index])
+                let tmp = JSON.parse(JSON.stringify(this.courseMaterialModel));
+                let tmpMaterial = {}
+                if (this.selectedFile) {
+                    tmpMaterial = {
+                        type_id: tmp.index,
+                        desc: tmp.description,
+                        list: [{
+                            url: this.selectedFile.url,
+                            media_id: this.selectedFile.id,
+                            file_name: this.selectedFile.file_name
+                        }]
                     }
-                    else{
-                        this.$message.error('保存失败. ' + res.data.data);
+                } else {
+                    tmpMaterial = {
+                        type_id: tmp.index,
+                        desc: tmp.description,
+                        list: [{
+                            url: tmp.url,
+                            media_id: 0,
+                            file_name: tmp.url
+                        }]
                     }
-                })
+                }
+
+                console.log('this.materials',this.materials)
+                if (this.materials.length > 0) {
+                    let id = this.materials.findIndex(e => {
+                        return e.type_id == tmp.index
+                    })
+                    if (id == -1) {
+                        this.materials.push(tmpMaterial)
+                    } else {
+                        this.materials.splice(id, 1, tmpMaterial)
+                    }
+                } else {
+                    this.materials.push(tmpMaterial)
+                }
+                console.log('this.materials',this.materials)
             },
+            // _startSaving: function(){ 
+            //     console.log('this.courseMaterialModel',this.courseMaterialModel)
+            //     saveMaterial(params).then(res => {
+            //         if(Util.isAjaxResOk(res)){
+            //             this.$message({
+            //                 type:'success',
+            //                 message:'保存成功'
+            //             });
+            //             // 隐藏表单
+            //             this.showMaterialForm = false;
+            //             // 从新加载materials
+            //             // this.getLectureMaterials();
+            //             this.getCourseGradeList()
+            //         }
+            //         else{
+            //             this.$message.error('保存失败. ' + res.data.data);
+            //         }
+            //     })
+            // },
             // 显示编辑可课节的标题，概要的表单
             showLectureSummaryEditForm: function(){
                 this.showLectureForm = true;
                 this.lectureModel.id = this.lecture.id;
             },
             // 添加数据
-            saveLecture: function(){
+            saveMaterials: function(){
 
                 if(Util.isEmpty(this.formCourseInfo.title)){
                     this.$message.error('请填写标题');
@@ -439,18 +445,31 @@
                     this.$message.error('请选择班级');
                     return false;
                 }
-
+                let materials = JSON.parse(JSON.stringify(this.materials))
+                materials = materials.map(e=>{
+                    e.media = JSON.parse(JSON.stringify(e.list))
+                    delete e.list
+                    return e;
+                })
+                let params = {
+                    course_id: this.course.id,
+                    idx: this.formCourseInfo.idx,
+                    grade_id: this.formCourseInfo.grade_id,
+                    title: this.formCourseInfo.title,
+                    lecture_id: this.formCourseInfo.lecture_id,
+                    material: materials
+                }
                 // 添加数据
-                let _that_ = this;
                 axios.post(
                     '/api/material/addMaterial',
-                    {formData:this.formCourseInfo}
+                    params
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
                         this.$message({
                             type:'success',
                             message: '保存成功'
                         })
+                        window.location.reload(); 
                     } else {
                         this.$message({
                             type: 'info',
@@ -459,10 +478,46 @@
                     }
                 });
             },
+            // saveLecture: function(){
+
+            //     if(Util.isEmpty(this.formCourseInfo.title)){
+            //         this.$message.error('请填写标题');
+            //         return false;
+            //     }
+            //     if(Util.isEmpty(this.formCourseInfo.idx)){
+            //         this.$message.error('请选择课节');
+            //         return false;
+            //     }
+            //     if(Util.isEmpty(this.formCourseInfo.grade_id)){
+            //         this.$message.error('请选择班级');
+            //         return false;
+            //     }
+
+            //     // 添加数据
+            //     let _that_ = this;
+            //     console.log('this.formCourseInfo',this.formCourseInfo)
+            //     axios.post(
+            //         '/api/material/addMaterial',
+            //         {formData:this.formCourseInfo}
+            //     ).then(res => {
+            //         if(Util.isAjaxResOk(res)){
+            //             this.$message({
+            //                 type:'success',
+            //                 message: '保存成功'
+            //             })
+            //         } else {
+            //             this.$message({
+            //                 type: 'info',
+            //                 message: '操作失败,请稍后重试'
+            //             });
+            //         }
+            //     });
+            // },
             // 当云盘中的文件被选择
             pickFileHandler: function(payload){
                 this.selectedFile = payload.file;
                 this.showFileManagerFlag = false;
+                console.log('添加的可见信息',payload)
             },
             // 当选择的班级发生变化, 则去更新作业的数据
             onSelectedGradesChangedHandler: function(updatedGrades){

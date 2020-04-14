@@ -77,6 +77,7 @@ class MaterialController extends Controller
         foreach ($return as $key => $item) {
             $idx = $item->lecture->idx;
             $result[] = [
+                'material_id' => $item->id,
                 'desc' => $item->description,
                 'url' => $item->url,
                 'lecture' => '第'.$idx.'节',
@@ -215,7 +216,6 @@ class MaterialController extends Controller
         $lectureDao = new LectureDao();
         $types = $lectureDao->getMaterialType($schoolId);
         $return = $dao->getMaterialByUser($user->id)->toArray();
-
         $list = [];
         foreach ($return as $key => $item) {
             $re = $dao->getMaterialByLectureIdAndMediaId($item['lecture_id'], $item['media_id']);
@@ -226,6 +226,7 @@ class MaterialController extends Controller
                     'grade_name' => $value->grade->name,
                 ];
                 $list[$value->lecture_id.'_'.$value->media_id] = [
+                    'material_id' => $value->id,
                     'desc'=>$value->description,
                     'url' => $value->url,
                     'type' => $value->type,
@@ -233,7 +234,6 @@ class MaterialController extends Controller
                 ];
             }
         }
-
         $result = [];
         foreach ($types as $key => $item) {
             $result[$key] = [
@@ -268,7 +268,7 @@ class MaterialController extends Controller
             return JsonBuilder::Success('当前课程的课节没有教学资料');
         }
         $materials = $lecture->lectureMaterials;
-        $gradeId = array_unique($materials->pluck('grade_id')->toArray());
+        $gradeId = array_merge(array_unique($materials->pluck('grade_id')->toArray()));
 
         $material = [];
         foreach ($materials as $key => $val) {

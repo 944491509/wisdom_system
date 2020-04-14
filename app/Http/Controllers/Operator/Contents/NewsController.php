@@ -155,14 +155,15 @@ class NewsController extends Controller
     }
 
     public function management(Request $request){
-        $this->dataForView['typeText'] = News::TypeText($request->get('type'));
+        $type = $request->get('type');
+        $schoolId = $request->session()->get('school.id');
+        $this->dataForView['typeText'] = News::TypeText($type);
+        $this->dataForView['type'] = $type;
         $this->dataForView['pageTitle'] = $this->dataForView['typeText'].'管理';
-        $this->dataForView['type'] = $request->get('type');
         $dao = new NewsDao();
-        $this->dataForView['newsList'] = $dao->paginateByType(
-            $request->get('type'),
-            $request->session()->get('school.id')
-        );
+        $list = $dao->paginateByType($type, $schoolId);
+
+        $this->dataForView['newsList'] = $list;
         return view('school_manager.news.list',$this->dataForView);
     }
 
