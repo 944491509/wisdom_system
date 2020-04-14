@@ -19,4 +19,10 @@ return [
         'url' => '/assets/manual/teacher.pdf',
 
     ],
+    [
+        'id' => 3,
+        'filename'=>'管理系统使用说明.pdf',
+        'url' => '/assets/manual/management.pdf',
+
+    ],
 ];
