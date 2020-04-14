@@ -137,10 +137,17 @@ $(document).ready(function(){
           this.drawer = false
           this.drawerList = []
         },
-        showDrawer(key, key1) {
-          console.log(key, key1)
-          this.drawerTitle = this.myCourseList[key].course_name + '-' + this.myMaterialsList[key1].name
-          this.drawerList =  this.myMaterialsList[key1].list
+        showDrawer(items, item) {
+          console.log(items, item)
+          this.drawerTitle = items.course_name + '-' + item.name
+          axios.post(
+            '/api/material/materialsByType',
+            { course_id: items.course_id, type_id: item.type_id }
+          ).then(res => {
+            if (Util.isAjaxResOk(res)) {
+              this.drawerList =  res.data.data
+            }
+          });
           this.drawer = true
         },
         // 教学资料
