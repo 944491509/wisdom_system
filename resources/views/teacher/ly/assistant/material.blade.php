@@ -96,7 +96,9 @@
                 </template>
               </el-table-column>
               <el-table-column>
-                <span class="cloumn-b">第25节课课前预习需要</span>
+                <template slot-scope="scope">
+                  <span class="cloumn-a">@{{ scope.row.idx }}</span>
+                </template>
               </el-table-column>
               <el-table-column>
                 <template slot-scope="scope">
