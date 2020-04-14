@@ -307,7 +307,7 @@ class LectureDao
         try{
             DB::beginTransaction();
             $map = ['lecture_id'=>$lectureId, 'type'=>$type];
-            $re = LectureMaterial::where($map)->delete();
+            LectureMaterial::where($map)->delete();
             // 判断还有当前课程资料是否还有其他类型
             $materials = LectureMaterial::where('lecture_id',$lectureId)->get();
             if(count($materials) == 0) {
@@ -333,10 +333,11 @@ class LectureDao
      * 获取数量
      * @param $teacherId
      * @param $type
+     * @param $courseId
      * @return mixed
      */
-    public function getMaterialNumByUserAndType($teacherId, $type) {
-        $map = ['teacher_id'=>$teacherId, 'type'=>$type];
+    public function getMaterialNumByUserAndType($teacherId, $type, $courseId) {
+        $map = ['teacher_id'=>$teacherId, 'type'=>$type, 'course_id'=>$courseId];
         return LectureMaterial::where($map)
             ->select('lecture_id')
             ->distinct('lecture_id')
