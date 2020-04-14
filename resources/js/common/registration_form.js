@@ -31,12 +31,12 @@ export function loadOpenedMajors(idNumber,mobile) {
     );
 }
 
-export function loadMajorDetail(majorId) {
+export function loadMajorDetail(majorId,school) {
     if(Util.isDevEnv()){
         return axios.get(Util.buildUrl(Constants.API.REGISTRATION_FORM.LOAD_MAJOR_DETAIL));
     }
     return axios.post(
         Util.buildUrl(Constants.API.REGISTRATION_FORM.LOAD_MAJOR_DETAIL),
-        {id: majorId, version:Constants.VERSION}
+        {id: majorId, school: school, version:Constants.VERSION}
     );
 }
