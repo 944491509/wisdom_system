@@ -519,6 +519,7 @@ class CourseDao
         $result = pageReturn($return);
 
         $courses = $result['list'];
+        $list = [];
         foreach ($courses as $course) {
             /**
              * @var Course $course
@@ -543,8 +544,9 @@ class CourseDao
                 $item['arrangements'] = $course->arrangements;
             }
 
-            $result['list'][] = $item;
+            $list[] = $item;
         }
+        $result['list'] = $list;
 
         return $result;
     }
