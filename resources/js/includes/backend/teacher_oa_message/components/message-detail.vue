@@ -21,7 +21,6 @@
 <script>
 import { MessageApi } from "../common/api";
 import { Util } from "../../../../common/utils";
-import { DownLoadUtil } from "../common/utils";
 import { MessageMode } from "../common/enum";
 import MemberSelect from "./setmember";
 import Detail from "./detail-component";

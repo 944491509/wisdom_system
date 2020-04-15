@@ -17,6 +17,7 @@ use App\Models\Courses\CourseTeacher;
 use App\Models\Courses\TeachingLog;
 use App\Models\ElectiveCourses\CourseElective;
 use App\Utils\JsonBuilder;
+use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\IMessageBag;
 use App\Utils\ReturnData\MessageBag;
 use Illuminate\Database\Eloquent\Collection;
@@ -504,6 +505,50 @@ class CourseDao
             $data[] = $item;
         }
         return $data;
+    }
+
+
+    /**
+     * 课程分页
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getCoursePageBySchoolId($schoolId) {
+        $return = Course::where('school_id',$schoolId)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        $result = pageReturn($return);
+
+        $courses = $result['list'];
+        $list = [];
+        foreach ($courses as $course) {
+            /**
+             * @var Course $course
+             */
+            $item = [];
+            foreach ($this->fields as $field) {
+                $item[$field] = $course->$field;
+            }
+            $item['teachers'] = $course->teachers;
+            $item['majors'] = $course->majors;
+            // 课程的教材
+            $item['books'] = [];
+            foreach ($course->courseTextbooks as $ct){
+                $i['id'] = $ct->textbook->id;
+                $i['name'] = $ct->textbook->name . '('.$ct->textbook->edition.')';
+                $item['books'][] = $i;
+            }
+
+            $item['arrangements'] = [];
+            if($course->optional){
+                // 是选修课
+                $item['arrangements'] = $course->arrangements;
+            }
+
+            $list[] = $item;
+        }
+        $result['list'] = $list;
+
+        return $result;
     }
 
 

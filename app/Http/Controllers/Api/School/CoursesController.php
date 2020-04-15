@@ -50,6 +50,7 @@ class CoursesController extends Controller
     public function load_courses(Request $request){
         $schoolId = $request->get('school');
         $dao = new CourseDao();
-        return JsonBuilder::Success(['courses'=>$dao->getCoursesBySchoolId($schoolId)]);
+        $courses = $dao->getCoursePageBySchoolId($schoolId);
+        return JsonBuilder::Success($courses);
     }
 }
