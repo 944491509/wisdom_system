@@ -26,7 +26,7 @@
             <el-tabs style="width: 100%;" :stretch="true" @tab-click="handleClick">
                 <el-tab-pane label="待审批" name="first"></el-tab-pane>
                 <el-tab-pane label="已审批" name="second"></el-tab-pane>
-                <el-tab-pane label="我抄送的" name="third"></el-tab-pane>
+                <el-tab-pane label="抄送我的" name="third"></el-tab-pane>
             </el-tabs>
         </div>
         <div class="card-body" v-cloak>
