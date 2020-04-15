@@ -42,7 +42,7 @@
                             >
                             <el-card>
                                 <div v-for="material in materials" :key="material.type_id">
-                                    <div v-if="isTypeOf(material.type_id, key)">
+                                    <div v-if="material.type_id == val.type_id">
                                         <p>
                                             <el-tag size="small" v-if="material.list[0].media_id === 0">
                                                 外部链接
@@ -323,7 +323,7 @@
                     return
                 }
                 let materialsByTypeId = this.materials.find(e=>e.type_id== val.type_id);
-               
+
                 this.courseMaterialModel.index = val.type_id;
                 this.selectedFile = null;
                 this.courseMaterialModel.type = 0;
@@ -341,11 +341,11 @@
                             description: materialsByTypeId.list[0].url
                         }
                     }
-               
+
                 }
-               
+
                  console.log('materialsByTypeId', materialsByTypeId,this.courseMaterialModel)
-              
+
                 this.showMaterialForm = true;
                 this.typeName = val.name; // 分类名称
             },
@@ -406,7 +406,7 @@
                 }
                 console.log('this.materials',this.materials)
             },
-            // _startSaving: function(){ 
+            // _startSaving: function(){
             //     console.log('this.courseMaterialModel',this.courseMaterialModel)
             //     saveMaterial(params).then(res => {
             //         if(Util.isAjaxResOk(res)){
