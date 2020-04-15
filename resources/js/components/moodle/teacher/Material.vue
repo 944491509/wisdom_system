@@ -43,18 +43,18 @@
                             <el-card>
                                 <div v-for="material in materials" :key="material.type_id">
                                     <div v-if="isTypeOf(material.type_id, key)">
-                                        <p>
-                                            <el-tag size="small" v-if="material.list[0].media_id === 0">
+                                        <p v-for="(item, index) in material.list" :key="index">
+                                            <el-tag size="small" v-if="item.media_id === 0">
                                                 外部链接
                                                 <span>
-                                                    <a :href="material.url" target="_blank">
-                                                        {{ material.list[0].url}}
+                                                    <a :href="item.url" target="_blank">
+                                                        {{ item.url}}
                                                     </a>
                                                 </span>
                                             </el-tag>
                                             <span v-else>
-                                                <span v-if="material.media">{{ material.list[0].file_name }}</span>
-                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].url}}</a>
+                                                <span v-if="material.media">{{ item.file_name }}</span>
+                                                <a v-else :href="item.url" target="_blank">{{item.url}}</a>
                                             </span>
                                         </p>
                                         <!-- <p style="font-size: 10px;color: #cccccc;" class="text-right">
@@ -100,11 +100,13 @@
                             </el-button>
                             <p v-if="selectedFile" class="mt-4">
                                 已选择的文件:
-                                <a :href="selectedFile.url">
-                                    {{ selectedFile.description }}
-                                </a>
-                                &
-                                <el-button type="text" @click="selectedFile = null"><span class="text-danger">放弃</span></el-button>
+                                <div v-for="(selectedFile, index) in selectedFiles" :key="index">
+                                    <a :href="selectedFile.url">
+                                        {{ selectedFile.description }}
+                                    </a>
+                                    &
+                                    <el-button type="text" @click="selectedFiles.splice(index, 1)"><span class="text-danger">放弃</span></el-button>
+                                </div>
                             </p>
                         </el-form-item>
 
@@ -122,6 +124,7 @@
                 size="100%"
                 custom-class="e-yun-pan">
             <file-manager
+                    v-if="showFileManagerFlag"
                     :user-uuid="userUuid"
                     :allowed-file-types="[]"
                     :pick-file="true"
@@ -238,6 +241,7 @@
                 },
                 showMaterialForm: false,
                 showFileManagerFlag: false,
+                selectedFiles:[],
                 selectedFile:null,
                 loadingData: false,
                 // 当前选择的班级
@@ -328,18 +332,26 @@
                 this.selectedFile = null;
                 this.courseMaterialModel.type = 0;
                 this.courseMaterialModel.description = '';
-                 this.courseMaterialModel.url =''
+                this.courseMaterialModel.url =''
                 if(materialsByTypeId){
                    
                     this.courseMaterialModel.type = materialsByTypeId.type || 0;
                     this.courseMaterialModel.description = materialsByTypeId.desc || '';
                     if(materialsByTypeId.list[0].media_id === 0){
                         this.courseMaterialModel.url =  materialsByTypeId.list[0].url || '';
+                        this.selectedFiles = []
                     }else{
-                        this.selectedFile = {
-                            url: materialsByTypeId.list[0].url,
-                            description: materialsByTypeId.list[0].url
-                        }
+                        // this.selectedFile = {
+                        //     url: materialsByTypeId.list[0].url,
+                        //     description: materialsByTypeId.list[0].url
+                        // }
+                        materialsByTypeId.list.map((e, i) => {
+                            this.selectedFiles.push({
+                                url: e.url,
+                                description: e.url,
+                                media_id: e.media_id
+                            })
+                        })
                     }
                
                 }
@@ -369,16 +381,24 @@
                 // console.log(index, this.formCourseInfo.materialArr[index])
                 let tmp = JSON.parse(JSON.stringify(this.courseMaterialModel));
                 let tmpMaterial = {}
-                if (this.selectedFile) {
+                if (this.selectedFiles.length > 0) {
                     tmpMaterial = {
                         type_id: tmp.index,
                         desc: tmp.description,
-                        list: [{
-                            url: this.selectedFile.url,
-                            media_id: this.selectedFile.id,
-                            file_name: this.selectedFile.file_name
-                        }]
+                        // list: [{
+                        //     url: this.selectedFile.url,
+                        //     media_id: this.selectedFile.id,
+                        //     file_name: this.selectedFile.file_name
+                        // }]
                     }
+                    console.log('AAAA',this.selectedFiles)
+                    tmpMaterial.list = this.selectedFiles.map(e => {
+                        return {
+                            url: e.url,
+                            media_id: e.id ? e.id : e.media_id,
+                            file_name: e.file_name
+                        }
+                    })
                 } else {
                     tmpMaterial = {
                         type_id: tmp.index,
@@ -469,7 +489,7 @@
                             type:'success',
                             message: '保存成功'
                         })
-                        window.location.reload(); 
+                        // window.location.reload(); 
                     } else {
                         this.$message({
                             type: 'info',
@@ -515,7 +535,14 @@
             // },
             // 当云盘中的文件被选择
             pickFileHandler: function(payload){
-                this.selectedFile = payload.file;
+                let idx = this.selectedFiles.findIndex(e => {
+                    return e.id == payload.file.id
+                })
+                if (idx == -1) {
+                    this.selectedFiles.push(payload.file)
+                }
+                console.log('文件数组',this.selectedFiles)
+                // this.selectedFile = payload.file;
                 this.showFileManagerFlag = false;
                 console.log('添加的可见信息',payload)
             },
