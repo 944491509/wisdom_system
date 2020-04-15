@@ -60,7 +60,9 @@ $(document).ready(function(){
           // 所有该教师教授的当前的课程的班级集合
           grades: [],
           currentGradeId: null, // 当前选中的班级
-  
+          drawer: false,
+          drawerTitle: '', // 抽屉的标题
+          drawerList: [],
         }
       },
       created() {
@@ -131,6 +133,23 @@ $(document).ready(function(){
             }
           });
         },
+        handleClose() {
+          this.drawer = false
+          this.drawerList = []
+        },
+        showDrawer(items, item) {
+          console.log(items, item)
+          this.drawerTitle = items.course_name + '-' + item.name
+          axios.post(
+            '/api/material/materialsByType',
+            { course_id: items.course_id, type_id: item.type_id }
+          ).then(res => {
+            if (Util.isAjaxResOk(res)) {
+              this.drawerList =  res.data.data
+            }
+          });
+          this.drawer = true
+        },
         // 教学资料
         getMyMaterialsListInfo: function () {
           let _that_ = this;
@@ -148,7 +167,7 @@ $(document).ready(function(){
           console.log(row)
           axios.post(
             '/api/study/delete-material',
-            { material_id: row.material_id }
+            { lecture_id: row.lecture_id, type_id: row.type_id }
           ).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
