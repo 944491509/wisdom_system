@@ -15,7 +15,7 @@
 	}
 </style>
 </head>
-<body style="margin:10px;font-family: '微软雅黑';font-size: 85%;">
+<body style="margin:10px;font-family: '微软雅黑';font-size: 85%;text-align: center;">
 {!!isset($data->content)?$data->content:''!!}
 </body>
 <script>
