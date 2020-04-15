@@ -37,11 +37,11 @@ class IndexController extends Controller
                 'icon' => asset('assets/img/teacher/ass3.png'),
                 'url' => 'meetings',
             ],
-            [
-                'name' => '公文',
-                'icon' => asset('assets/img/teacher/ass4.png'),
-                'url' => 'applications',
-            ],
+//            [
+//                'name' => '公文',
+//                'icon' => asset('assets/img/teacher/ass4.png'),
+//                'url' => 'applications',
+//            ],
             [
                 'name' => '任务',
                 'icon' => asset('assets/img/teacher/ass5.png'),
@@ -83,11 +83,11 @@ class IndexController extends Controller
                         'icon' => asset('assets/img/teacher/ass-icon8.png'),
                         'url' => 'evaluation',
                     ],
-                    [
-                        'name'=> '选课',
-                        'icon' => asset('assets/img/teacher/ass9.png'),
-                        'url' => 'electives',
-                    ],
+//                    [
+//                        'name'=> '选课',
+//                        'icon' => asset('assets/img/teacher/ass9.png'),
+//                        'url' => 'electives',
+//                    ],
                ]
             ],
             ['name' => '班主任助手', 'helper_page' =>
