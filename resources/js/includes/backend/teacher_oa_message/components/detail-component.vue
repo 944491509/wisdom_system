@@ -49,7 +49,7 @@
     <div class="detail detail-panel">
       <div class="detail-item">
         <span class="title">发件人</span>
-        <span class="content">{{message.title}}</span>
+        <span class="content">{{message.user_username}}</span>
       </div>
       <div class="detail-item">
         <span class="title">时间</span>
