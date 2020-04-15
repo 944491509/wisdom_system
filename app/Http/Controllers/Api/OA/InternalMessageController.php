@@ -48,10 +48,11 @@ class InternalMessageController extends Controller
         ];
 
         $result = $dao->create($data, $fileArr);
-        if ($result) {
-            return JsonBuilder::Success('添加成功');
+        $msg = $result->getMessage();
+        if ($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
         } else {
-            return JsonBuilder::Error('添加失败');
+            return JsonBuilder::Error($msg);
         }
     }
 

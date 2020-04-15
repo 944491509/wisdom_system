@@ -328,9 +328,9 @@
                 this.selectedFile = null;
                 this.courseMaterialModel.type = 0;
                 this.courseMaterialModel.description = '';
-                 this.courseMaterialModel.url =''
+                this.courseMaterialModel.url =''
                 if(materialsByTypeId){
-                   
+
                     this.courseMaterialModel.type = materialsByTypeId.type || 0;
                     this.courseMaterialModel.description = materialsByTypeId.desc || '';
                     if(materialsByTypeId.list[0].media_id === 0){
@@ -468,8 +468,8 @@
                         this.$message({
                             type:'success',
                             message: '保存成功'
-                        })
-                        window.location.reload(); 
+                        });
+                         window.location.reload();
                     } else {
                         this.$message({
                             type: 'info',
