@@ -13,7 +13,7 @@ use App\Utils\Misc\ConfigurationTool;
 <div id="teacher-homepage-app">
     <el-carousel arrow="never" type="card" height="300px">
         <el-carousel-item v-for="item in bannerList" :key="item.id">
-            <img :src="item.image_url" class="banner_img" :οnerrοr="item.image_url" @click="imgDetail(item)"/>
+            <div class="banner-item" :style="{backgroundImage:`url(${item.image_url})`}" @click="imgDetail(item)"></div>
         </el-carousel-item>
     </el-carousel>
     <div class="bottom">
