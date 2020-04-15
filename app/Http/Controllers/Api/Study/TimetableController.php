@@ -184,6 +184,8 @@ class TimetableController extends Controller
             foreach ($return as $k => $val) {
                 if($val->type == $value->type_id) {
                     $list[] = [
+                        'lecture_id'=>$val->lecture_id,
+                        'type_id' => $val->type,
                         'material_id' =>$val->id,
                         'idx' => '第'.$val->idx.'节',
                         'desc' => $val->media->file_name ?? '',
