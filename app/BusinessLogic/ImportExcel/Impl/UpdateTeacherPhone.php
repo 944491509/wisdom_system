@@ -47,12 +47,16 @@ class UpdateTeacherPhone extends AbstractImporter
                         echo $val[0].'----------修改成功'.PHP_EOL;
                     }
                 } else {
-                    if ($count != 1) {
+                    if ($count > 1) {
                         echo $val[0]. "有两个用户 跳过此人".PHP_EOL;
                         Log::info($val[0].'---有两个用户');
-                    } else {
-                        echo $val[0]. "手机号已经被使用了 跳过此人".PHP_EOL;
-                        Log::info($val[0].'----'.$val[1].'---手机号已经被使用了');
+                    } elseif($count == 0) {
+                        echo $val[0]. "没有这个用户".PHP_EOL;
+                        Log::info($val[0].'---没有这个用户');
+                    }
+                    else {
+//                        echo $val[0]. "手机号已经被使用了 跳过此人".PHP_EOL;
+//                        Log::info($val[0].'----'.$val[1].'---手机号已经被使用了');
                     }
                     continue;
                 }
