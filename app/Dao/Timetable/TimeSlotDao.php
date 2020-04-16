@@ -60,15 +60,17 @@ class TimeSlotDao
     /**
      * 获取所有用于学习的时间段: 上课 + 自习 + 自由活动
      * @param $schoolId
+     * @param $gradeYear 年级
      * @param boolean $simple
      * @param boolean $noTime 不要时间
      * @return array|Collection
      */
-    public function getAllStudyTimeSlots($schoolId, $simple = false, $noTime = false){
+    public function getAllStudyTimeSlots($schoolId, $gradeYear, $simple = false, $noTime = false){
         $config = SchoolConfiguration::where('school_id',$schoolId)->first();
         $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
         $slots = TimeSlot::where('school_id',$schoolId)
             ->where('season',$seasonType)
+            ->where('year',$gradeYear)
             ->whereIn('type',[TimeSlot::TYPE_STUDYING, TimeSlot::TYPE_PRACTICE, TimeSlot::TYPE_FREE_TIME])
             ->orderBy('from','asc')
             ->get();
@@ -135,8 +137,8 @@ class TimeSlotDao
         $startDate = $schoolConfiguration->getTermStartDate();
         $year = $startDate->year;
         $term = $schoolConfiguration->guessTerm($date->month);
-
-        $timeSlots = $this->getAllStudyTimeSlots($room->school_id);
+        $schoolId = $room->school_id;
+        $timeSlots = $this->getAllStudyTimeSlots($schoolId);
 
         $currentTimeSlot = null;
         foreach ($timeSlots as $timeSlot) {
