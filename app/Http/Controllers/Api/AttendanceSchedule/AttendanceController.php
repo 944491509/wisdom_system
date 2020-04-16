@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\AttendanceSchedule;
 
 
+use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
@@ -165,6 +166,7 @@ class AttendanceController extends Controller
      * 教师扫码云班牌
      * @param MyStandardRequest $request
      * @return string
+     * @throws \Exception
      */
     public function teacherSweepQrCode(MyStandardRequest $request)
     {
@@ -178,17 +180,21 @@ class AttendanceController extends Controller
         $timeTableDao = new TimetableItemDao;
         // 同时上多个课程 只取第一个
         $items = $timeTableDao->getCurrentItemByUser($user);
-        if ($items->isEmpty()) {
+        if (is_null($items) || $items->isEmpty()) {
             return JsonBuilder::Error('未找到您目前要上的课程');
         }
+        $item = $items[0];
         $attendancesDao = new AttendancesDao;
-        $arrive = $attendancesDao->getTeacherIsSignByItem($items[0], $user);
-        if (is_null($arrive)) {
-            $createData = $attendancesDao->createAttendanceData($items[0]);
-            if (!$createData) {
-                return JsonBuilder::Error('生成签到初始化数据失败');
-            }
-        }
+        $schoolDao = new SchoolDao;
+        $school = $schoolDao->getSchoolById($item->school_id);
+        $configuration = $school->configuration;
+        $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
+
+        $month = Carbon::parse($now)->month;
+        $term = $configuration->guessTerm($month);
+        $weeks = $configuration->getScheduleWeek($now, null, $term);
+        $week = $weeks->getScheduleWeekIndex();
+        $arrive = $attendancesDao->isAttendanceByTimetableAndWeek($item, $week);
 
         if ($arrive->teacher_sign == Attendance::TEACHER_SIGN) {
             $isArrive = true;
@@ -196,18 +202,13 @@ class AttendanceController extends Controller
             $isArrive = false;
         }
 
-        $arriveTime = '';
-        if (!empty($arrive->teacher_sign_time)) {
-            $arriveTime = $arrive->teacher_sign_time;
-        }
-
-        $data['timetable_id'] = $items[0]->id;
-        $data['time_slot_name'] = $items[0]->timeSlot->name;
-        $data['course_name'] = $items[0]->course->name;
-        $data['teacher'] = $items[0]->teacher->name;
-        $data['room'] = $items[0]->room->name;
+        $data['timetable_id'] = $item->id;
+        $data['time_slot_name'] = $item->timeSlot->name;
+        $data['course_name'] = $item->course->name;
+        $data['teacher'] = $item->teacher->name;
+        $data['room'] = $item->room->name;
         $data['is_arrive'] = $isArrive;
-        $data['arrive_time'] = $arriveTime;
+        $data['arrive_time'] = $arrive->teacher_sign_time;
 
         return JsonBuilder::Success($data);
     }
@@ -216,6 +217,7 @@ class AttendanceController extends Controller
      * 教师上课签到
      * @param MyStandardRequest $request
      * @return string
+     * @throws \Exception
      */
     public function teacherSign(MyStandardRequest $request)
     {
@@ -226,16 +228,28 @@ class AttendanceController extends Controller
         if (empty($item)) {
             return JsonBuilder::Error('未找到该老师目前上的课程');
         }
+        $item = $item[0];
 
         $dao = new AttendancesDao;
-        $result = $dao->getTeacherIsSignByItem($item[0], $user);
-        if (is_null($result)) {
-            $result = $dao->createAttendanceData($item[0]);
+        $schoolDao = new SchoolDao;
+        $school = $schoolDao->getSchoolById($item->school_id);
+        $configuration = $school->configuration;
+        $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
+
+        $month = Carbon::parse($now)->month;
+        $term = $configuration->guessTerm($month);
+        $weeks = $configuration->getScheduleWeek($now, null, $term);
+        $week = $weeks->getScheduleWeekIndex();
+        $result = $dao->isAttendanceByTimetableAndWeek($item, $week);
+        if ($result->teacher_sign == Attendance::TEACHER_SIGN) {
+             return JsonBuilder::Success('您已经签到了');
         }
 
-        $courseTime = $item[0]->timeSlot->from;
-        $date = Carbon::now()->toTimeString();
-        if($date > $courseTime) {
+        $courseTime = Carbon::parse($item->timeSlot->from);
+
+        $date = Carbon::now();
+        // 当前时间大于开课时间3分钟为迟到
+        if($date > $courseTime && $date->diffInMinutes($courseTime) > 3) {
             $late = Attendance::TEACHER_LATE;
         } else {
             $late = Attendance::TEACHER_NO_LATE;

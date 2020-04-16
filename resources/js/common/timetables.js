@@ -17,9 +17,9 @@ export function saveTimeSlot(schoolUuid, timeSlot) {
     );
 }
 
-export function getCourses(schoolId, pageNumber) {
+export function getCourses(schoolId, page) {
     return axios.post(
-        Constants.API.LOAD_COURSES_BY_SCHOOL,{school: schoolId, pageNumber: pageNumber}
+        Constants.API.LOAD_COURSES_BY_SCHOOL,{school: schoolId, page: page}
     );
 }
 
