@@ -133,7 +133,7 @@ if(document.getElementById('student_registration_app')){
                 this.selectedMajor = major;
             },
             showMajorDetailHandler: function(major){
-                loadMajorDetail(major.id).then(res => {
+                loadMajorDetail(major.id,this.schoolId).then(res => {
                     if(Util.isAjaxResOk(res)){
                         this.selectedMajor = res.data.data.plan;
                         this.showAllMajorsFlag = false;
@@ -156,7 +156,7 @@ if(document.getElementById('student_registration_app')){
             },
             // 新写的方法, 单独传送专业的ID和方法
             showMajorDetailNewHandler: function(majorId, majorName){
-                loadMajorDetail(majorId).then(res => {
+                loadMajorDetail(majorId,this.schoolId).then(res => {
                     if(Util.isAjaxResOk(res)){
                         // this.selectedMajor = res.data.data.plan;
                         // this.showAllMajorsFlag = false;

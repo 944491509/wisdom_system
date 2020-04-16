@@ -302,17 +302,17 @@ class IndexController extends Controller
         $dao = new StudentProfileDao;
         $userDao = new UserDao;
         $teacherDao = new TeacherProfileDao;
-        if ($user->isStudent()) {
+        if ($user->isStudent() && !empty($userProfile)) {
             $result = $dao->updateStudentProfile($user->id, $userProfile);
         }
-        if ($user->isTeacher()) {
+        if ($user->isTeacher() && !empty($userProfile)) {
             $result = $teacherDao->updateTeacherProfile($user->id, $userProfile);
         }
         if ($userInfo) {
             $result = $userDao->updateUserInfo($user->id, $userInfo);
         }
 
-        if ($result) {
+        if (!isset($result) || $result) {
             return JsonBuilder::Success('修改成功');
         } else {
             return JsonBuilder::Success('修改失败');
