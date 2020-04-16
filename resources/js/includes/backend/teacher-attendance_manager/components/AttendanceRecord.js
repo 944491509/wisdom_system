@@ -5,68 +5,72 @@ Vue.component("AttendanceRecord", {
   template: `
     <div class="attendance-record-container">
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="13" style="height: 100%;
+        background: #fff;">
           <div class="recordLeft">
             <div class="leftTitle">
-              <span>教务处考勤组</span>
-              <el-select v-model="select1" placeholder="请选择" size="small">
+              <img class="icon" src="/assets/img/yinxin/recordLeft.png">
+              <span class="title1">教务处考勤组</span>
+              <el-select v-model="selectDateType" placeholder="请选择" size="small">
                 <el-option
-                  v-for="item in options1"
+                  v-for="item in options"
                   :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :label="item.value"
+                  :value="item.label">
                 </el-option>
               </el-select>
               <el-date-picker
                 v-if="isDay"
                 size="small"
-                v-model="value1"
+                v-model="dateByDay"
                 type="date"
                 placeholder="选择日期">
               </el-date-picker>
               <el-date-picker
                 v-else
                 size="small"
-                v-model="value2"
+                v-model="dateByMonth"
                 type="month"
                 placeholder="选择月份">
               </el-date-picker>
-              <el-button type="primary" size="small" @click="getList">查询</el-button>
+              <el-button type="primary" size="small" @click="getList" style="margin-left: 20px;">查询</el-button>
               <el-button type="primary" size="small">导出</el-button>
             </div>
             <div class="leftContent">
-              <div>
+              <div class="itemsDiv">
                 <span>上午</span>
-                <div>
-                  <span></span>
-                  <span></span>
+                <div class="itemDiv">
+                  <p class="itemTop">XXXX</p>
+                  <p class="itemBtm">20</p>
                 </div>
               </div>
-              <div>
+              <div class="itemsDiv">
                 <span>下午</span>
-                <div>
-                  <span></span>
-                  <span></span>
+                <div class="itemDiv">
+                  <p>XXXX</p>
+                  <p>20</p>
                 </div>
               </div>
-              <div>
+              <div class="itemsDiv">
                 <span>下班</span>
-                <div>
-                  <span></span>
-                  <span></span>
+                <div class="itemDiv">
+                  <p>XXXX</p>
+                  <p>20</p>
                 </div>
               </div>
             </div>
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="11">
           <div class="recordRight">
-            <div class="leftTitle">上午-按时上班</div>
+            <div class="leftTitle">
+            <img class="icon" src="/assets/img/yinxin/recordRight.png">
+              上午-按时上班</div>
             <el-table
               :data="data.data"
               v-loading="isTableLoading"
               :empty-text="isTableLoading? ' ':'暂无数据'"
-              :style="{'width': '100%','min-height':minHeight + 'px'}"
+              :style="{}"
               border
               :header-cell-style="{'background':'#F8F9FB','color':'#313B4C'}"
               >
@@ -74,7 +78,7 @@ Vue.component("AttendanceRecord", {
                 align="center"
                 prop="title"
                 label="序号"
-                min-width="180">
+                min-width="60">
               </el-table-column>
               <el-table-column
                 align="center"
@@ -86,13 +90,13 @@ Vue.component("AttendanceRecord", {
                 align="center"
                 prop="using_afternoon"
                 label="打卡时间"
-                width="180">
+                width="280">
               </el-table-column>
               <el-table-column
                 align="center"
                 prop="wifi_name"
                 label="状态"
-                min-width="120">
+                min-width="100">
               </el-table-column>
             </el-table>
           </div>
@@ -102,10 +106,35 @@ Vue.component("AttendanceRecord", {
   mixins: [Mixins],
   data() {
     return {
+      options: [
+        {
+          lable: '按日筛选',
+          value: '0'
+        },
+        {
+          lable: '按月筛选',
+          value: '1'
+        }
+      ],
+      selectDateType: '',
+      dateByDay: '',
+      dateByMonth: '',
+      isDay: false
     };
   },
   created() {
 
+  },
+  watch: {
+    selectDateType: {
+      handler(val) {
+        if (val === '0') {
+          this.isDay = true
+        } else {
+          this.isDay = false
+        }
+      }
+    }
   },
   methods: {
     getList() {

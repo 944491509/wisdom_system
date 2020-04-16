@@ -135,5 +135,35 @@
   left: 0;
   right: 0;
   width: 100%;
-  background-color: #fff;
+  background-color: #eaeef3;
+}
+.attendance-manager-container .attendance-record-container .leftTitle {
+  padding: 10px;
+  border-bottom: 1px solid #eaedf2;
+}
+.attendance-manager-container .attendance-record-container .leftTitle .title1 {
+  margin-left: 10px;
+  margin-right: 20px;
+}
+.attendance-manager-container .attendance-record-container .leftContent {
+  margin-top: 20px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  border-bottom: 1px solid #eaedf2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv {
+  margin-left: 40px;
+  border: 1px solid #000;
+  height: 90px;
+  width: 90px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  box-shadow: 0 0 3px;
 }
