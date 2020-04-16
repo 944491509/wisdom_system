@@ -42,17 +42,17 @@ class UpdateTeacherPhone extends AbstractImporter
                 // 判断是否只有一个用户, 姓名可能有重复的
                 if ($count === 1 && is_null($phone)) {
                     // 只有一个的时候开始修改
-                    $result = User::where('name', $val[0])->update(['mobile' => $val[1]]);
+                    $result = User::where(['name'=>$val[0], 'type'=> Role::TEACHER])->update(['mobile' => $val[1]]);
                     if ($result) {
-                         echo $val[0].'----------修改成功'.PHP_EOL;
+                        echo $val[0].'----------修改成功'.PHP_EOL;
                     }
                 } else {
                     if ($count != 1) {
                         echo $val[0]. "有两个用户 跳过此人".PHP_EOL;
-                        Log::error($val[0].'---有两个用户');
+                        Log::info($val[0].'---有两个用户');
                     } else {
                         echo $val[0]. "手机号已经被使用了 跳过此人".PHP_EOL;
-                        Log::error($val[0].'----'.$val[1].'---手机号已经被使用了');
+                        Log::info($val[0].'----'.$val[1].'---手机号已经被使用了');
                     }
                     continue;
                 }
