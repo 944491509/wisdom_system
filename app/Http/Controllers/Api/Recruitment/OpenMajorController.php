@@ -190,27 +190,49 @@ class OpenMajorController extends Controller
 
         // 外部提交
         if (isset($formData['is_reg']) && $formData['is_reg'] == 1) {
-            // 验证邮箱是否被使用
-            if (!empty($userInfo1)) {
-                return JsonBuilder::Error('手机号已存在,请更换其他手机号');
-            }
-            // 验证邮箱是否被使用
-            if (!empty($userInfo2)) {
-                return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
-            }
-            // 注册账号信息
-            $dao = new RegistrationInformaticsDao;
-            $msgBag = $dao->addUser($formData, $plan);
-            if ($msgBag->isSuccess()) {
-                $user = $msgBag->getData()['user'];
+            // 存在
+            if($userInfo1){
+                // 验证邮箱是否被使用
+                if (!empty($userInfo2) && $userInfo2->id != $userInfo1->id) {
+                    return JsonBuilder::Error('邮箱已存在,请更换其他邮箱1');
+                }
                 // 获取我是否可以报名
                 $regDao = new RegistrationInformaticsDao();
-                $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
+                $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($userInfo1->id, $plan);
                 if ($statusMessageArr['status'] != 100) {
                     return JsonBuilder::Error($statusMessageArr['message']);
                 }
+                // 修改学生档案基础信息
+                $dao = new RegistrationInformaticsDao;
+                $returnData = $dao->eidtUser($userInfo1, $formData, $plan);
+                if ($returnData['status'] == true) {
+                    $user = $returnData['data']['user'];
+                } else {
+                    return JsonBuilder::Error($returnData['message']);
+                }
             } else {
-                return JsonBuilder::Error($msgBag->getMessage());
+                // 验证邮箱是否被使用
+                if (!empty($userInfo1)) {
+                    return JsonBuilder::Error('手机号已存在,请更换其他手机号');
+                }
+                // 验证邮箱是否被使用
+                if (!empty($userInfo2)) {
+                    return JsonBuilder::Error('邮箱已存在,请更换其他邮箱');
+                }
+                // 注册账号信息
+                $dao = new RegistrationInformaticsDao;
+                $msgBag = $dao->addUser($formData, $plan);
+                if ($msgBag->isSuccess()) {
+                    $user = $msgBag->getData()['user'];
+                    // 获取我是否可以报名
+                    $regDao = new RegistrationInformaticsDao();
+                    $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
+                    if ($statusMessageArr['status'] != 100) {
+                        return JsonBuilder::Error($statusMessageArr['message']);
+                    }
+                } else {
+                    return JsonBuilder::Error($msgBag->getMessage());
+                }
             }
         } else {
             $user = $request->user();
