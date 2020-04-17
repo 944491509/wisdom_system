@@ -214,10 +214,6 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
     Route::post('/submit-excel','Api\Recruitment\OpenMajorController@testExcel')
         ->name('api.major.submit.excel');
 
-    // 验证学生身份证信息的接口
-    Route::post('/verify-id-number','Api\Recruitment\OpenMajorController@verify_id_number')
-        ->name('api.major.verify.id.number');
-
     // 批准和拒绝学生的报名
     Route::post('/approve-or-reject','Api\Recruitment\OpenMajorController@approve_or_reject')
         ->name('api.major.approve.or.reject');
@@ -235,12 +231,15 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
         ->name('api.major.save.class.info');
 });
 
-
 // 招生API
 Route::prefix('student-register')->group(function () {
     // 专业详情: 前端加载是调用
     Route::post('/load-major-detail','Api\Recruitment\PlansController@get_plan_front')
         ->name('api.load.major.detail');
+
+    // 验证学生身份证信息的接口
+    Route::post('/verify-id-number','Api\Recruitment\OpenMajorController@verify_id_number')
+        ->name('api.major.verify.id.number');
 });
 
 // 录取API
