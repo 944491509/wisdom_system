@@ -1,5 +1,5 @@
 import { Mixins } from "../Mixins";
-import { _load_attendance,_load_all, catchErr } from "../api/index";
+import { _load_clockins_daycount, _load_clockins_monthcount, catchErr } from "../api/index";
 import Axios from "axios";
 Vue.component("AttendanceRecord", {
   template: `
@@ -123,7 +123,7 @@ Vue.component("AttendanceRecord", {
     };
   },
   created() {
-
+    this.getList()
   },
   watch: {
     selectDateType: {
@@ -137,14 +137,8 @@ Vue.component("AttendanceRecord", {
     }
   },
   methods: {
-    getList() {
-      let params = {
-        day: '',
-        groupid: ''
-      }
-      axios.post('/Oa/attendance/getManageDayCount', params).then(res => {
-        console.log(res)
-      })
+    async getList() {
+      const [err, res] = await catchErr(_load_clockins_daycount({ attendance_id: this.attendance_id, day: '2020-04-06' }));
     },
     _record(item) {},
   }
