@@ -1,12 +1,20 @@
 @extends('layouts.h5_app')
 @section('content')
+<link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<style>
+    img {
+        width: 100% !important;
+    }
+</style>
 <div id="current-school-id" data-id="{{ $school->uuid }}" data-is_reg="1" data-is_reg="1"></div>
 <div id="{{ $appName }}" class="school-intro-container">
     <div class="header">
         <h2 class="title">{{ $pageTitle }}</h2>
     </div>
     <div class="main">
-        <div class="intro-img">
+        <div class="intro-img" style="padding-left: 10px;padding-right: 10px;">
             <el-image src="{{ asset($school->configuration->recruitment_intro_pics)  }}"></el-image>
         </div>
         <div class="intro-content" style="padding-left: 10px;padding-right: 10px;">
