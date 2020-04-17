@@ -270,6 +270,7 @@
                     this.timeTableItem.grade_id = '';
                     this.timeTableItem.course_id = '';
                     this.timeTableItem.teacher_id = '';
+                    this.timeTableItem.time_slot_id = null
                 }
             },
             // 班级发生变化
@@ -300,6 +301,9 @@
                     this.timeTableItem.available_only = [];
                 }
             },
+            'timeTableItem.grade_id': function(){
+                this.timeTableItem.time_slot_id = null
+            }
         },
         // 计算属性
         computed: {
