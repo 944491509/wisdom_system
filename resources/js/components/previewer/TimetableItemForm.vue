@@ -275,6 +275,8 @@
             },
             // 班级发生变化
             'timeTableItem.grade_id': function(newVal, oldVal){
+                this.timeTableItem.time_slot_id = null
+                this.$emit('grade-change', newVal)
                 if(newVal !== oldVal){
                     // 去刷新课程表
                     this.fireUpTimetableRefresh();
@@ -300,9 +302,6 @@
                     // 不是指定的时间区间, 那么周数置为空数组
                     this.timeTableItem.available_only = [];
                 }
-            },
-            'timeTableItem.grade_id': function(){
-                this.timeTableItem.time_slot_id = null
             }
         },
         // 计算属性
