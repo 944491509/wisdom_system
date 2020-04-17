@@ -206,10 +206,6 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
      Route::post('/query-student-profile','Api\Recruitment\OpenMajorController@studentProfile')
         ->name('api.query.student.profile');
 
-     // 报名
-     Route::post('/submit-form','Api\Recruitment\OpenMajorController@signUp')
-        ->name('api.major.submit.form');
-
      //
     Route::post('/submit-excel','Api\Recruitment\OpenMajorController@testExcel')
         ->name('api.major.submit.excel');
@@ -240,6 +236,10 @@ Route::prefix('student-register')->group(function () {
     // 验证学生身份证信息的接口
     Route::post('/verify-id-number','Api\Recruitment\OpenMajorController@verify_id_number')
         ->name('api.major.verify.id.number');
+
+    // 报名
+    Route::post('/submit-form','Api\Recruitment\OpenMajorController@signUp')
+        ->name('api.major.submit.form');
 });
 
 // 录取API
