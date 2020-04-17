@@ -52,13 +52,14 @@ class School extends Model
     }
 
 
-    public function getCurrentTimeFrame(){
+    public function getCurrentTimeFrame($year){
         /**
          * @var SchoolConfiguration $config
          */
         $config = $this->configuration;
         $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
         $slots = TimeSlot::select(['id','name','type','from','to','season'])
+            ->where('year', $year)
             ->where('school_id',$this->id)
             ->where('season',$seasonType)
             ->orderBy('from','asc')->get();

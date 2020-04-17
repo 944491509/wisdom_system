@@ -1,13 +1,13 @@
 import {Constants} from "./constants";
 
-export function getTimeSlots(schoolId, noTime) {
+export function getTimeSlots(schoolId, noTime, grade_id) {
     if(noTime){
         noTime = true;
     }else{
         noTime = false;
     }
     return axios.post(
-        Constants.API.LOAD_STUDY_TIME_SLOTS_BY_SCHOOL,{school: schoolId, no_time: noTime}
+        Constants.API.LOAD_STUDY_TIME_SLOTS_BY_SCHOOL,{school: schoolId, no_time: noTime, grade_id}
     );
 }
 

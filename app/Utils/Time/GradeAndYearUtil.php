@@ -84,7 +84,8 @@ class GradeAndYearUtil
      */
     public static function GetTimeSlot($time = null, $schoolId = null){
         $dao = new TimeSlotDao();
-        $timeSlots = $dao->getAllStudyTimeSlots($schoolId ?? session('school.id'));
+        $schoolId = $schoolId ?? session('school.id');
+        $timeSlots = $dao->getAllStudyTimeSlots($schoolId);
         if(is_null($time)){
             $time = Carbon::now(self::TIMEZONE_CN);
         }
@@ -199,7 +200,8 @@ class GradeAndYearUtil
      */
     public static function GetUnEndTimeSlot($time = null, $schoolId = null){
         $dao = new TimeSlotDao();
-        $timeSlots = $dao->getAllStudyTimeSlots($schoolId ?? session('school.id'));
+        $schoolId = $schoolId ?? session('school.id');
+        $timeSlots = $dao->getAllStudyTimeSlots($schoolId);
         if(is_null($time)){
             $time = Carbon::now(self::TIMEZONE_CN);
         }
