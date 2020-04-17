@@ -52,9 +52,9 @@ class ClockinDao
                 'not' => ['count' => 0, 'users' => [], 'list' => []],
             ],
             'evening' => [
-                'ok' => ['count' => 0, 'users' => 0, 'list' => []],
-                'early' => ['count' => 0, 'users' => 0, 'list' => []],
-                'not' => ['count' => 0, 'users' => 0, 'list' => []],
+                'ok' => ['count' => 0, 'users' => [], 'list' => []],
+                'early' => ['count' => 0, 'users' => [], 'list' => []],
+                'not' => ['count' => 0, 'users' => [], 'list' => []],
             ]
         ];
 
