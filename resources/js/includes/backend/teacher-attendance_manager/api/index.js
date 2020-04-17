@@ -7,7 +7,9 @@ const postUrls = {
   save_clocksets:'/school_manager/teacher-attendance/save-clocksets',
   load_all:'/school_manager/organizations/load-all',
   save_exceptionday:'/school_manager/teacher-attendance/save-exceptionday',
-  delete_exceptionday:'/school_manager/teacher-attendance/delete-exceptionday'
+  delete_exceptionday:'/school_manager/teacher-attendance/delete-exceptionday',
+  load_clockins_daycount:'/school_manager/teacher-attendance/load-clockins-daycount',
+  load_clockins_monthcount: 'school_manager/teacher-attendance/load-clockins-monthcount'
 }
 const getUrls = {
 }
@@ -39,6 +41,8 @@ export const {
   _save_clocksets,
   _load_all,
   _save_exceptionday,
-  _delete_exceptionday
+  _delete_exceptionday,
+  _load_clockins_daycount,
+  _load_clockins_monthcount
 } = assetFuns;
 
