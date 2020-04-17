@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\School;
 
+use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Http\Requests\MyStandardRequest;
@@ -53,13 +54,13 @@ class TimeSlotsController extends Controller
 
     /**
      * 加载所有的学习时间段, 以及学期中用来学习的总周数
-     * @param Request $request
+     * @param MyStandardRequest $request
      * @return string
      */
-    public function load_study_time_slots(Request $request){
+    public function load_study_time_slots(MyStandardRequest $request){
         $schoolIdOrUuid = $request->get('school');
         $noTime = $request->get('no_time', false);
-
+        $gradeId = $request->getGradeId();
         $school = null;
         $schoolDao = new SchoolDao(new User());
 
@@ -76,12 +77,16 @@ class TimeSlotsController extends Controller
         if($schoolIdOrUuid && $school){
             $timeSlotDao = new TimeSlotDao();
             $field = ConfigurationTool::KEY_STUDY_WEEKS_PER_TERM;
-            return JsonBuilder::Success(
-                [
-                    'time_frame'=>$timeSlotDao->getAllStudyTimeSlots($schoolIdOrUuid, true, $noTime),
-                    'total_weeks'=>$school->configuration->$field,
-                ]
-            );
+            $gradeDao = new GradeDao();
+            $grade = $gradeDao->getGradeById($gradeId);
+
+            $timeFrame = $timeSlotDao->getAllStudyTimeSlots($schoolIdOrUuid, $grade->gradeYear(),true, $noTime);
+            $data = [
+                'time_frame'=> $timeFrame,
+                'total_weeks'=>$school->configuration->$field,
+            ];
+
+            return JsonBuilder::Success($data);
         }
         return JsonBuilder::Error();
     }
