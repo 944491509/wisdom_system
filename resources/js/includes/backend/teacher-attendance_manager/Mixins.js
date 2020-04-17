@@ -19,7 +19,8 @@ export const Mixins = {
       'isCreated',
       'teacherName',
       'exceptiondays',
-      'isShowRecord'
+      'isShowRecord',
+      'resDate'
     ])
   },
   methods: {
