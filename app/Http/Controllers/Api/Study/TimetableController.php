@@ -31,8 +31,8 @@ class TimetableController extends Controller
     {
         $user = $request->user();
         $date = $request->getDate();
-
-        $return = $this->timetable($user, $date);
+        $grade = $user->gradeUser->grade;
+        $return = $this->timetable($user, $date, $grade->gradeYear());
         $item = $return['item'];
 
         $dao = new LectureDao();
@@ -114,7 +114,7 @@ class TimetableController extends Controller
      * @param $date
      * @return array
      */
-    public function timetable($user, $date)
+    public function timetable($user, $date, $gradeYear)
     {
         $schoolId = $user->getSchoolId();
         $schoolDao = new SchoolDao();
@@ -138,7 +138,7 @@ class TimetableController extends Controller
         }
 
         $timeSlotDao = new TimeSlotDao();
-        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId);
+        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId, $gradeYear);
 
 
         return [

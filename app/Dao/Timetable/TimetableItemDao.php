@@ -584,8 +584,9 @@ class TimetableItemDao
         if(is_null($now)) {
             $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
         }
+        $grade = $user->gradeUser->grade;
         $school = (new SchoolDao())->getSchoolById($user->getSchoolId());
-        $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($now, $school->id);
+        $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear,$now, $school->id);
         if($currentTimeSlot && $school){
             $weekdayIndex = $now->dayOfWeekIso;
             // 当前学年
@@ -929,8 +930,9 @@ class TimetableItemDao
         if(is_null($now)) {
             $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
         }
+        $grade = $user->gradeUser->grade;
         $school = (new SchoolDao())->getSchoolById($user->getSchoolId());
-        $currentTimeSlot = GradeAndYearUtil::GetUnEndTimeSlot($now, $school->id);
+        $currentTimeSlot = GradeAndYearUtil::GetUnEndTimeSlot($grade->gradeYear(),$now, $school->id);
         if(!empty($currentTimeSlot) && $school){
             $weekdayIndex = $now->dayOfWeekIso;
             // 当前学年
