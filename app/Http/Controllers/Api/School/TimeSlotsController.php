@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\School;
 
+use App\User;
+use App\Models\School;
+use App\Utils\JsonBuilder;
+use Illuminate\Http\Request;
 use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Timetable\TimeSlotDao;
-use App\Http\Requests\MyStandardRequest;
-use App\User;
-use App\Utils\JsonBuilder;
-use App\Utils\Misc\ConfigurationTool;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\School;
+use App\Utils\Misc\ConfigurationTool;
+use App\Http\Requests\MyStandardRequest;
 
 class TimeSlotsController extends Controller
 {
@@ -39,13 +39,15 @@ class TimeSlotsController extends Controller
      */
     public function load_by_school(Request $request){
         $schoolUuid = $request->get('school');
+        $year = $request->get('year',1);
 
         $schoolDao = new SchoolDao(new User());
 
         $school = $schoolDao->getSchoolByIdOrUuid($schoolUuid);
 
         if($school){
-            return JsonBuilder::Success(['time_frame'=>$school->getCurrentTimeFrame()]);
+            $timeFrame = $school->getCurrentTimeFrame($year);
+            return JsonBuilder::Success(['time_frame'=>$timeFrame]);
         }
         else{
             return JsonBuilder::Error();
