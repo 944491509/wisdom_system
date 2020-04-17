@@ -19,6 +19,7 @@ use App\Utils\JsonBuilder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Welcome\IndexRequest;
 use App\Models\Notices\AppProposalImage;
+use App\Models\Schools\Campus;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Storage;
@@ -527,24 +528,26 @@ class IndexController extends Controller
      */
     public function page_info(\Illuminate\Http\Request $request)
     {
-        $school_id = $user->gradeUser->school_id;
         $campus_id = $request->input('campus_id', 0);
 
         // 类型(1:报到流程内容,2:迎新指南内容)
         $typeid = $request->input('typeid', 1);
-
+        
         // 内容
         $content = null;
         if($campus_id && $typeid)
         {
-            // 获取字段
-            $fieldArr = [1=>'config_content1 as content',2=>'config_content2 as content'];
+            $campusInfo = Campus::find($campus_id);
+            if (!empty($campusInfo) && $campusInfo->school_id) {
+                // 获取字段
+                $fieldArr = [1=>'config_content1 as content',2=>'config_content2 as content'];
 
-            $WelcomeConfigDao = new WelcomeConfigDao();
+                $WelcomeConfigDao = new WelcomeConfigDao();
 
-            $getWelcomeConfigOneInfo = $WelcomeConfigDao->getWelcomeConfigOneInfo( $school_id , $fieldArr[$typeid] );
+                $getWelcomeConfigOneInfo = $WelcomeConfigDao->getWelcomeConfigOneInfo( $campusInfo->school_id , $fieldArr[$typeid] );
 
-            $content = $getWelcomeConfigOneInfo->content;
+                $content = $getWelcomeConfigOneInfo->content;
+            }
         }
 
         $this->dataForView['content'] = $content;
