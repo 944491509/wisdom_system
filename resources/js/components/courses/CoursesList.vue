@@ -63,7 +63,7 @@
                     width="100">
                 <template slot-scope="scope">
                     <el-popover
-                            v-if="scope.row.arrangements.length > 0"
+                            v-if="scope.row.arrangements && scope.row.arrangements.length > 0"
                             placement="top"
                             width="400"
                             trigger="click">
@@ -73,7 +73,7 @@
                         <el-button size="mini" type="success" slot="reference">{{ scope.row.arrangements.length }}节课</el-button>
                     </el-popover>
 
-                    <el-tag v-if="scope.row.arrangements.length === 0" size="medium" type="success" effect="plain" style="margin:2px;">
+                    <el-tag v-if="!scope.row.arrangements || scope.row.arrangements.length === 0" size="medium" type="success" effect="plain" style="margin:2px;">
                         整个学期
                     </el-tag>
                 </template>
@@ -81,7 +81,7 @@
             <el-table-column
                     label="教材">
                 <template slot-scope="scope">
-                    <p v-if="scope.row.books.length === 0">
+                    <p v-if="!scope.row.books || scope.row.books.length === 0">
                         <el-button type="text" v-on:click="attachTextbook(scope.row)">添加教材</el-button>
                     </p>
                     <el-tag size="medium" type="info" effect="plain" :key="idx" v-for="(book,idx) in scope.row.books" style="margin:2px;">

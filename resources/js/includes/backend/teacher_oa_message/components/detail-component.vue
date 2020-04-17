@@ -19,7 +19,7 @@
           <span class="content">{{msg.title}}</span>
         </div>
         <div class="detail-item">
-          <span class="title"></span>
+          <span class="title">内容</span>
           <span class="content">{{msg.content}}</span>
         </div>
         <div class="detail-item" v-if="msg.file && msg.file.length > 0">
@@ -49,7 +49,7 @@
     <div class="detail detail-panel">
       <div class="detail-item">
         <span class="title">发件人</span>
-        <span class="content">{{message.title}}</span>
+        <span class="content">{{message.user_username}}</span>
       </div>
       <div class="detail-item">
         <span class="title">时间</span>
@@ -62,6 +62,10 @@
       <div class="detail-item">
         <span class="title">主题</span>
         <span class="content">{{message.title}}</span>
+      </div>
+      <div class="detail-item">
+        <span class="title">内容</span>
+        <span class="content">{{message.content}}</span>
       </div>
       <div class="detail-item" v-if="message.file && message.file.length > 0">
         <span class="title">附件</span>
@@ -113,13 +117,13 @@ export default {
         })
         .then(response => {
           DownLoadUtil.download(new Blob([response.data]), file.name);
-        }).catch(e=>{
-          if(e.response.status === 404){
-            this.$message.error('附件不存在');
-          }else{
-            this.$message.error('附件下载失败');
+        }).catch(e=> {
+          if (e.response.status === 404) {
+              this.$message.error('附件不存在');
+          } else {
+              this.$message.error('附件下载失败');
           }
-        });
+      });
     }
   }
 };

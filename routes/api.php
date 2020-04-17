@@ -199,8 +199,8 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
         ->name('api.load.plans.qa');
 
      // 专业详情: 前端加载是调用
-     Route::post('/load-major-detail','Api\Recruitment\PlansController@get_plan_front')
-        ->name('api.load.major.detail');
+     // Route::post('/load-major-detail','Api\Recruitment\PlansController@get_plan_front')
+     //   ->name('api.load.major.detail');
 
      // 报名辅助填充数据
      Route::post('/query-student-profile','Api\Recruitment\OpenMajorController@studentProfile')
@@ -233,6 +233,14 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
     // 分班保存
     Route::post('/save-class-info','Api\Recruitment\OpenMajorController@save_class_info')
         ->name('api.major.save.class.info');
+});
+
+
+// 招生API
+Route::prefix('student-register')->group(function () {
+    // 专业详情: 前端加载是调用
+    Route::post('/load-major-detail','Api\Recruitment\PlansController@get_plan_front')
+        ->name('api.load.major.detail');
 });
 
 // 录取API

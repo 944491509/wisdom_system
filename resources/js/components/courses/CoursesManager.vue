@@ -15,6 +15,15 @@
                     v-on:attach-textbook="onCourseAttacheTextbook"
                     :can-delete="canDelete"
             ></courses-list>
+            <div class="footer-pagination">
+                <el-pagination
+                background
+                layout="prev, pager, next"
+                :page-count="pagination.pageCount"
+                :current-page="pagination.page"
+                @current-change="onPageChange"
+                ></el-pagination>
+            </div>
         </div>
 
         <el-dialog
@@ -266,10 +275,19 @@
                 timeSlots:[],
                 totalWeeks: 20,
                 pageNumber: 0,
+                pagination: {
+                    page: 1,
+                    pageCount: 0
+                },
                 // 选修课程相关
                 showElectiveCourseFormFlag: false,
                 currentElectiveCourse:{}
             };
+        },
+        watch: {
+            "pagination.page": function() {
+                this._getAllCourses();
+            }
         },
         created(){
             this.courseModel = getEmptyElectiveCourseApplication();
@@ -287,6 +305,9 @@
             })
         },
         methods: {
+            onPageChange(page) {
+                this.pagination.page = page;
+            },
             updateInput: function(e){
                 this.$forceUpdate();
             },
@@ -295,9 +316,10 @@
                 window.location.reload();
             },
             _getAllCourses: function(){
-                getCourses(this.schoolId, this.pageNumber).then(res => {
+                getCourses(this.schoolId, this.pagination.page).then(res => {
                     if(res.data.code === Constants.AJAX_SUCCESS){
-                        this.courses = res.data.data.courses;
+                        this.courses = res.data.data.list;
+                        this.pagination.pageCount = res.data.data.lastPage
                     }
                 })
             },
@@ -528,4 +550,10 @@
         text-align: right;
     }
 }
+.footer-pagination {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 0;
+  }
 </style>
