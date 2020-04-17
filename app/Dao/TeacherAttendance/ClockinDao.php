@@ -40,16 +40,16 @@ class ClockinDao
     public function getOneMonthCount(Attendance $attendance, Carbon $monthStart, Carbon $monthEnd) {
         $return = [
             'morning' => [
-                'ok' => ['count' => 0, 'users' => 0, 'list' => []],
-                'late' => ['count' => 0, 'users' => 0, 'list' => []],
-                'later' => ['count' => 0, 'users' => 0, 'list' => []],
-                'not' => ['count' => 0, 'users' => 0, 'list' => []],
+                'ok' => ['count' => 0, 'users' => [], 'list' => []],
+                'late' => ['count' => 0, 'users' => [], 'list' => []],
+                'later' => ['count' => 0, 'users' => [], 'list' => []],
+                'not' => ['count' => 0, 'users' => [], 'list' => []],
             ],
             'afternoon' => [
-                'ok' => ['count' => 0, 'users' => 0, 'list' => []],
-                'late' => ['count' => 0, 'users' => 0, 'list' => []],
-                'later' => ['count' => 0, 'users' => 0, 'list' => []],
-                'not' => ['count' => 0, 'users' => 0, 'list' => []],
+                'ok' => ['count' => 0, 'users' => [], 'list' => []],
+                'late' => ['count' => 0, 'users' => [], 'list' => []],
+                'later' => ['count' => 0, 'users' => [], 'list' => []],
+                'not' => ['count' => 0, 'users' => [], 'list' => []],
             ],
             'evening' => [
                 'ok' => ['count' => 0, 'users' => 0, 'list' => []],
@@ -71,7 +71,84 @@ class ClockinDao
             ];
         }
 
+        while ($monthStart->lte($monthEnd)) {
+            $day = $monthStart->format('Y-m-d');
+            $clockins = $attendance->clockins()->where('day', '=', $day)->orderBy('id', 'desc')->get();
+            $hasUserId = ['morning' => [], 'afternoon' => [], 'evening' => []];
+            foreach ($clockins as $clockin) {
+                //该用户已不在此组内
+                if (!isset($userList[$clockin->user_id])) {
+                    continue;
+                }
+                $hasUserId[$clockin->type][] = $clockin->user_id;
+                $user = $userList[$clockin->user_id];
+                $user['status'] = $clockin->status;
+                $user['time'] = $clockin->time;
+                $user['day'] = $day;
+                switch ($clockin->status) {
+                    case Clockin::STATUS_NORMAL:
+                        $return[$clockin->type]['ok']['count']++;
+                        $return[$clockin->type]['ok']['list'][] = $user;
+                        if (!in_array($user['userid'], $return[$clockin->type]['ok']['users'])) {
+                            $return[$clockin->type]['ok']['users'][] = $user['userid'];
+                        }
+                        break;
+                    case Clockin::STATUS_LATE:
+                        $return[$clockin->type]['late']['count']++;
+                        $return[$clockin->type]['late']['list'][] = $user;
+                        if (!in_array($user['userid'], $return[$clockin->type]['late']['users'])) {
+                            $return[$clockin->type]['late']['users'][] = $user['userid'];
+                        }
+                        break;
+                    case Clockin::STATUS_LATER:
+                        $return[$clockin->type]['later']['count']++;
+                        $return[$clockin->type]['later']['list'][] = $user;
+                        if (!in_array($user['userid'], $return[$clockin->type]['later']['users'])) {
+                            $return[$clockin->type]['later']['users'][] = $user['userid'];
+                        }
+                        break;
+                    case Clockin::STATUS_EARLY:
+                        $return[$clockin->type]['early']['count']++;
+                        $return[$clockin->type]['early']['list'][] = $user;
+                        if (!in_array($user['userid'], $return[$clockin->type]['early']['users'])) {
+                            $return[$clockin->type]['early']['users'][] = $user['userid'];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
 
+            foreach ($userList as $userId => $user) {
+                $user['day'] = $day;
+                if (!in_array($userId, $hasUserId['morning'])) {
+                    $return['morning']['not']['count']++;
+                    $return['morning']['not']['list'][] = $user;
+                    if (!in_array($user['userid'], $return['morning']['not']['users'])) {
+                        $return['morning']['not']['users'][] = $user['userid'];
+                    }
+                }
+                if (!in_array($userId, $hasUserId['afternoon'])) {
+                    $return['afternoon']['not']['count']++;
+                    $return['afternoon']['not']['list'][] = $user;
+                    if (!in_array($user['userid'], $return['afternoon']['not']['users'])) {
+                        $return['afternoon']['not']['users'][] = $user['userid'];
+                    }
+                }
+                if (!in_array($userId, $hasUserId['evening'])) {
+                    $return['evening']['not']['count']++;
+                    $return['evening']['not']['list'][] = $user;
+                    if (!in_array($user['userid'], $return['evening']['not']['users'])) {
+                        $return['evening']['not']['users'][] = $user['userid'];
+                    }
+                }
+            }
+
+
+            $monthStart->addDay();
+        }
+
+        return $return;
     }
 
     public function getOneDayCount(Attendance $attendance, $day) {
