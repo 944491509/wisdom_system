@@ -55,8 +55,8 @@ class UpdateTeacherPhone extends AbstractImporter
                         Log::info($val[0].'---没有这个用户');
                     }
                     else {
-//                        echo $val[0]. "手机号已经被使用了 跳过此人".PHP_EOL;
-//                        Log::info($val[0].'----'.$val[1].'---手机号已经被使用了');
+                        echo $val[0]. "手机号已经被使用了 跳过此人".PHP_EOL;
+                        Log::info($val[0].'----'.$val[1].'---手机号已经被使用了');
                     }
                     continue;
                 }

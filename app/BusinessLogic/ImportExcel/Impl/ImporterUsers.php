@@ -2,14 +2,17 @@
 
 namespace App\BusinessLogic\ImportExcel\Impl;
 
+use App\Dao\Schools\GradeDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
+use App\Models\Schools\Grade;
 use App\User;
 use App\Utils\Time\GradeAndYearUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Ramsey\Uuid\Uuid;
 
@@ -84,8 +87,8 @@ class ImporterUsers extends AbstractImporter
                     'name' => $val[0],
                     'mobile' => $val[8],
                     'password' => Hash::make(substr($val['3'],-6)),
-                    'type' => Role::REGISTERED_USER,
-                    'status' => User::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED,
+                    'type' => Role::VERIFIED_USER_STUDENT,
+                    'status' => User::STATUS_VERIFIED,
                 ];
 
                 $profile = [
@@ -107,13 +110,13 @@ class ImporterUsers extends AbstractImporter
 
                 // 手机号不能为空
                 if (empty($student['mobile']) || strlen($student['mobile'])!= 11 ) {
-                    // $this->errorLog($val,'手机号格式错误');
+                     $this->errorLog($val[0],'手机号格式错误');
                     echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 // 身份证
                 if (empty($profile['id_number']) || strlen($profile['id_number'])!= 18) {
-                    // $this->errorLog($val,'身份证号格式错误');
+                     $this->errorLog($val[0],'身份证号格式错误');
                     echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
@@ -121,16 +124,42 @@ class ImporterUsers extends AbstractImporter
                 $profileResult = $profileDao->getStudentInfoByIdNumber($val[3]);
                 $userResult = $userDao->getUserByMobile($val[8]);
                 if ($userResult) {
+                    $this->errorLog($val[0],'手机号已经被注册了 跳过此人');
                     echo $val[0]. "手机号已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
                 if ($profileResult) {
+                    $this->errorLog($val[0],'身份证已经被注册了 跳过此人');
                     echo $val[0]. "身份证已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
 
                 DB::beginTransaction();
-
+                $gradeDao = new GradeDao;
+                $grades = Grade::where('name',$val[14])->first();
+                if (is_null($grades)) {
+                    $this->errorLog($val[0],'找不到班级');
+                    echo $val[0]. "找不到班级 跳过此人".PHP_EOL;
+                    continue;
+                }
+                $major = $grades->major;
+                if (is_null($major)) {
+                    $this->errorLog($val[0],'找不到专业');
+                    echo $val[0]. "找不到专业 跳过此人".PHP_EOL;
+                    continue;
+                }
+                $department = $major->department;
+                if (is_null($department)) {
+                    $this->errorLog($val[0],'找不到系');
+                    echo $val[0]. "找不到系 跳过此人".PHP_EOL;
+                    continue;
+                }
+                $institute =  $department->institute;
+                if (is_null($institute)) {
+                    $this->errorLog($val[0],'找不到学院');
+                    echo $val[0]. "找不到学院 跳过此人".PHP_EOL;
+                    continue;
+                }
                 try{
                     // 创建用户数据
                     // 创建用户班级的关联
@@ -142,9 +171,13 @@ class ImporterUsers extends AbstractImporter
                     $gradeData = [
                         'user_id' => $user->id,
                         'name' => $student['name'],
-                        'user_type' => Role::REGISTERED_USER, // 学生
-                        'school_id' => $this->task['school_id']
-
+                        'user_type' => Role::VERIFIED_USER_STUDENT, // 学生
+                        'school_id' => $this->task['school_id'],
+                        'campus_id' => 1,
+                        'institute_id' => $institute->id,
+                        'department_id' => $department->id,
+                        'major_id' => $major->id,
+                        'grade_id' => $grades->id,
                     ];
                     $gradeUserDao->create($gradeData);
 
@@ -182,6 +215,7 @@ class ImporterUsers extends AbstractImporter
      */
     public function errorLog($data, $log)
     {
+        Log::error($data, [$log]);
         // todo :: 错误记录
     }
 
