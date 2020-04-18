@@ -22,6 +22,7 @@ Vue.component("AttendanceRecord", {
                 size="small"
                 v-model="dateByDay"
                 value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
                 type="date"
                 placeholder="选择日期">
               </el-date-picker>
@@ -161,18 +162,28 @@ Vue.component("AttendanceRecord", {
     };
   },
   mounted() {
-    // this.$nextTick(() => {
-      // this.getList()
-    // })
+    let date = new Date()
+    let year = date.getFullYear()
+    let month = date.getMonth().toString().length == 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+    let day = date.getDate()
+    this.isDay = true
+    this.dateByDay = year + '-' + month + '-' + day
+    console.log(this.dateByDay)
+    this.selectDateType = '0'
+    this.getList()
   },
   watch: {
     selectDateType: {
       handler(val) {
+        let date = new Date()
+        let year = date.getFullYear()
+        let month = date.getMonth().toString().length == 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+        let day = date.getDate()
         if (val === '0') {
-          this.dateByDay = ''
+          this.dateByDay = year + '-' + month + '-' + day
           this.isDay = true
         } else {
-          this.dateByDay = ''
+          this.dateByDay = year + '-' + month 
           this.isDay = false
         }
       }
@@ -182,6 +193,7 @@ Vue.component("AttendanceRecord", {
     async getList() {
       let params = {}
       if (this.dateByDay.split("-").length == 3) {
+        console.log('ssss')
         params = {
           attendance_id: this.attendance_id,
           day: this.dateByDay
@@ -191,6 +203,7 @@ Vue.component("AttendanceRecord", {
         this.isShow = true
         console.log(this.resDate)
       } else if (this.dateByDay.split("-").length == 2) {
+        console.log('xxxx')
         params = {
           attendance_id: this.attendance_id,
           month: this.dateByDay
