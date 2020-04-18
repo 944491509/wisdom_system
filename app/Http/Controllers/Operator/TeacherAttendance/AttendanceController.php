@@ -59,7 +59,7 @@ class AttendanceController extends Controller
         $info = $clockinDao->getOneMonthCount($attendance, $monthStart, $monthEnd);
         $return = [
             'using_afternoon' => $attendance->using_afternoon,
-            'date' => $month,
+            'month' => $month,
             'info' => $info
         ];
         return JsonBuilder::Success($return);

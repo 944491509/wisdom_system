@@ -55,6 +55,8 @@ class FromStudentPoint implements ITimetableBuilder
     protected $year;
     protected $timetableItemDao;
     protected $timeSlotDao;
+    protected $grade;
+
     /**
      * @var TimeSlot[] $timeSlots
      */
@@ -74,6 +76,7 @@ class FromStudentPoint implements ITimetableBuilder
         }
 
         $this->gradeUser = $this->student->gradeUser;
+        $this->grade = $this->gradeUser->grade;
 
         $this->school = $this->gradeUser->school;
         $this->schoolConfiguration = $this->school->configuration;
@@ -104,7 +107,7 @@ class FromStudentPoint implements ITimetableBuilder
 
         $this->weekType = $this->isOddWeek ? GradeAndYearUtil::WEEK_ODD : GradeAndYearUtil::WEEK_EVEN; // 单双周
         $this->timeSlotDao = new TimeSlotDao($this->school);
-        $this->timeSlots = $this->timeSlotDao->getAllStudyTimeSlots($this->school->id);
+        $this->timeSlots = $this->timeSlotDao->getAllStudyTimeSlots($this->school->id, $this->grade->gradeYear());
         $this->timetableItemDao = new TimetableItemDao($this->timeSlots);
     }
 
