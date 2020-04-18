@@ -9,7 +9,7 @@ const postUrls = {
   save_exceptionday:'/school_manager/teacher-attendance/save-exceptionday',
   delete_exceptionday:'/school_manager/teacher-attendance/delete-exceptionday',
   load_clockins_daycount:'/school_manager/teacher-attendance/load-clockins-daycount',
-  load_clockins_monthcount: 'school_manager/teacher-attendance/load-clockins-monthcount'
+  load_clockins_monthcount: '/school_manager/teacher-attendance/load-clockins-monthcount'
 }
 const getUrls = {
 }
