@@ -183,29 +183,48 @@ class TimeSlotDao
         $startDate = $schoolConfiguration->getTermStartDate();
         $year = $startDate->year;
         $term = $schoolConfiguration->guessTerm($date->month);
+        // 先查询当前教室今天要上的所有的课
+        $map = [
+            'room_id' => $room->id,
+            'year' => $year,
+            'term' => $term,
+            'weekday_index' => $date->dayOfWeekIso,
+        ];
+        $timeTableItems = TimetableItem::where($map)->get();
 
-        $timeSlots = $this->getAllStudyTimeSlots($room->school_id);
-
-        $currentTimeSlot = null;
-        foreach ($timeSlots as $timeSlot) {
-            /**
-             * @var TimeSlot $timeSlot
-             */
-            if($timeSlot->current){
-                $currentTimeSlot = $timeSlot;
+        foreach ($timeTableItems as $key => $item) {
+            // 判断这节课是否是当前课
+            $timeSlot = $item->timeSlot;
+            if($this->isCurrent($timeSlot)) {
+                return $item;
+                break;
             }
         }
+        return null;
 
-        if (empty($currentTimeSlot->id)) {
-            return null;
-        }
-        return TimetableItem::where('room_id',$room->id)
-            ->where('year', $year)
-            ->where('term', $term)
-            ->where('weekday_index',$date->dayOfWeekIso)
-            ->where('time_slot_id', $currentTimeSlot->id)
-            ->with('timeslot')
-            ->first();
+
+//        $timeSlots = $this->getAllStudyTimeSlots($room->school_id);
+//
+//        $currentTimeSlot = null;
+//        foreach ($timeSlots as $timeSlot) {
+//            /**
+//             * @var TimeSlot $timeSlot
+//             */
+//            if($timeSlot->current){
+//                $currentTimeSlot = $timeSlot;
+//            }
+//        }
+//
+//        if (empty($currentTimeSlot->id)) {
+//            return null;
+//        }
+//        return TimetableItem::where('room_id',$room->id)
+//            ->where('year', $year)
+//            ->where('term', $term)
+//            ->where('weekday_index',$date->dayOfWeekIso)
+//            ->where('time_slot_id', $currentTimeSlot->id)
+//            ->with('timeslot')
+//            ->first();
     }
 
 
