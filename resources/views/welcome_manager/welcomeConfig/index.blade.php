@@ -11,28 +11,28 @@
                 </div>
                 <div class="card-body menu-left">
                     <div class="menu-left-title">
-                        <ul>
+                        <div>
                             <!-- <li @click="isShow(1)"><a :class="[this.is_show1?'on-backgroup-green':'']">基础设置</a></li>
                             <li @click="isShow(2)"><a :class="[this.is_show2?'on-backgroup-green':'']">个人信息</a></li>
                             <li @click="isShow(3)"><a :class="[this.is_show3?'on-backgroup-green':'']">报到确认</a></li>
                             <li @click="isShow(4)"><a :class="[this.is_show4?'on-backgroup-green':'']">报到单</a></li> -->
-                            <li @click="isShow(1)">
+                            <div @click="isShow(1)">
                               <img v-if="is_show1" src="/assets/img/yinxin/jichuxinxikuang.png">
                               <img v-else src="/assets/img/yinxin/jichuxinxi2.png">
-                            </li>
-                            <li @click="isShow(2)">
+                            </div>
+                            <div @click="isShow(2)">
                               <img v-if="is_show2" src="/assets/img/yinxin/gerenxinxikuang.png">
                               <img v-else src="/assets/img/yinxin/gerenxinxi2.png">
-                            </li>
-                            <li @click="isShow(3)">
+                            </div>
+                            <div @click="isShow(3)">
                               <img v-if="is_show3" src="/assets/img/yinxin/baodaoquerenkuang.png">
                               <img v-else src="/assets/img/yinxin/baodaoqueren2.png">
-                            </li>
-                            <li @click="isShow(4)">
+                            </div>
+                            <div @click="isShow(4)">
                               <img v-if="is_show4" src="/assets/img/yinxin/baodaodankuang.png">
                               <img v-else src="/assets/img/yinxin/baodaodan2.png">
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                     </div>
                     <div class="menu-left-content">
                         <!--基础设置-->
@@ -126,7 +126,7 @@
             </div>
         </div>
 
-        <div class="col-2" v-if="dataList2 !== undefined && dataList2.length >0">
+        <div class="col-3" v-if="dataList2 !== undefined && dataList2.length >0">
             <div class="card">
                 <div class="card-head">
                     <header>
@@ -144,7 +144,7 @@
                                 </a> -->
                                 <div class="itemDiv">
                                   <img class="" src="/assets/img/yinxin/duihao.png">
-                                  <span style="margin-left: 20px;">@{{ item.name }}</span>
+                                  <span class="title2">@{{ item.name }}</span>
                                   <img class="delete icon" src="/assets/img/yinxin/shanchu.png" @click="deleteConfigStep(item)">
                                   <img class="up icon" src="/assets/img/yinxin/shangyi.png" @click="upConfigStep(item)">
                                   <img class="down icon" src="/assets/img/yinxin/xiayi.png" @click="downConfigStep(item)">
@@ -155,7 +155,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-5" v-if="dataList2 !== undefined && dataList2.length >0">
+        <div class="col-4" v-if="dataList2 !== undefined && dataList2.length >0">
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
@@ -189,6 +189,9 @@
     *{
         margin: 0;
         padding: 0;
+    }
+    .title2 {
+        margin-left: 20px;
     }
     .el-form-item__label {
         font-weight: bold;
@@ -299,4 +302,27 @@
         height: 100px;
         margin: 5px 5px;
     }
+</style>
+
+<style>
+@media screen and (max-width: 1800px) and (min-width: 1200px){
+    .menu-left-title {
+        width: 30%;
+    }
+    .menu-left-title img {
+        width: 158px;
+    }
+    .menu-left-content {
+        width: 70%;
+    }
+    .el-input {
+        font-size: 12px !important;
+    }
+    .title2 {
+        margin-left: 0;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner {
+        width: 200px !important;
+    }
+}
 </style>

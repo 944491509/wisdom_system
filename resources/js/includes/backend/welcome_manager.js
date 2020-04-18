@@ -22,7 +22,7 @@ if(document.getElementById('school-welcome-list-app')){
             return {
                 showFileManagerFlag: false,
                 schoolId: null,
-                is_show1:true, // 基础信息
+                is_show1:false, // 基础信息
                 is_show2:false, // 个人信息
                 is_show3:false, // 报到确认
                 is_show4:false, // 报到单
@@ -164,7 +164,7 @@ if(document.getElementById('school-welcome-list-app')){
                     this.userInfoForm.card_front = '';
                     this.userInfoForm.config_content1 = '';
                 }
-                this.getConfigStepListInfo();
+                // this.getConfigStepListInfo();
             },
             // 获取流程数据列表
             getConfigStepListInfo: function () {
