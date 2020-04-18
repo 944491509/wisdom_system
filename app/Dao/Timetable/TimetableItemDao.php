@@ -359,6 +359,7 @@ class TimetableItemDao
                 'optional'=>$row->course->optional,
                 'weekday_index'=>$row->weekday_index,
                 'time_slot_id'=>$row->time_slot_id,
+                'time_slot' => $row->timeSlot,
                 'specials'=>'',
             ];
         }
