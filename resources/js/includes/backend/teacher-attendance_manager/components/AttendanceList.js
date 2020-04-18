@@ -61,7 +61,9 @@ Vue.component("AttendanceList", {
     };
   },
   methods: {
-    _record(item) {},
+    _record(item) {
+      this.SETOPTIONS({ isShowRecord: true });
+    },
     async _holiday_set (attendance_id) {
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       const exceptiondays = res.exceptiondays.map(({day}) => (day))

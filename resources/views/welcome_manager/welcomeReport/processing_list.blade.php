@@ -56,7 +56,7 @@ use App\User;
                                         <td>{{ isset($info->birthday)?$info->birthday:'---' }}</td>
                                         <td>{{ isset($info->nation_name)?$info->nation_name:'---' }}</td>
                                         <td>{{ isset($info->political_name)?$info->political_name:'---' }}</td>
-                                        <td>{{ isset($info->serial_number)?$info->serial_number:'---' }}</td>
+                                        <td>{{ isset($info->student_number)?$info->student_number:'---' }}</td>
                                         <td>{{ isset($info->id_number)?$info->id_number:'---' }}</td>
                                         <td>手机号</td>
                                         <td>{{ isset($info->institute_name)?$info->institute_name:'---' }}</td>

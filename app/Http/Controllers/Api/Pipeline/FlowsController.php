@@ -306,7 +306,7 @@ class FlowsController extends Controller
 
                         $retUserList[$key][] = [
                             'avatar' => $im->profile->avatar ?? '',
-                            'name' => $im->profile->name ?? '',
+                            'name' => $im->name ?? '',
                             'result' => $im->result
                         ];
                     }
@@ -446,7 +446,7 @@ class FlowsController extends Controller
                 $cancelInfo = [
                     'avatar' => $startUserAction->userFlow->user->profile->avatar ?? '',
                     'name' => $startUserAction->userFlow->user->name ?? '',
-                    'time' => substr($startUserAction->updated_at, 0, 16),
+                    'time' => substr($startUserAction->userFlow->updated_at, 0, 16),
                 ];
             }
 

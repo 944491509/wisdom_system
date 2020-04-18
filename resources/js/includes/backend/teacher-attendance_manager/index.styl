@@ -1,5 +1,6 @@
 .attendance-manager-container
-  padding 20px
+  position: relative
+  margin 20px
   :focus
     outline none
   .attendance-add
@@ -95,5 +96,38 @@
     width 100%
     .el-button--mini
       padding 5px 12px
-
+  .attendance-record-container
+    position: absolute
+    height: 100%
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    width: 100%
+    background-color: #fff
+    .leftTitle
+      padding: 10px;
+      border-bottom: 1px solid #EAEDF2;
+      .title1
+        margin-left: 10px;
+        margin-right: 20px;
+    .leftContent
+      margin-top: 20px;
+      .itemsDiv
+        height: 150px;
+        display: flex;
+        align-items: center;
+        padding-left: 30px;
+        border-bottom: 1px solid #EAEDF2;
+        .itemDiv
+          margin-left: 40px;
+          border: 1px solid #000;
+          height: 90px;
+          width: 90px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          border-radius: 5px;
+          box-shadow: 0 0 3px;
 

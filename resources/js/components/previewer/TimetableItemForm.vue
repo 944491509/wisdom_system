@@ -82,9 +82,9 @@
                                 </el-select>
                                 <span class="help-text">
                                 说明: 请选择要教授哪门课程
-                                <span v-if="timeTableItem.course_id !== ''">
+                                <!--<span v-if="timeTableItem.course_id !== ''">
                                     <a target="_blank" :href="previewByCourseUrl">点击查看({{ courseText }})的已有课程安排</a>
-                                </span>
+                                </span>-->
                             </span>
                             </el-form-item>
 
@@ -94,9 +94,9 @@
                                 </el-select>
                                 <span class="help-text">
                                     说明: 请选择授课的老师
-                                    <span v-if="timeTableItem.teacher_id !== ''">
+                                    <!--<span v-if="timeTableItem.teacher_id !== ''">
                                         <a target="_blank" :href="previewByTeacherUrl">点击查看老师: ({{ teacherText }}) 已被安排的课程</a>
-                                    </span>
+                                    </span>-->
                                 </span>
                             </el-form-item>
                             <el-form-item label="教学楼">
@@ -119,11 +119,12 @@
                                 <el-select v-model="timeTableItem.room_id" style="width: 100%;">
                                     <el-option :label="room.name + ': ' + room.description + '(可容纳: ' + room.seats +'人)'" :value="room.id" :key="room.id" v-for="room in rooms"></el-option>
                                 </el-select>
-                                <span v-if="timeTableItem.room_id !== ''">
-                                    <a target="_blank" :href="previewByRoomUrl">点击查看教室: ({{ locationText }}) 的排课</a>
-                                </span>
-                                <span v-else class="help-text">
+
+                                <span class="help-text">
                                     说明: 请选择上面选择的楼的那个房间上课
+                                    <!--<span v-if="timeTableItem.room_id !== ''">-->
+                                    <!--<a target="_blank" :href="previewByRoomUrl">点击查看教室: ({{ locationText }}) 的排课</a>-->
+                                <!--</span>-->
                                 </span>
                             </el-form-item>
                         </div>
@@ -270,10 +271,13 @@
                     this.timeTableItem.grade_id = '';
                     this.timeTableItem.course_id = '';
                     this.timeTableItem.teacher_id = '';
+                    this.timeTableItem.time_slot_id = null
                 }
             },
             // 班级发生变化
             'timeTableItem.grade_id': function(newVal, oldVal){
+                this.timeTableItem.time_slot_id = null
+                this.$emit('grade-change', newVal)
                 if(newVal !== oldVal){
                     // 去刷新课程表
                     this.fireUpTimetableRefresh();
@@ -299,7 +303,7 @@
                     // 不是指定的时间区间, 那么周数置为空数组
                     this.timeTableItem.available_only = [];
                 }
-            },
+            }
         },
         // 计算属性
         computed: {

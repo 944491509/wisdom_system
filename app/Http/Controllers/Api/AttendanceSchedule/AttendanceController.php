@@ -319,6 +319,7 @@ class AttendanceController extends Controller
         $time = $request->get('time');
 
         $timeSlotDao = new TimeSlotDao;
+        // todo
         $data =  $timeSlotDao->getAllStudyTimeSlots($user->getSchoolId());
 
         $result = [];

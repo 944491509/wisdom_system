@@ -28,7 +28,6 @@ class PagesController extends Controller
         $school = $dao->getSchoolById($request->get('school_id'));
         $this->dataForView['pageTitle'] = ''; // 招生简章
         $this->dataForView['school'] = $school;
-
         $this->dataForView['appName'] = 'student_registration_app';
         $this->dataForView['api_token'] = Auth::user()->api_token ?? null;
 
