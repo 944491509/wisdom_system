@@ -17,16 +17,16 @@ if(document.getElementById('teaching-research-app')){
             }
         },
         created(){
-            const dom = document.getElementById('app-init-data-holder');
-            this.group.school_id = dom.dataset.school;
-            const members = JSON.parse(dom.dataset.members);
-            const group = JSON.parse(dom.dataset.group);
-            if(!Util.isEmpty(group)){
-                this.group = group;
-            }
-            if(!Util.isEmpty(members)){
-                this.members = members;
-            }
+          const dom = document.getElementById('app-init-data-holder');
+          this.group.school_id = dom.dataset.school;
+          this.group = {};
+          this.members = [];
+          if (!Util.isEmpty(dom.dataset.group)) {
+            this.group = JSON.parse(dom.dataset.group);
+          }
+          if (!Util.isEmpty(dom.dataset.members)) {
+            this.members = JSON.parse(dom.dataset.members);
+          }
         },
         methods: {
             onSubmit: function(){
