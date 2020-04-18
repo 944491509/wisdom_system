@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('school')->middleware('auth:api')->group(function () {
+    // 加载学校年制接口
+    Route::get('/load-config-year','Api\School\TimeSlotsController@load_year_school')
+        ->name('api.school.load.config.year');
+
     // 加载学校的作息时间表
     Route::any('/load-time-slots','Api\School\TimeSlotsController@load_by_school')
         ->name('api.school.load.time.slots');
