@@ -101,6 +101,7 @@ Vue.component("AttendanceRecord", {
             <el-table
               :data="tableList"
               :style="{}"
+              height="470"
               border
               :header-cell-style="{'background':'#F8F9FB','color':'#313B4C'}"
               >
