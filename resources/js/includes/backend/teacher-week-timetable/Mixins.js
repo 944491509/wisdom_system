@@ -7,9 +7,9 @@ export const Mixins = {
   },
   methods: {
     ...mapMutations(["SETOPTIONS", "SETOPTIONOBJ"]),
-    async _initData(currentDate) {
+    async _initData(currentDate, year) {
       this.SETOPTIONS({ isTableLoading: true });
-      let [err, data] = await catchErr(_timetable_teacher_week({ date:currentDate }));
+      let [err, data] = await catchErr(_timetable_teacher_week({ date:currentDate, year }));
       const {timetable,time_slots,week_index,date} = data
       let tableHeader = timetable.map(({table})=>table)
       tableHeader.unshift({title:'周课'})

@@ -2,7 +2,7 @@
   <div class="block">
     <h2 class="title-bar">
       作息时间表
-      <el-dropdown>
+      <el-dropdown trigger="click" class="grades">
         <span class="el-dropdown-link">
           {{selectedGrade.text}}
           <i class="el-icon-arrow-down el-icon--right"></i>
@@ -130,15 +130,17 @@ export default {
   .title-bar {
     display: block;
     line-height: 50px;
-    .el-dropdown {
-      cursor: pointer;
-      .el-dropdown-link {
-        cursor: pointer;
-      }
-    }
   }
   .frame-wrap {
     margin-top: 20px;
+  }
+}
+
+.el-dropdown.grades {
+  cursor: pointer;
+  padding-left: 12px;
+  .el-dropdown-link {
+    cursor: pointer;
   }
 }
 .grade-item {
