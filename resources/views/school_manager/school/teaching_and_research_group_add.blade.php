@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div id="app-init-data-holder" data-school="{{ session('school.id') }}" data-group="{{ json_encode($group) }}"></div>
+    <div id="app-init-data-holder" data-school="{{ session('school.id') }}" data-group="{{ json_encode($group,JSON_UNESCAPED_UNICODE) }}"></div>
     <div class="row" id="teaching-research-app">
         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="card">

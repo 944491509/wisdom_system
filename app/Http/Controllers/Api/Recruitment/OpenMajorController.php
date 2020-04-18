@@ -186,10 +186,8 @@ class OpenMajorController extends Controller
         $userObj = new UserDao();
         $userInfo1 = $userObj->getUserByMobile($formData['mobile']);
         $userInfo2 = $userObj->getUserByEmail($formData['email']);
-
         // 获取专业信息
         $plan = $request->getPlan();
-
         // 外部提交
         if (isset($formData['is_reg']) && $formData['is_reg'] == 1) {
             // 存在
