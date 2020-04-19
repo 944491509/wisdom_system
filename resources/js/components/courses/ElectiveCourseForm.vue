@@ -306,6 +306,7 @@ import {
   approveElectiveCourse,
   refuseElectiveCourse
 } from "../../common/elective_course";
+import { getTimeSlots } from "../../common/timetables";
 
 export default {
   name: "ElectiveCourseForm",
@@ -314,14 +315,14 @@ export default {
       type: Object,
       required: true
     },
-    totalWeeks: {
-      type: Number,
-      required: true
-    },
-    timeSlots: {
-      type: Array,
-      required: true
-    },
+    // totalWeeks: {
+    //   type: Number,
+    //   required: true
+    // },
+    // timeSlots: {
+    //   type: Array,
+    //   required: true
+    // },
     majors: {
       type: Array,
       required: true
@@ -364,6 +365,15 @@ export default {
         const item = Util.GetItemById(newVal, this.teachers);
         this.courseModel.teacher_name = item.name;
       }
+    },
+    "courseModel.year": function(newval) {
+      this.scheduleItem.timeSlots = [];
+      getTimeSlots(this.schoolId, null, newval).then(res => {
+        if (Util.isAjaxResOk(res)) {
+          this.timeSlots = res.data.data.time_frame;
+          this.totalWeeks = res.data.data.total_weeks;
+        }
+      });
     }
   },
   computed: {
@@ -399,6 +409,8 @@ export default {
       teachers: [],
       schedule: [],
       grades: [],
+      timeSlots: [],
+      totalWeeks: 20,
       scheduleItem: {
         weeks: [],
         days: [],
