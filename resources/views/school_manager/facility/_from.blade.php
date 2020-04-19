@@ -1,4 +1,5 @@
 @csrf
+<div id="facility-form">
 <div class="form-group">
     <label for="facility-number-input">布放环境</label>
     <select name="facility[location]" class="form-control">
@@ -19,7 +20,7 @@
 <div class="form-group">
     <label for="facility-name-input">类型</label>
 
-    <select required type="select" class="form-control" id="facility-type-select" value="" placeholder="类型" name="facility[type]">
+    <select required type="select" class="form-control" id="facility-type-select" value="" placeholder="类型" name="facility[type]" v-model="type">
         <option value="">请选择</option>
         @foreach($type as $key => $val)
         <option value="{{$val['id']}}"
@@ -30,13 +31,23 @@
         </option>
         @endforeach
     </select>
-
 </div>
+<div class="form-group" v-show="type == 3">
+    <label for="facility-name-input">班牌类型</label>
+    <select required type="select" class="form-control" id="facility-type-select" value="" placeholder="班牌类型" name="facility[card_type]" v-model="card_type">
+        <option value="">请选择</option>
+        <option value="0">公共班牌</option>
+        <option value="1">独立班牌</option>
+    </select>
+</div>
+
+
+<search-grade v-show="card_type == 1"></search-grade>
 
 
 <div class="form-group">
     <label for="facility-campus-select">校区</label>
-    <select required type="text" class="form-control" id="facility-campus-select" value="" placeholder="校区" name="facility[campus_id]">
+    <select required type="text" class="form-control" id="facility-campus-select" value="" placeholder="校区" name="facility[campus_id]" >
         <option value="">请选择</option>
         @foreach($campus as $key => $val)
             <option value="{{$val['id']}}"
@@ -85,4 +96,6 @@
 <div class="form-group">
     <label for="facility-addr-select">详细地址</label>
     <input  type="text" class="form-control" id="facility-addr-input" value="{{$facility['detail_addr'] ?? old('detail_addr')}}" placeholder="详细地址" name="facility[detail_addr]">
+</div>
+
 </div>
