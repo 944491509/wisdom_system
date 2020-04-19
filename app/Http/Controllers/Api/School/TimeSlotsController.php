@@ -77,7 +77,7 @@ class TimeSlotsController extends Controller
     }
 
     /**
-     *
+     * 添加课程表和选修课选择时间共用一个接口
      * 加载所有的学习时间段, 以及学期中用来学习的总周数
      * @param MyStandardRequest $request
      * @return string
@@ -88,6 +88,9 @@ class TimeSlotsController extends Controller
         $year = $request->get('year');
         if(is_null($year)) {
             $gradeId = $request->getGradeId();
+            if(is_null($gradeId)) {
+                return JsonBuilder::Error('却少参数');
+            }
             $gradeDao = new GradeDao();
             $grade = $gradeDao->getGradeById($gradeId);
             $year = $grade->gradeYear();
