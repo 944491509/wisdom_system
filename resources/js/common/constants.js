@@ -7,6 +7,7 @@ export const Constants = {
     AJAX_ERROR: 999,
     API: {
         LOAD_TIME_SLOTS_BY_SCHOOL: '/api/school/load-time-slots',
+        LOAD_GRADE_OF_SCHOOL: '/api/school/load-config-year',
         SAVE_TIME_SLOT: '/api/school/save-time-slot',
         LOAD_STUDY_TIME_SLOTS_BY_SCHOOL: '/api/school/load-study-time-slots',
         LOAD_BUILDINGS_BY_SCHOOL: '/api/school/load-buildings',

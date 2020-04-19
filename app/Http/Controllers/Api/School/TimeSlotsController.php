@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\School;
 
+use App\Models\Schools\SchoolConfiguration;
 use App\User;
 use App\Models\School;
 use App\Utils\JsonBuilder;
@@ -31,6 +32,27 @@ class TimeSlotsController extends Controller
         }
         return JsonBuilder::Error('系统繁忙, 请稍候再试!');
     }
+
+
+    /**
+     * 加载学校年级
+     * @param Request $request
+     * @return string
+     */
+    public function load_year_school(Request $request) {
+        $schoolId = $request->get('school_id');
+        if(empty($schoolId)) {
+            return JsonBuilder::Error('缺少参数');
+        }
+        $configuration = SchoolConfiguration::where('school_id',$schoolId)->first();
+        $year = $configuration->yearText();
+
+        return JsonBuilder::Success($year);
+
+    }
+
+
+
 
     /**
      * 根据指定的学校 uuid 返回作息时间表
