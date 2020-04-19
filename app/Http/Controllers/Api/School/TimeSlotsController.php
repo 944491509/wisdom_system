@@ -84,7 +84,7 @@ class TimeSlotsController extends Controller
     public function load_study_time_slots(MyStandardRequest $request){
         $schoolIdOrUuid = $request->get('school');
         $noTime = $request->get('no_time', false);
-        $gradeId = $request->getGradeId();
+        $year = $request->get('year');
         $school = null;
         $schoolDao = new SchoolDao(new User());
 
@@ -101,10 +101,8 @@ class TimeSlotsController extends Controller
         if($schoolIdOrUuid && $school){
             $timeSlotDao = new TimeSlotDao();
             $field = ConfigurationTool::KEY_STUDY_WEEKS_PER_TERM;
-            $gradeDao = new GradeDao();
-            $grade = $gradeDao->getGradeById($gradeId);
 
-            $timeFrame = $timeSlotDao->getAllStudyTimeSlots($schoolIdOrUuid, $grade->gradeYear(),true, $noTime);
+            $timeFrame = $timeSlotDao->getAllStudyTimeSlots($schoolIdOrUuid, $year,true, $noTime);
             $data = [
                 'time_frame'=> $timeFrame,
                 'total_weeks'=>$school->configuration->$field,
