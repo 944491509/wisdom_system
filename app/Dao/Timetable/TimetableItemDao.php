@@ -330,7 +330,13 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+        $rows = TimetableItem::where($where)
+            ->leftJoin('time_slots',function ($join) {
+                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
+            })
+            ->orderBy('time_slots.from','asc')
+            ->get();
 
         $result = [];
 
@@ -421,10 +427,10 @@ class TimetableItemDao
      */
     private function _getItemsByWeekDayIndexBy($weekDayIndex, $year, $term, $weekType, $by){
         $where = [
-            ['year','=',$year],
-            ['term','=',$term],
-            ['weekday_index','=',$weekDayIndex],
-            ['to_replace','=',0], // 不需要调课记录
+            ['timetable_items.year','=',$year],
+            ['timetable_items.term','=',$term],
+            ['timetable_items.weekday_index','=',$weekDayIndex],
+            ['timetable_items.to_replace','=',0], // 不需要调课记录
         ];
 
         foreach ($by as $k=>$v) {
@@ -434,13 +440,13 @@ class TimetableItemDao
         if($weekType === GradeAndYearUtil::WEEK_ODD){
             // 单周课程表, 那么就加载 每周 + 单周
             $where[] = [
-                'repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_EVEN_WEEK
+                'timetable_items.repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_EVEN_WEEK
             ];
         }
         else{
             // 双周课程表, 那么就加载 每周 + 双周
             $where[] = [
-                'repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_ODD_WEEK
+                'timetable_items.repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_ODD_WEEK
             ];
         }
         return $where;

@@ -41,12 +41,13 @@ class ElectiveController extends Controller
 
         $nowTime = Carbon::now()->timestamp;
 
+        $gradeYear = $userInfo->grade->gradeYear();
         foreach ($major->courseMajors as $key => $courseMajor) {
             $course       = $courseMajor->course;
 
             $elective     = $course->courseElective()->first();
             //报名已满或被取消不显示
-            if (!$elective || $elective->status == CourseElective::STATUS_ISFULL || $elective->status == CourseElective::STATUS_CANCEL)
+            if (!$elective || $elective->status == CourseElective::STATUS_ISFULL || $elective->status == CourseElective::STATUS_CANCEL || $gradeYear != $course->year)
             {
                 continue;
             }
