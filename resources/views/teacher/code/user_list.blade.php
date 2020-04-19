@@ -1,3 +1,8 @@
+<?php
+use App\Utils\UI\Anchor;
+use App\Utils\UI\Button;
+use App\User;
+?>
 @extends('layouts.app')
 @section('content')
  <div class="col-sm-12 col-md-12 col-xl-12">
@@ -8,24 +13,25 @@
                             <table
                                     class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
-                                <tr>
-                                    <th></th>
+                                <tr style="text-align: center">
+                                    <th>序号</th>
                                     <th>姓名</th>
-                                    <th>设备名称</th>
-                                    <th>类型</th>
-                                    <th>描述</th>
-                                    <th>创建时间</th>
+                                    <th>身份</th>
+                                    <th>是否使用</th>
+                                    <th>使用次数</th>
+                                    <th>操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($list as $key => $val)
-                                    <tr>
+                                    <tr style="text-align: center">
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->user->name }}</td>
-                                        <td>{{ $val->facility->facility_name }}</td>
-                                        <td>{{ $val->typeText() }}</td>
-                                        <td>{{ $val->desc }}</td>
-                                        <td>{{ $val->created_at }}</td>
+                                        <td>{{ \App\Models\Acl\Role::GetRoleSlugByUserType($val->user_type) }}</td>
+                                        <td>是</td>
+                                        <td>0 次</td>
+                                        <td>  {{ \App\Utils\UI\Anchor::Print(['text'=>'获取二维码','class'=>'btn-edit-evaluate','href'=> '#'], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                        </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
