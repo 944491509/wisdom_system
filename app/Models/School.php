@@ -58,28 +58,31 @@ class School extends Model
          */
         $config = $this->configuration;
         $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
-        $slots = TimeSlot::select(['id','name','type','from','to','season'])
-            ->where('year', $year)
-            ->where('school_id',$this->id)
-            ->where('season',$seasonType)
+        $field = ['id','name','type','from','to','season'];
+        $map = ['year' => $year,'school_id'=>$this->id, 'season'=>$seasonType];
+        $slots = TimeSlot::select($field)
+            ->where($map)
             ->orderBy('from','asc')->get();
-
-        if(count($slots)===0){
+        if(count($slots) == 0){
             // 还没有创建
             $dao = new TimeSlotDao();
             $frames = $dao->getDefaultTimeFrame(TimeSlot::SEASONS_WINTER_AND_SPRINT)['frames'];
             foreach ($frames as $frame) {
                 $frame['school_id'] = $this->id;
                 $frame['season'] = TimeSlot::SEASONS_WINTER_AND_SPRINT;
+                $frame['year'] = $year;
                 $dao->createTimeSlot($frame);
             }
             $frames = $dao->getDefaultTimeFrame(TimeSlot::SEASONS_SUMMER_AND_AUTUMN)['frames'];
             foreach ($frames as $frame) {
                 $frame['school_id'] = $this->id;
                 $frame['season'] = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;
+                $frame['year'] = $year;
                 $dao->createTimeSlot($frame);
             }
-            $slots = TimeSlot::select(['id','name','type','from','to','season'])->where('season',$seasonType)->orderBy('from','asc')->get();
+            $slots = TimeSlot::select($field)
+                ->where($map)
+                ->orderBy('from','asc')->get();
         }
 
         return $slots;
