@@ -330,11 +330,11 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
-        $rows = TimetableItem::where($where)
-            ->with('time_slots')
-            ->orderBy('time_slots.from','asc')
-            ->get();
+        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+//        $rows = TimetableItem::where($where)
+////            ->with('time_slots')
+////            ->orderBy('time_slots.from','asc')
+////            ->get();
 
         $result = [];
 
