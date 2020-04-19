@@ -197,6 +197,10 @@ Route::prefix('teacher')->group(function () {
         // 保存
         Route::post('/code-save','Code\CodeController@save')
             ->name('teacher.code.save');
+
+        // 所有用户二维码
+        Route::get('/all-code','Code\CodeController@userCode')
+            ->name('teacher.user.code.list');
     });
 
 

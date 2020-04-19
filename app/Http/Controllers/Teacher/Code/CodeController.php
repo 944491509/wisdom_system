@@ -8,6 +8,7 @@ use App\Dao\Users\UserCodeRecordDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MyStandardRequest;
 use App\Models\Teachers\TeacherCode;
+use App\Models\Users\GradeUser;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\Misc\ConfigurationTool;
 
@@ -83,4 +84,14 @@ class CodeController extends Controller
     }
 
 
+    public function userCode(MyStandardRequest $request)
+    {
+        $schoolId = $request->getSchoolId();
+        $list = GradeUser::where('school_id', $schoolId)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+
+        $this->dataForView['pageTitle'] = '二维码';
+        $this->dataForView['list'] = $list;
+        return view('teacher.code.user_list', $this->dataForView);
+    }
 }
