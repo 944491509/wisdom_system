@@ -20,7 +20,6 @@ use App\User;
                                     <th>类型</th>
                                     <th>描述</th>
                                     <th>创建时间</th>
-
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -32,7 +31,6 @@ use App\User;
                                         <td>{{ $val->typeText() }}</td>
                                         <td>{{ $val->desc }}</td>
                                         <td>{{ $val->created_at }}</td>
-
                                     </tr>
                                 @endforeach
                                 </tbody>
