@@ -174,6 +174,7 @@
         <div class="card">
             <time-slots-manager
                     school="{{ $school->uuid }}"
+                    schoolid="{{ $school->id }}"
                     v-on:edit-time-slot="editTimeSlotHandler"
             ></time-slots-manager>
         </div>

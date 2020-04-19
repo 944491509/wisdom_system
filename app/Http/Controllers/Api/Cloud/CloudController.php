@@ -202,14 +202,16 @@ class CloudController extends Controller
         }
 
         // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
-        $codeStr = base64_encode(json_encode(['app' => UserCodeRecord::IDENTIFICATION_CLOUD,
-                                              'school_id' => $item->school_id,
-                                              'grade_id' => $item->grade_id,
-                                              'teacher_id' => $item->teacher_id,
-                                              'timetable_id' => $item->id,
-                                              'course_id' => $item->course_id,
-                                              'term' => $item->term,
-                                              'time' => time()]));
+        $codeStr = base64_encode(json_encode([
+            'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
+            'school_id' => $item->school_id,
+            'grade_id' => $item->grade_id,
+            'teacher_id' => $item->teacher_id,
+            'timetable_id' => $item->id,
+            'course_id' => $item->course_id,
+            'term' => $item->term,
+            'time' => time()
+        ]));
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
         $qrCode->setLogoPath(public_path('assets/img/logo.png'));

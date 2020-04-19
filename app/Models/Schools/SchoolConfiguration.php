@@ -39,7 +39,8 @@ class SchoolConfiguration extends Model
         'recruitment_intro',
         'recruitment_intro_pics',
         'open_for_uploading_qualification',
-        'apply_status' // 选课状态 0关闭 1开启
+        'apply_status', // 选课状态 0关闭 1开启
+        'year', // 年制
     ];
 
     public $casts = [
@@ -299,6 +300,29 @@ class SchoolConfiguration extends Model
 
 
         return $weeks;
+    }
+
+
+    /**
+     * 获取学校的年级
+     * @return array
+     */
+    public function yearText() {
+        $num = $this->year;
+
+        $year = [];
+        for($i=0; $i< $num; $i++) {
+            $year[] = [
+                'year' => $i + 1,
+                'text' => $this->toChinese($i).'年级',
+            ];
+        }
+        return $year;
+    }
+
+    public function toChinese($num) {
+        $upperCaseNumber = ['一', '二', '三', '四', '五', '六'];
+        return $upperCaseNumber[$num] ?? '';
     }
 
 

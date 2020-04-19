@@ -41,9 +41,18 @@ class OaElectiveCourseController extends Controller
                 'name' => $item->name
             ];
         }
+        $yearArr = $school->configuration->yearText();
+
+        return JsonBuilder::Success(['majors' => $majors, 'weeks' => $weeks, 'years' => $yearArr, 'times' => [], 'campuses' => $campuses]);
+    }
+
+    public function times(OaElectiveCourseRequest $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $year = $request->get('year');
         $timeSlotDao = new TimeSlotDao();
-        $times = $timeSlotDao->getAllStudyTimeSlots($schoolId, true);
-        return JsonBuilder::Success(['majors' => $majors, 'weeks' => $weeks, 'times' => $times, 'campuses' => $campuses]);
+        $times = $timeSlotDao->getAllStudyTimeSlots($schoolId, $year, true);
+        return JsonBuilder::Success(['times' => $times]);
     }
 
     /**
@@ -66,7 +75,6 @@ class OaElectiveCourseController extends Controller
         //@TODO UI缺少的参数 随便写的默认值 可能UI会调整也可能后台会调整
         $applyData['course']['code'] = 'auto';
         $applyData['course']['scores'] = 1;
-        $applyData['course']['year'] = 1;
         $applyData['course']['term'] = $nowYearAndTerm['term'];
         $applyData['course']['max_num'] = $applyData['course']['open_num'];
         $applyData['course']['start_year'] = $nowYearAndTerm['year'];
