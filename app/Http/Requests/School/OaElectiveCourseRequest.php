@@ -24,6 +24,7 @@ class OaElectiveCourseRequest extends MyStandardRequest
                 'desc' => '课程描述',
                 'apply_content' => '申请理由',
                 'campuse_id' => 1,//学院
+                'year' => 1, //年级
             ],
             'schedule' => [
                 'weeks' => [1,2],//周
