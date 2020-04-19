@@ -41,16 +41,8 @@ class OaElectiveCourseController extends Controller
                 'name' => $item->name
             ];
         }
-        /*$timeSlotDao = new TimeSlotDao();
-        $times = $timeSlotDao->getAllStudyTimeSlots($schoolId, true);*/
-        $yearArr = [
-            ['id' => 1, 'name' => '1年级'],
-            ['id' => 2, 'name' => '2年级'],
-            ['id' => 3, 'name' => '3年级'],
-            ['id' => 4, 'name' => '4年级'],
-            ['id' => 5, 'name' => '5年级'],
-            ['id' => 6, 'name' => '6年级'],
-        ];
+        $yearArr = $school->configuration->yearText();
+
         return JsonBuilder::Success(['majors' => $majors, 'weeks' => $weeks, 'years' => $yearArr, 'times' => [], 'campuses' => $campuses]);
     }
 
