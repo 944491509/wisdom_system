@@ -77,6 +77,7 @@ class TimeSlotsController extends Controller
     }
 
     /**
+     *
      * 加载所有的学习时间段, 以及学期中用来学习的总周数
      * @param MyStandardRequest $request
      * @return string
@@ -85,6 +86,12 @@ class TimeSlotsController extends Controller
         $schoolIdOrUuid = $request->get('school');
         $noTime = $request->get('no_time', false);
         $year = $request->get('year');
+        if(is_null($year)) {
+            $gradeId = $request->getGradeId();
+            $gradeDao = new GradeDao();
+            $grade = $gradeDao->getGradeById($gradeId);
+            $year = $grade->gradeYear();
+        }
         $school = null;
         $schoolDao = new SchoolDao(new User());
 
