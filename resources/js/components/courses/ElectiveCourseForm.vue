@@ -368,7 +368,7 @@ export default {
     },
     "courseModel.year": function(newval) {
       this.scheduleItem.timeSlots = [];
-      getTimeSlots(this.schoolId, null, newval).then(res => {
+      getTimeSlots(this.schoolId, null, null, newval).then(res => {
         if (Util.isAjaxResOk(res)) {
           this.timeSlots = res.data.data.time_frame;
           this.totalWeeks = res.data.data.total_weeks;
