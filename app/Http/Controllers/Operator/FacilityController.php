@@ -38,6 +38,7 @@ class FacilityController extends Controller
         $facilityDao = new FacilityDao();
         if($request->isMethod('post')) {
             $all = $request->post('facility');
+            dd($all);
             $all['school_id'] = $request->getSchoolId();
             $result = $facilityDao->save($all);
             if($result) {

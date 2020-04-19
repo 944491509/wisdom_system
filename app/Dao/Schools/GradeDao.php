@@ -27,7 +27,7 @@ class GradeDao
      */
     public function searchByName($name, $schoolId){
         return Grade::select(['id','name'])
-            ->where('school_id',$schoolId)->where('name','like',$name.'%')->get();
+            ->where('school_id',$schoolId)->where('name','like','%'.$name.'%')->get();
     }
 
     /**

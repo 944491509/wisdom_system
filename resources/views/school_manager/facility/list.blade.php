@@ -40,8 +40,8 @@
                                         <td>{{ $val['facility_number'] }}</td>
                                         <td>{{ $val['facility_name'] }}</td>
                                         <td>{{$val['campus']['name']}}</td>
-                                        <td>{{ $val['building']['name'] }}</td>
-                                        <td>{{$val['room']['name']}}</td>
+                                        <td>{{ $val['building']['name'] ?? ''}}</td>
+                                        <td>{{$val['room']['name'] ?? ''}}</td>
                                         <td>{{$val['TypeText']}}</td>
                                         <td>
                                             @if($val['status'] == 1)

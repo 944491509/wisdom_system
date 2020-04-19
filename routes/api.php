@@ -103,6 +103,10 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
 
     Route::any('/all-events','Api\Home\IndexController@all_events')
         ->name('api.school.all-events'); // 历史事件
+
+    // 搜索班级
+    Route::any('/search-grade', 'Operator\GradesController@searchGrade')
+        ->name('api.school.search.grade');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
