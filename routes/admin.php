@@ -32,8 +32,8 @@ Route::prefix('admin')->group(function () {
     // 创建学校管理员
     Route::any('create/school-manager', 'SchoolsController@create_school_manager')
         ->name('admin.create.school-manager');
-    // 创建学校管理员
-    Route::get('edit/school-manager', 'SchoolsController@edit_school_manager')
+    // 编辑学校管理员
+    Route::any('edit/school-manager', 'SchoolsController@edit_school_manager')
         ->name('admin.edit.school-manager');
 
     Route::get('importer/manager', 'ImporterController@manager')->name('admin.importer.manager');

@@ -204,11 +204,10 @@ class UserDao
      * @param $mobile
      * @param $password
      * @param $name
-     * @param $email
      * @param $userType
      * @return MessageBag
      */
-    public function createSchoolManager($schoolId, $mobile, $password,$name, $email, $userType){
+    public function createSchoolManager($schoolId, $mobile, $password,$name, $userType){
         $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         // 判断账号是否存在
         $info = $this->getUserByMobile($mobile);
@@ -216,17 +215,12 @@ class UserDao
             $bag->setMessage('该账号已存在');
             return $bag;
         }
-        $info = $this->getUserByEmail($email);
-        if(!is_null($info)) {
-            $bag->setMessage('该邮箱已存在');
-            return $bag;
-        }
+
         DB::beginTransaction();
         try{
             $data = [
                 'mobile'=>$mobile,
                 'name'=>$name,
-                'email'=>$email,
                 'api_token'=>Uuid::uuid4()->toString(),
                 'uuid'=>Uuid::uuid4()->toString(),
                 'password'=>Hash::make($password),
@@ -264,6 +258,40 @@ class UserDao
         catch (Exception $exception){
             DB::rollBack();
             $bag->setMessage($exception->getMessage());
+        }
+        return $bag;
+    }
+
+
+    /**
+     * 编辑管理员
+     * @param $userId
+     * @param $mobile
+     * @param $password
+     * @param $name
+     * @param $userType
+     * @return MessageBag
+     */
+    public function updateSchoolManager($userId, $mobile, $password, $name, $userType) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        $save = ['name'=>$name, 'type'=>$userType, 'mobile'=>$mobile];
+        if(!is_null($password)) {
+            $save['password'] = Hash::make($password);
+        }
+        try {
+            DB::beginTransaction();
+            // 修改用户表
+            User::where('id', $userId)->update($save);
+            // 修改gradeUser
+            $upd = ['name'=>$name, 'user_type'=>$userType];
+            GradeUser::where('user_id', $userId)->update($upd);
+            DB::commit();
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setMessage('编辑成功');
+        } catch (Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
         }
         return $bag;
     }

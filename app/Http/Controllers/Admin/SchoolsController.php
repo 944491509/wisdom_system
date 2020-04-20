@@ -74,12 +74,12 @@ class SchoolsController extends Controller
         return redirect()->route('home');
     }
 
-    public function edit_school_manager(SchoolRequest $request){
+    /*public function edit_school_manager(SchoolRequest $request){
         $this->dataForView['pageTitle'] = '编辑学校管理员';
         $this->dataForView['user'] = (new UserDao())->getUserByUuid($request->get('user'));
         $this->dataForView['school'] = (new SchoolDao())->getSchoolByUuid($request->get('school'));
         return view('admin.schools.add_school_manager',$this->dataForView);
-    }
+    }*/
 
 
     /**
@@ -97,7 +97,6 @@ class SchoolsController extends Controller
                 $userData['mobile'],
                 $userData['password'],
                 $userData['name'],
-                $userData['email'],
                 $userData['type']
             );
             $msg = $result->getMessage();
@@ -125,35 +124,48 @@ class SchoolsController extends Controller
             ];
             return view('admin.schools.add_school_manager',$this->dataForView);
         }
-//            }
-//            else{
-//                // 更新学校管理员账户
-//                if($school){
-//                    $userDao = new UserDao();
-//                    $user = $userDao->getUserByUuid($request->get('user_uuid'));
-//                    if($user){
-//                        $userData = $request->get('user');
-//                        $userDao->updateUser(
-//                            $user->id,
-//                            $userData['mobile'],
-//                            $userData['password'],
-//                            $userData['name'],
-//                            $userData['email']
-//                        );
-//                    }
-//
-//                    return redirect()->route('home');
-//                }
-//            }
-//        }
     }
 
-    public function update_school_manager(SchoolRequest $request) {
+
+    /**
+     * 编辑管理员
+     * @param SchoolRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function edit_school_manager(SchoolRequest $request) {
         if($request->isMethod('post')) {
+            $data = $request->all();
+
+            $userData = $data['user'];
+            $userDao = new UserDao();
+            $result = $userDao->updateSchoolManager(
+                $userData['user_id'],
+                $userData['mobile'],
+                $userData['password'],
+                $userData['name'],
+                $userData['type']
+            );
+            $msg = $result->getMessage();
+            if($result->isSuccess()) {
+                FlashMessageBuilder::Push($request,FlashMessageBuilder::SUCCESS,$msg);
+                return redirect()->route('admin.list.school-manager',['school_id'=>$data['school_id']]);
+            } else {
+                FlashMessageBuilder::Push($request,FlashMessageBuilder::WARNING,$msg);
+                return redirect()->route('admin.edit.school-manager',['user_id' => $userData['user_id']]);
+            }
 
         } else {
-
-            return view('admin.schools.add_school_manager',$this->dataForView);
+            $userId = $request->getUserId();
+            $gradeDao = new GradeUserDao();
+            $user = $gradeDao->getUserInfoByUserId($userId);
+            $this->dataForView['pageTitle'] = '编辑学校管理员';
+            $this->dataForView['user'] = $user;
+            $this->dataForView['school'] = $user->school;
+            $this->dataForView['type'] = [
+                ['id' => Role::SCHOOL_MANAGER, 'name' => '学校管理员'],
+                ['id' => Role::TEACHER, 'name' => '教师'],
+            ];
+            return view('admin.schools.edit_school_manager',$this->dataForView);
         }
     }
 
@@ -164,7 +176,7 @@ class SchoolsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function list_school_manager(SchoolRequest $request) {
-        $schoolId = $request->get('school_id');
+        $schoolId = $request->getSchoolId();
         $gradeUserDao = new GradeUserDao();
         $list = $gradeUserDao->getSchoolManagerBySchoolId($schoolId);
         $this->dataForView['pageTitle'] = '学校管理员列表';

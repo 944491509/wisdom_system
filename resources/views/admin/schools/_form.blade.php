@@ -1,16 +1,9 @@
 @csrf
 <input type="hidden" name="school_id" value="{{ $school->id }}">
-<div class="form-group">
-    <label>登陆账户名</label>
-    <input required type="text" class="form-control" value="{{$user['mobile'] ?? old('mobile')}}" placeholder="必填: 登陆账号" name="user[mobile]">
-</div>
-<div class="form-group">
-    <label>登陆密码</label>
-    <input type="password" class="form-control" value="" placeholder="登陆密码, 创建时必填" name="user[password]">
-</div>
+
 <div class="form-group">
     <label>管理员姓名</label>
-    <input required type="text" class="form-control" value="" placeholder="必填: 管理员真实姓名" name="user[name]">
+    <input required type="text" class="form-control" value="{{ $user->name }}" placeholder="必填: 管理员真实姓名" name="user[name]">
 </div>
 
 <div class="form-group">
@@ -20,8 +13,8 @@
         <option value="">请选择</option>
         @foreach($type as $key => $val)
             <option value="{{$val['id']}}"
-                    @if(isset($user['type']))
-                    @if($val['id'] == $user['type']) selected @endif
+                    @if(isset($user['user_type']))
+                    @if($val['id'] == $user['user_type']) selected @endif
                     @endif >
                 {{$val['name']}}
             </option>
@@ -31,7 +24,3 @@
 </div>
 
 
-<div class="form-group">
-    <label>电子邮箱</label>
-    <input required type="text" class="form-control" value="" placeholder="必填: 电子邮箱" name="user[email]">
-</div>
