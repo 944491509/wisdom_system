@@ -12,6 +12,15 @@ Route::prefix('admin')->group(function () {
     Route::get('roles/edit', 'RolesController@edit')->name('admin.roles.edit');
     Route::post('roles/update_permission', 'RolesController@update_permission')->name('admin.roles.update_permission');
 
+    //新的权限管理
+    Route::get('simpleacl/manager', 'SimpleaclController@index')->name('admin.simpleacl.manager');
+    Route::post('simpleacl/list', 'SimpleaclController@lists')->name('admin.simpleacl.list');
+    Route::post('simpleacl/delete', 'SimpleaclController@delete')->name('admin.simpleacl.delete');
+    Route::post('simpleacl/add', 'SimpleaclController@add')->name('admin.simpleacl.add');
+    Route::post('simpleacl/add-role', 'SimpleaclController@add_role')->name('admin.simpleacl.add-role');
+    Route::post('simpleacl/add-permission', 'SimpleaclController@add_permission')->name('admin.simpleacl.add-permission');
+    Route::post('simpleacl/menu-permission', 'SimpleaclController@menu_permission')->name('admin.simpleacl.menu-permission');
+
     //版本管理
     Route::get('versions/list', 'VersionController@index')->name('admin.versions.list');
     Route::get('versions/add', 'VersionController@add')->name('admin.versions.add');
