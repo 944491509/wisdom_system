@@ -42,7 +42,13 @@
                                         <td>{{$val['campus']['name']}}</td>
                                         <td>{{ $val['building']['name'] ?? ''}}</td>
                                         <td>{{$val['room']['name'] ?? ''}}</td>
-                                        <td>{{$val['TypeText']}}</td>
+                                        <td>
+                                            @if($val['type'] == 3)
+                                                {{$val['TypeText']}} -- {{$val['CardTypeText']}}
+                                                @else
+                                                {{$val['TypeText']}}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if($val['status'] == 1)
                                             <span class="label label-sm label-success"> 开启 </span>
