@@ -28,6 +28,7 @@
                                     <th>楼群</th>
                                     <th>教室</th>
                                     <th>类型</th>
+                                    <th>所属班级</th>
                                     <th>状态</th>
                                     <th>创建时间</th>
                                     <th>操作</th>
@@ -49,6 +50,7 @@
                                                 {{$val['TypeText']}}
                                             @endif
                                         </td>
+                                        <td>{{$val->grade->name  ?? '' }}</td>
                                         <td>
                                             @if($val['status'] == 1)
                                             <span class="label label-sm label-success"> 开启 </span>
