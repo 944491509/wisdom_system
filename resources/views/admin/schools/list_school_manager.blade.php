@@ -7,7 +7,7 @@
                 <div class="row">
                     <div class="row table-padding">
                         <div class="col-md-6 col-sm-6 col-6">
-                            <a href="{{ route('school_manager.facility.add') }}" class="btn btn-primary">
+                            <a href="{{ route('admin.create.school-manager',['school_id' => $school_id]) }}" class="btn btn-primary">
                                 创建 <i class="fa fa-plus"></i>
                             </a>
                         </div>

@@ -52,4 +52,14 @@ class SchoolRequest extends MyStandardRequest
     public function getWinterStart(){
         return $this->get('winter_start_date',null);
     }
+
+
+    /**
+     * 获取schoolId
+     * @return mixed
+     */
+    public function getSchoolId()
+    {
+        return $this->get('school_id');
+    }
 }
