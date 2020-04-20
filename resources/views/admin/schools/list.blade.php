@@ -53,7 +53,7 @@ use App\Utils\UI\Button;
                                         {{--</td>--}}
                                         <td>{{ $school->last_updated_by ? $school->lastUpdatedBy->mobile : '超级管理员' }} {{ $school->updated_at }}</td>
                                         <td class="text-center">
-                                            {{ Anchor::Print(['text'=>'管理员','href'=>route('admin.schools.edit',['uuid'=>$school->uuid])], Button::TYPE_PRIMARY,'arrow-circle-o-right') }}
+                                            {{ Anchor::Print(['text'=>'管理员','href'=>route('admin.list.school-manager',['school_id'=>$school->id])], Button::TYPE_PRIMARY,'arrow-circle-o-right') }}
                                             {{ Anchor::Print(['text'=>'编辑','href'=>route('admin.schools.edit',['uuid'=>$school->uuid])], Button::TYPE_DEFAULT,'edit') }}
                                             {{ Anchor::Print(['text'=>'进入','href'=>route('operator.schools.enter',['uuid'=>$school->uuid])], Button::TYPE_SUCCESS,'arrow-circle-o-right') }}
                                         </td>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Controllers\Controller;
@@ -130,5 +131,22 @@ class SchoolsController extends Controller
                 }
             }
         }
+    }
+
+
+    /**
+     * 管理员列表
+     * @param SchoolRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function list_school_manager(SchoolRequest $request) {
+        $schoolId = $request->get('school_id');
+        $gradeUserDao = new GradeUserDao();
+        $list = $gradeUserDao->getSchoolManagerBySchoolId($schoolId);
+        $this->dataForView['pageTitle'] = '学校管理员列表';
+
+        $this->dataForView['school_id'] = $schoolId;
+        $this->dataForView['list'] = $list;
+        return view('admin.schools.list_school_manager',$this->dataForView);
     }
 }
