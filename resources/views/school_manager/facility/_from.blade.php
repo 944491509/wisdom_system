@@ -1,5 +1,5 @@
 @csrf
-<div id="facility-form">
+
 <div class="form-group">
     <label for="facility-number-input">布放环境</label>
     <select name="facility[location]" class="form-control">
@@ -16,34 +16,41 @@
     <input required type="text" class="form-control" id="facility-name-input" value="{{$facility['facility_name'] ?? old('facility_name')}}" placeholder="设备名称" name="facility[facility_name]">
 </div>
 
+<div id="facility-form">
+    <div class="form-group">
+        <label for="facility-name-input">类型</label>
+        <select required type="select" class="form-control"  value="" placeholder="类型" name="facility[type]" v-model="type">
+            <option value="">请选择</option>
+            @foreach($type as $key => $val)
+            <option value="{{$val['id']}}"
+                    @if(isset($facility['type']))
+                        @if($val['id'] == $facility['type']) selected @endif
+                    @endif >
+                    {{$val['val']}}
+            </option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group" v-show="type == 3">
+        <label for="facility-name-input">班牌类型</label>
+        <select required type="select" class="form-control"  value="" placeholder="班牌类型" name="facility[card_type]" v-model="card_type">
+            <option value="">请选择</option>
+            <option value="0">公共班牌</option>
+            <option value="1">独立班牌</option>
+        </select>
+    </div>
 
-<div class="form-group">
-    <label for="facility-name-input">类型</label>
-
-    <select required type="select" class="form-control" id="facility-type-select" value="" placeholder="类型" name="facility[type]" v-model="type">
-        <option value="">请选择</option>
-        @foreach($type as $key => $val)
-        <option value="{{$val['id']}}"
-                @if(isset($facility['type']))
-                    @if($val['id'] == $facility['type']) selected @endif
-                @endif >
-                {{$val['val']}}
-        </option>
-        @endforeach
-    </select>
+    <el-select v-model="value"  filterable  remote placeholder="请选择班级或搜索" class="search-grade" :remote-method="searchGrade" :loading="loading" :loading-text="loading_text"  v-show="card_type == 1">
+    <el-option
+      v-for="item in options"
+      :label="item.name"
+      :value="item.id"
+      :key="item.id"
+      >
+    </el-option>
+  </el-select>
+    <input type="hidden" name="facility[grade_id]" v-model="value">
 </div>
-<div class="form-group" v-show="type == 3">
-    <label for="facility-name-input">班牌类型</label>
-    <select required type="select" class="form-control" id="facility-type-select" value="" placeholder="班牌类型" name="facility[card_type]" v-model="card_type">
-        <option value="">请选择</option>
-        <option value="0">公共班牌</option>
-        <option value="1">独立班牌</option>
-    </select>
-</div>
-
-
-<search-grade v-show="card_type == 1"></search-grade>
-
 
 <div class="form-group">
     <label for="facility-campus-select">校区</label>
@@ -98,4 +105,4 @@
     <input  type="text" class="form-control" id="facility-addr-input" value="{{$facility['detail_addr'] ?? old('detail_addr')}}" placeholder="详细地址" name="facility[detail_addr]">
 </div>
 
-</div>
+

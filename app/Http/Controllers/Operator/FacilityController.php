@@ -25,7 +25,6 @@ class FacilityController extends Controller
         $map = ['school_id' => $schoolId];
         $result = $facilityDao->getFacilityPage($map);
 
-
         $this->dataForView['facility'] = $result;
 
         return view('school_manager.facility.list', $this->dataForView);
@@ -38,7 +37,6 @@ class FacilityController extends Controller
         $facilityDao = new FacilityDao();
         if($request->isMethod('post')) {
             $all = $request->post('facility');
-            dd($all);
             $all['school_id'] = $request->getSchoolId();
             $result = $facilityDao->save($all);
             if($result) {
