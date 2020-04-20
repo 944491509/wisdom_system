@@ -15,7 +15,7 @@ use App\Utils\UI\Button;
                     <form action="{{ route('admin.create.school-manager') }}" method="post">
                         <div class="form-group">
                             <label>登陆账户名</label>
-                            <input required type="text" class="form-control" value="{{$user->user->mobile ?? old('mobile')}}" placeholder="必填: 登陆账号" name="user[mobile]">
+                            <input required type="text" class="form-control" value="" placeholder="必填: 登陆账号" name="user[mobile]">
                         </div>
                         <div class="form-group">
                             <label>登陆密码</label>
@@ -26,7 +26,7 @@ use App\Utils\UI\Button;
                         Button::Print(['id'=>'btnSubmit','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
                         ?>&nbsp;
                         <?php
-                        Anchor::Print(['text'=>trans('general.return'),'href'=>route('home'),'class'=>'pull-right'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
+                        Anchor::Print(['text'=>trans('general.return'),'href'=>route('admin.list.school-manager',['school_id'=>$school->id]),'class'=>'pull-right'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
                         ?>
                     </form>
                 </div>

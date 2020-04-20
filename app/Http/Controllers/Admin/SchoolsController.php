@@ -74,13 +74,6 @@ class SchoolsController extends Controller
         return redirect()->route('home');
     }
 
-    /*public function edit_school_manager(SchoolRequest $request){
-        $this->dataForView['pageTitle'] = '编辑学校管理员';
-        $this->dataForView['user'] = (new UserDao())->getUserByUuid($request->get('user'));
-        $this->dataForView['school'] = (new SchoolDao())->getSchoolByUuid($request->get('school'));
-        return view('admin.schools.add_school_manager',$this->dataForView);
-    }*/
-
 
     /**
      * 创建管理员
