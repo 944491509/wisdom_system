@@ -26,11 +26,14 @@ Route::prefix('admin')->group(function () {
     Route::any('notifications/edit', 'NotificationsController@edit')->name('admin.notifications.edit');
     Route::get('notifications/delete', 'NotificationsController@delete')->name('admin.notifications.delete');
 
+    //学校管理员列表
+    Route::get('list/school-manager', 'SchoolsController@list_school_manager')
+        ->name('admin.list.school-manager');
     // 创建学校管理员
     Route::any('create/school-manager', 'SchoolsController@create_school_manager')
         ->name('admin.create.school-manager');
-    // 创建学校管理员
-    Route::get('edit/school-manager', 'SchoolsController@edit_school_manager')
+    // 编辑学校管理员
+    Route::any('edit/school-manager', 'SchoolsController@edit_school_manager')
         ->name('admin.edit.school-manager');
 
     Route::get('importer/manager', 'ImporterController@manager')->name('admin.importer.manager');
