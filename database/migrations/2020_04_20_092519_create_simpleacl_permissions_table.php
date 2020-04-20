@@ -16,7 +16,7 @@ class CreateSimpleaclPermissionsTable extends Migration
         Schema::create('simpleacl_permissions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->comment('权限名称');
-            $table->string('router')->unique()->comment('权限节点');
+            $table->string('router')->comment('权限节点');
             $table->unsignedBigInteger('simpleacl_menu_id')->comment('菜单id');
 
             $table->timestamps();
