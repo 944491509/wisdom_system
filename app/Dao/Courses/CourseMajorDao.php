@@ -39,15 +39,19 @@ class CourseMajorDao
      * @param $majorId
      * @param $termIdx
      * @param bool $simple
-     * @return Collection|array
+     * @param null $year
+     * @return array|Collection
      */
-    public function getCoursesByMajorAndTerm($majorId, $termIdx, $simple = true){
+    public function getCoursesByMajorAndTerm($majorId, $termIdx, $simple = true, $year = null){
         $cms =  DB::table('course_majors')
-            ->join('courses', function ($join) use ($termIdx) {
-                $join->on('courses.id', '=', 'course_majors.course_id')
+            ->join('courses', function ($join) use ($termIdx, $year) {
+                $re = $join->on('courses.id', '=', 'course_majors.course_id')
                     ->where('courses.term','=',$termIdx);
+                if(!is_null($year)) {
+                    $re->where('courses.year', $year);
+                }
             })
-            ->where('major_id',$majorId)
+            ->whereIn('major_id',[$majorId,0])
             ->orderBy('course_majors.course_name','asc')
             ->get();
 
