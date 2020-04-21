@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Dao\Simpleacl\SimpleaclRoleDao;
 use App\Http\Controllers\Controller;
+use App\Models\Simpleacl\SimpleaclPermission;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -113,6 +114,13 @@ class SimpleaclController extends Controller
         foreach ($parents as $parent) {
             $return[] = $dao->outputOnlyData($parent);
         }
+        //获取一下无菜单的
+        $return[] = [
+            'id' => 0,
+            'name' => '未分类的权限',
+            'permissions' => SimpleaclPermission::where('simpleacl_menu_id', '=', 0)->get()
+        ];
+
         return JsonBuilder::Success($return);
     }
 }
