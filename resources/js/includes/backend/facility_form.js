@@ -4,6 +4,9 @@
 import {Util} from "../../common/utils";
 import {Constants} from "../../common/constants";
 if (document.getElementById('facility-form')){
+    const dom = document.getElementById('app-init-data-holder');
+    const schoolId = dom.dataset.school
+
     new Vue({
         el: '#facility-form',
         data: {
@@ -23,10 +26,11 @@ if (document.getElementById('facility-form')){
                 this.options = [];
             }
             else{
-                this.loading = true;
+
+              this.loading = true;
                 axios.post(
                     Constants.API.LOAD_GRADES_BY_NAME,
-                    {grade_name: _queryString, school_id: 1}
+                    {grade_name: _queryString, school_id: 2}
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
                         this.loading = false;
