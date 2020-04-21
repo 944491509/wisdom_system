@@ -8,6 +8,7 @@ use App\Dao\Simpleacl\SimpleaclRoleDao;
 use App\Http\Controllers\Controller;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleaclController extends Controller
 {

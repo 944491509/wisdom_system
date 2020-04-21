@@ -1,6 +1,6 @@
 <?php
 // 管理后台路由: 超级管理员专有的路由, 这里定义的路由, 其他任何角色都不能访问到
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('simpleacl')->group(function () {
     // 学校管理
     Route::get('schools/statistic', 'SchoolsController@statistic')->name('admin.schools.statistic'); // 显示学校的统计信息
     Route::get('schools/add', 'SchoolsController@add')->name('admin.schools.add');    // 显示创建学校的界面

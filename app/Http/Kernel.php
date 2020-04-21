@@ -33,7 +33,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            //\App\Http\Middleware\VerifyCsrfToken::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\RedirectIfNoSessionData::class, // 如果 session 的数据丢失, 则必须跳转到 /home 路由
             \App\Http\Middleware\RoutesGuard::class, // 权限管理中间件
@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 //        'acl' => \Kodeine\Acl\Middleware\HasPermission::class,
+        'simpleacl' => \App\Http\Middleware\Simpleacl::class,
     ];
 
     /**

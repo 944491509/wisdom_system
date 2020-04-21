@@ -1,6 +1,6 @@
 <?php
 
-Route::prefix('school_manager')->group(function () {
+Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     // 学校管理
     Route::get('school/view', 'CampusController@school')->name('school_manager.school.view'); // 显示学校的统计信息
     Route::get('school/institutes', 'SchoolsController@institutes')->name('school_manager.school.institutes'); // 显示学校的所有学院
