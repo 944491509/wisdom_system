@@ -6,10 +6,11 @@ use App\Utils\UI\Button;
 @section('content')
   <div class="authManage" id="new-authManage-app" data-school="{{session('school.id')}}">
     <div class="authTitle">
-      <span>权限管理11</span>
-      <el-button class="btn" type="primary" @click="isShowAddAuthDrawer = true">添加权限组+</el-button>
+      <span>权限管理</span>
+      <el-button class="btn" type="primary" @click="isShowAddAuthDrawer = true" v-if="isShowPermission">添加权限组+</el-button>
+      <el-button class="btn" type="primary" @click="isShowPermission = true" v-if="!isShowPermission">返回</el-button>
     </div>
-    <div style="padding: 0 20px;">
+    <div style="padding: 0 20px;" v-if="isShowPermission">
       <el-table
         :data="tableData"
         style="width: 100%">
@@ -36,12 +37,39 @@ use App\Utils\UI\Button;
           label="操作"
         >
           <template slot-scope="scope">
-            <el-button @click="setAuthPage = true" type="primary" size="small">设置权限</el-button>
-            <el-button @click="isShowAuthGroupDrawer = true" type="success" size="small">账号管理</el-button>
+            <el-button @click="setPermission(scope.row.id)" type="primary" size="small">设置权限</el-button>
+            <el-button @click="setCount(scope.row.type, scope.row.id, scope.row)" type="success" size="small">账号管理</el-button>
             <el-button @click="deleteAuth(scope.row.id)" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div v-else>
+      <el-table
+        :data="permission"
+        style="width: 95%; margin: 20px auto;"
+        row-key="id"
+        border
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+        <el-table-column
+          prop="name"
+          label="菜单"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="id"
+          label="权限"
+          >
+          <template slot-scope="scope">
+            <el-checkbox-group v-if="scope.row.permissions && scope.row.permissions.length" v-model="permissionsList">
+              <el-checkbox v-for="item in scope.row.permissions" :label="item.id" >@{{item.name}}</el-checkbox>
+            </el-checkbox-group>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="btn-create">
+        <el-button  @click="savePermission" type="primary">保存</el-button>
+      </div>
     </div>
     <div>
       <el-drawer
@@ -50,7 +78,7 @@ use App\Utils\UI\Button;
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
         :before-close="handleClose">
-        <el-form ref="ruleForm" class="attendance-form"  label-width="50px">
+        <el-form ref="ruleForm" class="attendance-form"  label-width="50px" v-model="formData">
           <el-form-item label="名称">
             <el-input v-model="role.name"></el-input>
           </el-form-item>
@@ -84,10 +112,11 @@ use App\Utils\UI\Button;
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
         :before-close="handleClose">
-        <manager-ment ref="managerMent" :school_id="school_id" />
-
+        <manager-ment ref="managerMent" :school_id="school_id" :scoped="scoped"  @close = "isShowAuthGroupDrawer = false" />
+        
       </el-drawer>
     </div>
+    
   </div>
 
   <style scoped lang="scss">

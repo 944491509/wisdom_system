@@ -14,6 +14,7 @@ if (authManager) {
         tableData: [],
         isShowAuthGroupDrawer: false,
         isShowAddAuthDrawer: false,
+        isShowPermission: true,
         setAuthPage: false,
         options:[
           {
@@ -34,13 +35,21 @@ if (authManager) {
           type: '',
           description: ''
         },
-        school_id: ''
+        school_id: '',
+        formData: {
+          managers:[],
+        },
+        scoped: '',
+        rowXXId: '',
+        msg:"2312",
+        permissionsList:[],
+        permission: []
       }
     },
     created() {
       this.getList()
       const d = document.getElementById('new-authManage-app');
-      school_id = d.getAttribute("data-school")
+      this.school_id = d.getAttribute("data-school")
       // console.log(school_id)
     },
 
@@ -91,15 +100,14 @@ if (authManager) {
           '/admin/simpleacl/add',{role: this.role}
         ).then(res => {
             if(Util.isAjaxResOk(res)){
-              console.log(res)
               if(res.data.code == 1000) {
-                console.log()
                 this.$message({
                   message: '添加成功！',
                   type: 'success'
                 });
               }
               this.isShowAddAuthDrawer = false
+              this.role = {}
               this.getList()
             }
         })
@@ -119,7 +127,44 @@ if (authManager) {
       },
       handleClose() {
         this.isShowAddAuthDrawer = false
+        this.isShowAuthGroupDrawer = false
       },
+      setCount(val, id, row) {
+        if (val == 1) {
+          this.scoped = 'super'
+        } else if (val == 2) {
+          this.scoped = 'school'
+        } else if (val == 9) {
+          this.scoped = 'teacher'
+        }
+        this.rowXXId = id
+
+        console.log('this.rowXXId',this.rowXXId)
+        this.isShowAuthGroupDrawer = true
+      },
+      setPermission(val){
+        this.isShowPermission = false
+        this.rowXXId = val
+        axios.post('/admin/simpleacl/menu-permission', {id: val}).then(res => {
+          if(Util.isAjaxResOk(res)){
+            this.permission = res.data.data
+          }
+        })
+      },
+      savePermission() {
+        axios.post('/admin/simpleacl/add-permission', {id: this.rowXXId, permissions: this.permissionsList}).then(res => {
+          if(Util.isAjaxResOk(res)){
+            if(res.data.code == 1000) {
+              this.$message({
+                message: '操作成功！',
+                type: 'success'
+              });
+              this.permissionsList = []
+              this.isShowPermission = true
+            }
+          }
+        })
+      }
     }
   })
 }
