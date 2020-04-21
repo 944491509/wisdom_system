@@ -8,6 +8,7 @@
 
 namespace App\Dao\Timetable;
 
+use App\Models\Schools\Grade;
 use Carbon\Carbon;
 use App\Models\School;
 use App\Models\Schools\Room;
@@ -113,63 +114,53 @@ class TimeSlotDao
         return $timeSlot->from <= $time && $time < $timeSlot->to;
     }
 
+
     /**
-     * 为云班牌提供当前教室的课程列表的方法.
-     *
-     * 提供当前上课的教室, 返回 Timetable Item 集合
-     *
-     * @param Room $room: 教室对象
-     * @param Carbon|null $date: 日期, 默认为今天
-     *
+     * 为云班牌提供当前班级的课程列表的方法.
+     * 提供当前上课的班级, 返回 Timetable Item 集合
+     * @param Grade $grade
      * @return TimetableItem[]
      */
-    public function getTimeSlotByRoom(Room $room, $date = null){
-        if(!$date){
-            $date = Carbon::now();
-        }
+    public function getTimeSlotByGrade(Grade $grade)
+    {
+
+        $date = Carbon::now();
+
         /**
          * @var School $school
          */
-        $school = $room->school;
+        $school = $grade->school;
         $schoolConfiguration = $school->configuration;
 
         // 根据当前时间, 获取所在的学期, 年, 单双周, 第几节课
         $startDate = $schoolConfiguration->getTermStartDate();
         $year = $startDate->year;
         $term = $schoolConfiguration->guessTerm($date->month);
-        $schoolId = $room->school_id;
-        $timeSlots = $this->getAllStudyTimeSlots($schoolId);
+        // 获取当前年级作息时间
+        $hour = $date->format('H:i:s');
 
-        $currentTimeSlot = null;
-        foreach ($timeSlots as $timeSlot) {
-            /**
-             * @var TimeSlot $timeSlot
-             */
-            if($timeSlot->current){
-                $currentTimeSlot = $timeSlot;
-            }
-        }
-        if (is_null($currentTimeSlot)) {
-            return  false;
-        }
-        $timeSlots = TimetableItem::where('room_id',$room->id)
-            ->where('year', $year)
-            ->where('term', $term)
-            ->where('weekday_index',$date->dayOfWeekIso)
-            ->where('time_slot_id','>=',$currentTimeSlot->id)
-            ->with('timeslot')
-            ->orderBy('time_slot_id','asc')
+        $where = [
+            ['grade_id', '=', $grade->id],
+            ['timetable_items.year', '=', $year],
+            ['term', '=', $term],
+            ['weekday_index', '=', $date->dayOfWeekIso],
+        ];
+
+        return TimetableItem::where($where)
+            ->whereTime('time_slots.to', '>', $hour)
+            ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
+            ->orderBy('time_slots.from','asc')
             ->get();
-        return $timeSlots;
     }
 
     /**
      * 根据房间号获取当前正在上课的的 Timetable Item
      * @param Room $room
      * @param null $date
+     * @param int $type
      * @return TimetableItem|null
      */
-    public function getItemByRoomForNow(Room $room, $date = null){
+    public function getItemByRoomForNow(Room $room, $date = null, $type = 0 ){
         if(!$date){
             $date = Carbon::now();
         }
@@ -186,47 +177,32 @@ class TimeSlotDao
         // 先查询当前教室今天要上的所有的课
         $map = [
             'room_id' => $room->id,
-            'year' => $year,
+            'timetable_items.year' => $year,
             'term' => $term,
             'weekday_index' => $date->dayOfWeekIso,
         ];
-        $timeTableItems = TimetableItem::where($map)->get();
 
-        foreach ($timeTableItems as $key => $item) {
-            // 判断这节课是否是当前课
-            $timeSlot = $item->timeSlot;
-            if($this->isCurrent($timeSlot)) {
-                return $item;
-                break;
+        $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
+                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
+            })
+            ->orderBy('time_slots.from','asc')
+            ->get();
+
+        if ($type == 0) {
+            foreach ($timeTableItems as $key => $item) {
+                // 判断这节课是否是当前课
+                $timeSlot = $item->timeSlot;
+                if($this->isCurrent($timeSlot)) {
+                    return $item;
+                    break;
+                }
             }
+        }elseif ($type == 1) {
+            return  $timeTableItems;
         }
         return null;
 
-
-//        $timeSlots = $this->getAllStudyTimeSlots($room->school_id);
-//
-//        $currentTimeSlot = null;
-//        foreach ($timeSlots as $timeSlot) {
-//            /**
-//             * @var TimeSlot $timeSlot
-//             */
-//            if($timeSlot->current){
-//                $currentTimeSlot = $timeSlot;
-//            }
-//        }
-//
-//        if (empty($currentTimeSlot->id)) {
-//            return null;
-//        }
-//        return TimetableItem::where('room_id',$room->id)
-//            ->where('year', $year)
-//            ->where('term', $term)
-//            ->where('weekday_index',$date->dayOfWeekIso)
-//            ->where('time_slot_id', $currentTimeSlot->id)
-//            ->with('timeslot')
-//            ->first();
     }
-
 
     /**
      * 获取当前时间的第几节课
