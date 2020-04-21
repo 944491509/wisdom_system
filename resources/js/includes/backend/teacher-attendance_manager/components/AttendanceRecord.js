@@ -22,6 +22,7 @@ Vue.component("AttendanceRecord", {
                 size="small"
                 v-model="dateByDay"
                 value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
                 type="date"
                 placeholder="选择日期">
               </el-date-picker>
@@ -34,7 +35,7 @@ Vue.component("AttendanceRecord", {
                 placeholder="选择月份">
               </el-date-picker>
               <el-button type="primary" size="small" @click="getList" style="margin-left: 20px;">查询</el-button>
-              <el-button type="primary" size="small">导出</el-button>
+              <el-button type="primary" size="small" @click="getExcel">导出</el-button>
             </div>
             <div class="leftContent" v-if="isShow">
               <div class="itemsDiv">
@@ -48,7 +49,7 @@ Vue.component("AttendanceRecord", {
                   <p class="itemBtm">{{resDate.morning ? resDate.morning.late.count :0}}<span v-if="resDate.morning.late.users">次/{{resDate.morning.late.users ? resDate.morning.late.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border3" @click="clickItem(resDate.morning.later.list)">
-                  <p class="itemTop">早退</p>
+                  <p class="itemTop">严重迟到</p>
                   <p class="itemBtm">{{resDate.morning ? resDate.morning.later.count :0}}<span v-if="resDate.morning.later.users">次/{{resDate.morning.later.users ? resDate.morning.later.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border4" @click="clickItem(resDate.morning.not.list)">
@@ -67,7 +68,7 @@ Vue.component("AttendanceRecord", {
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.late.count :0}}<span v-if="resDate.afternoon.late.users">次/{{resDate.afternoon.late.users ? resDate.afternoon.late.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border3" @click="clickItem(resDate.afternoon.later.list)">
-                  <p class="itemTop">早退</p>
+                  <p class="itemTop">严重迟到</p>
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.later.count :0}}<span v-if="resDate.afternoon.later.users">次/{{resDate.afternoon.later.users ? resDate.afternoon.later.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border4" @click="clickItem(resDate.afternoon.not.list)">
@@ -157,22 +158,33 @@ Vue.component("AttendanceRecord", {
       resDate: {},
       tableList: [],
       isShowTable: false,
-      isShow: false
+      isShow: false,
+      type: ''
     };
   },
   mounted() {
-    // this.$nextTick(() => {
-      // this.getList()
-    // })
+    let date = new Date()
+    let year = date.getFullYear()
+    let month = date.getMonth().toString().length == 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+    let day = date.getDate()
+    this.isDay = true
+    this.dateByDay = year + '-' + month + '-' + day
+    console.log(this.dateByDay)
+    this.selectDateType = '0'
+    this.getList()
   },
   watch: {
     selectDateType: {
       handler(val) {
+        let date = new Date()
+        let year = date.getFullYear()
+        let month = date.getMonth().toString().length == 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+        let day = date.getDate()
         if (val === '0') {
-          this.dateByDay = ''
+          this.dateByDay = year + '-' + month + '-' + day
           this.isDay = true
         } else {
-          this.dateByDay = ''
+          this.dateByDay = year + '-' + month 
           this.isDay = false
         }
       }
@@ -182,6 +194,7 @@ Vue.component("AttendanceRecord", {
     async getList() {
       let params = {}
       if (this.dateByDay.split("-").length == 3) {
+        console.log('ssss')
         params = {
           attendance_id: this.attendance_id,
           day: this.dateByDay
@@ -191,6 +204,7 @@ Vue.component("AttendanceRecord", {
         this.isShow = true
         console.log(this.resDate)
       } else if (this.dateByDay.split("-").length == 2) {
+        console.log('xxxx')
         params = {
           attendance_id: this.attendance_id,
           month: this.dateByDay
@@ -224,6 +238,99 @@ Vue.component("AttendanceRecord", {
       })
 
       this.isShowTable = true
-    }
+    },
+    typeSwitch(val) {
+      switch (val) {
+        case 'morning': 
+          return '上午'
+          break
+        case 'afternoon': 
+          return '下午'
+          break
+        case 'evening': 
+          return '下班'
+          break
+        default:
+          break
+      }
+    },
+    dakaSwitch(val) {
+      switch (val) {
+        case 0: 
+          return '未打卡'
+          break
+        case 1: 
+          return '正常'
+          break
+        case 2: 
+          return '迟到'
+          break
+        case 3: 
+          return '严重迟到'
+          break
+        case 4: 
+          return '早退'
+        default:
+          break
+      }
+    },
+    formatList() {
+      let list = []
+      let data = JSON.parse(JSON.stringify(this.resDate))
+      if (this.dateByDay.split("-").length == 3) {
+        Object.entries(data).map(([key, value], i) => {
+          Object.entries(value).map(([k, v]) => {
+            v.list.map(e => {
+              e.date = this.dateByDay,
+              e.type = this.typeSwitch(key),
+              e.dakaStatus = this.dakaSwitch(e.status)
+            })
+            list = list.concat(v.list)
+          })
+        })
+        return list
+      } else if (this.dateByDay.split("-").length == 2) {
+        Object.entries(data).map(([key, value]) => {
+          console.log(value)
+          let O = {
+            date: this.dateByDay,
+            type: this.typeSwitch(key),
+            okCount: value.ok.count,
+            okTimes: value.ok.users.length,
+            lateCount: value.late ? value.late.count : value.early.count,
+            lateTimes: value.late ? value.late.users.length : value.early.users.length,
+            laterCount: value.later ? value.later.count : 0,
+            laterTimes: value.later ? value.later.users.length : 0,
+            notCount: value.not.count,
+            notTimes: value.not.users.length,
+          }
+          list.push(O)
+        })
+        console.log(list)
+        return list
+      }
+
+    },
+
+    getExcel(res) {
+      require.ensure([], () => {
+          const { export_json_to_excel } = require('../js/Export2Excel.js')
+          let tHeader = []
+          let filterVal = []
+          if (this.dateByDay.split("-").length == 3) {
+            tHeader = ['日期', '姓名', '打卡类型', '打卡时间', '打卡状态']
+            filterVal = ['date', 'name', 'type', 'time', 'dakaStatus']
+          } else if (this.dateByDay.split("-").length == 2) {
+            tHeader = ['日期', '打卡类型', '按时打卡次数', '按时打卡人数', '迟到/早退次数', '迟到/早退人数', '严重迟到次数', '严重迟到人数', '未打卡次数', '未打卡人数']
+            filterVal = ['date', 'type', 'okCount', 'okTimes', 'lateCount', 'lateTimes', 'laterCount', 'laterTimes', 'notCount', 'notTimes']
+          }
+          const data = this.formatJson(filterVal, this.formatList())
+          let excelName = this.dateByDay + '考勤记录'
+          export_json_to_excel(tHeader, data, excelName)
+      })
+    }, 
+    formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+    },
   }
 });
