@@ -109,7 +109,7 @@ class TimeSlotDao
      * @param $timeSlot
      * @return bool
      */
-    protected function isCurrent($timeSlot){
+    public function isCurrent($timeSlot){
         $time = now(GradeAndYearUtil::TIMEZONE_CN)->format('H:i:s');
         return $timeSlot->from <= $time && $time < $timeSlot->to;
     }
