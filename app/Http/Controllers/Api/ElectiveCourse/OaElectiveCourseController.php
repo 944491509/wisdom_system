@@ -115,6 +115,17 @@ class OaElectiveCourseController extends Controller
         $schoolId = $user->getSchoolId();
         $applyDao = new TeacherApplyElectiveCourseDao();
         $app  = $applyDao->getApplicationByTeacherById($request->getInputApplyid(), $schoolId);
+        $schoolDao = new SchoolDao();
+        $school = $schoolDao->getSchoolById($schoolId);
+        $yearArr = $school->configuration->yearText();
+        if (!empty($app['year'])) {
+            foreach ($yearArr as $year) {
+                if ($year['year'] == $app['year']) {
+                    $app['year'] = $app['text'];
+                }
+            }
+        }
+
         return $app ?
             JsonBuilder::Success($app)
             : JsonBuilder::Error();
@@ -124,6 +135,20 @@ class OaElectiveCourseController extends Controller
     {
         $applyDao = new TeacherApplyElectiveCourseDao();
         $app  = $applyDao->getApplication2ByTeacherById($request->getInputApplyid());
+
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $schoolDao = new SchoolDao();
+        $school = $schoolDao->getSchoolById($schoolId);
+        $yearArr = $school->configuration->yearText();
+        if (!empty($app['year'])) {
+            foreach ($yearArr as $year) {
+                if ($year['year'] == $app['year']) {
+                    $app['year'] = $app['text'];
+                }
+            }
+        }
+
         return $app ?
             JsonBuilder::Success($app)
             : JsonBuilder::Error();
