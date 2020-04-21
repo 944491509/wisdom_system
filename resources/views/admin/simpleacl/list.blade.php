@@ -4,7 +4,7 @@ use App\Utils\UI\Button;
 ?>
 @extends('layouts.app')
 @section('content')
-  <div class="authManage" id="new-authManage-app">
+  <div class="authManage" id="new-authManage-app" data-school="{{session('school.id')}}">
     <div class="authTitle">
       <span>权限管理11</span>
       <el-button class="btn" type="primary" @click="isShowAddAuthDrawer = true">添加权限组+</el-button>
@@ -84,7 +84,7 @@ use App\Utils\UI\Button;
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
         :before-close="handleClose">
-        <manager-ment ref="managerMent" />
+        <manager-ment ref="managerMent" :school_id="school_id" />
 
       </el-drawer>
     </div>

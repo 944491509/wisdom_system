@@ -33,11 +33,15 @@ if (authManager) {
           name: '',
           type: '',
           description: ''
-        }
+        },
+        school_id: ''
       }
     },
     created() {
       this.getList()
+      const d = document.getElementById('new-authManage-app');
+      school_id = d.getAttribute("data-school")
+      // console.log(school_id)
     },
 
     methods: {
