@@ -599,7 +599,7 @@ class TimetableItemDao
 
         if($user->isStudent()) {
             $grade = $user->gradeUser->grade;
-            $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear,$now, $school->id);
+            $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear(),$now, $school->id);
             if(is_null( $currentTimeSlot)) {
                 return null;
             }
