@@ -121,7 +121,7 @@ class OaElectiveCourseController extends Controller
         if (!empty($app['year'])) {
             foreach ($yearArr as $year) {
                 if ($year['year'] == $app['year']) {
-                    $app['year'] = $app['text'];
+                    $app['year'] = $year['text'];
                 }
             }
         }
@@ -144,7 +144,7 @@ class OaElectiveCourseController extends Controller
         if (!empty($app['year'])) {
             foreach ($yearArr as $year) {
                 if ($year['year'] == $app['year']) {
-                    $app['year'] = $app['text'];
+                    $app['year'] = $year['text'];
                 }
             }
         }
