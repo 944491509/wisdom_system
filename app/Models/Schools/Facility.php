@@ -41,7 +41,7 @@ class Facility extends Model
     /**
      * @var array
      */
-    protected $fillable = ['facility_number','location', 'facility_name', 'school_id', 'campus_id', 'building_id', 'room_id', 'detail_addr', 'status', 'type'];
+    protected $fillable = ['facility_number','location', 'facility_name', 'school_id', 'campus_id', 'building_id', 'room_id', 'detail_addr', 'status', 'type', 'card_type', 'grade_id'];
 
 
     const TYPE_MONITORING  = 1;
@@ -60,8 +60,10 @@ class Facility extends Model
     const TYPE_CLASS_SIGN_TEXT  = '班牌设备';
     const TYPE_CLASS_CLASSROOM_TEXT  = '教室设备';
 
-
-
+    const  CARD_TYPE_PUBLIC  = 0;
+    const  CARD_TYPE_PRIVATE = 1;
+    const  CARD_TYPE_PUBLIC_TEXT = '公共班牌';
+    const  CARD_TYPE_PRIVATE_TEXT = '私有班牌';
 
     public function campus() {
         return $this->belongsTo(Campus::class, 'campus_id', 'id');
@@ -81,6 +83,10 @@ class Facility extends Model
         return $this->belongsTo(School::class, 'school_id', 'id');
     }
 
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
+    }
 
     /**
      * 获取type属性
@@ -98,6 +104,17 @@ class Facility extends Model
                 return self::TYPE_CLASS_CLASSROOM_TEXT;
             default : return '';
 
+        }
+    }
+
+    public function getCardTypeTextAttribute()
+    {
+        switch ($this->card_type) {
+            case self::CARD_TYPE_PUBLIC:
+                return self::CARD_TYPE_PUBLIC_TEXT;break;
+            case self::CARD_TYPE_PRIVATE:
+                return self::CARD_TYPE_PRIVATE_TEXT;break;
+            default : return '';
         }
     }
 }
