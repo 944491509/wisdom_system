@@ -608,7 +608,7 @@ class TimetableItemDao
                 ['year','=',$year],
                 ['term','=',$term],
                 ['time_slot_id','=',$currentTimeSlot->id],
-                ['grade_id','=',$grade->grade_id],
+                ['grade_id','=',$grade->id],
                 ['weekday_index','=',$weekdayIndex],
             ];
             return TimetableItem::where($where)->first();
