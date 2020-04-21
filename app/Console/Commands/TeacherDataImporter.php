@@ -58,7 +58,7 @@ class TeacherDataImporter extends Command
         try{
             if($type === 'lixian'){
                 // 导入礼县教师
-                $filePath = __DIR__.'/data/lixian-teacher.xlsx';
+                $filePath = __DIR__.'/data/lixian-teacher2.xlsx';
                 $this->lixianImporter($filePath);
             }
         }
@@ -101,6 +101,7 @@ class TeacherDataImporter extends Command
             'Q',// 15
             'R',// 16
             'S',// 17
+            'T' // 18
         ];
 
         $startRow = 2;
@@ -122,7 +123,7 @@ class TeacherDataImporter extends Command
             return;
         }
 
-        $u = User::where('mobile',substr($data[2],10))->first();
+        $u = User::where('mobile', $data[18])->first();
         if($u){
             echo $u->name .' 账户已存在'.PHP_EOL;
             $gu = GradeUser::where('user_id',$u->id)->first();
@@ -150,7 +151,7 @@ class TeacherDataImporter extends Command
                 $user->password = Hash::make(substr($data[2],-6)); // 身份证号后 6 位作为密码
                 $user->api_token = Uuid::uuid4()->toString();
                 $user->name = $data[0];
-                $user->mobile = substr($data[2],-8); // 身份证号后 8 位作为手机号
+                $user->mobile = $data[18]; // 身份证号后 8 位作为手机号 substr($data[2],-8)
                 $user->type = Role::TEACHER;
                 $user->status = User::STATUS_VERIFIED;
                 $user->save();
@@ -200,11 +201,10 @@ class TeacherDataImporter extends Command
                 $profile->save();
 
                 $gradeUser->user_id = $user->id;
-                $gradeUser->name = $user->$data[0];
+                $gradeUser->name = $data[0];
                 $gradeUser->user_type = 9;
                 $gradeUser->school_id = 1;
                 $gradeUser->campus_id = 1;
-
                 $gradeUser->save();
 
             }
