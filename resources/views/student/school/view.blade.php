@@ -20,7 +20,7 @@
                 </p>
                 <p class="text-white">
                     @php
-                        $slot = \App\Utils\Time\GradeAndYearUtil::GetTimeSlot();
+                        $slot = \App\Utils\Time\GradeAndYearUtil::GetTimeSlot($gradeUser->grade->gradeYear());
                     @endphp
                     目前是: {{ $slot ? $slot->name.'时间' : '休息时间' }}
                 </p>

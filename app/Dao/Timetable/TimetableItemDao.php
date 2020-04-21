@@ -591,42 +591,53 @@ class TimetableItemDao
         if(is_null($now)) {
             $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
         }
-        $grade = $user->gradeUser->grade;
         $school = (new SchoolDao())->getSchoolById($user->getSchoolId());
-        $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear,$now, $school->id);
-        if($currentTimeSlot && $school){
-            $weekdayIndex = $now->dayOfWeekIso;
-            // 当前学年
-            $year = $school->configuration->getSchoolYear();
+        $weekdayIndex = $now->dayOfWeekIso;
+        $year = $school->configuration->getSchoolYear();
 
-            $term = $school->configuration->guessTerm($now->month);
-            if ($user->isStudent()) {
-                $where = [
-                    ['school_id','=',$school->id],
-                    ['year','=',$year],
-                    ['term','=',$term],
-                    ['time_slot_id','=',$currentTimeSlot->id],
-                    ['grade_id','=',$user->gradeUser->grade_id],
-                    ['weekday_index','=',$weekdayIndex],
-                ];
-                return TimetableItem::where($where)->first();
-            } elseif ($user->isTeacher()) {
-                $where = [
-                    ['school_id','=',$school->id],
-                    ['year','=',$year],
-                    ['term','=',$term],
-                    ['time_slot_id','=',$currentTimeSlot->id],
-                    ['teacher_id','=',$user->id],
-                    ['weekday_index','=',$weekdayIndex],
-                ];
-                // 一个老师可以同时给多个班级上课
-                return TimetableItem::where($where)->get();
+        $term = $school->configuration->guessTerm($now->month);
 
-            } else  {
-                return  false;
+        if($user->isStudent()) {
+            $grade = $user->gradeUser->grade;
+            $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear(),$now, $school->id);
+            if(is_null( $currentTimeSlot)) {
+                return null;
             }
+            $where = [
+                ['school_id','=',$school->id],
+                ['year','=',$year],
+                ['term','=',$term],
+                ['time_slot_id','=',$currentTimeSlot->id],
+                ['grade_id','=',$grade->id],
+                ['weekday_index','=',$weekdayIndex],
+            ];
+            return TimetableItem::where($where)->first();
+
+        } elseif ($user->isTeacher()) {
+            $where = [
+                ['school_id', '=', $school->id],
+                ['year', '=', $year],
+                ['term', '=', $term],
+                ['teacher_id', '=', $user->id],
+                ['weekday_index', '=', $weekdayIndex],
+            ];
+            // 一个老师可以同时给多个班级上课
+            $timeTables = TimetableItem::where($where)->get();
+            if(count($timeTables) == 0) {
+                return null;
+            }
+
+            foreach ($timeTables as $key => $item) {
+                $timeSlot = $item->timeSlot;
+                $timeSlotDao = new TimeSlotDao();
+                if ($timeSlotDao->isCurrent($timeSlot)) {
+                    // todo  这块应该返回二维数据处理
+                    return collect([$item]);
+                }
+
+            }
+            return null;
         }
-        return null;
     }
 
 
