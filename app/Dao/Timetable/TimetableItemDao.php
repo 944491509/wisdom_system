@@ -632,7 +632,7 @@ class TimetableItemDao
                 $timeSlotDao = new TimeSlotDao();
                 if ($timeSlotDao->isCurrent($timeSlot)) {
                     // todo  这块应该返回二维数据处理
-                    return [$item];
+                    return collect([$item]);
                 }
 
             }
