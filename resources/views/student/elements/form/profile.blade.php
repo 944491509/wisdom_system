@@ -96,11 +96,13 @@ use App\Utils\UI\Button;
                 }
                 ?>
                 @if($birthday)
+
                 <label for="student-political_name-input">出生日期(系统自动维护, 与身份证信息同步)</label><br>
                 <select style="width: 100px;" class="form-control float-md-left mr-2" id="student-year-input" disabled>
                     @php
                         $firstYear = intval(date('Y')) - 50;
-                        $years = range($firstYear, $firstYear + 18);
+                        $years = range($firstYear, $firstYear + 50);
+
                     @endphp
                     @foreach($years as $year)
                         <option value="{{ $year }}" {{ ($profile->birthday->year??$student->profile->birthday->year) === $year ? 'selected' : null }}>{{ $year }}年</option>
