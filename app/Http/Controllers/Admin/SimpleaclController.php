@@ -8,6 +8,7 @@ use App\Dao\Simpleacl\SimpleaclRoleDao;
 use App\Http\Controllers\Controller;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleaclController extends Controller
 {
@@ -100,6 +101,8 @@ class SimpleaclController extends Controller
     }
 
     public function menu_permission(Request $request) {
+        dd(Auth::user()->aclPermissions());
+
         $dao = new SimpleaclRoleDao();
         $info = $dao->getById($request->get('id'));
         if (empty($info)) {

@@ -13,6 +13,9 @@ use App\Models\NetworkDisk\Category;
 use App\Models\Schools\GradeManager;
 use App\Models\Schools\Organization;
 use App\Models\Schools\RecruitmentPlan;
+use App\Models\Simpleacl\SimpleaclMenu;
+use App\Models\Simpleacl\SimpleaclRolePermission;
+use App\Models\Simpleacl\SimpleaclRoleUser;
 use App\Models\Students\StudentProfile;
 use App\Models\Students\StudentTextbook;
 use App\Models\Teachers\TeacherProfile;
@@ -98,6 +101,43 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
      */
     public function getCurrentRoleSlug(){
         return Role::GetRoleSlugByUserType($this->type);
+    }
+
+    public function managerMenu(){
+        $parents = SimpleaclMenu::with('children')->where(['type' => $this->type, 'parent_id' => 0])->orderBy('sort', 'desc')->get();
+        $return = [];
+        foreach ($parents as $parent) {
+            $return[] = $this->menuOutput($parent);
+        }
+        return $return;
+    }
+
+    public function aclPermissions(){
+        $roleId = SimpleaclRoleUser::where('user_id', '=', $this->id)->value('simpleacl_role_id');
+        if (empty($roleId)) {
+            return [];
+        }
+        $list = SimpleaclRolePermission::where('simpleacl_role_id', '=', $roleId)->with('permissions')->get();
+        $return = [];
+        foreach ($list as $item) {
+            $return[] = $item->permissions->router;
+        }
+        return $return;
+    }
+
+    private function menuOutput(SimpleaclMenu $menu){
+        $return = [
+            'id' => $menu->id,
+            'name' => $menu->name,
+            'icon' => $menu->icon,
+            'href' => $menu->href,
+            'need_uuid' => $menu->need_uuid,
+            'param' => $menu->param
+        ];
+        foreach ($menu->children as $child) {
+            $return['children'][] = $this->menuOutput($child);
+        }
+        return $return;
     }
 
     /**

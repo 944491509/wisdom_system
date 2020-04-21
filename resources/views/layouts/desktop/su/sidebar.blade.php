@@ -30,21 +30,11 @@
                     </a>
                 </li>
                 @if(session('school.id'))
-                    @include('layouts.desktop.elements.home_menu')
-                    @include('layouts.desktop.elements.oa_menu')
-                    @include('layouts.desktop.elements.students_menu')
-                    @include('layouts.desktop.elements.courses_menu_group')
-                    @include('layouts.desktop.elements.recruitment_menu_group')
-                    @include('layouts.desktop.elements.content_menu')
-                    @include('layouts.desktop.elements.welcome_menu')
-                    @include('layouts.desktop.elements.operator_only_menu')
-{{--                    @include('layouts.desktop.elements.community_menu')--}}
-                    @include('layouts.desktop.elements.affiche_menu')
-                    @include('layouts.desktop.elements.code_menu')
-                    {{--@include('layouts.desktop.elements.group_menu')--}}
-                    @include('layouts.desktop.elements.wifi_menu')
-                    @include('layouts.desktop.elements.wifirepairs_menu')
-                    @include('layouts.desktop.elements.evaluate')
+                    @php
+                        $menuList = \Illuminate\Support\Facades\Auth::user()->managerMenu();
+                        $permissions = \Illuminate\Support\Facades\Auth::user()->aclPermissions();
+                        
+                    @endphp
                 @endif
             </ul>
         </div>

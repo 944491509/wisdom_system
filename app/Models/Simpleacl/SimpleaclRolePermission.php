@@ -11,4 +11,8 @@ class SimpleaclRolePermission extends Model
     protected $fillable = [
         'simpleacl_role_id','simpleacl_permission_id'
     ];
+    public function permissions()
+    {
+        return $this->belongsTo(SimpleaclPermission::class, 'simpleacl_permission_id');
+    }
 }
