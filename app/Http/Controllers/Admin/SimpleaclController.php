@@ -101,8 +101,6 @@ class SimpleaclController extends Controller
     }
 
     public function menu_permission(Request $request) {
-        dd(Auth::user()->aclPermissions());
-
         $dao = new SimpleaclRoleDao();
         $info = $dao->getById($request->get('id'));
         if (empty($info)) {

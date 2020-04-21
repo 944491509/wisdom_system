@@ -30,11 +30,7 @@
                     </a>
                 </li>
                 @if(session('school.id'))
-                    @php
-                        $menuList = \Illuminate\Support\Facades\Auth::user()->managerMenu();
-                        $permissions = \Illuminate\Support\Facades\Auth::user()->aclPermissions();
-                        
-                    @endphp
+                    @include('layouts.desktop.elements.aclmenu')
                 @endif
             </ul>
         </div>

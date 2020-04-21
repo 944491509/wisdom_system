@@ -30,9 +30,11 @@ use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 //use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Cache;
 use Kodeine\Acl\Traits\HasRole;
 use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\NetworkDisk\Media;
+use function foo\func;
 
 class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 {
@@ -103,15 +105,6 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
         return Role::GetRoleSlugByUserType($this->type);
     }
 
-    public function managerMenu(){
-        $parents = SimpleaclMenu::with('children')->where(['type' => $this->type, 'parent_id' => 0])->orderBy('sort', 'desc')->get();
-        $return = [];
-        foreach ($parents as $parent) {
-            $return[] = $this->menuOutput($parent);
-        }
-        return $return;
-    }
-
     public function aclPermissions(){
         $roleId = SimpleaclRoleUser::where('user_id', '=', $this->id)->value('simpleacl_role_id');
         if (empty($roleId)) {
@@ -125,19 +118,46 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
         return $return;
     }
 
-    private function menuOutput(SimpleaclMenu $menu){
+    public function managerMenu(){
+        return Cache::remember('simpleacl.getmenuByuserid_' . $this->id, now()->addMinutes(1440), function (){
+            $parents = SimpleaclMenu::with('children')->where(['type' => $this->type, 'parent_id' => 0])->orderBy('sort', 'desc')->get();
+            $permissions = $this->aclPermissions();
+            $return = [];
+            foreach ($parents as $parent) {
+                $menu = $this->menuOutput($parent, $permissions);
+                if ($menu) {
+                    $return[] = $menu;
+                }
+            }
+            return $return;
+        });
+    }
+
+    private function menuOutput(SimpleaclMenu $menu, $permissions){
+        $param = [];
+        if (!empty($menu->need_uuid)) {
+            $param['uuid'] = session('school.uuid');
+        }
+        if (!empty($menu->param)) {
+            $param = array_merge($param, json_decode($menu->param, true));
+        }
         $return = [
             'id' => $menu->id,
             'name' => $menu->name,
             'icon' => $menu->icon,
             'href' => $menu->href,
-            'need_uuid' => $menu->need_uuid,
-            'param' => $menu->param
+            'param' => $param,
+            'children' => [],
+            'is_show' => !empty($menu->href) && in_array($menu->href, $permissions)
         ];
         foreach ($menu->children as $child) {
-            $return['children'][] = $this->menuOutput($child);
+            $children = $this->menuOutput($child, $permissions);
+            if ($children) {
+                $return['children'][] = $children;
+                $return['is_show'] = true;
+            }
         }
-        return $return;
+        return $return['is_show'] ? $return : [];
     }
 
     /**
