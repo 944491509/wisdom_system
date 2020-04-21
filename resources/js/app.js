@@ -72,6 +72,7 @@ require('./includes/backend/welcome_manager'); // 迎新管理
 require('./includes/backend/contacts_list_manager'); // 通讯录
 require('./includes/backend/textbook_manager'); // 教材
 require('./includes/backend/timeslots_manager'); // 作息时间段管理
+require('./includes/backend/auth_manager'); // 权限管理
 
 require('./includes/backend/recruitment_manager'); // 招生
 require('./includes/backend/recruitment_plan_manager'); // 招生计划
