@@ -104,5 +104,5 @@
     <label for="facility-addr-select">详细地址</label>
     <input  type="text" class="form-control" id="facility-addr-input" value="{{$facility['detail_addr'] ?? old('detail_addr')}}" placeholder="详细地址" name="facility[detail_addr]">
 </div>
-
+<div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
 
