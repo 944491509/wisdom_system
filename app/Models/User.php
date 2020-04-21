@@ -106,16 +106,18 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     }
 
     public function aclPermissions(){
-        $roleId = SimpleaclRoleUser::where('user_id', '=', $this->id)->value('simpleacl_role_id');
-        if (empty($roleId)) {
-            return [];
-        }
-        $list = SimpleaclRolePermission::where('simpleacl_role_id', '=', $roleId)->with('permissions')->get();
-        $return = [];
-        foreach ($list as $item) {
-            $return[] = $item->permissions->router;
-        }
-        return $return;
+        return Cache::remember('simpleacl.getpermissionsByuserid_' . $this->id, now()->addMinutes(1440), function (){
+            $roleId = SimpleaclRoleUser::where('user_id', '=', $this->id)->value('simpleacl_role_id');
+            if (empty($roleId)) {
+                return [];
+            }
+            $list = SimpleaclRolePermission::where('simpleacl_role_id', '=', $roleId)->with('permissions')->get();
+            $return = [];
+            foreach ($list as $item) {
+                $return[] = $item->permissions->router;
+            }
+            return $return;
+        });
     }
 
     public function managerMenu(){
