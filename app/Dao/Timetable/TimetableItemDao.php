@@ -843,7 +843,7 @@ class TimetableItemDao
         $field = ['timetable_items.*','time_slots.id as time_slot_id','time_slots.name'];
         $map = [
                 ['time_slots.school_id', '=', $schoolId],
-                ['year','=', $year],
+                ['timetable_items.year','=', $year],
                 ['term', '=', $term],
                 ['teacher_id', '=', $teacherId],
                 ['grade_id', '=', $gradeId],
