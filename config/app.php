@@ -179,7 +179,7 @@ return [
         /**
          * IdeHelper
          */
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+//        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
     ],
 
     /*
