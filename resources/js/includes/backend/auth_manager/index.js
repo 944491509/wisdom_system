@@ -1,8 +1,12 @@
-import {Util} from "../../common/utils";
-import ManagerMent from "./ManagerMent";
 
-if(document.getElementById('new-authManage-app')){
-  console.log(1222222231231,Vue)
+import {Util} from "../../../common/utils";
+import ManagerMent from "./components/ManagerMent";
+
+const authManager = document.getElementById(
+  "new-authManage-app"
+);
+if (authManager) {
+
   new Vue({
     el: "#new-authManage-app",
     data() {
@@ -35,6 +39,7 @@ if(document.getElementById('new-authManage-app')){
     created() {
       this.getList()
     },
+
     methods: {
       getList() {
         axios.post(

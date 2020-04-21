@@ -6,7 +6,7 @@ use App\Utils\UI\Button;
 @section('content')
   <div class="authManage" id="new-authManage-app">
     <div class="authTitle">
-      <span>权限管理</span>
+      <span>权限管理11</span>
       <el-button class="btn" type="primary" @click="isShowAddAuthDrawer = true">添加权限组+</el-button>
     </div>
     <div style="padding: 0 20px;">
@@ -72,7 +72,7 @@ use App\Utils\UI\Button;
               v-model="role.description">
             </el-input>
           </el-form-item>
-          
+
         </el-form>
         <div class="btn-create">
             <el-button  @click="addRole" type="primary">保存</el-button>
@@ -84,7 +84,8 @@ use App\Utils\UI\Button;
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
         :before-close="handleClose">
-        <ManagerMents ref="managerMent" />
+        <manager-ment ref="managerMent" />
+
       </el-drawer>
     </div>
   </div>
