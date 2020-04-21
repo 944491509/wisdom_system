@@ -39,16 +39,19 @@ class TimeSlotsController extends Controller
      * @param Request $request
      * @return string
      */
-    public function load_year_school(Request $request) {
+    public function load_year_school(Request $request)
+    {
+
         $schoolId = $request->get('school_id');
+
         if(empty($schoolId)) {
-            return JsonBuilder::Error('缺少参数');
+            $schoolId = $request->user()->getSchoolId();
         }
+
         $configuration = SchoolConfiguration::where('school_id',$schoolId)->first();
         $year = $configuration->yearText();
 
         return JsonBuilder::Success($year);
-
     }
 
 
