@@ -1,6 +1,7 @@
 
 $('#facility-campus-select').change(function () {
     var campus_id = $('#facility-campus-select option:selected').val();
+
     $.ajax({
         //请求方式
         type : "get",

@@ -20,6 +20,7 @@ export const Constants = {
         LOAD_COURSES_BY_MAJOR: '/api/school/load-major-courses',
         LOAD_COURSES_BY_SCHOOL: '/api/school/load-courses',
         LOAD_TEACHERS_BY_COURSE: '/api/school/load-course-teachers',
+        LOAD_GRADES_BY_NAME: '/api/school/search-grade',
         SEARCH_TEACHERS_BY_NAME: '/api/school/search-teachers',
         GET_USER_NAME_BY_ID: '/api/school/get-user-name',
         QUICK_SEARCH_USERS_BY_NAME: '/api/school/quick-search-users',
