@@ -273,23 +273,27 @@ class AttendanceController extends Controller
     public function studentSweepQrCode(MyStandardRequest $request)
     {
         $code = json_decode($request->get('code'), true);
-        $user = $request->user();
 
+        $user = $request->user();
+        $grade = $user->gradeUser;
+        if ($grade->grade_id != $code['grade_id']) {
+            return JsonBuilder::Error('当前课不上你要上的');
+        }
         $timetableItemDao = new TimetableItemDao;
         $item = $timetableItemDao->getCurrentItemByUser($user);
 
         if (is_null($item)) {
             return JsonBuilder::Error('未找到当前学生要上的的课程');
         }
-        $timetableItem = $timetableItemDao->getTimeTableItemById($code['timetable_id']);
 
         $data = [
-            'timetable_id' => $timetableItem->id,
-            'time_slot_name' => $timetableItem->timeSlot->name,
-            'course_name' => $timetableItem->course->name,
-            'room' => $timetableItem->room->name,
+            'timetable_id' => $item->id,
+            'time_slot_name' => $item->timeSlot->name,
+            'course_name' => $item->course->name,
+            'room' => $item->room->name,
             'is_arrive' => false,
         ];
+
         // 查询是否已签到
         $schoolId = $user->getSchoolId();
         $schoolDao = new SchoolDao();
@@ -298,7 +302,7 @@ class AttendanceController extends Controller
         $weeks = $configuration->getScheduleWeek(Carbon::now(), null, $code['term']);
         $week = $weeks->getScheduleWeekIndex();
         $detailsDao = new AttendancesDetailsDao();
-        $detail = $detailsDao->getDetailByTimeTableIdAndWeekAndStudentId($timetableItem->id, $week, $user->id);
+        $detail = $detailsDao->getDetailByTimeTableIdAndWeekAndStudentId($item->id, $week, $user->id);
         if(!empty($detail) && $detail->mold == AttendancesDetail::MOLD_SIGN_IN) {
             $data['arrive_time'] = $detail->signin_time;
             $data['arrive_type'] = $detail->typeText();
