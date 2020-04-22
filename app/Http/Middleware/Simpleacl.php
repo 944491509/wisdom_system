@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Route;
 class Simpleacl
 {
     public function handle($request, Closure $next)
-    {   
-        return $next($request);
+    {
         $currentRoute = Route::currentRouteName();
         if (!in_array($currentRoute, Auth::user()->aclPermissions())) {
             Log::info('simpleacl:', ['route' => $currentRoute, 'user' => Auth::user()->id]);
