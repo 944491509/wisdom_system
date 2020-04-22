@@ -150,6 +150,7 @@ class TimeSlotDao
             ->whereTime('time_slots.to', '>', $hour)
             ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
             ->orderBy('time_slots.from','asc')
+            ->orderBy('timetable_items.id', 'desc')
             ->get();
     }
 
@@ -182,12 +183,14 @@ class TimeSlotDao
             'weekday_index' => $date->dayOfWeekIso,
         ];
 
+        $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
                 $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
             })
+            ->select($field)
             ->orderBy('time_slots.from','asc')
+            ->orderBy('timetable_items.id', 'desc')
             ->get();
-
         if ($type == 0) {
             foreach ($timeTableItems as $key => $item) {
                 // 判断这节课是否是当前课

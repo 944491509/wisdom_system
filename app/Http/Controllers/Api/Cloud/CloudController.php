@@ -62,6 +62,9 @@ class CloudController extends Controller
                     'video' => $school->video,
                     'size'  => '',
                     'type'  => $type,
+                ],
+                'card' => [
+                    'address' => $facility->room->building->name.'-'.$facility->room->name,
                 ]
             ]
         ];

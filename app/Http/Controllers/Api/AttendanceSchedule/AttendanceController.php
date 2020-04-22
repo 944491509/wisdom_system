@@ -273,8 +273,12 @@ class AttendanceController extends Controller
     public function studentSweepQrCode(MyStandardRequest $request)
     {
         $code = json_decode($request->get('code'), true);
-        $user = $request->user();
 
+        $user = $request->user();
+        $grade = $user->gradeUser;
+        if ($grade->grade_id != $code['grade_id']) {
+            return JsonBuilder::Error('当前课不上你要上的');
+        }
         $timetableItemDao = new TimetableItemDao;
         $item = $timetableItemDao->getCurrentItemByUser($user);
 
@@ -289,6 +293,7 @@ class AttendanceController extends Controller
             'room' => $item->room->name,
             'is_arrive' => false,
         ];
+
         // 查询是否已签到
         $schoolId = $user->getSchoolId();
         $schoolDao = new SchoolDao();
