@@ -118,7 +118,7 @@ class SimpleaclController extends Controller
         $return[] = [
             'id' => 0,
             'name' => '未分类的权限',
-            'permissions' => SimpleaclPermission::where('simpleacl_menu_id', '=', 0)->get()
+            'permissions' => SimpleaclPermission::where(['simpleacl_menu_id' => 0, 'type' => $info->type])->get()
         ];
 
         return JsonBuilder::Success($return);
