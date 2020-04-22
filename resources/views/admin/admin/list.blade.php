@@ -30,7 +30,7 @@
                                     <td>{{ $item->mobile }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td class="text-center">
-                                        {{ \App\Utils\UI\Anchor::Print(['text'=>'编辑','class'=>'btn-edit-facility','href'=>route('admin.edit.school-manager',['user_id'=>$item->user_id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                        {{ \App\Utils\UI\Anchor::Print(['text'=>'编辑','class'=>'btn-edit-facility','href'=>route('admin.admin.update',['user_id'=>$item->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
                                     </td>
                                 </tr>
                             @endforeach

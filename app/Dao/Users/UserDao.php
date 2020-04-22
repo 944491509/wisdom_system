@@ -29,12 +29,22 @@ class UserDao
     }
 
 
+    /**
+     * 获取平台管理员
+     * @return mixed
+     */
     public function getAdminPage() {
         return User::where('type',Role::SUPER_ADMIN)
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
 
+    /**
+     * 添加平台管理员
+     * @param $data
+     * @return MessageBag
+     * @throws Exception
+     */
     public function addAdmin($data) {
         $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         // 查询账号是否存在
@@ -50,7 +60,6 @@ class UserDao
             'status'=>User::STATUS_VERIFIED,
             'type'=>Role::SUPER_ADMIN,
             'name' => $data['name'],
-//            'mobile_verified_at'=>Carbon::now(),
         ];
 
         $re = User::create($add);
@@ -62,6 +71,23 @@ class UserDao
         }
         return $bag;
     }
+
+
+    /**
+     * 编辑管理员
+     * @param $userId
+     * @param $name
+     * @param $password
+     * @return mixed
+     */
+    public function updateAdminByUserId($userId, $name, $password) {
+        $upd = ['name' => $name];
+        if(!is_null($password)) {
+            $upd['password'] = Hash::make($password);
+        }
+        return User::where('id', $userId)->update($upd);
+    }
+
 
     /**
      * 根据用户的电话号码获取用户
