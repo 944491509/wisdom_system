@@ -143,6 +143,7 @@ use App\Utils\UI\Button;
     .btn-create {
       margin-top: 50px;
       text-align: center;
+      padding-bottom: 20px;
     }
     .attendance-form {
       padding-right: 20px;
