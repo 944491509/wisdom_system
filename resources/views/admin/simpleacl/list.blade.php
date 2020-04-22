@@ -110,7 +110,7 @@ use App\Utils\UI\Button;
         </div>
       </el-drawer>
       <el-drawer
-        title="招生就业处权限组"
+        :title="groupName +'权限组'"
         :visible.sync="isShowAuthGroupDrawer"
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
@@ -146,6 +146,7 @@ use App\Utils\UI\Button;
     .btn-create {
       margin-top: 50px;
       text-align: center;
+      padding-bottom: 20px;
     }
     .attendance-form {
       padding-right: 20px;
