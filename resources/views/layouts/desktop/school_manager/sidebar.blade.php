@@ -21,9 +21,7 @@
                         </div>
                     </div>
                 </li>
-                @if(session('school.id'))
-                    @include('layouts.desktop.elements.aclmenu')
-                @endif
+                @include('layouts.desktop.elements.aclmenu')
             </ul>
         </div>
     </div>

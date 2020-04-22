@@ -29,9 +29,7 @@
                         <span class="title">切换学校</span>
                     </a>
                 </li>
-                @if(session('school.id'))
-                    @include('layouts.desktop.elements.aclmenu')
-                @endif
+                @include('layouts.desktop.elements.aclmenu')
             </ul>
         </div>
     </div>
