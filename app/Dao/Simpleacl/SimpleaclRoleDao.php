@@ -10,6 +10,7 @@ use App\Models\Simpleacl\SimpleaclRoleUser;
 use App\Utils\JsonBuilder;
 use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\MessageBag;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SimpleaclRoleDao
@@ -34,6 +35,7 @@ class SimpleaclRoleDao
 
     public function deleteRole($roleId)
     {
+        $userArr = SimpleaclRoleUser::where('simpleacl_role_id', '=', $roleId)->pluck('user_id')->toArray();
         DB::beginTransaction();
         try {
             if (SimpleaclRole::where('id', '=', $roleId)->delete()) {
@@ -41,6 +43,12 @@ class SimpleaclRoleDao
                 SimpleaclRolePermission::where('simpleacl_role_id', '=', $roleId)->delete();
             }
             DB::commit();
+            if ($userArr) {
+                foreach ($userArr as $userid) {
+                    Cache::forget('simpleacl.getpermissionsByuserid_' . $userid);
+                    Cache::forget('simpleacl.getmenuByuserid_' . $userid);
+                }
+            }
             return new MessageBag(JsonBuilder::CODE_SUCCESS,'删除成功');
         }catch (\Exception $e) {
             return new MessageBag(JsonBuilder::CODE_ERROR, $e->getMessage());
@@ -49,6 +57,7 @@ class SimpleaclRoleDao
 
     public function addUsers($roleId, $users)
     {
+        $userArr = SimpleaclRoleUser::where('simpleacl_role_id', '=', $roleId)->pluck('user_id')->toArray();
         DB::beginTransaction();
         try {
             SimpleaclRoleUser::where('simpleacl_role_id', '=', $roleId)->delete();
@@ -58,9 +67,19 @@ class SimpleaclRoleDao
                         'simpleacl_role_id' => $roleId,
                         'user_id' => $userid
                     ]);
+
+                    Cache::forget('simpleacl.getpermissionsByuserid_' . $userid);
+                    Cache::forget('simpleacl.getmenuByuserid_' . $userid);
                 }
             }
             DB::commit();
+            if ($userArr) {
+                foreach ($userArr as $userid) {
+                    Cache::forget('simpleacl.getpermissionsByuserid_' . $userid);
+                    Cache::forget('simpleacl.getmenuByuserid_' . $userid);
+                }
+            }
+
             return new MessageBag(JsonBuilder::CODE_SUCCESS,'绑定成功');
         }catch (\Exception $e) {
             return new MessageBag(JsonBuilder::CODE_ERROR, $e->getMessage());
@@ -69,6 +88,7 @@ class SimpleaclRoleDao
 
     public function addPermissions($roleId, $permissions)
     {
+        $userArr = SimpleaclRoleUser::where('simpleacl_role_id', '=', $roleId)->pluck('user_id')->toArray();
         DB::beginTransaction();
         try {
             SimpleaclRolePermission::where('simpleacl_role_id', '=', $roleId)->delete();
@@ -81,6 +101,13 @@ class SimpleaclRoleDao
                 }
             }
             DB::commit();
+
+            if ($userArr) {
+                foreach ($userArr as $userid) {
+                    Cache::forget('simpleacl.getpermissionsByuserid_' . $userid);
+                    Cache::forget('simpleacl.getmenuByuserid_' . $userid);
+                }
+            }
             return new MessageBag(JsonBuilder::CODE_SUCCESS,'绑定成功');
         }catch (\Exception $e) {
             return new MessageBag(JsonBuilder::CODE_ERROR, $e->getMessage());
