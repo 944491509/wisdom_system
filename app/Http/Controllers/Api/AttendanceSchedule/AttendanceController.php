@@ -281,13 +281,12 @@ class AttendanceController extends Controller
         if (is_null($item)) {
             return JsonBuilder::Error('未找到当前学生要上的的课程');
         }
-        $timetableItem = $timetableItemDao->getTimeTableItemById($code['timetable_id']);
 
         $data = [
-            'timetable_id' => $timetableItem->id,
-            'time_slot_name' => $timetableItem->timeSlot->name,
-            'course_name' => $timetableItem->course->name,
-            'room' => $timetableItem->room->name,
+            'timetable_id' => $item->id,
+            'time_slot_name' => $item->timeSlot->name,
+            'course_name' => $item->course->name,
+            'room' => $item->room->name,
             'is_arrive' => false,
         ];
         // 查询是否已签到
@@ -298,7 +297,7 @@ class AttendanceController extends Controller
         $weeks = $configuration->getScheduleWeek(Carbon::now(), null, $code['term']);
         $week = $weeks->getScheduleWeekIndex();
         $detailsDao = new AttendancesDetailsDao();
-        $detail = $detailsDao->getDetailByTimeTableIdAndWeekAndStudentId($timetableItem->id, $week, $user->id);
+        $detail = $detailsDao->getDetailByTimeTableIdAndWeekAndStudentId($item->id, $week, $user->id);
         if(!empty($detail) && $detail->mold == AttendancesDetail::MOLD_SIGN_IN) {
             $data['arrive_time'] = $detail->signin_time;
             $data['arrive_type'] = $detail->typeText();
