@@ -11,6 +11,7 @@ use App\Models\Users\GradeUser;
 use App\User;
 use App\Models\Acl\Role;
 use App\Utils\JsonBuilder;
+use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\MessageBag;
 use Carbon\Carbon;
 use Exception;
@@ -26,6 +27,67 @@ class UserDao
     public function createUser($data){
         return User::create($data);
     }
+
+
+    /**
+     * 获取平台管理员
+     * @return mixed
+     */
+    public function getAdminPage() {
+        return User::where('type',Role::SUPER_ADMIN)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
+    /**
+     * 添加平台管理员
+     * @param $data
+     * @return MessageBag
+     * @throws Exception
+     */
+    public function addAdmin($data) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        // 查询账号是否存在
+        $info = $this->getUserByMobile($data['mobile']);
+        if(!is_null($info)) {
+            $bag->setMessage('该账号已存在');
+            return $bag;
+        }
+        $add = [
+            'mobile'=>$data['mobile'],
+            'uuid'=>Uuid::uuid4()->toString(),
+            'password'=>Hash::make($data['password']),
+            'status'=>User::STATUS_VERIFIED,
+            'type'=>Role::SUPER_ADMIN,
+            'name' => $data['name'],
+        ];
+
+        $re = User::create($add);
+        if($re) {
+            $bag->setMessage('创建成功');
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+        } else {
+            $bag->setMessage('创建失败');
+        }
+        return $bag;
+    }
+
+
+    /**
+     * 编辑管理员
+     * @param $userId
+     * @param $name
+     * @param $password
+     * @return mixed
+     */
+    public function updateAdminByUserId($userId, $name, $password) {
+        $upd = ['name' => $name];
+        if(!is_null($password)) {
+            $upd['password'] = Hash::make($password);
+        }
+        return User::where('id', $userId)->update($upd);
+    }
+
 
     /**
      * 根据用户的电话号码获取用户
