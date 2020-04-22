@@ -14,6 +14,7 @@ use App\Models\Schools\GradeManager;
 use App\Models\Schools\Organization;
 use App\Models\Schools\RecruitmentPlan;
 use App\Models\Simpleacl\SimpleaclMenu;
+use App\Models\Simpleacl\SimpleaclPermission;
 use App\Models\Simpleacl\SimpleaclRolePermission;
 use App\Models\Simpleacl\SimpleaclRoleUser;
 use App\Models\Students\StudentProfile;
@@ -117,6 +118,12 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
                 $return[] = $item->permissions->router;
             }
             return $return;
+        });
+    }
+
+    public function allPermissions(){
+        return Cache::remember('simpleacl.getpermissionsBytype_' . $this->type, now()->addMinutes(1440), function (){
+            return SimpleaclPermission::where('type', '=', $this->type)->pluck('router')->toArray();
         });
     }
 
