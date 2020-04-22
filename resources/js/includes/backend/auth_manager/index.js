@@ -43,7 +43,8 @@ if (authManager) {
         rowXXId: '',
         msg:"2312",
         permissionsList:[],
-        permission: []
+        permission: [],
+        checkedUsers:[]
       }
     },
     created() {
@@ -138,11 +139,11 @@ if (authManager) {
           this.scoped = 'teacher'
         }
         this.rowXXId = id
-
+        this.checkedUsers = row.users
         console.log('this.rowXXId',this.rowXXId)
         this.isShowAuthGroupDrawer = true
       },
-      setPermission(val){
+      setPermission(val,permissions){
         this.isShowPermission = false
         this.rowXXId = val
         axios.post('/admin/simpleacl/menu-permission', {id: val}).then(res => {
@@ -150,6 +151,7 @@ if (authManager) {
             this.permission = res.data.data
           }
         })
+        this.permissionsList = permissions
       },
       savePermission() {
         axios.post('/admin/simpleacl/add-permission', {id: this.rowXXId, permissions: this.permissionsList}).then(res => {
@@ -160,10 +162,14 @@ if (authManager) {
                 type: 'success'
               });
               this.permissionsList = []
-              this.isShowPermission = true
+              this.isShowPermission = true;
+              this.getList();
             }
           }
         })
+      },
+      chanegMenu(val){
+        console.log('chanegMenu',val)
       }
     }
   })
