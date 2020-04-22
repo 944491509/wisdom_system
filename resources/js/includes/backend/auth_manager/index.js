@@ -44,7 +44,8 @@ if (authManager) {
         msg:"2312",
         permissionsList:[],
         permission: [],
-        checkedUsers:[]
+        checkedUsers:[],
+        groupName:"",
       }
     },
     created() {
@@ -139,7 +140,8 @@ if (authManager) {
           this.scoped = 'teacher'
         }
         this.rowXXId = id
-        this.checkedUsers = row.users
+        this.checkedUsers = row.users;
+        this.groupName  = row.name;
         console.log('this.rowXXId',this.rowXXId)
         this.isShowAuthGroupDrawer = true
       },
