@@ -33,7 +33,23 @@ Vue.component("ManagerMent", {
     },
     scoped: {
       type: String
+    },
+    users:{
+      type: Array,
+      default(){
+        return [];
+      }
     }
+  },
+  watch: {
+    users:{
+      handler(val){
+        console.log('users',val)
+        this.form.managers = val;
+      },
+      immediate:true
+    }
+
   },
   mounted() {
     console.log(this.rowXXId)
@@ -55,7 +71,7 @@ Vue.component("ManagerMent", {
     addAuthGroup() {
       console.log(this.$parent.$parent.rowXXId)
       let users = this.form.managers.map(e => e.id)
-      axios.post('/admin/simpleacl/menu-permission', {id: this.$parent.$parent.rowXXId, users: users}).then(res => {
+      axios.post('/admin/simpleacl/add-role', {id: this.$parent.$parent.rowXXId, users: users}).then(res => {
         if(Util.isAjaxResOk(res)){
           if (res.data.code == 1000) {
             this.$message({
