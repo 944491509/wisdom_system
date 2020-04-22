@@ -12,6 +12,10 @@ class Simpleacl
     public function handle($request, Closure $next)
     {
         $currentRoute = Route::currentRouteName();
+        $needcheckRoute = Auth::user()->allPermissions();
+        if (!in_array($currentRoute, $needcheckRoute)) {
+            return $next($request);
+        }
         if (!in_array($currentRoute, Auth::user()->aclPermissions())) {
             Log::info('simpleacl:', ['route' => $currentRoute, 'user' => Auth::user()->id]);
             if ( $request->isJson() || $request->wantsJson() ) {
