@@ -150,6 +150,7 @@ class TimeSlotDao
             ->whereTime('time_slots.to', '>', $hour)
             ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
             ->orderBy('time_slots.from','asc')
+            ->orderBy('timetable_items.id', 'desc')
             ->get();
     }
 
@@ -188,6 +189,7 @@ class TimeSlotDao
             })
             ->select($field)
             ->orderBy('time_slots.from','asc')
+            ->orderBy('timetable_items.id', 'desc')
             ->get();
         if ($type == 0) {
             foreach ($timeTableItems as $key => $item) {
