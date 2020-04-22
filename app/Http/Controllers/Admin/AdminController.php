@@ -32,11 +32,12 @@ class AdminController extends Controller
             $msg = $result->getMessage();
             if($result->isSuccess()) {
                 FlashMessageBuilder::Push($request,FlashMessageBuilder::SUCCESS,$msg);
-                return redirect()->route('admin.list.school-manager',['school_id'=>$data['school_id']]);
+                return redirect()->route('admin.admin.list');
             } else {
-
+                FlashMessageBuilder::Push($request,FlashMessageBuilder::WARNING,$msg);
+                return redirect()->route('admin.admin.list');
             }
-            dd($all);
+            
         } else {
             $this->dataForView['pageTitle'] = '添加管理员';
             return view('admin.admin.create',$this->dataForView);
