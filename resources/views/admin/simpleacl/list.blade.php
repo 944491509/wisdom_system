@@ -37,7 +37,7 @@ use App\Utils\UI\Button;
           label="操作"
         >
           <template slot-scope="scope">
-            <el-button @click="setPermission(scope.row.id)" type="primary" size="small">设置权限</el-button>
+            <el-button @click="setPermission(scope.row.id,scope.row.permissions)" type="primary" size="small">设置权限</el-button>
             <el-button @click="setCount(scope.row.type, scope.row.id, scope.row)" type="success" size="small">账号管理</el-button>
             <el-button @click="deleteAuth(scope.row.id)" type="danger" size="small">删除</el-button>
           </template>
@@ -55,6 +55,9 @@ use App\Utils\UI\Button;
           prop="name"
           label="菜单"
           width="180">
+          <!-- <template slot-scope="scope">
+            <el-checkbox  @change="chanegMenu(scope.row)" >@{{scope.row.name}}</el-checkbox>
+          </template> -->
         </el-table-column>
         <el-table-column
           prop="id"
@@ -107,16 +110,16 @@ use App\Utils\UI\Button;
         </div>
       </el-drawer>
       <el-drawer
-        title="招生就业处权限组"
+        :title="groupName +'权限组'"
         :visible.sync="isShowAuthGroupDrawer"
         :wrapperClosable="false"
         custom-class="attendance-form-drawer"
         :before-close="handleClose">
-        <manager-ment ref="managerMent" :school_id="school_id" :scoped="scoped"  @close = "isShowAuthGroupDrawer = false" />
-        
+        <manager-ment ref="managerMent" :school_id="school_id" :scoped="scoped" :users="checkedUsers" @close = "isShowAuthGroupDrawer = false;getList();" />
+
       </el-drawer>
     </div>
-    
+
   </div>
 
   <style scoped lang="scss">
