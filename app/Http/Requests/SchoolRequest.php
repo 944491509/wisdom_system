@@ -55,15 +55,6 @@ class SchoolRequest extends MyStandardRequest
 
 
     /**
-     * 获取schoolId
-     * @return mixed
-     */
-    public function getSchoolId(){
-        return $this->get('school_id');
-    }
-
-
-    /**
      * @return mixed
      */
     public function getUserId() {

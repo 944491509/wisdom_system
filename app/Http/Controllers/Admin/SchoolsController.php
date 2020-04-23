@@ -102,7 +102,7 @@ class SchoolsController extends Controller
                 return redirect()->route('admin.create.school-manager',['school_id' => $data['school_id']]);
             }
         } else {
-            $schoolId = $request->getSchoolId();
+            $schoolId = $request->get('school_id');
             $this->dataForView['pageTitle'] = '创建学校管理员';
             $this->dataForView['school'] = (new SchoolDao())->getSchoolById($schoolId);
             $this->dataForView['type'] = [
@@ -169,7 +169,7 @@ class SchoolsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function list_school_manager(SchoolRequest $request) {
-        $schoolId = $request->getSchoolId();
+        $schoolId = $request->get('school_id');
         $gradeUserDao = new GradeUserDao();
         $list = $gradeUserDao->getSchoolManagerBySchoolId($schoolId);
         $this->dataForView['pageTitle'] = '学校管理员列表';
