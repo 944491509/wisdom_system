@@ -198,61 +198,47 @@ class AttendancesDao
 
 
     /**
-     * 统计老师签到
-     * @param $timetableIds
-     * @param $week
+     * 根据日期统计老师签到
+     * @param $timeSlotId
+     * @param $time
      * @param $signStatus
-     * @param $late
+     * @param bool $late
      * @return mixed
      */
-    public function getTeacherSignInStatus($timetableIds, $week, $signStatus, $late = false)
+    public function getTeacherSignByTime($timeSlotId, Carbon $time, $signStatus, $late = false)
     {
+
         $map = [
-            ['week', '=' ,$week],
+            ['time_slot_id', '=' ,$timeSlotId],
             ['teacher_sign', '=', $signStatus]
         ];
-        if ($late) {
+        if ($late || $late == Attendance::TEACHER_NO_LATE) {
            array_push($map, ['teacher_late', '=', $late]);
         }
-        return Attendance::where($map)->whereIn('timetable_id', $timetableIds)->count();
+
+        return Attendance::where($map)->whereDate('created_at', $time->format('Y-m-d'))->count();
     }
 
-
-  /**
-   * 根据 给定时间获取所有签到
-   * @param $time
-   * @param $timeSlotId
-   * @return mixed
-   */
-    public function getTeacherSignInfoByTime($time, $timeSlotId = false)
-    {
-        $result =  Attendance::whereDate('created_at', $time);
-
-        if ($timeSlotId) {
-            $result->where('time_slot_id', $timeSlotId);
-        }
-
-        return $result->get();
-    }
 
     /**
-     * 统计老师签到
-     * @param $timetableIds
-     * @param $week
+     * 查询老师签到
+     * @param $timeSlotId
+     * @param Carbon $time
      * @param $signStatus
-     * @param $late
+     * @param bool $late
      * @return mixed
      */
-    public function getTeacherSignInfo($timetableIds, $week, $signStatus, $late = false)
+    public function getTeacherSignInfo($timeSlotId, Carbon $time, $signStatus, $late = false)
     {
         $map = [
-            ['week', '=' ,$week],
+            ['time_slot_id', '=' ,$timeSlotId],
             ['teacher_sign', '=', $signStatus]
         ];
-        if ($late) {
+        if ($late || $late == Attendance::TEACHER_NO_LATE) {
            array_push($map, ['teacher_late', '=', $late]);
         }
-        return Attendance::where($map)->whereIn('timetable_id', $timetableIds)->get();
+
+        return Attendance::where($map)->whereDate('created_at', $time->format('Y-m-d'))->get();
     }
 
 

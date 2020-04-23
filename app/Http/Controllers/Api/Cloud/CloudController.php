@@ -62,6 +62,9 @@ class CloudController extends Controller
                     'video' => $school->video,
                     'size'  => '',
                     'type'  => $type,
+                ],
+                'card' => [
+                    'address' => $facility->room->building->name.'-'.$facility->room->name,
                 ]
             ]
         ];
@@ -144,17 +147,27 @@ class CloudController extends Controller
         $code     = $request->get('code');
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
+
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        /**
-         * @var  Facility $facility
-         */
-        $room = $facility->room;
 
         $timeSlotDao = new TimeSlotDao;
+        /**
+         * 公有班牌
+         */
+        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+            $room = $facility->room;
+            $items = $timeSlotDao->getItemByRoomForNow($room, null,1);
+        }
+        /**
+         *  私有班牌
+         */
+        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+            $grade = $facility->grade;
+            $items =  $timeSlotDao->getTimeSlotByGrade($grade);
+        }
 
-        $items = $timeSlotDao->getTimeSlotByRoom($room);
         if (!$items) {
              return JsonBuilder::Error('现在是休息时间');
         }
