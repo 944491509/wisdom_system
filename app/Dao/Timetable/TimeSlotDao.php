@@ -184,7 +184,7 @@ class TimeSlotDao
             'weekday_index' => $date->dayOfWeekIso,
         ];
 
-        $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id'];
+        $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
                 $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
             })
