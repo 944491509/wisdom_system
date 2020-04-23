@@ -150,6 +150,7 @@ class TimeSlotDao
             ->whereTime('time_slots.to', '>', $hour)
             ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
             ->orderBy('time_slots.from','asc')
+            ->orderBy('timetable_items.id', 'desc')
             ->get();
     }
 
@@ -164,6 +165,7 @@ class TimeSlotDao
         if(!$date){
             $date = Carbon::now();
         }
+
         /**
          * @var School $school
          */
@@ -182,14 +184,26 @@ class TimeSlotDao
             'weekday_index' => $date->dayOfWeekIso,
         ];
 
+        $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
                 $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
             })
+            ->select($field)
             ->orderBy('time_slots.from','asc')
-            ->get();
+            ->orderBy('timetable_items.id', 'desc')
+            ->get()
+            ->groupBy('time_slot_id');
+
+        /**
+         * 由于添加课程有bug 课程去重
+         */
+        $newData = collect();
+        foreach ($timeTableItems as $key => $value) {
+            $newData->push($value[0]);
+        }
 
         if ($type == 0) {
-            foreach ($timeTableItems as $key => $item) {
+            foreach ($newData as $key => $item) {
                 // 判断这节课是否是当前课
                 $timeSlot = $item->timeSlot;
                 if($this->isCurrent($timeSlot)) {
@@ -198,7 +212,14 @@ class TimeSlotDao
                 }
             }
         }elseif ($type == 1) {
-            return  $timeTableItems;
+
+            foreach ($newData as $key => $val) {
+                $timeSlot = $val->timeSlot;
+                if ($date->format('H:i:s') > $timeSlot->to) {
+                    unset($newData[$key]);
+                }
+            }
+            return  $newData->merge([]);
         }
         return null;
 
