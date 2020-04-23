@@ -87,28 +87,35 @@ class CloudController extends Controller
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
 
-        /**
-         * @var  Facility $facility
-         */
         $room = $facility->room;
-
         $timeSlotDao = new TimeSlotDao;
-
-        $item = $timeSlotDao->getItemByRoomForNow($room);
-
-        if (empty($item)) {
-            return JsonBuilder::Error('暂无课程');
+        /**
+         * 公有班牌
+         */
+        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+             $item = $timeSlotDao->getItemByRoomForNow($room);
+             if (empty($item)) {
+                return JsonBuilder::Error('暂无课程');
+             } else {
+                 $grade = $item->grade;
+             }
+        }
+        /**
+         *  私有班牌
+         */
+        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+            $grade = $facility->grade;
         }
 
 
-        $gradeUser = $item->grade->gradeUser;
+        $gradeUser = $grade->gradeUser;
         $userIds   = $gradeUser->pluck('user_id');
 
         $studentProfileDao = new  StudentProfileDao;
         $gradeRes = new GradeResourceDao;
         $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
         $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
-        $gradeResource = $gradeRes->getResourceByGradeId($item->grade_id);
+        $gradeResource = $gradeRes->getResourceByGradeId($grade->id);
 
         $photo = [];
         foreach ($gradeResource as $key => $value) {
@@ -121,9 +128,9 @@ class CloudController extends Controller
 
         $data = [
             'grade'    => [
-                'name' => $item->grade->name,
-                'teacher' => $item->grade->gradeManager->adviser_name ?? '未设置班主任',
-                'monitor' => $item->grade->gradeManager->monitor_name ?? '未设置班长',
+                'name' => $grade->name,
+                'teacher' => $grade->gradeManager->adviser_name ?? '未设置班主任',
+                'monitor' => $grade->gradeManager->monitor_name ?? '未设置班长',
             ],
             'number'  => [
                 'total' => $man + $woman,
