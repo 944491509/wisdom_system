@@ -34,7 +34,8 @@ interface IFlow extends IPersistent
         'name' => '考勤修改Mac',
         'options' => [
             ['name' => '单行输入框', 'type' => 'input', 'readonly' => true, 'required' => 1, 'extra' => ['text' => '考勤组id'], 'uri' => 'attendance_id', 'title' => '考勤组id', 'tips' => '考勤组id'],
-            ['name' => '单行输入框', 'type' => 'input', 'readonly' => false, 'required' => 1, 'extra' => ['text' => '当前手机设备码'], 'uri' => 'mac_address', 'title' => '当前手机设备码','tips' => '当前手机设备码'],
+
+            ['name' => '单行输入框', 'type' => 'input', 'readonly' => true, 'required' => 1, 'extra' => ['text' => '当前手机设备码'], 'uri' => 'mac_address', 'title' => '当前手机设备码','tips' => '当前手机设备码'],
         ]
     ];
     const BUSINESS_ATTENDANCE_CLOCKIN = [
