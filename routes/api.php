@@ -541,7 +541,7 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::any('/load-special','Api\AttendanceSchedule\AttendanceScheduleController@load_special')
         ->name('api.attendance.load-special');
 
-    // 学生签到
+    // 课程签到列表
     Route::post('/sign-in-record','Api\AttendanceSchedule\AttendanceController@signInRecord')
         ->name('api.attendance.sign-in-record');
     // 签到详情
