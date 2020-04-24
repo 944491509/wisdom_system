@@ -4,8 +4,8 @@ import { _load_children, catchErr } from "../api/index";
 Vue.component("Organization", {
   template: `
   <el-form-item label="考勤部门" prop="organizations">
-    <el-cascader v-if="isCreated" style="width: 100%;" :props="props" :options="organizations"  v-model="formData.organizations"></el-cascader>
-    <el-cascader  v-else style="width:100%;" :props="propsOptions" :options= "organizations"  v-model="formData.organizations"></el-cascader>
+    <el-cascader popper-class="teach_att_mamager_cascader" v-if="isCreated" style="width: 100%;" :props="props" :options="organizations"  v-model="formData.organizations"></el-cascader>
+    <el-cascader popper-class="teach_att_mamager_cascader" v-else style="width:100%;" :props="propsOptions" :options= "organizations"  v-model="formData.organizations"></el-cascader>
   </el-form-item>
   `,
   mixins: [Mixins],

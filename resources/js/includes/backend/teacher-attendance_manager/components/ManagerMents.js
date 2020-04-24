@@ -1,8 +1,8 @@
 import { Mixins } from "../Mixins";
 Vue.component("ManagerMents", {
   template: `
-  <el-form-item label="管理员" prop="managers">
-    <search-bar style="width: 100%;" :school-id="formData.attendance.school_id" full-tip="请输入教职工名字" scope="employee" :init-query="teacher" v-on:result-item-selected="_selectManager"></search-bar>
+  <el-form-item label="管理员" prop="managers" >
+    <search-bar style="width: 100%;" class="managesments" :school-id="formData.attendance.school_id" full-tip="请输入教职工名字" scope="employee" :init-query="teacher" v-on:result-item-selected="_selectManager"></search-bar>
     <br/>
     <el-tag :key="idx" v-for="(item, idx) in formData.managers" closable :disable-transitions="false" @close="removeFromOrg(idx)">
         {{ item.name }}
