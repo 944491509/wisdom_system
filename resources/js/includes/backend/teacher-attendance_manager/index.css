@@ -1,9 +1,9 @@
-.el-checkbox {
+.managesments .el-checkbox {
   position: absolute;
   left: 20px;
   right: 50px;
 }
-.el-cascader-node__label {
+.managesments .el-cascader-node__label {
   padding-left: 25px;
 }
 
