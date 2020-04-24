@@ -85,6 +85,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                     value: 'id',
                     multiple: true,
                     label: 'name',
+                    checkStrictly:true,
                     lazyLoad(node, resolve) {
                         let parentId = null;
                         if (!Util.isEmpty(node.data)) {
@@ -180,7 +181,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
             handleClose(done) {
                 done();
             },
-            // 获取侧边栏流程图标       
+            // 获取侧边栏流程图标
             iconSelectedHandler(payload) {
                 this.flow.icon = payload.url;
                 this.selectedImgUrl = payload.url;
@@ -403,7 +404,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                 this.role = 2;
                 this.gettitlesList();
             },
-            // 设置审批人确定啊按钮 
+            // 设置审批人确定啊按钮
             setone() {
                 if (this.section == '' && this.organization === 1) {
                     this.$message({

@@ -47,7 +47,27 @@ export default new Vuex.Store({
     isCreated:false,
     teacherName:'',
     exceptiondays:[],//节假日数据
-    isShowRecord: false
+    isShowRecord: false,
+    resDate: {
+      morning: {
+        ok: {},
+        late: {},
+        later: {},
+        not: {},
+      },
+      afternoon: {
+        ok: {},
+        late: {},
+        later: {},
+        not: {},
+      },
+      evening: {
+        ok: {},
+        late: {},
+        later: {},
+        not: {},
+      }
+    }
   },
   mutations: {
     SETOPTIONS(state, res) {
