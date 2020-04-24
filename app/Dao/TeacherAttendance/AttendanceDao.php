@@ -210,8 +210,7 @@ class AttendanceDao
             ->orderBy('created_at','desc')
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
         foreach ($list as &$item) {
-            $item->members = UserOrganization::whereIn('organization_id', $item->organizations()->pluck('organization_id')->toArray())
-                ->where('title_id', '=', Title::MEMBER)->count();
+            $item->members = UserOrganization::whereIn('organization_id', $item->organizations()->pluck('organization_id')->toArray())->count();
         }
         return $list;
     }
