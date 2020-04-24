@@ -1,3 +1,12 @@
+.teach_att_mamager_cascader .el-checkbox {
+  position: absolute;
+  left: 20px;
+  right: 50px;
+}
+.teach_att_mamager_cascader .el-cascader-node__label {
+  padding-left: 25px;
+}
+
 .attendance-manager-container {
   position: relative;
   margin: 20px;
@@ -135,7 +144,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  background-color: #eaeef3;
+  background-color: #fff;
 }
 .attendance-manager-container .attendance-record-container .leftTitle {
   padding: 10px;
@@ -157,7 +166,6 @@
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv {
   margin-left: 40px;
-  border: 1px solid #000;
   height: 90px;
   width: 90px;
   text-align: center;
@@ -165,5 +173,29 @@
   flex-direction: column;
   justify-content: center;
   border-radius: 5px;
-  box-shadow: 0 0 3px;
+  box-shadow: #eaedf2 1px 1px 2px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color1 {
+  color: #6dcc58;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color2 {
+  color: #fa7921;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color3 {
+  color: #fd1b1b;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color4 {
+  color: #ababab;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border1 {
+  border: 1px solid #6dcc58;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border2 {
+  border: 1px solid #fa7921;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border3 {
+  border: 1px solid #fd1b1b;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border4 {
+  border: 1px solid #ababab;
 }
