@@ -1022,4 +1022,20 @@ class TimetableItemDao
     }
 
 
+    /**
+     * 查询班级要上的课程
+     * @param $year
+     * @param $term
+     * @param $gradeId
+     * @return mixed
+     */
+    public function getCoursesByYearAndTermAndGradeId($year, $term, $gradeId) {
+        $map = ['year'=>$year, 'term'=>$term, 'graded_id'=>$gradeId];
+        return TimetableItem::where($map)
+            ->select('course_id')
+            ->distinct('course_id')
+            ->get();
+    }
+
+
 }

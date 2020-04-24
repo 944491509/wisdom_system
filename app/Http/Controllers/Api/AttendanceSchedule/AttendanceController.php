@@ -38,22 +38,28 @@ class AttendanceController extends Controller
         $year = $request->get('year', $configuration->getSchoolYear());
         // 学期
         $term = $request->get('term', $configuration->guessTerm(Carbon::now()->month));
-        $gradeYear = $year - $grade->year + 1; // 年级
 
-        $courseMajorDao = new CourseMajorDao();
         $attendancesDetailsDao = new AttendancesDetailsDao();
-        $courseList = $courseMajorDao->getCoursesByMajorAndYear($grade->major_id, $gradeYear, $term);
-        foreach ($courseList as $key => $val) {
+        // 查询课程列表
+        $timeTableDao = new TimetableItemDao();
+        $courseIds = $timeTableDao->getCoursesByYearAndTermAndGradeId($year, $term, $grade->id);
+
+        $courseList = [];
+        foreach ($courseIds as $key => $val) {
 
             // 签到次数
-            $signNum = $attendancesDetailsDao->getSignInCountByUser($user->id, $year, $term, $val['id']);
+            $signNum = $attendancesDetailsDao->getSignInCountByUser($user->id, $year, $term, $val->course_id);
             // 请假次数
-            $leavesNum = $attendancesDetailsDao->getLeaveCountByUser($user->id, $year, $term, $val['id']);
+            $leavesNum = $attendancesDetailsDao->getLeaveCountByUser($user->id, $year, $term, $val->course_id);
             // 旷课次数
-            $truantNum = $attendancesDetailsDao->getTruantCountByUser($user->id, $year, $term, $val['id']);
-            $courseList[$key]['sign_num'] = $signNum;
-            $courseList[$key]['leaves_num'] = $leavesNum;
-            $courseList[$key]['truant_num'] = $truantNum;
+            $truantNum = $attendancesDetailsDao->getTruantCountByUser($user->id, $year, $term, $val->course_id);
+            $courseList[] = [
+                'id' => $val->course_id,
+                'name' => $val->course->name,
+                'sign_num' => $signNum,
+                'leaves_num' => $leavesNum,
+                'truant_num' => $truantNum,
+            ];
         }
 
         return JsonBuilder::Success($courseList);
