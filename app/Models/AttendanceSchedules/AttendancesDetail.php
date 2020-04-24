@@ -79,7 +79,7 @@ class AttendancesDetail extends Model
     }
 
 
-    public function getTeacherSignInTimeAttribute($value) {
+    public function getSignInTimeAttribute($value) {
         return Carbon::parse($value)->format('Y-m-d H:i');
     }
 
