@@ -4,17 +4,15 @@
 namespace App\Http\Controllers\Api\AttendanceSchedule;
 
 
-use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Timetable\TimeSlotDao;
-use App\Dao\Courses\CourseMajorDao;
+use App\Utils\Time\GradeAndYearUtil;
 use App\Http\Controllers\Controller;
 use App\Dao\Timetable\TimetableItemDao;
 use App\Http\Requests\MyStandardRequest;
 use App\Models\AttendanceSchedules\Attendance;
-use App\BusinessLogic\Attendances\Attendances;
 use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
