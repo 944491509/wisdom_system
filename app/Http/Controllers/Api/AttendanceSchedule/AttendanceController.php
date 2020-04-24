@@ -313,6 +313,7 @@ class AttendanceController extends Controller
     }
 
     /**
+     * --------弃用-----------
      * 教师考勤 -获取当天所有课节
      * @param MyStandardRequest $request
      * @return string
@@ -323,9 +324,7 @@ class AttendanceController extends Controller
         $time = $request->get('time');
 
         $timeSlotDao = new TimeSlotDao;
-        // todo
         $data =  $timeSlotDao->getAllStudyTimeSlots($user->getSchoolId());
-
         $result = [];
         if ($data) {
             foreach ($data as $key => $val) {
@@ -375,9 +374,8 @@ class AttendanceController extends Controller
      * @param MyStandardRequest $request
      * @return string
      */
-    public function teacherSignDetails(MyStandardRequest $request)
+     public function teacherSignDetails(MyStandardRequest $request)
     {
-
         $time = Carbon::parse($request->get('time'));
         $timeSlotId = $request->get('time_slot_id');
         $type = $request->get('type');
@@ -393,24 +391,24 @@ class AttendanceController extends Controller
         }
 
         $result = [];
-        $organizations = '';
-        $signStatus = '';
         foreach ($data as $key => $val) {
+            $result[$key]['major'] = '';
             foreach ($val->teacher->organizations as $v) {
-                $organizations = $v->organization->name.' '.$organizations;
+                $result[$key]['major'] .= $v->organization->name.' ';
             }
             $result[$key]['avatar'] = $val->teacher->profile->avatar;
             $result[$key]['name'] = $val->teacher->name;
-            $result[$key]['major'] = $organizations;
-            if ($val->teacher_late) {
-                $signStatus = $val->teacher_late == Attendance::TEACHER_NO_LATE ? '正常' : '迟到';
-            }elseif ($val->teacher_late == Attendance::TEACHER_NO_SIGN) {
-                $signStatus = '未签到';
+            // 已签到 并且 未迟到
+            if ($val->teacher_sign == Attendance::TEACHER_SIGN && $val->teacher_late == Attendance::TEACHER_NO_LATE) {
+                $result[$key]['sign_status'] = '正常';
+                //已签到 并且 迟到
+            }elseif ($val->teacher_sign == Attendance::TEACHER_SIGN && $val->teacher_late == Attendance::TEACHER_LATE) {
+                $result[$key]['sign_status'] = '迟到';
+            }else {
+                $result[$key]['sign_status'] = '未签到';
             }
-            $result[$key]['sign_status'] = $signStatus;
             $result[$key]['sign_time'] = $val->teacher_sign_time;
         }
-
         return JsonBuilder::Success($result);
     }
 
