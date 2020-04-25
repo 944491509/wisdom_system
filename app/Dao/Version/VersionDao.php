@@ -32,7 +32,7 @@ class VersionDao
         try {
             $version = Version::create($data);
             DB::commit();
-            $bag->setMessage(JsonBuilder::CODE_SUCCESS);
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
             $bag->setData(['id'=>$version->id]);
             $bag->setMessage('操作成功');
 
