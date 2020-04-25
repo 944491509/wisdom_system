@@ -31,10 +31,11 @@ class VersionDao
         DB::beginTransaction();
         try {
             $version = Version::create($data);
-            DB::rollBack();
+            DB::commit();
             $bag->setMessage(JsonBuilder::CODE_SUCCESS);
             $bag->setData(['id'=>$version->id]);
             $bag->setMessage('操作成功');
+
         } catch (\Exception $e) {
             DB::rollBack();
             $msg = $e->getMessage();
