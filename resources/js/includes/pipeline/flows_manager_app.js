@@ -86,6 +86,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                     multiple: true,
                     label: 'name',
                     checkStrictly:true,
+                    expandTrigger:'hover',
                     lazyLoad(node, resolve) {
                         let parentId = null;
                         if (!Util.isEmpty(node.data)) {
@@ -104,8 +105,9 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                 prop: {
                     lazy: true,
                     value: 'id',
-                    multiple: false,
+                    checkStrictly: true,
                     label: 'name',
+                    expandTrigger:'hover',
                     lazyLoad(node, resolve) {
                         let parentId = null;
                         if (!Util.isEmpty(node.data)) {
