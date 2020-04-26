@@ -194,20 +194,22 @@ class Flow extends Model implements IFlow
     private function getorganizationIdArrByName($schoolId, $name)
     {
         $ret = [];
-        $nameArr = explode(';', $name);
-        $organizationDao = new OrganizationDao();
-        foreach ($nameArr as $value) {
-            $organization = Organization::where(['school_id', $schoolId, 'name' => $value])->first();
-            $nowLevel = $organization->level;
-            $return = [$organization->id];
-            $parentid = $organization->parent_id;
-            while ($nowLevel > 1) {
-                $parent = $organizationDao->getById($parentid);
-                array_unshift($return, $parent->id);
-                $parentid = $parent->parent_id;
-                $nowLevel = $parent->level;
+        if (!empty($name)) {
+            $nameArr = explode(';', trim($name, ';'));
+            $organizationDao = new OrganizationDao();
+            foreach ($nameArr as $value) {
+                $organization = Organization::where(['school_id' => $schoolId, 'name' => $value])->first();
+                $nowLevel = $organization->level;
+                $return = [$organization->id];
+                $parentid = $organization->parent_id;
+                while ($nowLevel > 1) {
+                    $parent = $organizationDao->getById($parentid);
+                    array_unshift($return, $parent->id);
+                    $parentid = $parent->parent_id;
+                    $nowLevel = $parent->level;
+                }
+                $ret[] = $return;
             }
-            $ret[] = $return;
         }
         return $ret;
     }
