@@ -248,7 +248,7 @@ class OpenMajorController extends Controller
                 }
             }
         } else {
-            $user = $request->user();
+            $user = $request->user('api');
             // 验证邮件是否被注册
             if (!empty($userInfo1) && ($user->email != $userInfo1->email)) {
                 return JsonBuilder::Error('手机号已存在,请更换其他手机号');
