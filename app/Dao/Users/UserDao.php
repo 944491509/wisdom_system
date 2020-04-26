@@ -11,6 +11,7 @@ use App\Models\Users\GradeUser;
 use App\User;
 use App\Models\Acl\Role;
 use App\Utils\JsonBuilder;
+use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\MessageBag;
 use Carbon\Carbon;
 use Exception;
@@ -370,6 +371,29 @@ class UserDao
     public function updateUserInfo($userId, $data)
     {
         return User::where('id', $userId)->update($data);
+    }
+
+    public function getUsersWithNameLike($name, $userType = null, $schoolId = null){
+        $where = [
+            ['name','like',$name.'%'],
+        ];
+        if ($schoolId) {
+            $where[] = ['school_id','=',$schoolId];
+        }
+        $query = User::select(['id','id as user_id','name','user_type'])
+            ->where($where);
+
+        if($userType){
+            if(is_array($userType)){
+                // 如果同时定位多个角色
+                $query->whereIn('user_type',$userType);
+            }
+            else{
+                $query->where('user_type',$userType);
+            }
+        }
+
+        return $query->take(ConfigurationTool::DEFAULT_PAGE_SIZE_QUICK_SEARCH)->get();
     }
 
 
