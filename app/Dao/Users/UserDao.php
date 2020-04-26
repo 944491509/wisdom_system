@@ -480,7 +480,7 @@ class UserDao
         if ($schoolId) {
             $where[] = ['school_id','=',$schoolId];
         }
-        $query = User::select(['id','id as user_id','name','user_type'])
+        $query = User::select(['id','id as user_id','name','`type` as user_type'])
             ->where($where);
 
         if($userType){
