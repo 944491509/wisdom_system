@@ -166,6 +166,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
             // 新增流程按钮--打开侧边栏
             createNewFlow() {
                 this.flowFormFlag = true;
+                this.flow.business = ''
                 this.newFlow = true;
                 this.flow.type = '';
                 this.flow.name = '';
@@ -330,6 +331,8 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                 this.newFlow = false;
                 this.role = 1;
                 this.flowFormFlag = true;
+                // this.flow.business = ''
+                this.getbusinessList();
                 loadNodes(this.returnId).then(res => {
                     if (Util.isAjaxResOk(res)) {
                         this.flow.type = res.data.data.flow.type; // 流程分类
