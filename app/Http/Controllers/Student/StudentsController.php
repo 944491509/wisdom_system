@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Student;
 
 use App\Dao\Users\UserDao;
 use App\Models\Schools\GradeManager;
+use App\Models\Students\StudentAdditionInformation;
+use App\Models\Users\GradeUser;
 use App\Utils\FlashMessageBuilder;
 use App\Http\Controllers\Controller;
 use App\Dao\Students\StudentProfileDao;
@@ -22,6 +24,8 @@ class StudentsController extends Controller
         $grade = $student->gradeUser();
         $this->dataForView['is_show'] = $grade?1:0;
         $this->dataForView['pageTitle'] = '档案管理';
+        $this->dataForView['addition'] = StudentAdditionInformation::where('user_id', $student['id'])->first();
+        $this->dataForView['gradeUser'] = GradeUser::where('user_id', $student['id'])->first();
         return view('student.edit', $this->dataForView);
     }
 
@@ -35,8 +39,8 @@ class StudentsController extends Controller
         $uuid = $data['user']['uuid'];
         unset($data['user']['uuid']);
         unset($data['user']['id']);
-        $dao = new StudentProfileDao();
-        $result = $dao->updateStudentInfoByUserId($userId, $data['user'], $data['profile']);
+        $dao = new StudentProfileDao;
+        $result = $dao->updateStudentInfoByUserId($userId, $data['user'], $data['profile'], $data['addition'], $data['grade_user']);
 
         if($result->isSuccess()){
             FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,'编辑成功');
