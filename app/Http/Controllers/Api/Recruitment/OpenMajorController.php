@@ -16,8 +16,10 @@ use App\Dao\Schools\GradeDao;
 use App\Dao\RecruitStudent\RegistrationInformaticsDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Models\RecruitStudent\RegistrationInformatics;
+use App\Models\Users\GradeUser;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -184,10 +186,8 @@ class OpenMajorController extends Controller
         $userObj = new UserDao();
         $userInfo1 = $userObj->getUserByMobile($formData['mobile']);
         $userInfo2 = $userObj->getUserByEmail($formData['email']);
-
         // 获取专业信息
         $plan = $request->getPlan();
-
         // 外部提交
         if (isset($formData['is_reg']) && $formData['is_reg'] == 1) {
             // 存在
@@ -224,6 +224,19 @@ class OpenMajorController extends Controller
                 $msgBag = $dao->addUser($formData, $plan);
                 if ($msgBag->isSuccess()) {
                     $user = $msgBag->getData()['user'];
+                    // 添加grade_users 表信息
+                    $addData['user_id'] = $user->id; // 学生id
+                    $addData['name'] = $user->name; // 姓名
+                    $addData['user_type'] = 5; // 普通用户
+                    $addData['grade_id'] = 0; // 班级id
+                    $addData['major_id'] = 0; // 专业id
+                    $addData['department_id'] = 0; // 系
+                    $addData['institute_id'] = 0; // 学院
+                    $addData['campus_id'] = 0; // 校区ID
+                    $addData['school_id'] = $plan->school_id; // 学校id
+                    $addData['last_updated_by'] = $user->id; // 最后更新的用户id
+                    $addData['created_at'] = Carbon::now()->format('Y-m-d H:i:s'); // 添加时间
+                    GradeUser::insert($addData);
                     // 获取我是否可以报名
                     $regDao = new RegistrationInformaticsDao();
                     $statusMessageArr = $regDao->getRegistrationInformaticsStatusInfo($user->id, $plan);
