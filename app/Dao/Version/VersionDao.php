@@ -23,23 +23,25 @@ class VersionDao
      */
     public function create($data)
     {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         if (empty($data))
         {
-            return false;
+            return $bag;
         }
         DB::beginTransaction();
         try {
-            if ($obj = Version::create($data)) {
-                DB::commit();
-                return $obj->id;
-            } else {
-                DB::rollBack();
-                return false;
-            }
-        } catch (\Exception $exception) {
+            $version = Version::create($data);
+            DB::commit();
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setData(['id'=>$version->id]);
+            $bag->setMessage('操作成功');
+
+        } catch (\Exception $e) {
             DB::rollBack();
-            return false;
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
         }
+        return $bag;
     }
 
     /**

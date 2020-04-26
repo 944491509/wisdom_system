@@ -4,17 +4,15 @@
 namespace App\Http\Controllers\Api\AttendanceSchedule;
 
 
-use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Timetable\TimeSlotDao;
-use App\Dao\Courses\CourseMajorDao;
+use App\Utils\Time\GradeAndYearUtil;
 use App\Http\Controllers\Controller;
 use App\Dao\Timetable\TimetableItemDao;
 use App\Http\Requests\MyStandardRequest;
 use App\Models\AttendanceSchedules\Attendance;
-use App\BusinessLogic\Attendances\Attendances;
 use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
@@ -38,22 +36,28 @@ class AttendanceController extends Controller
         $year = $request->get('year', $configuration->getSchoolYear());
         // 学期
         $term = $request->get('term', $configuration->guessTerm(Carbon::now()->month));
-        $gradeYear = $year - $grade->year + 1; // 年级
 
-        $courseMajorDao = new CourseMajorDao();
         $attendancesDetailsDao = new AttendancesDetailsDao();
-        $courseList = $courseMajorDao->getCoursesByMajorAndYear($grade->major_id, $gradeYear, $term);
-        foreach ($courseList as $key => $val) {
+        // 查询课程列表
+        $timeTableDao = new TimetableItemDao();
+        $courseIds = $timeTableDao->getCoursesByYearAndTermAndGradeId($year, $term, $grade->id);
+
+        $courseList = [];
+        foreach ($courseIds as $key => $val) {
 
             // 签到次数
-            $signNum = $attendancesDetailsDao->getSignInCountByUser($user->id, $year, $term, $val['id']);
+            $signNum = $attendancesDetailsDao->getSignInCountByUser($user->id, $year, $term, $val->course_id);
             // 请假次数
-            $leavesNum = $attendancesDetailsDao->getLeaveCountByUser($user->id, $year, $term, $val['id']);
+            $leavesNum = $attendancesDetailsDao->getLeaveCountByUser($user->id, $year, $term, $val->course_id);
             // 旷课次数
-            $truantNum = $attendancesDetailsDao->getTruantCountByUser($user->id, $year, $term, $val['id']);
-            $courseList[$key]['sign_num'] = $signNum;
-            $courseList[$key]['leaves_num'] = $leavesNum;
-            $courseList[$key]['truant_num'] = $truantNum;
+            $truantNum = $attendancesDetailsDao->getTruantCountByUser($user->id, $year, $term, $val->course_id);
+            $courseList[] = [
+                'id' => $val->course_id,
+                'name' => $val->course->name,
+                'sign_num' => $signNum,
+                'leaves_num' => $leavesNum,
+                'truant_num' => $truantNum,
+            ];
         }
 
         return JsonBuilder::Success($courseList);
@@ -313,6 +317,7 @@ class AttendanceController extends Controller
     }
 
     /**
+     * --------弃用-----------
      * 教师考勤 -获取当天所有课节
      * @param MyStandardRequest $request
      * @return string
@@ -323,9 +328,7 @@ class AttendanceController extends Controller
         $time = $request->get('time');
 
         $timeSlotDao = new TimeSlotDao;
-        // todo
         $data =  $timeSlotDao->getAllStudyTimeSlots($user->getSchoolId());
-
         $result = [];
         if ($data) {
             foreach ($data as $key => $val) {
@@ -375,9 +378,8 @@ class AttendanceController extends Controller
      * @param MyStandardRequest $request
      * @return string
      */
-    public function teacherSignDetails(MyStandardRequest $request)
+     public function teacherSignDetails(MyStandardRequest $request)
     {
-
         $time = Carbon::parse($request->get('time'));
         $timeSlotId = $request->get('time_slot_id');
         $type = $request->get('type');
@@ -393,24 +395,24 @@ class AttendanceController extends Controller
         }
 
         $result = [];
-        $organizations = '';
-        $signStatus = '';
         foreach ($data as $key => $val) {
+            $result[$key]['major'] = '';
             foreach ($val->teacher->organizations as $v) {
-                $organizations = $v->organization->name.' '.$organizations;
+                $result[$key]['major'] .= $v->organization->name.' ';
             }
             $result[$key]['avatar'] = $val->teacher->profile->avatar;
             $result[$key]['name'] = $val->teacher->name;
-            $result[$key]['major'] = $organizations;
-            if ($val->teacher_late) {
-                $signStatus = $val->teacher_late == Attendance::TEACHER_NO_LATE ? '正常' : '迟到';
-            }elseif ($val->teacher_late == Attendance::TEACHER_NO_SIGN) {
-                $signStatus = '未签到';
+            // 已签到 并且 未迟到
+            if ($val->teacher_sign == Attendance::TEACHER_SIGN && $val->teacher_late == Attendance::TEACHER_NO_LATE) {
+                $result[$key]['sign_status'] = '正常';
+                //已签到 并且 迟到
+            }elseif ($val->teacher_sign == Attendance::TEACHER_SIGN && $val->teacher_late == Attendance::TEACHER_LATE) {
+                $result[$key]['sign_status'] = '迟到';
+            }else {
+                $result[$key]['sign_status'] = '未签到';
             }
-            $result[$key]['sign_status'] = $signStatus;
             $result[$key]['sign_time'] = $val->teacher_sign_time;
         }
-
         return JsonBuilder::Success($result);
     }
 
