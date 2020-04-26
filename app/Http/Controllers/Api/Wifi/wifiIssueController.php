@@ -180,9 +180,9 @@ class wifiIssueController extends Controller
 
          // 获取状态流程时间
          $data = [
-            ['order_title'=>'报修时间','order_time'=>$infos['created_at']],
-            ['order_title'=>'接单时间','order_time'=>$infos['jiedan_time']],
-            ['order_title'=>'修复时间','order_time'=>$infos['chulis_time']],
+            ['order_title'=>'报修时间','order_time'=>date('Y-m-d H:i',strtotime($infos['created_at']))],
+            ['order_title'=>'接单时间','order_time'=>date('Y-m-d H:i',strtotime($infos['jiedan_time']))],
+            ['order_title'=>'修复时间','order_time'=>date('Y-m-d H:i',strtotime(   $infos['chulis_time']))],
          ];
          foreach ( $data as $key => $val )
          {
