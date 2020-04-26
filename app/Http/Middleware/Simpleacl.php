@@ -28,7 +28,7 @@ class Simpleacl
                 ], 401);
             }
 
-            return abort(401, '权限不足');
+            return abort(401);
         }
 
         return $next($request);
