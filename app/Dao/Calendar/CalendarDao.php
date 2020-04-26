@@ -71,15 +71,18 @@ class CalendarDao
         $where = [
             ['school_id','=',$schoolId]
         ];
+        $sort = 'asc';
         if($date){
             $where[] = ['event_time','>=',$date];
         }
         if($history) {
+            $sort = 'desc';
             $now = Carbon::now()->toDateTimeString();
             $where[] = ['event_time','<',$now];
         }
+        $field = ['id' ,'tag', 'content', 'event_time', 'week_idx'];
         return SchoolCalendar::where($where)
-            ->select('id' ,'tag', 'content', 'event_time', 'week_idx')->orderBy('event_time')->get();
+            ->select($field)->orderBy('event_time', $sort)->get();
     }
 
     /**

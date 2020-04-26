@@ -119,9 +119,11 @@ class IndexController extends Controller
             return JsonBuilder::Error('找不到学校的信息');
         } else {
             $dao = new CalendarDao();
-            return JsonBuilder::Success(
-                $dao->getCalendar($school->configuration, $request->get('year'), $request->get('month'))
-            );
+            $configuration = $school->configuration;
+            $year = $request->get('year');
+            $month = $request->get('month');
+            $data = $dao->getCalendar($configuration, $year, $month);
+            return JsonBuilder::Success($data);
         }
     }
 
