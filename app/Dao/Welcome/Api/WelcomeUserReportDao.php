@@ -327,6 +327,7 @@ class WelcomeUserReportDao
         // 返回用户信息
         $data['student_id'] = isset($userReportArr['serial_number']) ? (String)$userReportArr['serial_number'] : (isset($getStudentProfilesInfo->serial_number) ? (String)$getStudentProfilesInfo->serial_number : '');; // 学号
         $data['user_name'] = isset($userReportArr['user_name']) ? $userReportArr['user_name'] : (String)$baseUserInfo->user_name; // 姓名
+        $data['student_number'] = isset($userReportArr['student_number']) ? (String)$userReportArr['student_number'] : (isset($getStudentProfilesInfo->student_number) ? (String)$getStudentProfilesInfo->student_number : ''); // 学号
         $data['id_number'] = isset($userReportArr['id_number']) ? (String)$userReportArr['id_number'] : (isset($getStudentProfilesInfo->id_number) ? (String)$getStudentProfilesInfo->id_number : ''); // 身份证号
         $data['gender'] = isset($userReportArr['gender']) ? (String)$userReportArr['gender'] : (isset($getStudentProfilesInfo->gender) ? (String)$getStudentProfilesInfo->gender : 1); // 性别(1:男 2:女 )
         $data['birthday'] = isset($userReportArr['birthday']) ? (String)$userReportArr['birthday'] : (isset($getStudentProfilesInfo->birthday) ? date('Y-m-d',strtotime($getStudentProfilesInfo->birthday)) : ''); // 出身日期(2020-01-12)

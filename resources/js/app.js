@@ -119,5 +119,6 @@ require('./includes/backend/teacher_oa_tasks/index'); // 后台,oa-task
 require('./includes/backend/teacher_oa_tasks/detail.js'); // 后台,oa-task-detail
 require('./includes/backend/teacher_oa_message/index'); // 后台,内部信
 require('./includes/backend/school_importer_student.js'); // 后台, exec 导入学生
+require('./includes/backend/facility_form.js'); // 后台, exec 导入学生
 require('./common/add_new_student.js'); // 后台,学生档案
 

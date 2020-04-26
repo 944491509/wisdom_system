@@ -21,7 +21,6 @@ yarn-error.log
 .vscode
 /.vscode
 /public/querylog.txt
-/public/phpMyAdmin4.8.5
 _ide_helper.php
 _ide_helper_models.php
 querylog.txt
@@ -34,3 +33,5 @@ package-lock.json
 /public/vendor/*
 config/telescope.php
 app/Providers/TelescopeServiceProvider.php
+/v8-compile-cache-0
+

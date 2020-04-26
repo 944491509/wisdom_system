@@ -7,11 +7,13 @@
  */
 
 namespace App\BusinessLogic\TimetableViewLogic\Impl;
-use App\BusinessLogic\TimetableViewLogic\Contracts\ITimetableBuilder;
+
+use App\Dao\Schools\GradeDao;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Dao\Timetable\TimetableItemDao;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\BusinessLogic\TimetableViewLogic\Contracts\ITimetableBuilder;
 
 abstract class AbstractPointView implements ITimetableBuilder
 {
@@ -19,6 +21,8 @@ abstract class AbstractPointView implements ITimetableBuilder
     protected $weekType;
     protected $term;
     protected $year;
+    protected $gradeId;
+    protected $gradeYear;
     protected $timetableItemDao;
     protected $timeSlotDao;
 
@@ -33,10 +37,15 @@ abstract class AbstractPointView implements ITimetableBuilder
         $this->term = $request->get('term');
         $this->schoolId = $request->get('school');
         $this->weekType = intval($request->get('weekType')); // 指示位: 是否为单双周
+        $this->gradeId = $request->get('grade');
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($this->gradeId);
+        $this->gradeYear = $grade->gradeYear();  // 年级
 
         $this->timeSlotDao = new TimeSlotDao();
         // 找到所有的和学习相关的时间段
-        $forStudyingSlots = $this->timeSlotDao->getAllStudyTimeSlots($this->schoolId);
+        $forStudyingSlots = $this->timeSlotDao->getAllStudyTimeSlots($this->schoolId, $this->gradeYear);
+//        dd($forStudyingSlots);
         // 构建课程表项的 DAO
         $this->timetableItemDao = new TimetableItemDao($forStudyingSlots);
     }

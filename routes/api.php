@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('school')->middleware('auth:api')->group(function () {
+    // 加载学校年制接口
+    Route::get('/load-config-year','Api\School\TimeSlotsController@load_year_school')
+        ->name('api.school.load.config.year');
+
     // 加载学校的作息时间表
     Route::any('/load-time-slots','Api\School\TimeSlotsController@load_by_school')
         ->name('api.school.load.time.slots');
@@ -99,6 +103,10 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
 
     Route::any('/all-events','Api\Home\IndexController@all_events')
         ->name('api.school.all-events'); // 历史事件
+
+    // 搜索班级
+    Route::any('/search-grade', 'Operator\GradesController@searchGrade')
+        ->name('api.school.search.grade');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
@@ -206,17 +214,9 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
      Route::post('/query-student-profile','Api\Recruitment\OpenMajorController@studentProfile')
         ->name('api.query.student.profile');
 
-     // 报名
-     Route::post('/submit-form','Api\Recruitment\OpenMajorController@signUp')
-        ->name('api.major.submit.form');
-
      //
     Route::post('/submit-excel','Api\Recruitment\OpenMajorController@testExcel')
         ->name('api.major.submit.excel');
-
-    // 验证学生身份证信息的接口
-    Route::post('/verify-id-number','Api\Recruitment\OpenMajorController@verify_id_number')
-        ->name('api.major.verify.id.number');
 
     // 批准和拒绝学生的报名
     Route::post('/approve-or-reject','Api\Recruitment\OpenMajorController@approve_or_reject')
@@ -235,12 +235,19 @@ Route::prefix('student-register')->middleware('auth:api')->group(function () {
         ->name('api.major.save.class.info');
 });
 
-
 // 招生API
 Route::prefix('student-register')->group(function () {
     // 专业详情: 前端加载是调用
     Route::post('/load-major-detail','Api\Recruitment\PlansController@get_plan_front')
         ->name('api.load.major.detail');
+
+    // 验证学生身份证信息的接口
+    Route::post('/verify-id-number','Api\Recruitment\OpenMajorController@verify_id_number')
+        ->name('api.major.verify.id.number');
+
+    // 报名
+    Route::post('/submit-form','Api\Recruitment\OpenMajorController@signUp')
+        ->name('api.major.submit.form');
 });
 
 // 录取API
@@ -534,7 +541,7 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::any('/load-special','Api\AttendanceSchedule\AttendanceScheduleController@load_special')
         ->name('api.attendance.load-special');
 
-    // 学生签到
+    // 课程签到列表
     Route::post('/sign-in-record','Api\AttendanceSchedule\AttendanceController@signInRecord')
         ->name('api.attendance.sign-in-record');
     // 签到详情

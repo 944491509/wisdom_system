@@ -26,6 +26,8 @@ class TimeSlot extends Model
     const TYPE_DAY_END = 13;        // 就寝/熄灯
     const TYPE_DINNER = 14;         // 晚餐
     const TYPE_PRACTICE_EVENING = 15;  // 晚自习
+    const TYPE_ANIMAL_HEAT_EXAMINE = 16;  // 体温检查
+    const TYPE_EYE_EXERCISES = 17; // 眼保健操
 
     const TYPE_STUDYING_TXT = '上课时间';
     const TYPE_BREAK_TXT = '休息时间';
@@ -42,6 +44,8 @@ class TimeSlot extends Model
     const TYPE_PREPARE_TXT = '预备';
     const TYPE_DAY_END_TXT = '就寝/熄灯';
     const TYPE_PRACTICE_EVENING_TXT = '晚自习';
+    const TYPE_ANIMAL_HEAT_EXAMINE_TXT = '体温检查';
+    const TYPE_EYE_EXERCISES_TXT = '眼保健操';
 
     const SEASONS_WINTER_AND_SPRINT = 1;
     const SEASONS_WINTER_AND_SPRINT_TEXT = '冬季/春季';
@@ -49,7 +53,7 @@ class TimeSlot extends Model
     const SEASONS_SUMMER_AND_AUTUMN_TEXT = '夏季/秋季';
 
     protected $fillable = [
-        'school_id','name','from','to','type','season'
+        'school_id','name','from','to','type','season', 'year'
     ];
 
     public static function AllTypes(){
@@ -69,6 +73,8 @@ class TimeSlot extends Model
             self::TYPE_EXERCISE => self::TYPE_EXERCISE_TXT,
             self::TYPE_FREE_TIME => self::TYPE_FREE_TIME_TXT,
             self::TYPE_TIME_POINT => self::TYPE_TIME_POINT_TXT,
+            self::TYPE_ANIMAL_HEAT_EXAMINE => self::TYPE_ANIMAL_HEAT_EXAMINE_TXT,
+            self::TYPE_EYE_EXERCISES => self::TYPE_EYE_EXERCISES_TXT,
         ];
     }
 

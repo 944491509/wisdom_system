@@ -96,7 +96,7 @@ if(document.getElementById('student_registration_app')){
                 }
             },
             formSavedFailedHandler: function(errorMsgText){
-                this.hideRegistrationForm();
+                this.showRegistrationFormFlag = true;
                 // 当报名失败, 显示失败原因
                 this.$alert(errorMsgText, '报名失败', {
                     confirmButtonText: '确定',

@@ -28,6 +28,7 @@ class Factory
     public static function GetInstance(Request $request, $type = null){
         $instance = null;
         if($request->has('grade')){
+
             // 表示从班级的角度来加载课程表
             $instance = new FromGradePoint($request);
         }

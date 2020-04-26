@@ -27,7 +27,6 @@ class FlowsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function start(Request $request){
-        $this->dataForView['pageTitle'] = '发起审批';
 
         /**
          * @var User $user
@@ -52,6 +51,7 @@ class FlowsController extends Controller
                 $this->dataForView['node'] = $bag->getData()['node'];
                 $this->dataForView['api_token'] = $request->get('api_token');
                 $this->dataForView['appName'] = 'pipeline-flow-open-app';
+                $this->dataForView['pageTitle'] = $flow->name;
                 return view('h5_apps.pipeline.flow_open',$this->dataForView);
             }
         }

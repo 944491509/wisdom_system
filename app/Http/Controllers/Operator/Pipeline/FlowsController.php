@@ -71,6 +71,7 @@ class FlowsController extends Controller
         if($flow){
             $flow->position = Flow::getPositionByType($flow->type);
             $nodes = $flow->getSimpleLinkedNodes();
+            
             return JsonBuilder::Success(['flow'=>$flow,'nodes'=>$nodes]);
         }
         return JsonBuilder::Error();
