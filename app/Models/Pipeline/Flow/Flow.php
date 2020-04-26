@@ -4,6 +4,8 @@ namespace App\Models\Pipeline\Flow;
 
 use App\Dao\Pipeline\ActionDao;
 use App\Dao\Pipeline\FlowDao;
+use App\Dao\Schools\OrganizationDao;
+use App\Models\Schools\Organization;
 use App\Models\Teachers\Teacher;
 use App\Models\Users\GradeUser;
 use App\User;
@@ -189,6 +191,27 @@ class Flow extends Model implements IFlow
         return $this->hasMany(Node::class);
     }
 
+    private function getorganizationIdArrByName($schoolId, $name)
+    {
+        $ret = [];
+        $nameArr = explode(';', $name);
+        $organizationDao = new OrganizationDao();
+        foreach ($nameArr as $value) {
+            $organization = Organization::where(['school_id', $schoolId, 'name' => $value])->first();
+            $nowLevel = $organization->level;
+            $return = [$organization->id];
+            $parentid = $organization->parent_id;
+            while ($nowLevel > 1) {
+                $parent = $organizationDao->getById($parentid);
+                array_unshift($return, $parent->id);
+                $parentid = $parent->parent_id;
+                $nowLevel = $parent->level;
+            }
+            $ret[] = $return;
+        }
+        return $ret;
+    }
+
     /**
      * 获取简单的流程的按顺序排列的步骤集合
      *
@@ -197,6 +220,7 @@ class Flow extends Model implements IFlow
     public function getSimpleLinkedNodes(){
         $result = ['head' => [], 'copy' => [], 'handler' => [], 'options' => []];
         $node = $this->getHeadNode();
+        $node->handler->organization_ids = $this->getorganizationIdArrByName($this->school_id, $node->handler->organizations);
         $result['head'] = $node;//发起人
         if ($this->copy_uids) {
             //抄送人
@@ -230,6 +254,7 @@ class Flow extends Model implements IFlow
                 ->with('options')
                 ->first();
             if (!empty($next->handler->titles) || !empty($next->handler->organizations)) {
+                $next->handler->organization_ids = $this->getorganizationIdArrByName($this->school_id, $next->handler->organizations);
                 $result['handler'][] = $next->handler;
             }
             $node = $next;
