@@ -23,7 +23,7 @@ class VersionController extends Controller
 
     /**
      * 管理问卷调查表的 action
-     * @param MyStandardRequest $request
+     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request){
@@ -33,7 +33,7 @@ class VersionController extends Controller
         $data2_1 = $dao->getVersionOneInfo([['user_apptype', '=', 2], ['typeid', '=', 1]]);
         $data2_2 = $dao->getVersionOneInfo([['user_apptype', '=', 2], ['typeid', '=', 2]]);
         $versions = collect([$data1_1, $data1_2, $data2_1, $data2_2]);
-	
+
         $this->dataForView['versions'] = $versions;
         $this->dataForView['typeidArr'] = self::$typeidArr;
         $this->dataForView['isupdateArr'] = self::$isupdateArr;
@@ -161,7 +161,7 @@ class VersionController extends Controller
 
     /**
      * Func 版本详情
-     * @param MyStandardRequest $request
+     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function detail(Request $request)
