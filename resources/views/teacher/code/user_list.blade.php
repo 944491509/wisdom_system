@@ -27,7 +27,7 @@ use App\User;
                                     <tr style="text-align: center">
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->user->name }}</td>
-                                        <td>{{ \App\Models\Acl\Role::GetRoleSlugByUserType($val->user_type) }}</td>
+                                        <td>{{ \App\Models\Acl\Role::AllNames()[\App\Models\Acl\Role::GetRoleSlugByUserType($val->user_type)] }}</td>
                                         <td>是</td>
                                         <td>0 次</td>
                                         <td>  {{ \App\Utils\UI\Anchor::Print(['text'=>'获取二维码','class'=>'btn-edit-evaluate','href'=> '#'], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
