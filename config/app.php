@@ -176,6 +176,10 @@ return [
 //        App\Providers\TelescopeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        /**
+         * IdeHelper
+         */
+//        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
     ],
 
     /*

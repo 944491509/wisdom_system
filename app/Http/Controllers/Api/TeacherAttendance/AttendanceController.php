@@ -101,7 +101,7 @@ class AttendanceController extends Controller
         //获取Mac
         $mac = $dao->getMacAddress($attendance, $user->id);
         if (empty($mac)) {
-            return JsonBuilder::Error('请先绑定Mac地址');
+            return JsonBuilder::Error('请先绑定手机设备码');
         }
         if ($mac->mac_address != $useMac) {
             return JsonBuilder::Error('请使用绑定的手机打卡');
@@ -150,7 +150,7 @@ class AttendanceController extends Controller
 
         $mac = $dao->getMacAddress($attendance, $user->id);
         if (!empty($mac)) {
-            return JsonBuilder::Error('您已绑定Mac地址');
+            return JsonBuilder::Error('您已绑定手机设备码');
         }
 
         $inputMac = $request->getInputMacAddress();

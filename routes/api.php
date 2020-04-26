@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('school')->middleware('auth:api')->group(function () {
     // 加载学校年制接口
-    Route::get('/load-config-year','Api\School\TimeSlotsController@load_year_school')
+    Route::any('/load-config-year','Api\School\TimeSlotsController@load_year_school')
         ->name('api.school.load.config.year');
 
     // 加载学校的作息时间表
@@ -103,6 +103,10 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
 
     Route::any('/all-events','Api\Home\IndexController@all_events')
         ->name('api.school.all-events'); // 历史事件
+
+    // 搜索班级
+    Route::any('/search-grade', 'Operator\GradesController@searchGrade')
+        ->name('api.school.search.grade');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
@@ -537,7 +541,7 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::any('/load-special','Api\AttendanceSchedule\AttendanceScheduleController@load_special')
         ->name('api.attendance.load-special');
 
-    // 学生签到
+    // 课程签到列表
     Route::post('/sign-in-record','Api\AttendanceSchedule\AttendanceController@signInRecord')
         ->name('api.attendance.sign-in-record');
     // 签到详情

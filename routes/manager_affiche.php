@@ -1,6 +1,6 @@
 <?php
 
-Route::prefix('manager_affiche')->group(function ()
+Route::prefix('manager_affiche')->middleware('simpleacl')->group(function ()
 {
     // 置顶推荐
     Route::any('/affiche/top-affiche-list','Affiche\AfficheController@top_affiche_list')

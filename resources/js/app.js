@@ -73,6 +73,7 @@ require('./includes/backend/contacts_list_manager'); // 通讯录
 require('./includes/backend/textbook_manager'); // 教材
 require('./includes/backend/timeslots_manager'); // 作息时间段管理
 
+
 require('./includes/backend/recruitment_manager'); // 招生
 require('./includes/backend/recruitment_plan_manager'); // 招生计划
 require('./includes/backend/recruitment_enrol_manager'); // 招生录取
@@ -114,10 +115,12 @@ require('./includes/backend/teacher_grades_check_in'); // 后台,教师班级签
 require('./includes/backend/teacher_grades_manager'); // 后台,教师班级管理
 require('./includes/backend/teacher_assistant_material_app'); // 后台,老师教学资料
 require('./includes/backend/teacher-attendance_manager/index'); // 后台,考勤管理
+
 require('./includes/backend/teacher-week-timetable/index'); // 后台,课程表
 require('./includes/backend/teacher_oa_tasks/index'); // 后台,oa-task
 require('./includes/backend/teacher_oa_tasks/detail.js'); // 后台,oa-task-detail
 require('./includes/backend/teacher_oa_message/index'); // 后台,内部信
 require('./includes/backend/school_importer_student.js'); // 后台, exec 导入学生
+require('./includes/backend/facility_form.js'); // 后台, exec 导入学生
 require('./common/add_new_student.js'); // 后台,学生档案
-
+require('./includes/backend/auth_manager/index');  // 权限管理

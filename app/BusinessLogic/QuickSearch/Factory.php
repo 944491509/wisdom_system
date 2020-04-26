@@ -12,7 +12,9 @@ use App\BusinessLogic\QuickSearch\Impl\GradeQuickSearchLogic;
 use App\BusinessLogic\QuickSearch\Impl\InstituteQuickSearchLogic;
 use App\BusinessLogic\QuickSearch\Impl\MajorQuickSearchLogic;
 use App\BusinessLogic\QuickSearch\Impl\RegistrationFormsQuickSearchLogic;
+use App\BusinessLogic\QuickSearch\Impl\SchoolQuickSearchLogic;
 use App\BusinessLogic\QuickSearch\Impl\StudentQuickSearchLogic;
+use App\BusinessLogic\QuickSearch\Impl\SuperQuickSearchLogic;
 use Illuminate\Http\Request;
 
 class Factory
@@ -51,6 +53,12 @@ class Factory
                 break;
             case 'registrations':
                 $instance = new RegistrationFormsQuickSearchLogic($request);
+                break;
+            case 'super':
+                $instance = new SuperQuickSearchLogic($request);
+                break;
+            case 'school':
+                $instance = new SchoolQuickSearchLogic($request);
                 break;
             default:
                 break;

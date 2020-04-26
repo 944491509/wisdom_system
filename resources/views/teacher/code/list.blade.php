@@ -1,8 +1,3 @@
-<?php
-use App\Utils\UI\Anchor;
-use App\Utils\UI\Button;
-use App\User;
-?>
 @extends('layouts.app')
 @section('content')
  <div class="col-sm-12 col-md-12 col-xl-12">
@@ -20,7 +15,6 @@ use App\User;
                                     <th>类型</th>
                                     <th>描述</th>
                                     <th>创建时间</th>
-
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -32,7 +26,6 @@ use App\User;
                                         <td>{{ $val->typeText() }}</td>
                                         <td>{{ $val->desc }}</td>
                                         <td>{{ $val->created_at }}</td>
-
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -43,5 +36,4 @@ use App\User;
                 </div>
             </div>
         </div>
-    </div>
 @endsection

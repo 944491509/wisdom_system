@@ -1,6 +1,6 @@
 <?php
 
-Route::prefix('manager_wifi')->group(function ()
+Route::prefix('manager_wifi')->middleware('simpleacl')->group(function ()
 {
     // wifi产品
     Route::any('wifi/list', 'WifiController@list')->name('manager_wifi.wifi.list'); // wifi列表
@@ -28,7 +28,7 @@ Route::prefix('manager_wifi')->group(function ()
 	Route::any('wifiIssue/edit', 'WifiIssueController@edit')->name('manager_wifi.wifiIssue.edit'); // wifi报修修改
     Route::any('wifiIssue/detail', 'WifiIssueController@detail')->name('manager_wifi.wifiIssue.detail'); // wifi报修详情
     Route::any('wifiIssue/update', 'WifiIssueController@update')->name('manager_wifi.wifiIssue.update'); // wifi报修处理
-	
+
 	// wifi报修评论
     Route::any('wifiIssueComment/list', 'WifiIssueCommentController@list')->name('manager_wifi.wifiIssueComment.list'); // wifi报修评论列表
     Route::any('wifiIssueComment/detail', 'WifiIssueCommentController@detail')->name('manager_wifi.wifiIssueComment.detail'); // wifi报修评论详情

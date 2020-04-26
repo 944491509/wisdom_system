@@ -169,7 +169,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="部门" v-if="organization == 1&&posiType !== 2">
-                        <el-cascader style="width: 90%;" :props="props" v-model="node.organizations"></el-cascader>
+                        <el-cascader popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="props"  v-model="node.organizations"></el-cascader>
                     </el-form-item>
                     <el-form-item label="角色">
                         <el-checkbox-group v-model="node.titles">

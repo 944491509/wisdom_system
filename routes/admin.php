@@ -1,6 +1,6 @@
 <?php
 // 管理后台路由: 超级管理员专有的路由, 这里定义的路由, 其他任何角色都不能访问到
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('simpleacl')->group(function () {
     // 学校管理
     Route::get('schools/statistic', 'SchoolsController@statistic')->name('admin.schools.statistic'); // 显示学校的统计信息
     Route::get('schools/add', 'SchoolsController@add')->name('admin.schools.add');    // 显示创建学校的界面
@@ -11,6 +11,15 @@ Route::prefix('admin')->group(function () {
     Route::get('roles/list', 'RolesController@index')->name('admin.roles.list');
     Route::get('roles/edit', 'RolesController@edit')->name('admin.roles.edit');
     Route::post('roles/update_permission', 'RolesController@update_permission')->name('admin.roles.update_permission');
+
+    //新的权限管理
+    Route::get('simpleacl/manager', 'SimpleaclController@index')->name('admin.simpleacl.manager');
+    Route::post('simpleacl/list', 'SimpleaclController@lists')->name('admin.simpleacl.list');
+    Route::post('simpleacl/delete', 'SimpleaclController@delete')->name('admin.simpleacl.delete');
+    Route::post('simpleacl/add', 'SimpleaclController@add')->name('admin.simpleacl.add');
+    Route::post('simpleacl/add-role', 'SimpleaclController@add_role')->name('admin.simpleacl.add-role');
+    Route::post('simpleacl/add-permission', 'SimpleaclController@add_permission')->name('admin.simpleacl.add-permission');
+    Route::post('simpleacl/menu-permission', 'SimpleaclController@menu_permission')->name('admin.simpleacl.menu-permission');
 
     //版本管理
     Route::get('versions/list', 'VersionController@index')->name('admin.versions.list');
@@ -26,11 +35,19 @@ Route::prefix('admin')->group(function () {
     Route::any('notifications/edit', 'NotificationsController@edit')->name('admin.notifications.edit');
     Route::get('notifications/delete', 'NotificationsController@delete')->name('admin.notifications.delete');
 
+    // 平台管理员
+    Route::get('admin/list', 'AdminController@list')->name('admin.admin.list');
+    Route::any('admin/create', 'AdminController@create')->name('admin.admin.create');
+    Route::any('admin/update', 'AdminController@update')->name('admin.admin.update');
+
+    //学校管理员列表
+    Route::get('list/school-manager', 'SchoolsController@list_school_manager')
+        ->name('admin.list.school-manager');
     // 创建学校管理员
     Route::any('create/school-manager', 'SchoolsController@create_school_manager')
         ->name('admin.create.school-manager');
-    // 创建学校管理员
-    Route::get('edit/school-manager', 'SchoolsController@edit_school_manager')
+    // 编辑学校管理员
+    Route::any('edit/school-manager', 'SchoolsController@edit_school_manager')
         ->name('admin.edit.school-manager');
 
     Route::get('importer/manager', 'ImporterController@manager')->name('admin.importer.manager');

@@ -33,6 +33,7 @@ return [
     'update' => '更新',
     'school-manager' => '学校管理员',
     'manual' => '用户使用手册',
+    'admin' => '平台管理员',
 
     //风采管理
     'scenery' => '风采管理',

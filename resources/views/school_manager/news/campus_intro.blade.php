@@ -44,7 +44,7 @@ use App\Utils\UI\Button;
               <div slot="tip" class="el-upload__tip" style="margin-bottom:20px;">图片格式为jpg/png，图片宽高比2:1</div>
               </el-upload>
                   <ele-upload-video
-                    :file-size="50"
+                    :file-size="300"
                     :height="250"
                     :width="420"
                     :error="handleUploadError"

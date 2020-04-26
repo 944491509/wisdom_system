@@ -330,7 +330,13 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+        $rows = TimetableItem::where($where)
+            ->leftJoin('time_slots',function ($join) {
+                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
+            })
+            ->orderBy('time_slots.from','asc')
+            ->get();
 
         $result = [];
 
@@ -421,10 +427,10 @@ class TimetableItemDao
      */
     private function _getItemsByWeekDayIndexBy($weekDayIndex, $year, $term, $weekType, $by){
         $where = [
-            ['year','=',$year],
-            ['term','=',$term],
-            ['weekday_index','=',$weekDayIndex],
-            ['to_replace','=',0], // 不需要调课记录
+            ['timetable_items.year','=',$year],
+            ['timetable_items.term','=',$term],
+            ['timetable_items.weekday_index','=',$weekDayIndex],
+            ['timetable_items.to_replace','=',0], // 不需要调课记录
         ];
 
         foreach ($by as $k=>$v) {
@@ -434,13 +440,13 @@ class TimetableItemDao
         if($weekType === GradeAndYearUtil::WEEK_ODD){
             // 单周课程表, 那么就加载 每周 + 单周
             $where[] = [
-                'repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_EVEN_WEEK
+                'timetable_items.repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_EVEN_WEEK
             ];
         }
         else{
             // 双周课程表, 那么就加载 每周 + 双周
             $where[] = [
-                'repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_ODD_WEEK
+                'timetable_items.repeat_unit','<>',GradeAndYearUtil::TYPE_EVERY_ODD_WEEK
             ];
         }
         return $where;
@@ -585,42 +591,55 @@ class TimetableItemDao
         if(is_null($now)) {
             $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
         }
-        $grade = $user->gradeUser->grade;
         $school = (new SchoolDao())->getSchoolById($user->getSchoolId());
-        $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear,$now, $school->id);
-        if($currentTimeSlot && $school){
-            $weekdayIndex = $now->dayOfWeekIso;
-            // 当前学年
-            $year = $school->configuration->getSchoolYear();
+        $weekdayIndex = $now->dayOfWeekIso;
+        $year = $school->configuration->getSchoolYear();
 
-            $term = $school->configuration->guessTerm($now->month);
-            if ($user->isStudent()) {
-                $where = [
-                    ['school_id','=',$school->id],
-                    ['year','=',$year],
-                    ['term','=',$term],
-                    ['time_slot_id','=',$currentTimeSlot->id],
-                    ['grade_id','=',$user->gradeUser->grade_id],
-                    ['weekday_index','=',$weekdayIndex],
-                ];
-                return TimetableItem::where($where)->first();
-            } elseif ($user->isTeacher()) {
-                $where = [
-                    ['school_id','=',$school->id],
-                    ['year','=',$year],
-                    ['term','=',$term],
-                    ['time_slot_id','=',$currentTimeSlot->id],
-                    ['teacher_id','=',$user->id],
-                    ['weekday_index','=',$weekdayIndex],
-                ];
-                // 一个老师可以同时给多个班级上课
-                return TimetableItem::where($where)->get();
+        $term = $school->configuration->guessTerm($now->month);
 
-            } else  {
-                return  false;
+        if($user->isStudent()) {
+            $grade = $user->gradeUser->grade;
+
+            $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear(),$now, $school->id);
+            if(is_null( $currentTimeSlot)) {
+                return null;
             }
+            $where = [
+                ['school_id','=',$school->id],
+                ['year','=',$year],
+                ['term','=',$term],
+                ['time_slot_id','=',$currentTimeSlot->id],
+                ['grade_id','=',$grade->id],
+                ['weekday_index','=',$weekdayIndex],
+            ];
+
+            return TimetableItem::where($where)->first();
+
+        } elseif ($user->isTeacher()) {
+            $where = [
+                ['school_id', '=', $school->id],
+                ['year', '=', $year],
+                ['term', '=', $term],
+                ['teacher_id', '=', $user->id],
+                ['weekday_index', '=', $weekdayIndex],
+            ];
+            // 一个老师可以同时给多个班级上课
+            $timeTables = TimetableItem::where($where)->get();
+            if(count($timeTables) == 0) {
+                return null;
+            }
+
+            foreach ($timeTables as $key => $item) {
+                $timeSlot = $item->timeSlot;
+                $timeSlotDao = new TimeSlotDao();
+                if ($timeSlotDao->isCurrent($timeSlot)) {
+                    // todo  这块应该返回二维数据处理
+                    return collect([$item]);
+                }
+
+            }
+            return null;
         }
-        return null;
     }
 
 
@@ -826,7 +845,7 @@ class TimetableItemDao
         $field = ['timetable_items.*','time_slots.id as time_slot_id','time_slots.name'];
         $map = [
                 ['time_slots.school_id', '=', $schoolId],
-                ['year','=', $year],
+                ['timetable_items.year','=', $year],
                 ['term', '=', $term],
                 ['teacher_id', '=', $teacherId],
                 ['grade_id', '=', $gradeId],
@@ -1000,6 +1019,22 @@ class TimetableItemDao
 
     public function getTimeTableItemById($timeTableId) {
         return TimetableItem::where('id',$timeTableId)->first();
+    }
+
+
+    /**
+     * 查询班级要上的课程
+     * @param $year
+     * @param $term
+     * @param $gradeId
+     * @return mixed
+     */
+    public function getCoursesByYearAndTermAndGradeId($year, $term, $gradeId) {
+        $map = ['year'=>$year, 'term'=>$term, 'grade_id'=>$gradeId];
+        return TimetableItem::where($map)
+            ->select('course_id')
+            ->distinct('course_id')
+            ->get();
     }
 
 

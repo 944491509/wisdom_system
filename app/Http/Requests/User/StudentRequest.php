@@ -16,6 +16,8 @@ class StudentRequest extends MyStandardRequest
     public function getFormData() {
         $user = $this->get('user');
         $profile = $this->get('profile');
-        return ['user'=>$user, 'profile'=>$profile];
+        $addition = $this->get('addition');
+        $gradeUser = $this->get('grade_user');
+        return ['user'=>$user, 'profile'=>$profile, 'addition'=> $addition, 'grade_user' => $gradeUser];
     }
 }

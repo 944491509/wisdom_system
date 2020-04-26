@@ -265,9 +265,9 @@
             },
             'selectedMajor': function (newVal, oldVal) {
                 if(newVal !== oldVal){
-                    // 去加载选定专业的班级和课程
+                    // 去加载选定专业的班级
                     this._getGradesByMajor(newVal);
-                    this._getCoursesByMajor(newVal);
+                    // this._getCoursesByMajor(newVal);
                     this.timeTableItem.grade_id = '';
                     this.timeTableItem.course_id = '';
                     this.timeTableItem.teacher_id = '';
@@ -276,11 +276,18 @@
             },
             // 班级发生变化
             'timeTableItem.grade_id': function(newVal, oldVal){
-                this.timeTableItem.time_slot_id = null
-                this.$emit('grade-change', newVal)
+                this.timeTableItem.time_slot_id = null;
+                this.$emit('grade-change', newVal);
                 if(newVal !== oldVal){
-                    // 去刷新课程表
-                    this.fireUpTimetableRefresh();
+                    // 课程置空
+                    this.timeTableItem.course_id = '';
+                    if( this.timeTableItem.grade_id !== '') {
+                        // 去刷新课程表
+                        this.fireUpTimetableRefresh();
+                        // 去请求课程
+                        this._getCoursesByMajor();
+                    }
+
                 }
             },
             'timeTableItem.course_id': function(newVal, oldVal){
@@ -495,7 +502,7 @@
                     })
                 }
             },
-            // 根据专业获取课程
+           /* // 根据专业获取课程
             _getCoursesByMajor: function(){
                 // 获取课程的时候, 除了专业, 还有学期
                 if(this.selectedMajor !== '') {
@@ -509,7 +516,25 @@
                         }
                     })
                 }
+            },*/
+
+            // 根据班级获取课程
+            _getCoursesByMajor: function(){
+                // 获取课程的时候, 除了专业, 还有学期
+                if(this.timeTableItem.grade_id !== '') {
+                    axios.post(
+                        Constants.API.LOAD_COURSES_BY_MAJOR,{id: this.selectedMajor, term: this.timeTableItem.term, grade_id: this.timeTableItem.grade_id}
+                    ).then( res => {
+                        if(Util.isAjaxResOk(res)){
+                            this.courses = res.data.data.courses;
+                        }else{
+                            this.courses = [];
+                        }
+                    })
+                }
             },
+
+
             _getTeachersByCourse: function(courseId){
                 if(courseId !== ''){
                     // 传入了有效的 course id

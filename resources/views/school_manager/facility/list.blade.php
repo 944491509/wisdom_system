@@ -28,6 +28,7 @@
                                     <th>楼群</th>
                                     <th>教室</th>
                                     <th>类型</th>
+                                    <th>所属班级</th>
                                     <th>状态</th>
                                     <th>创建时间</th>
                                     <th>操作</th>
@@ -40,9 +41,16 @@
                                         <td>{{ $val['facility_number'] }}</td>
                                         <td>{{ $val['facility_name'] }}</td>
                                         <td>{{$val['campus']['name']}}</td>
-                                        <td>{{ $val['building']['name'] }}</td>
-                                        <td>{{$val['room']['name']}}</td>
-                                        <td>{{$val['TypeText']}}</td>
+                                        <td>{{ $val['building']['name'] ?? ''}}</td>
+                                        <td>{{$val['room']['name'] ?? ''}}</td>
+                                        <td>
+                                            @if($val['type'] == 3)
+                                                {{$val['TypeText']}} -- {{$val['CardTypeText']}}
+                                                @else
+                                                {{$val['TypeText']}}
+                                            @endif
+                                        </td>
+                                        <td>{{$val->grade->name  ?? '' }}</td>
                                         <td>
                                             @if($val['status'] == 1)
                                             <span class="label label-sm label-success"> 开启 </span>
