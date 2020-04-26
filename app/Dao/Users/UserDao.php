@@ -56,6 +56,7 @@ class UserDao
         $add = [
             'mobile'=>$data['mobile'],
             'uuid'=>Uuid::uuid4()->toString(),
+            'api_token'=>Uuid::uuid4()->toString(),
             'password'=>Hash::make($data['password']),
             'status'=>User::STATUS_VERIFIED,
             'type'=>Role::SUPER_ADMIN,
