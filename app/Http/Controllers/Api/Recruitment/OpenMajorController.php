@@ -233,7 +233,7 @@ class OpenMajorController extends Controller
                     $addData['department_id'] = 0; // 系
                     $addData['institute_id'] = 0; // 学院
                     $addData['campus_id'] = 0; // 校区ID
-                    $addData['school_id'] = 0; // 学校id
+                    $addData['school_id'] = $plan->school_id; // 学校id
                     $addData['last_updated_by'] = $user->id; // 最后更新的用户id
                     $addData['created_at'] = Carbon::now()->format('Y-m-d H:i:s'); // 添加时间
                     GradeUser::insert($addData);
