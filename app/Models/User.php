@@ -209,7 +209,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
         }
         elseif ($this->isSchoolAdminOrAbove()){
             // 学校管理员的默认首页
-            $viewPath = 'school_manager.school.view';
+            $viewPath = 'school_manager.school.home';
         }
         elseif ($this->isTeacher()){
             // 学校管理员的默认首页
