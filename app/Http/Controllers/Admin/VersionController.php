@@ -129,11 +129,12 @@ class VersionController extends Controller
         $versionData['vserion_invalidtime'] = strtotime($versionData['vserion_invalidtime']);
 
         $result = $dao->create($versionData);
-        if($result){
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,'操作成功');
+        $msg = $result->getMessage();
+        if($result->isSuccess()){
+            FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,$msg);
             return redirect()->route('admin.versions.list');
         }else{
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER,'操作失败,请稍后重试');
+            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER,$msg);
             return redirect()->back()->withInput();
         }
     }
