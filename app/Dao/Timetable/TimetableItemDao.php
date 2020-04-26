@@ -238,7 +238,7 @@ class TimetableItemDao
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $rows = TimetableItem::where($where)
             ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
-            ->orderBy('time_slots','asc')
+            ->orderBy('time_slots.from','asc')
             ->select($field)
             ->get();
         $result = [];
