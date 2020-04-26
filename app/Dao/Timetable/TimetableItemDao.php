@@ -235,7 +235,12 @@ class TimetableItemDao
         /**
          * @var TimetableItem[] $rows
          */
-        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
+        $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
+        $rows = TimetableItem::where($where)
+            ->join('time_slots', 'timetable_items.time_slot_id', '=', 'time_slots.id')
+            ->orderBy('time_slots','asc')
+            ->select($field)
+            ->get();
         $result = [];
 
         foreach ($this->timeSlots as $timeSlot) {
