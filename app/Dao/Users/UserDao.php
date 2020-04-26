@@ -380,16 +380,16 @@ class UserDao
         if ($schoolId) {
             $where[] = ['school_id','=',$schoolId];
         }
-        $query = User::select(['id','id as user_id','name','`type` as user_type'])
+        $query = User::select(['id','name','type'])
             ->where($where);
 
         if($userType){
             if(is_array($userType)){
                 // 如果同时定位多个角色
-                $query->whereIn('user_type',$userType);
+                $query->whereIn('type',$userType);
             }
             else{
-                $query->where('user_type',$userType);
+                $query->where('type',$userType);
             }
         }
 
