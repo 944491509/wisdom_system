@@ -340,6 +340,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                         this.flow.icon = res.data.data.flow.icon
                         this.flow.business = res.data.data.flow.business
                         this.flow.school_id = res.data.data.flow.school_id
+                        this.selectedImgUrl = res.data.data.flow.icon
                         this.flow.id = this.returnId
                         // 有部门
                         if (res.data.data.nodes.head.handler.organizations.length > 0) {
@@ -347,6 +348,8 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                             this.node.organizations = ''
                             // this.node.organizations = res.data.data.nodes.head.handler.organizations.substring(0, res.data.data.nodes.head.handler.organizations.length - 1).split(';')
                             this.node.titles = res.data.data.nodes.head.handler.titles.substring(0, res.data.data.nodes.head.handler.titles.length - 1).split(';')
+                            this.node.organizations = res.data.data.nodes.head.handler.organizations.substring(0, res.data.data.nodes.head.handler.organizations.length - 1).split(';')
+                            console.log('this.node.organizations',this.node.organizations)
                             this.gettitlesList();
                         } else {
                             this.organization = 2;
