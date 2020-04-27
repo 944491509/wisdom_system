@@ -36,17 +36,17 @@ use App\Utils\UI\Button;
                 <div class="card-head">
                     <header>专业班级信息</header>
                 </div>
-                <div class="card-body" id="school-add-student-app">
+                <div class="card-body" id="school-add-student-app" data-majorId="{{ $gradeUser->major_id }}"  data-gradeId="{{ $gradeUser->grade_id}}" data-year="{{$gradeUser->grade->year}}">
                     <div class="form-group">
                         <label class="control-label">专业</label>
-                        <select name="grade_user[major_id]" class="form-control" @click="getMajors" v-model="majorId">
+                        <select name="grade_user[major_id]" class="form-control" @change="changeMajor" v-model="majorId">
                           <option value="">请选择</option>
                           <option v-for="(item, key) in majors"  :value="item.id" >@{{item.name}}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="control-label">班级</label>
-                        <select name="grade_user[grade_id]" class="form-control" @click="getGrades">
+                        <select name="grade_user[grade_id]" class="form-control" v-model="gradeId">
                           <option value="">请选择</option>
                           <option v-for="(item, key) in grades"  :value="item.id" >@{{item.name}}</option>
                         </select>

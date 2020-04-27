@@ -34,4 +34,4 @@ package-lock.json
 config/telescope.php
 app/Providers/TelescopeServiceProvider.php
 /v8-compile-cache-0
-
+/public/*.js
