@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\School;
 
 use App\Dao\Courses\CourseDao;
+use App\Dao\ElectiveCourses\TeacherApplyElectiveCourseDao;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,7 +40,18 @@ class CoursesController extends Controller
     public function delete_course(Request $request){
         $courseUuid = $request->get('course');
         $dao = new CourseDao();
-        $result = $dao->deleteCourseByUuid($courseUuid);
+        $course = $dao->getCourseByUuid($courseUuid);
+        if(count($course->timetableItems)) {
+            return JsonBuilder::Error('该课程已经在课程表中安排了课时, 无法删除');
+        }
+        // 判断是选修课还是必修课
+        if($course->OBLIGATORY_COURSE) {
+            $result = $dao->deleteCourseByUuid($course);
+        } else {
+            // 解散课程
+            $optionalCourseDao = new TeacherApplyElectiveCourseDao();
+            $result = $optionalCourseDao->discolved($course->id);
+        }
         return $result->isSuccess() ? JsonBuilder::Success() : JsonBuilder::Error($result->getMessage());
     }
 
