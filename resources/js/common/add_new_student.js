@@ -56,6 +56,7 @@ if (document.getElementById('school-add-student-app')) {
           },
           changeMajor(){
             this.getGrades();
+            this.gradeId = ''
           }
         },
         mounted(){

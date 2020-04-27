@@ -46,7 +46,7 @@ use App\Utils\UI\Button;
                     </div>
                     <div class="form-group">
                         <label class="control-label">班级</label>
-                        <select name="grade_user[grade_id]" class="form-control" @click="getGrades">
+                        <select name="grade_user[grade_id]" class="form-control" v-model="gradeId">
                           <option value="">请选择</option>
                           <option v-for="(item, key) in grades"  :value="item.id" >@{{item.name}}</option>
                         </select>
