@@ -39,7 +39,7 @@ use App\Utils\UI\Button;
                 <div class="card-body" id="school-add-student-app">
                     <div class="form-group">
                         <label class="control-label">专业</label>
-                        <select name="grade_user[major_id]" class="form-control" @click="getMajors" v-model="majorId">
+                        <select name="grade_user[major_id]" class="form-control" @change="changeMajor" v-model="majorId">
                           <option value="">请选择</option>
                           <option v-for="(item, key) in majors"  :value="item.id" >@{{item.name}}</option>
                         </select>

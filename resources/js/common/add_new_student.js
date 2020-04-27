@@ -54,6 +54,12 @@ if (document.getElementById('school-add-student-app')) {
                   console.log(err)
               });
           },
+          changeMajor(){
+            this.getGrades();
+          }
+        },
+        mounted(){
+          this.getMajors();
         }
   })
 }
