@@ -56,7 +56,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="部门" v-if="organization === 1">
-                        <el-cascader style="width: 90%;" :props="prop" v-model="section"></el-cascader>
+                        <el-cascader popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="prop" v-model="section"></el-cascader>
                     </el-form-item>
                     <el-form-item label="审批人">
                         <el-radio-group v-model="approval">

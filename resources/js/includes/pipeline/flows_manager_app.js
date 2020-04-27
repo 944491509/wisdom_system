@@ -86,6 +86,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                     multiple: true,
                     label: 'name',
                     checkStrictly:true,
+                    expandTrigger:'hover',
                     lazyLoad(node, resolve) {
                         let parentId = null;
                         if (!Util.isEmpty(node.data)) {
@@ -100,12 +101,20 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                             }
                         });
                     }
+                },
+                props2: {
+                    value: 'id',
+                    multiple: true,
+                    label: 'name',
+                    checkStrictly:true,
+                    expandTrigger:'hover',
                 },
                 prop: {
                     lazy: true,
                     value: 'id',
-                    multiple: false,
+                    checkStrictly: true,
                     label: 'name',
+                    expandTrigger:'hover',
                     lazyLoad(node, resolve) {
                         let parentId = null;
                         if (!Util.isEmpty(node.data)) {
@@ -121,6 +130,8 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                         });
                     }
                 },
+               
+                organizansList:''
             }
         },
         created() {
@@ -164,6 +175,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
             // 新增流程按钮--打开侧边栏
             createNewFlow() {
                 this.flowFormFlag = true;
+                this.flow.business = ''
                 this.newFlow = true;
                 this.flow.type = '';
                 this.flow.name = '';
@@ -328,6 +340,9 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                 this.newFlow = false;
                 this.role = 1;
                 this.flowFormFlag = true;
+                // this.flow.business = ''
+                this.getbusinessList();
+               
                 loadNodes(this.returnId).then(res => {
                     if (Util.isAjaxResOk(res)) {
                         this.flow.type = res.data.data.flow.type; // 流程分类
@@ -335,6 +350,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                         this.flow.icon = res.data.data.flow.icon
                         this.flow.business = res.data.data.flow.business
                         this.flow.school_id = res.data.data.flow.school_id
+                        this.selectedImgUrl = res.data.data.flow.icon
                         this.flow.id = this.returnId
                         // 有部门
                         if (res.data.data.nodes.head.handler.organizations.length > 0) {
@@ -342,11 +358,15 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                             this.node.organizations = ''
                             // this.node.organizations = res.data.data.nodes.head.handler.organizations.substring(0, res.data.data.nodes.head.handler.organizations.length - 1).split(';')
                             this.node.titles = res.data.data.nodes.head.handler.titles.substring(0, res.data.data.nodes.head.handler.titles.length - 1).split(';')
+                            this.node.organizations = res.data.data.nodes.head.handler.organization_ids;
+                            this.getOrganizansList()
+                            console.log('this.node.organizations',this.node.organizations)
                             this.gettitlesList();
                         } else {
                             this.organization = 2;
                             this.node.titles = res.data.data.nodes.head.handler.titles.substring(0, res.data.data.nodes.head.handler.titles.length - 1).split(';')
                             this.gettitlesList();
+                            this.organizansList = ''
                         }
                         this.node.handlers = res.data.data.nodes.head.handler.role_slugs.substring(0, res.data.data.nodes.head.handler.role_slugs.length - 1).split(';')
                     } else {
@@ -355,6 +375,16 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                         );
                     }
                 })
+            },
+            getOrganizansList(){
+                axios.post(
+                    Constants.API.ORGANIZATION.LOAD_ALL,
+                    { school_id: this.flow.school_id }
+                ).then(res => {
+                    if (Util.isAjaxResOk(res)) {
+                        this.organizansList = res.data.data;
+                    }
+                });
             },
             // 右侧的删除按钮
             deleteFlow: function () {
