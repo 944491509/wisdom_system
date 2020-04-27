@@ -628,7 +628,7 @@ class TeacherApplyElectiveCourseDao
             ]);
             //对应课程删除
             $dao = new CourseDao();
-            $dao->deleteCourseByUuid($course->uuid);
+            $dao->deleteCourseByUuid($course);
             //标记选修课状态为取消
             CourseElective::where('course_id', $courseId)->update([
                 'status' => CourseElective::STATUS_CANCEL
