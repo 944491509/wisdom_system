@@ -100,7 +100,7 @@
         </div>
     </div>
 
-    <el-drawer title="添加/修改流程" size="70%" :visible.sync="flowFormFlag" v-cloak>
+    <el-drawer title="添加/修改流程" size="70%" :visible.sync="flowFormFlag" v-cloak wrapperClosable="false">
         <el-form ref="currentFlowForm" label-width="120px" style="padding: 10px;">
             <el-row>
                 <el-col :span="7">
@@ -169,7 +169,8 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="部门" v-if="organization == 1&&posiType !== 2">
-                        <el-cascader popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="props"  v-model="node.organizations"></el-cascader>
+                        <el-cascader v-if="organizansList && organizansList.length" popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="props2" :options="organizansList"  v-model="node.organizations"></el-cascader>
+                        <el-cascader v-else popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="props"  v-model="node.organizations"></el-cascader>
                     </el-form-item>
                     <el-form-item label="角色">
                         <el-checkbox-group v-model="node.titles">
@@ -181,7 +182,7 @@
             <el-form-item>
                 <el-button type="primary" @click="onNewFlowSubmit(1)" v-if="newFlow">立即创建</el-button>
                 <el-button type="primary" @click="onNewFlowSubmit(2)" v-else>保存流程</el-button>
-                <el-button @click="flowFormFlag = false">取消</el-button>
+                <el-button @click="flowFormFlag = false;flow.business = ''">取消</el-button>
             </el-form-item>
         </el-form>
         <el-dialog width="30%" title="选择图标" :visible.sync="iconSelectorShowFlag">
