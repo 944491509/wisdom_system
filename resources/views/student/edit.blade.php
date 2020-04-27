@@ -36,7 +36,7 @@ use App\Utils\UI\Button;
                 <div class="card-head">
                     <header>专业班级信息</header>
                 </div>
-                <div class="card-body" id="school-add-student-app">
+                <div class="card-body" id="school-add-student-app" data-majorId="{{ $gradeUser->major_id }}"  data-gradeId="{{ $gradeUser->grade_id}}" data-year="{{$gradeUser->grade->year}}">
                     <div class="form-group">
                         <label class="control-label">专业</label>
                         <select name="grade_user[major_id]" class="form-control" @change="changeMajor" v-model="majorId">
