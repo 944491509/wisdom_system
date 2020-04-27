@@ -81,7 +81,7 @@ use App\Utils\UI\Button;
                                     <label>招生年度/年级</label>
                                     <select required type="date" class="form-control" name="profile[year]" v-model="year" @click="getGrades">
                                          <option value="">请选择</option>
-                                        @foreach(\App\Utils\Time\GradeAndYearUtil::GetAllYears() as $year)
+                                        @foreach(\App\Utils\Time\GradeAndYearUtil::GetAllYears(3) as $year)
                                             <option {{ intval(date('Y'))===$year+1 ? 'selected':null }} value="{{ $year+1 }}">{{ $year+1 }}年</option>
                                         @endforeach
                                     </select>
