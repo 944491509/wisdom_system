@@ -42,12 +42,16 @@
   }
 }
 .pip_flow_mamager_cascader{
-    .el-checkbox{
-        position: absolute;
-        left: 20px;
-        right: 50px;
+    .el-cascader-node{
+        position: relative;
+        .el-checkbox, .el-radio{
+            position: absolute;
+            left: 20px;
+            right: 50px;
+        }
+        .el-cascader-node__label{
+            padding-left: 25px;
+        }
     }
-    .el-cascader-node__label{
-        padding-left: 25px;
-    }
+
 }
