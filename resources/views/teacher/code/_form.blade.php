@@ -14,13 +14,13 @@
     <select  name="code[status]"  class="form-control" >
              <option value="0"
                      @if(isset($code))
-                        @if($key == $code['status']) selected @endif
+                        @if($code['status']) selected @endif
                     @endif>
                  关闭
              </option>
             <option value="1"
                      @if(isset($code))
-                        @if($key == $code['status']) selected @endif
+                        @if($code['status']) selected @endif
                     @endif>
                  正常
              </option>

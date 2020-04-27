@@ -5,7 +5,7 @@ use App\User;
 ?>
 @extends('layouts.app')
 @section('content')
- <div class="col-sm-12 col-md-12 col-xl-12">
+ <div class="col-sm-12 col-md-12 col-xl-12" id="get-user-qr-code">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -13,6 +13,7 @@ use App\User;
                             <table
                                     class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
+                                <div align="center"><img :src="code"></div>
                                 <tr style="text-align: center">
                                     <th>序号</th>
                                     <th>姓名</th>
@@ -27,10 +28,11 @@ use App\User;
                                     <tr style="text-align: center">
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $val->user->name }}</td>
-                                        <td>{{ \App\Models\Acl\Role::GetRoleSlugByUserType($val->user_type) }}</td>
+                                        <td>{{ \App\Models\Acl\Role::AllNames()[\App\Models\Acl\Role::GetRoleSlugByUserType($val->user_type)] }}</td>
                                         <td>是</td>
                                         <td>0 次</td>
-                                        <td>  {{ \App\Utils\UI\Anchor::Print(['text'=>'获取二维码','class'=>'btn-edit-evaluate','href'=> '#'], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
+                                        <td @click="getUserCode({{$val->user->id}})">
+                                            {{ \App\Utils\UI\Anchor::Print(['text'=>'获取二维码','class'=>'btn-edit-evaluate','href'=> '#'], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
                                         </td>
                                     </tr>
                                 @endforeach
