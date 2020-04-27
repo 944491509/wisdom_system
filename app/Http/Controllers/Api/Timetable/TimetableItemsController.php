@@ -105,8 +105,12 @@ class TimetableItemsController extends Controller
      */
     public function load(Request $request){
         $logic = Factory::GetInstance($request);
-        $data = ['timetable'=>$logic->build()];
-        return JsonBuilder::Success($data);
+        $timetable = $logic->build();
+        $data = [];
+        foreach ($timetable as $key => $value) {
+            $data[] = array_merge($value);
+        }
+        return JsonBuilder::Success(['timetable'=>$data]);
     }
 
     /**
