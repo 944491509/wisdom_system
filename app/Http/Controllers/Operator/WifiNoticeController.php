@@ -88,7 +88,13 @@
                return redirect()->route('manager_wifi.wifiNotice.add')->withInput();
             }
          }
-         $this->dataForView[ 'infos' ] = []; // 数据信息
+          $this->dataForView['user'] = $request->user();
+          $this->dataForView['infos'] = []; // 数据信息
+          $this->dataForView['redactor'] = true;
+          $this->dataForView['redactorWithVueJs'] = true;
+          $this->dataForView['js'] = [
+              'manager_wifi.wifiNotice.note_js'
+          ];
 
          return view ( 'manager_wifi.wifiNotice.add' , $this->dataForView );
       }
@@ -147,7 +153,13 @@
             }
          }
 
-         $this->dataForView[ 'dataOne' ] = $getWifiNoticesOneInfo;
+          $this->dataForView['dataOne'] = $getWifiNoticesOneInfo;
+          $this->dataForView['user'] = $request->user();
+          $this->dataForView['redactor'] = true;
+          $this->dataForView['redactorWithVueJs'] = true;
+          $this->dataForView['js'] = [
+              'manager_wifi.wifiNotice.note_js'
+          ];
 
          return view ( 'manager_wifi.wifiNotice.edit' , $this->dataForView );
       }

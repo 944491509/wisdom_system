@@ -24,7 +24,7 @@ class ClockinDao
     {
         try{
             foreach ($data as $key => $val) {
-                if (in_array($key, ['time', 'status', 'source'])) {
+                if (in_array($key, ['teacher_attendance_id', 'user_id', 'day', 'type'])) {
                     $data1[$key] = $val;
                 }else {
                     $data2[$key] = $val;

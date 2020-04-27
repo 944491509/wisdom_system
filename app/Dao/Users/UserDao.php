@@ -56,6 +56,7 @@ class UserDao
         $add = [
             'mobile'=>$data['mobile'],
             'uuid'=>Uuid::uuid4()->toString(),
+            'api_token'=>Uuid::uuid4()->toString(),
             'password'=>Hash::make($data['password']),
             'status'=>User::STATUS_VERIFIED,
             'type'=>Role::SUPER_ADMIN,
@@ -471,6 +472,29 @@ class UserDao
     public function updateUserInfo($userId, $data)
     {
         return User::where('id', $userId)->update($data);
+    }
+
+    public function getUsersWithNameLike($name, $userType = null, $schoolId = null){
+        $where = [
+            ['name','like',$name.'%'],
+        ];
+        if ($schoolId) {
+            $where[] = ['school_id','=',$schoolId];
+        }
+        $query = User::select(['id','name','type'])
+            ->where($where);
+
+        if($userType){
+            if(is_array($userType)){
+                // 如果同时定位多个角色
+                $query->whereIn('type',$userType);
+            }
+            else{
+                $query->where('type',$userType);
+            }
+        }
+
+        return $query->take(ConfigurationTool::DEFAULT_PAGE_SIZE_QUICK_SEARCH)->get();
     }
 
 

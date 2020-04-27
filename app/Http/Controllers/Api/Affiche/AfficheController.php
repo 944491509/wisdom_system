@@ -180,14 +180,9 @@ class AfficheController extends Controller
 
         $user_id = 0;
         $school_id = 0;
+		$user = $request->user();
+        $user_id = $user->id;
         if ($typeid == 2) {
-
-            if (!$token) {
-                return JsonBuilder::Error('请先登录');
-            }
-
-            $user = $request->user();
-            $user_id = $user->id;
             $school_id = $user->gradeUserOneInfo->school_id;
         }
 

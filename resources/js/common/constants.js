@@ -140,6 +140,7 @@ export const Constants = {
         },
         ORGANIZATION: {
             LOAD_PARENTS: '/school_manager/organizations/load-parent',
+            LOAD_ALL: '/school_manager/organizations/load-all',
             LOAD_CHILDREN: '/school_manager/organizations/load-children',
             SAVE: '/school_manager/organizations/save',
             LOAD: '/school_manager/organizations/load',

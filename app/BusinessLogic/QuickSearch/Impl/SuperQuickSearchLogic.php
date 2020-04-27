@@ -7,15 +7,15 @@
  */
 
 namespace App\BusinessLogic\QuickSearch\Impl;
-use App\Dao\Users\GradeUserDao;
+use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
 
 class SuperQuickSearchLogic extends AbstractQuickSearchLogic
 {
     public function getUsers()
     {
-        $dao = new GradeUserDao();
-        return $dao->getUsersWithNameLike($this->queryString, $this->schoolId, Role::SUPER_ADMIN);
+        $dao = new UserDao();
+        return $dao->getUsersWithNameLike($this->queryString, Role::SUPER_ADMIN);
     }
 
     /**

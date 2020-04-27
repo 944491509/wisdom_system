@@ -26,6 +26,7 @@ $teacher = \Illuminate\Support\Facades\Auth::user();
                     </div>
                 </li>
                 @include('layouts.desktop.elements.aclmenu')
+
             </ul>
         </div>
     </div>
