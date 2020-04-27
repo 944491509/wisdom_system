@@ -14,7 +14,7 @@ use App\Utils\UI\Button;
                 <div class="card-body">
                     <form action="{{ route('teacher.code.save') }}" method="post"  id="edit-evaluate-form">
                         @csrf
-                        <input type="hidden" id="evaluate-id" name="code[id]" value="{{$old['id']}}">
+                        <input type="hidden" id="evaluate-id" name="code[id]" value="{{$code['id']}}">
 
                         @include('teacher.code._form')
 

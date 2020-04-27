@@ -7,6 +7,7 @@ use App\Dao\Schools\SchoolDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
 use App\Models\Users\UserCodeRecord;
+use App\User;
 use App\Utils\JsonBuilder;
 use Endroid\QrCode\QrCode;
 use App\Http\Controllers\Controller;
@@ -26,12 +27,19 @@ class IndexController extends Controller
      */
     public function generate(QrCodeRequest $request)
     {
-        $school = $request->getAppSchool();
-        if (empty($school)) {
-            return JsonBuilder::Error('未找到学校');
+        // PC 端
+        $userId = $request->get('user_id');
+        if ($userId) {
+            $user = User::find($userId);
+            $school = $user->gradeUser->school;
+        } else {
+            // 移动端
+            $school = $request->getAppSchool();
+            if (empty($school)) {
+                return JsonBuilder::Error('未找到学校');
+            }
+            $user  = $request->user();
         }
-
-        $user  = $request->user();
         // 生成规则 : 识别标识+学校ID+用户ID+时间戳
         $codeStr = base64_encode(json_encode(['app' => UserCodeRecord::IDENTIFICATION_APP, 'school_id' => $school->id, 'user_id' => $user->id, 'time' => time()]));
         $code = $this->generateQrCode($codeStr, $user->type);
@@ -65,7 +73,7 @@ class IndexController extends Controller
                                               'course_id' => $item->course_id,
                                               'term' => $item->term,
                                               'time' => time()]));
-        
+
         $code = $this->generateQrCode($codeStr, $user->type);
         if (!$code) {
             return  JsonBuilder::Error('生成二维码失败');

@@ -21,6 +21,7 @@ export const Constants = {
         LOAD_TEACHERS_BY_COURSE: '/api/school/load-course-teachers',
         SEARCH_TEACHERS_BY_NAME: '/api/school/search-teachers',
         GET_USER_NAME_BY_ID: '/api/school/get-user-name',
+        GET_USER_QR_CODE_BY_ID: '/api/QrCode/getQrCode',
         QUICK_SEARCH_USERS_BY_NAME: '/api/school/quick-search-users',
         SAVE_COURSE: '/api/school/save-course',
         DELETE_COURSE: '/api/school/delete-course',

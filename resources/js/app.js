@@ -56,6 +56,7 @@ Vue.component('grade-table', require('./components/moodle/teacher/GradeTable').d
 // 教师课件
 Vue.component('material', require('./components/moodle/teacher/Material').default);
 
+
 require('./includes/backend/school_calendar_app'); // 后台: 校历的管理
 require('./includes/backend/notice_manager_app'); // 后台: Notice 的管理
 require('./includes/backend/banner_manager_app'); // 后台: Banner 的管理
@@ -120,4 +121,5 @@ require('./includes/backend/teacher_oa_tasks/detail.js'); // 后台,oa-task-deta
 require('./includes/backend/teacher_oa_message/index'); // 后台,内部信
 require('./includes/backend/school_importer_student.js'); // 后台, exec 导入学生
 require('./common/add_new_student.js'); // 后台,学生档案
+require('./includes/backend/get_user_qr_code'); // 用户二维码
 
