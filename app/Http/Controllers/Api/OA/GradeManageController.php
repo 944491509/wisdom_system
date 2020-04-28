@@ -194,7 +194,7 @@ class GradeManageController extends Controller
         $dao = new StudentProfileDao;
         $gradeManagerDao = new GradeManagerDao;
         $userDao = new UserDao;
-        if ($data['email']) {
+        if (isset($data['email'])) {
             $result = $userDao->getUserByEmail($data['email']);
             if ($result  && $result['id'] != $studentId) {
                 return  JsonBuilder::Error('邮箱已经有人用了');
