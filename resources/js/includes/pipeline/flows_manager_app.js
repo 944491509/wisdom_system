@@ -175,6 +175,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
             // 新增流程按钮--打开侧边栏
             createNewFlow() {
                 this.flowFormFlag = true;
+                this.selectedImgUrl = ''
                 this.flow.business = ''
                 this.newFlow = true;
                 this.flow.type = '';
@@ -288,6 +289,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                 }
                 // 创建新的流程
                 if (id === 1) {
+                  this.flow.id = ''
                     saveFlow(this.flow, this.node).then(res => {
                         if (Util.isAjaxResOk(res)) {
                             window.location.href = '/school_manager/pipeline/flows/manager?lastNewFlow=' + res.data.data.id;
