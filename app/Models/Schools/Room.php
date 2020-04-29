@@ -12,7 +12,7 @@ class Room extends Model
     const TYPE_CLASSROOM             = 1;                // 教室
     const TYPE_INTELLIGENT_CLASSROOM = 2;                // 智慧教室
     const TYPE_MEETING_ROOM          = 3;                // 会议室
-    const TYPE_OFFICE                = 4;                // 会议室
+    const TYPE_OFFICE                = 4;                // 教师办公室
     const TYPE_STUDENT_HOSTEL        = 5;                // 学生宿舍
     const TYPE_WAREHOUSE             = 6;                // 仓库
     const TYPE_ACCOUNTING_TRAINING   = 7;                // 实训实

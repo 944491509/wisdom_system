@@ -669,5 +669,20 @@ class NewMeetingController extends Controller
     }
 
 
+    /**
+     * 获取会议室列表
+     * @param MeetingRequest $request
+     * @return string
+     */
+    public function getMeetRoomList(MeetingRequest $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $roomDao = new RoomDao();
+        $type = Room::TYPE_MEETING_ROOM;
+        $list = $roomDao->getRoomByType($schoolId,$type);
+        return JsonBuilder::Success($list);
+    }
+
+
 
 }
