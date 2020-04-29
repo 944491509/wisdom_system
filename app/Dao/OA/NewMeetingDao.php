@@ -377,7 +377,8 @@ class NewMeetingDao
         $map = [
             ['room_id','=',$roomId],
             ['meet_start','<',$meetEnd],
-            ['meet_end', '>', $meetStart]
+            ['meet_end', '>', $meetStart],
+            ['status', '=', NewMeeting::STATUS_PASS]
         ];
         return NewMeeting::where($map)->first();
     }
