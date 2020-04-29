@@ -13,7 +13,8 @@ if (document.getElementById("school-add-student-app")) {
       institutes: [],
       gradeId: "",
       majorId: "",
-      year: ""
+      year: "",
+      status: ""
     },
     methods: {
       getMajors() {
@@ -49,8 +50,7 @@ if (document.getElementById("school-add-student-app")) {
       },
       getInstitutes() {
         const url = Util.buildUrl(Constants.API.LOAD_INSTITUTES_BY_SCHOOL);
-        axios
-          .post(url, {
+        axios.post(url, {
             school_id: schoolId
           })
           .then(res => {
@@ -65,14 +65,18 @@ if (document.getElementById("school-add-student-app")) {
       changeMajor() {
         this.getGrades();
         this.gradeId = "";
+      },
+      changeStatus(status) {
+       this.status = status.target.value;
       }
     },
     mounted() {
       this.getMajors();
       let dom = document.getElementById("school-add-student-app");
       if (dom) {
-        let { gradeid, majorid, year } = $(dom).data();
+        let { gradeid, majorid, year, status} = $(dom).data();
         if (majorid) {
+          this.status  = status;
           this.majorId = majorid;
           this.gradeId = gradeid;
           this.year = year;

@@ -94,7 +94,6 @@ use App\User;
                                                     'subs'=>[
                                                         ['url'=>route('verified_student.profile.edit',['uuid'=>$gradeUser->user->uuid]),'text'=>'编辑'],
                                                         ['url'=>route('teacher.student.edit-avatar',['uuid'=>$gradeUser->user->uuid]),'text'=>'照片'],
-                                                        ['url'=>route('school_manager.student.reject',['uuid'=>$gradeUser->user->uuid]),'text'=>'退学'],
                                                     ]
                                                 ],
                                                 Button::TYPE_PRIMARY
