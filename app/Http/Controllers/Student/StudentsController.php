@@ -2,9 +2,11 @@
 namespace App\Http\Controllers\Student;
 
 use App\Dao\Users\UserDao;
+use App\Models\Acl\Role;
 use App\Models\Schools\GradeManager;
 use App\Models\Students\StudentAdditionInformation;
 use App\Models\Users\GradeUser;
+use App\User;
 use App\Utils\FlashMessageBuilder;
 use App\Http\Controllers\Controller;
 use App\Dao\Students\StudentProfileDao;
@@ -32,6 +34,7 @@ class StudentsController extends Controller
     /**
      * @param StudentRequest $request
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
     public function update(StudentRequest $request) {
         $data = $request->getFormData();
@@ -40,6 +43,9 @@ class StudentsController extends Controller
         unset($data['user']['uuid']);
         unset($data['user']['id']);
         $dao = new StudentProfileDao;
+        if ($data['user']['status'] != User::STATUS_VERIFIED) {
+            $data['user']['type'] = Role::REGISTERED_USER;
+        }
         $result = $dao->updateStudentInfoByUserId($userId, $data['user'], $data['profile'], $data['addition'], $data['grade_user']);
 
         if($result->isSuccess()){

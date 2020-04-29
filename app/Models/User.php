@@ -48,6 +48,10 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT = '认证中';
     const STATUS_VERIFIED = 3;
     const STATUS_VERIFIED_TEXT = '已认证';
+    const STATUS_SUSPENSION = 4 ;
+    const STATUS_SUSPENSION_TEXT = '休学' ;
+    const STATUS_DROP_OUT = 5;
+    const STATUS_DROP_OUT_TEXT = '退学';
 
     const TYPE_STUDENT  = 1;
     const TYPE_EMPLOYEE = 2;
@@ -330,11 +334,14 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
      * 获取学生的状态文字
      * @return string
      */
-    public function getStatusText(){
+    public function getStatusText()
+    {
         $arr = [
             self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED=>self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT,
             self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED=>self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT,
             self::STATUS_VERIFIED=>self::STATUS_VERIFIED_TEXT,
+            self::STATUS_SUSPENSION=>self::STATUS_SUSPENSION_TEXT,
+            self::STATUS_DROP_OUT=>self::STATUS_DROP_OUT_TEXT,
         ];
         return $arr[$this->status];
     }
