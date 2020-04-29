@@ -11,6 +11,7 @@ use App\Dao\Teachers\QualificationDao;
 use App\Dao\Teachers\TeacherProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
+use App\Dao\Users\UserOrganizationDao;
 use App\Exports\TeacherExport;
 use App\Http\Requests\MyStandardRequest;
 use App\Http\Controllers\Controller;
@@ -93,40 +94,64 @@ class ProfilesController extends Controller
     }
 
     public function edit(MyStandardRequest $request){
-        $this->dataForView['pageTitle'] = '教师档案管理';
         $schoolId = session('school.id');
-        $id = $request->uuid();
-        $dao = new UserDao();
-        /**
-         * @var Teacher $teacher
-         */
-        $teacher = $dao->getTeacherByIdOrUuid($id);
-        $this->dataForView['teacher'] = $teacher;
-        $this->dataForView['userOrganization'] = Teacher::myUserOrganization($teacher->id);
-        $this->dataForView['profile'] = $teacher->profile;
-        // 行政方面的职务
-        $this->dataForView['organizations'] = (new OrganizationDao())->getBySchoolId($schoolId);
-        $this->dataForView['titles'] = Organization::AllTitles();
+        if($request->isMethod('post')) {
+            $data = $request->all();
+            $userId = $data['uuid'];
+            unset($data['uuid']);
+            unset($data['_token']);
+            $userOrgan = new UserOrganizationDao();
+            $userDao = new UserDao();
+            $user = $userDao->getTeacherById($userId);
+            $data['name'] = $user->name;
+            $data['title'] = Organization::getTitleByTitleId($data['title_id']);
+            $data['school_id'] = $schoolId;
+            $data['user_id'] = $userId;
+            $re = $userOrgan->create($data);
+            if($re->isSuccess()) {
+                FlashMessageBuilder::Push($request, 'success','设置成功');
+            } else {
+                FlashMessageBuilder::Push($request, 'warning','设置失败');
+            }
+            return redirect()->route('school_manager.teachers.edit-profile',['uuid'=>$userId]);
 
-        // 教学方面的职务: 是否隶属于任何的教研组
-        $this->dataForView['groups'] = Teacher::myTeachingAndResearchGroup($teacher->id);
-        // 学生管理方面的职务: 是否班主任
-        $this->dataForView['gradeManager'] = Teacher::myGradeManger($teacher->id);
-        $this->dataForView['yearManager'] = Teacher::myYearManger($teacher->id);
+        } else {
+            $this->dataForView['pageTitle'] = '教师档案管理';
 
-        // 该教师历年的考核记录
-        $schoolDao = new SchoolDao();
-        $school = $schoolDao->getSchoolById($schoolId);
-        $this->dataForView['school'] = $school;
-        $this->dataForView['configs'] = $school->teacherPerformanceConfigs;
-        $this->dataForView['history'] = $teacher->performances ?? [];
+            $id = $request->uuid();
+            $dao = new UserDao();
+            /**
+             * @var Teacher $teacher
+             */
+            $teacher = $dao->getTeacherByIdOrUuid($id);
+            $this->dataForView['teacher'] = $teacher;
+            $this->dataForView['userOrganization'] = Teacher::myUserOrganization($teacher->id);
+            $this->dataForView['profile'] = $teacher->profile;
+            // 行政方面的职务
+            $this->dataForView['organizations'] = (new OrganizationDao())->getBySchoolId($schoolId);
+            $this->dataForView['titles'] = Organization::AllTitles();
+
+            // 教学方面的职务: 是否隶属于任何的教研组
+            $this->dataForView['groups'] = Teacher::myTeachingAndResearchGroup($teacher->id);
+            // 学生管理方面的职务: 是否班主任
+            $this->dataForView['gradeManager'] = Teacher::myGradeManger($teacher->id);
+            $this->dataForView['yearManager'] = Teacher::myYearManger($teacher->id);
+
+            // 该教师历年的考核记录
+            $schoolDao = new SchoolDao();
+            $school = $schoolDao->getSchoolById($schoolId);
+            $this->dataForView['school'] = $school;
+            $this->dataForView['configs'] = $school->teacherPerformanceConfigs;
+            $this->dataForView['history'] = $teacher->performances ?? [];
 
 
-        // 该教师的评聘佐证材料
-        $qualificationDao =  new QualificationDao;
-        $qualification = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
-        $this->dataForView['qualification'] = $qualification;
-        return view('teacher.profile.edit', $this->dataForView);
+            // 该教师的评聘佐证材料
+            $qualificationDao = new QualificationDao;
+            $qualification = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
+            $this->dataForView['qualification'] = $qualification;
+//            dd($this->dataForView);
+            return view('teacher.profile.edit', $this->dataForView);
+        }
     }
 
     /**
