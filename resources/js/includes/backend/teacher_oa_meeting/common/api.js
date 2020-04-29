@@ -5,7 +5,8 @@ import {
 const meeting = Vue.prototype.$meeting
 
 const API_MAP = {
-  list: '/api/meeting/'
+  list: '/api/meeting/',
+  getMeetRoomList: '/api/meeting/getMeetRoomList'
 }
 
 const toGet = function (obj) {
