@@ -74,7 +74,7 @@ class NewMeetingController extends Controller
         $dao = new NewMeetingDao();
         // 判断当前会议室是否被占用
         if($data['type'] == NewMeeting::TYPE_MEETING_ROOM) {
-            $re = $dao->getMeetingByTime($data['room_id'], $data['meet_start'], $data['meet_end']);
+            $re = $dao->getMeetingByTime($data['room'], $data['meet_start'], $data['meet_end']);
             if(!is_null($re)) {
                 return JsonBuilder::Error('当前时间段该会议室有会议');
             }
