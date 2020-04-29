@@ -11,18 +11,28 @@
                               <span class="icon" :class="activeName"></span>
                               <span class="title-text">@{{activeNameText}}</span>
                           </span>  
-                          <el-button type="primary" size="small" @click="formbroad(false)">创建会议</el-button>
+                          <el-button type="primary" size="small" @click="showCreateModal">创建会议</el-button>
                         </div>
                     </header>
                 </div>
                 <div class="card-body">
                   <el-tabs v-model="activeName">
                     <el-tab-pane v-for="(type, index) in meetingTypes" :key="index" :label="type.text" :name="type.status">
-                      <meeting-list :mode="type.status" :ref="type.status" @formbroad="formbroad"/>
+                      <meeting-list :mode="type.status" :ref="type.status"/>
                     </el-tab-pane>
                   </el-tabs>
                 </div>
             </div>
+            <el-drawer
+              ref="addMeetingDrawer"
+              :destroy-on-close="true"
+              :visible.sync="addDrawer"
+              direction="rtl">
+              <template slot="title">
+                  <div class="add-Meeting-title"><span class="title-icon"></span>创建会议</div>
+              </template>
+              <Meeting-form ref="addMeetingForm" @done="onMeetingCreated"/>
+            </el-drawer>
         </div>
     <div id="app-init-data-holder"
          data-school="{{ session('school.id') }}"
