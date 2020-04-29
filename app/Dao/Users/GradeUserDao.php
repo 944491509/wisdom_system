@@ -284,4 +284,16 @@ class GradeUserDao
     }
 
 
+    /**
+     * 根据用户ID修改信息
+     * @param $userId
+     * @param $data
+     * @return mixed
+     */
+    public function updateDataByUserId($userId, $data) {
+        return GradeUser::where('user_id', $userId)
+            ->update($data);
+    }
+
+
 }
