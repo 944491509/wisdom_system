@@ -1,12 +1,12 @@
 @csrf
 <div class="form-group">
     <label for="evaluate-title-input">设备名称</label>
-    <input required type="text" class="form-control"  value="{{$code['title'] ?? old('title')}}" placeholder="设备名称" name="code[title]">
+    <input required  class="form-control"  value="{{$code['title'] ?? old('title')}}" placeholder="设备名称" name="code[title]">
 </div>
 
 <div class="form-group">
     <label for="code-number-input">设备型号</label>
-    <input required type="number"  class="form-control"  value="{{$code['type'] ?? old('type')}}" placeholder="设备型号" name="code[type]">
+    <input required  class="form-control"  value="{{$code['type'] ?? old('type')}}" placeholder="设备型号" name="code[type]">
 </div>
 
 <div class="form-group">
