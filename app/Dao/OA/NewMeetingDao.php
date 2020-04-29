@@ -366,4 +366,21 @@ class NewMeetingDao
     }
 
 
+    /**
+     * 获取当前会议室当前时间段内是否有会议
+     * @param $roomId
+     * @param $meetStart
+     * @param $meetEnd
+     * @return mixed
+     */
+    public function getMeetingByTime($roomId, $meetStart, $meetEnd) {
+        $map = [
+            ['room_id','=',$roomId],
+            ['meet_start','<',$meetEnd],
+            ['meet_end', '>', $meetStart]
+        ];
+        return NewMeeting::where($map)->first();
+    }
+
+
 }
