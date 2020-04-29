@@ -188,7 +188,7 @@ class CloudController extends Controller
             $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
             $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
             $data[$key]['course_teacher'] = $item->teacher->name;
-            $data[$key]['course_name']   = $item->course->name;
+            $data[$key]['course_name']   = $item->course->name ?? '';
         }
 
         return JsonBuilder::Success($data);
