@@ -9,9 +9,6 @@
                     <hr>
                         <el-form :model="formCourseInfo" label-width="80px" class="course-form" style="margin-top: 20px;">
 
-                            <el-form-item label="标题">
-                                <el-input placeholder="必填: 标题" v-model="formCourseInfo.title"></el-input>
-                            </el-form-item>
                             <el-form-item label="课节">
                                 <el-select v-model="formCourseInfo.idx" placeholder="请选择" style="width: 100%" @change="getCourseGradeList">
                                     <el-option
@@ -22,10 +19,13 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
+                            <el-form-item label="标题">
+                                <el-input placeholder="必填: 标题" v-model="formCourseInfo.title"></el-input>
+                            </el-form-item>
 
                             <el-form-item label="班级">
-                                <el-checkbox-group v-model="formCourseInfo.grade_id">
-                                    <el-checkbox-button v-for="item in grades" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
+                                <el-checkbox-group v-model="formCourseInfo.grade_id" size="small">
+                                    <el-checkbox-button  v-for="item in grades" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-form>
@@ -54,7 +54,7 @@
                                             </el-tag>
                                             <span v-else>
                                                 <span v-if="material.media">{{ material.list[0].file_name }}</span>
-                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].url}}</a>
+                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].file_name}}</a>
                                             </span>
                                         </p>
                                         <!-- <p style="font-size: 10px;color: #cccccc;" class="text-right">

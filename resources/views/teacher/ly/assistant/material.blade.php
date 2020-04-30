@@ -78,8 +78,9 @@
               <el-tag v-for="(item1,key1) in item.types" @click="showDrawer(item, item1)">@{{ item1.name }}@{{ item1.num }}</el-tag>
             </div>
             <el-row class="button">
-              <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button>
-              <el-button type="primary" size="mini" @click="changeMeans(4,item)">添加资料</el-button>
+              <!-- <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button> -->
+              <el-button type="primary" size="mini" @click="changeMeans(3,item)">教学计划日志</el-button>
+              <el-button type="success" size="mini" @click="changeMeans(4,item)">添加/编辑资料</el-button>
             </el-row>
           </div>
         </el-row>
