@@ -45,6 +45,7 @@ class StudentsController extends Controller
         $dao = new StudentProfileDao;
         if ($data['user']['status'] != User::STATUS_VERIFIED) {
             $data['user']['type'] = Role::REGISTERED_USER;
+            $data['grade_user']['user_type'] = Role::REGISTERED_USER;
         }
         $result = $dao->updateStudentInfoByUserId($userId, $data['user'], $data['profile'], $data['addition'], $data['grade_user']);
 
