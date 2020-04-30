@@ -1,5 +1,10 @@
 @foreach(\Illuminate\Support\Facades\Auth::user()->managerMenu() as $menu)
     <li class="nav-item">
+        @php
+            if (isset($menu['param']['uuid'])) {
+                $menu['param']['uuid'] = session('school.uuid');
+            }
+        @endphp
         <a href="@empty($menu['href'])javascript:;@else{{ route($menu['href'],$menu['param']) }}@endempty" class="nav-link nav-toggle">
             <i class="material-icons">{{ $menu['icon'] }}</i>
             <span class="title">{{ $menu['name'] }}</span>
@@ -10,6 +15,11 @@
         @if($menu['children'])
             <ul class="sub-menu">
                 @foreach($menu['children'] as $child)
+                    @php
+                        if (isset($child['param']['uuid'])) {
+                            $child['param']['uuid'] = session('school.uuid');
+                        }
+                    @endphp
                     <li class="nav-item">
                             @if ($child['children'])
                             <a href="@empty($child['href'])javascript:;@else{{ route($child['href'],$child['param']) }}@endempty" class="nav-link nav-toggle">
@@ -18,6 +28,11 @@
                             </a>
                             <ul class="sub-menu">
                                 @foreach($child['children'] as $ch)
+                                    @php
+                                        if (isset($ch['param']['uuid'])) {
+                                            $ch['param']['uuid'] = session('school.uuid');
+                                        }
+                                    @endphp
                                     <li class="nav-item">
                                         <a href="@empty($ch['href'])javascript:;@else{{ route($ch['href'],$ch['param']) }}@endempty" class="nav-link">
                                             <span class="title">{{ $ch['name'] }}</span>
