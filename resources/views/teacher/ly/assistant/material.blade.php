@@ -2,7 +2,9 @@
 @section('content')
 <div id="teacher-assistant-material-app" class="material-box">
   <div class="teacher-container">
-    <div class="blade_title">教学资料</div>
+    <div class="blade_title">教学资料
+        <el-button class="pull-right" v-if="activeIndex == 3 || activeIndex == 4" type="primary" size="small" @click="activeIndex = 1">返回</el-button>
+    </div>
     <div class="blade_container" :class="{'bg-none':activeIndex === 3}">
 
       <!--我的课程/教学资料--->
