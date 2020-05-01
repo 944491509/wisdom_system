@@ -77,14 +77,15 @@ class GradeAndYearUtil
 
     /**
      * 获取当前的额 timeslot 对象
-     *
+     * @param $gradeYear 年级
      * @param null $time
      * @param null $schoolId
      * @return TimeSlot|null
      */
-    public static function GetTimeSlot($time = null, $schoolId = null){
+    public static function GetTimeSlot($gradeYear,$time = null, $schoolId = null){
         $dao = new TimeSlotDao();
-        $timeSlots = $dao->getAllStudyTimeSlots($schoolId ?? session('school.id'));
+        $schoolId = $schoolId ?? session('school.id');
+        $timeSlots = $dao->getAllStudyTimeSlots($schoolId, $gradeYear);
         if(is_null($time)){
             $time = Carbon::now(self::TIMEZONE_CN);
         }
@@ -192,14 +193,15 @@ class GradeAndYearUtil
 
     /**
      * 获取当前的额 timeslot 对象
-     *
+     * @param $gradeYear
      * @param null $time
      * @param null $schoolId
      * @return TimeSlot|null
      */
-    public static function GetUnEndTimeSlot($time = null, $schoolId = null){
+    public static function GetUnEndTimeSlot($gradeYear, $time = null, $schoolId = null){
         $dao = new TimeSlotDao();
-        $timeSlots = $dao->getAllStudyTimeSlots($schoolId ?? session('school.id'));
+        $schoolId = $schoolId ?? session('school.id');
+        $timeSlots = $dao->getAllStudyTimeSlots($schoolId, $gradeYear);
         if(is_null($time)){
             $time = Carbon::now(self::TIMEZONE_CN);
         }

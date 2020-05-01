@@ -2,6 +2,9 @@
 
 namespace App\Dao\Students;
 
+use App\Dao\Schools\MajorDao;
+use App\Models\Students\StudentAdditionInformation;
+use App\Models\Users\GradeUser;
 use App\User;
 use App\Dao\Users\UserDao;
 use App\Utils\JsonBuilder;
@@ -134,13 +137,32 @@ class StudentProfileDao
      * @param $userId
      * @param $user
      * @param $profile
+     * @param $addition
+     * @param $gradeUser
      * @return MessageBag
+     * @throws \Exception
      */
-    public function updateStudentInfoByUserId($userId, $user,$profile) {
+    public function updateStudentInfoByUserId($userId, $user, $profile, $addition, $gradeUser)
+    {
         try{
             DB::beginTransaction();
+            // 修改profile
             User::where('id',$userId)->update($user);
             StudentProfile::where('user_id',$userId)->update($profile);
+            // 修改专业,班级
+            $majorDao = new MajorDao;
+            $major = $majorDao->getMajorById($gradeUser['major_id']);
+            $gradeUser['institute_id'] = $major->institute_id;
+            GradeUser::where('user_id', $userId)->update($gradeUser);
+            // 修改附加信息
+            $dao = new  StudentAdditionInformationDao;
+            $studentAddition = $dao->getStudentAddInfoByUserId($userId);
+            if($studentAddition) {
+                $dao->update($userId, $addition);
+            } else {
+                $addition['user_id'] = $userId;
+                $dao->create($addition);
+            }
             DB::commit();
             return new MessageBag(JsonBuilder::CODE_SUCCESS,'编辑成功');
         }

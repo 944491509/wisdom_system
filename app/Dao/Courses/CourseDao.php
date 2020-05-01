@@ -17,6 +17,7 @@ use App\Models\Courses\CourseTeacher;
 use App\Models\Courses\TeachingLog;
 use App\Models\ElectiveCourses\CourseElective;
 use App\Utils\JsonBuilder;
+use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\IMessageBag;
 use App\Utils\ReturnData\MessageBag;
 use Illuminate\Database\Eloquent\Collection;
@@ -299,9 +300,9 @@ class CourseDao
                     }
                 }
 
-                // 保存课程所关联的专业
                 // 删除所有的关联专业
                 CourseMajor::where('course_id',$id)->delete();
+                // 保存课程所关联的专业
                 if(!empty($majorsId)){
                     $majorDao = new MajorDao();
                     foreach ($majorsId as $majorId) {
@@ -316,6 +317,16 @@ class CourseDao
                         ];
                         CourseMajor::create($d);
                     }
+                } else { // 所有专业都开放
+                    $d = [
+                        'course_id'=>$id,
+                        'course_code'=>$data['code'],
+                        'major_id'=> 0,
+                        'school_id'=>$data['school_id'],
+                        'major_name'=>$theMajor->name ?? '对所有专业都开放',
+                        'course_name'=>$data['name']
+                    ];
+                    CourseMajor::create($d);
                 }
 
                 // 检查是选修课还是必修课, 如果是选修课, 则需要保留选修课的上课时间信息, 并保存到单独的记录表中
@@ -422,6 +433,16 @@ class CourseDao
                         ];
                         CourseMajor::create($d);
                     }
+                } else { // 对所有专业开放
+                    $d = [
+                        'course_id'=>$course->id,
+                        'course_code'=>$course->code,
+                        'major_id'=>0, // 所有专业都开放
+                        'school_id'=>$data['school_id'],
+                        'major_name'=>$theMajor->name ?? '对所有专业都开放',
+                        'course_name'=>$course->name
+                    ];
+                    CourseMajor::create($d);
                 }
 
                 // 检查是选修课还是必修课, 如果是选修课, 则需要保留选修课的上课时间信息, 并保存到单独的记录表中
@@ -504,6 +525,50 @@ class CourseDao
             $data[] = $item;
         }
         return $data;
+    }
+
+
+    /**
+     * 课程分页
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getCoursePageBySchoolId($schoolId) {
+        $return = Course::where('school_id',$schoolId)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        $result = pageReturn($return);
+
+        $courses = $result['list'];
+        $list = [];
+        foreach ($courses as $course) {
+            /**
+             * @var Course $course
+             */
+            $item = [];
+            foreach ($this->fields as $field) {
+                $item[$field] = $course->$field;
+            }
+            $item['teachers'] = $course->teachers;
+            $item['majors'] = $course->majors;
+            // 课程的教材
+            $item['books'] = [];
+            foreach ($course->courseTextbooks as $ct){
+                $i['id'] = $ct->textbook->id;
+                $i['name'] = $ct->textbook->name . '('.$ct->textbook->edition.')';
+                $item['books'][] = $i;
+            }
+
+            $item['arrangements'] = [];
+            if($course->optional){
+                // 是选修课
+                $item['arrangements'] = $course->arrangements;
+            }
+
+            $list[] = $item;
+        }
+        $result['list'] = $list;
+
+        return $result;
     }
 
 

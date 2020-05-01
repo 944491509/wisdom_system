@@ -41,36 +41,39 @@ class ElectiveController extends Controller
 
         $nowTime = Carbon::now()->timestamp;
 
-        foreach ($major->courseMajors as $key => $courseMajor) {
-            $course       = $courseMajor->course;
+        $gradeYear = $userInfo->grade->gradeYear();
+        $courseMajorsList = $major->courseMajors()->orderBy('id','desc')->get();
+        if ($courseMajorsList){
+            foreach ($courseMajorsList as $key => $courseMajor) {
+                $course       = $courseMajor->course;
 
-            $elective     = $course->courseElective()->first();
-            //报名已满或被取消不显示
-            if (!$elective || $elective->status == CourseElective::STATUS_ISFULL || $elective->status == CourseElective::STATUS_CANCEL)
-            {
-                continue;
-            }
-            $tableName = self::STUDENT_ENROLLED_OPTIONAL_COURSES_TABLE_NAME.'_'.$elective->start_year.'_'.$course->term;
-            $electiveDao = new TeacherApplyElectiveCourseDao();
-            $studentCount = $electiveDao->getEnrolledTotalForCourses($course->id); // 学生报名数量
-            $studentCount += $electiveDao->getEnrolledResultTotalForCourse($course->id, $tableName);
+                $elective     = $course->courseElective()->first();
+                //报名已满或被取消不显示
+                if (!$elective || $elective->status == CourseElective::STATUS_ISFULL || $elective->status == CourseElective::STATUS_CANCEL || $gradeYear != $course->year)
+                {
+                    continue;
+                }
+                $tableName = self::STUDENT_ENROLLED_OPTIONAL_COURSES_TABLE_NAME.'_'.$elective->start_year.'_'.$course->term;
+                $electiveDao = new TeacherApplyElectiveCourseDao();
+                $studentCount = $electiveDao->getEnrolledTotalForCourses($course->id); // 学生报名数量
+                $studentCount += $electiveDao->getEnrolledResultTotalForCourse($course->id, $tableName);
 
-            $arrangements = $course->courseArrangements;
+                $arrangements = $course->courseArrangements;
 
-            $schedules = [];
-            foreach ($arrangements as $arrangement) {
+                $schedules = [];
+                foreach ($arrangements as $arrangement) {
                     $s = ['week' => $arrangement->week, 'day_index' => $arrangement->day_index, 'time' => $arrangement->timeslot->name];
                     $schedules[] = $s;
-            }
-            if ($nowTime < Carbon::parse($elective->enrol_start_at)->timestamp) {
-                $status = 0;//未开始
-            }elseif ($nowTime > Carbon::parse($elective->expired_at)->timestamp) {
-                $status = 2;//已结束
-            }else {
-                $status = 1;//进行中
-            }
+                }
+                if ($nowTime < Carbon::parse($elective->enrol_start_at)->timestamp) {
+                    $status = 0;//未开始
+                }elseif ($nowTime > Carbon::parse($elective->expired_at)->timestamp) {
+                    $status = 2;//已结束
+                }else {
+                    $status = 1;//进行中
+                }
 
-            $item[]= [
+                $item[]= [
                     'course_id'    => $course->id,
                     'course_name'  => $courseMajor->course_name,
                     'course_time'  => $schedules,
@@ -79,9 +82,9 @@ class ElectiveController extends Controller
                     'applied'      => $studentCount,
                     'expired_at'   => Carbon::parse($elective->expired_at)->format('Y-m-d H:i'),
                     'status'       => $status
-            ];
+                ];
+            }
         }
-
         return JsonBuilder::Success($item);
     }
 

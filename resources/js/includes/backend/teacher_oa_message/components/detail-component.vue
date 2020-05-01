@@ -49,7 +49,7 @@
     <div class="detail detail-panel">
       <div class="detail-item">
         <span class="title">发件人</span>
-        <span class="content">{{message.title}}</span>
+        <span class="content">{{message.user_username}}</span>
       </div>
       <div class="detail-item">
         <span class="title">时间</span>
@@ -117,14 +117,13 @@ export default {
         })
         .then(response => {
           DownLoadUtil.download(new Blob([response.data]), file.name);
-        })
-        .catch(e => {
+        }).catch(e=> {
           if (e.response.status === 404) {
-            this.$message.error("附件不存在");
+              this.$message.error('附件不存在');
           } else {
-            this.$message.error("附件下载失败");
+              this.$message.error('附件下载失败');
           }
-        });
+      });
     }
   }
 };

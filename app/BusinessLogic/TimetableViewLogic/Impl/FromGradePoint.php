@@ -30,6 +30,7 @@ class FromGradePoint extends AbstractPointView
      * @return mixed
      */
     public function build(){
+
         $timetable = [];
         foreach (range(1, 7) as $weekDayIndex) {
             $timetable[] = $this->timetableItemDao->getItemsByWeekDayIndex(

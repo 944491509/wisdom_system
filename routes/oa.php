@@ -93,6 +93,8 @@ Route::prefix('electivecourse')->middleware('auth:api')->group(function () {
         ->name('oa.electivecourse.apply');
     Route::post('/conf', 'Api\ElectiveCourse\OaElectiveCourseController@conf')
         ->name('oa.electivecourse.conf');
+    Route::post('/times', 'Api\ElectiveCourse\OaElectiveCourseController@times')
+        ->name('oa.electivecourse.times');
     Route::post('lists', 'Api\ElectiveCourse\OaElectiveCourseController@lists')
         ->name('oa.electivecourse.lists');
     Route::post('info', 'Api\ElectiveCourse\OaElectiveCourseController@info')

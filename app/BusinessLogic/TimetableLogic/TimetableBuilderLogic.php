@@ -4,6 +4,7 @@
  */
 
 namespace App\BusinessLogic\TimetableLogic;
+use App\Dao\Schools\GradeDao;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Dao\Timetable\TimetableItemDao;
 use Carbon\Carbon;
@@ -40,10 +41,11 @@ class TimetableBuilderLogic
      */
     public function build(){
         $timetable = [];
-
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($this->gradeId);
         // 找到所有的和学习相关的时间段
         $timeSlotDao = new TimeSlotDao();
-        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($this->schoolId);
+        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($this->schoolId, $grade->gradeYear());
         // 构建课程表项的 DAO
         $this->timetableItemDao = new TimetableItemDao($forStudyingSlots);
 

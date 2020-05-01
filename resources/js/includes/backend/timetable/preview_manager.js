@@ -49,12 +49,6 @@ if(document.getElementById('school-timetable-previewer-app')){
                 }
                 this.timetable.push(rows);
             }
-            // 把时间段数据取来, 然后去生成课程表左边第一栏
-            getTimeSlots(this.schoolId).then(res => {
-                if(Util.isAjaxResOk(res)){
-                    this.timeSlots = res.data.data.time_frame;
-                }
-            })
         },
         methods: {
             // 来自 Preview 格子元素的点击事件最终处理函数
@@ -152,6 +146,18 @@ if(document.getElementById('school-timetable-previewer-app')){
                         this.$message.error('您尝试加载的课程表不存在');
                     }
                 });
+            },
+            gradeChange: function(grade_id){
+                // 把时间段数据取来, 然后去生成课程表左边第一栏
+                if(!grade_id){
+                    this.timeSlots = []
+                    return
+                }
+                getTimeSlots(this.schoolId, null, grade_id).then(res => {
+                    if(Util.isAjaxResOk(res)){
+                        this.timeSlots = res.data.data.time_frame;
+                    }
+                })
             }
         }
     });

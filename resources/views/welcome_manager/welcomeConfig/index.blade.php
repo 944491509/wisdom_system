@@ -12,10 +12,26 @@
                 <div class="card-body menu-left">
                     <div class="menu-left-title">
                         <ul>
-                            <li @click="isShow(1)"><a :class="[this.is_show1?'on-backgroup-green':'']">基础设置</a></li>
+                            <!-- <li @click="isShow(1)"><a :class="[this.is_show1?'on-backgroup-green':'']">基础设置</a></li>
                             <li @click="isShow(2)"><a :class="[this.is_show2?'on-backgroup-green':'']">个人信息</a></li>
                             <li @click="isShow(3)"><a :class="[this.is_show3?'on-backgroup-green':'']">报到确认</a></li>
-                            <li @click="isShow(4)"><a :class="[this.is_show4?'on-backgroup-green':'']">报到单</a></li>
+                            <li @click="isShow(4)"><a :class="[this.is_show4?'on-backgroup-green':'']">报到单</a></li> -->
+                            <li @click="isShow(1)">
+                              <img v-if="is_show1" src="/assets/img/yinxin/jichuxinxikuang.png">
+                              <img v-else src="/assets/img/yinxin/jichuxinxi2.png">
+                            </li>
+                            <li @click="isShow(2)">
+                              <img v-if="is_show2" src="/assets/img/yinxin/gerenxinxikuang.png">
+                              <img v-else src="/assets/img/yinxin/gerenxinxi2.png">
+                            </li>
+                            <li @click="isShow(3)">
+                              <img v-if="is_show3" src="/assets/img/yinxin/baodaoquerenkuang.png">
+                              <img v-else src="/assets/img/yinxin/baodaoqueren2.png">
+                            </li>
+                            <li @click="isShow(4)">
+                              <img v-if="is_show4" src="/assets/img/yinxin/baodaodankuang.png">
+                              <img v-else src="/assets/img/yinxin/baodaodan2.png">
+                            </li>
                         </ul>
                     </div>
                     <div class="menu-left-content">
@@ -121,11 +137,18 @@
                     <div class="menu-center-title">
                         <ul>
                             <li v-for="(item,index) in dataList2" :key="index">
-                                <a>@{{ item.name }}
+                                <!-- <a>@{{ item.name }}
                                     <img class="delete" src="/assets/img/yinxin/delete.png" @click="deleteConfigStep(item)">
                                     <img class="up" src="/assets/img/yinxin/up.png" @click="upConfigStep(item)">
                                     <img class="down" src="/assets/img/yinxin/down.png" @click="downConfigStep(item)">
-                                </a>
+                                </a> -->
+                                <div class="itemDiv">
+                                  <img class="" src="/assets/img/yinxin/duihao.png">
+                                  <span style="margin-left: 20px;">@{{ item.name }}</span>
+                                  <img class="delete icon" src="/assets/img/yinxin/shanchu.png" @click="deleteConfigStep(item)">
+                                  <img class="up icon" src="/assets/img/yinxin/shangyi.png" @click="upConfigStep(item)">
+                                  <img class="down icon" src="/assets/img/yinxin/xiayi.png" @click="downConfigStep(item)">
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -203,38 +226,53 @@
         text-align: center;
         list-style: none;
     }
-    .menu-center-title a{
-        display: block;
+    .menu-center-title div{
+        /* display: block;
         min-height: 120px;
-        min-width: 120px;
+        min-width: 120px; */
         font-size: 16px;
-        text-align: center;
+        text-align: left;
         line-height: 120px;
         font-weight: bold;
-        background: #F2F2F2;
-        margin-bottom: 30px;
+        /* background: #F2F2F2;
+        margin-bottom: 30px; */
         position: relative;
     }
-    .menu-center-title a .delete{
-        top: -11%;
-        left: 88%;
-        width: 25px;
-        height: 25px;
+    .menu-center-title .itemDiv::after {
+      content: '';
+      position: absolute;
+      width: 1px;
+      height: 80px;
+      background-color: #ccc;
+      bottom: -31%;
+      left: 70%;
+      opacity: .5;
+    }
+    .menu-center-title li:last-child .itemDiv::after {
+      content: '';
+      display: none
+    }
+    .menu-center-title  .delete{
+      position: absolute;
+      top: calc( 50% - 14px );
+      right: -114%;
         position: absolute;
     }
-    .menu-center-title a .up{
-        top: 90%;
-        left: -2%;
-        width: 15px;
-        height: 15px;
+    .menu-center-title  .up{
+        position: absolute;
+        top: calc( 50% - 14px );
+        right: -44%;
         position: absolute;
     }
-    .menu-center-title a .down{
-        top: 89%;
-        left: 87%;
-        width: 15px;
-        height: 15px;
+    .menu-center-title  .down{
+      position: absolute;
+    top: calc( 50% - 14px );
+    right: -80%;
         position: absolute;
+    }
+    .menu-center-title .icon {
+      height: 25px;
+      width: 25px;
     }
     .on-backgroup-green {
         background: #1B9CD5 !important;

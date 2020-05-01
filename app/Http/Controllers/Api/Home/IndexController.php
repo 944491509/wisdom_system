@@ -69,6 +69,7 @@ class IndexController extends Controller
         }
         $result['list'] = $list;
         $result['is_show_account'] = false; // 是否展示账户
+        $result['school_id']       = $school->id;
         $result['school_name']     = $school->name;
         $result['school_logo']     = $school->logo;
 
@@ -92,7 +93,7 @@ class IndexController extends Controller
     /**
      * 获取资源位 Banner 的接口
      * @param BannerRequest $request
-     * @return string 
+     * @return string
      */
     public function banner(BannerRequest $request)
     {
@@ -118,9 +119,11 @@ class IndexController extends Controller
             return JsonBuilder::Error('找不到学校的信息');
         } else {
             $dao = new CalendarDao();
-            return JsonBuilder::Success(
-                $dao->getCalendar($school->configuration, $request->get('year'), $request->get('month'))
-            );
+            $configuration = $school->configuration;
+            $year = $request->get('year');
+            $month = $request->get('month');
+            $data = $dao->getCalendar($configuration, $year, $month);
+            return JsonBuilder::Success($data);
         }
     }
 
@@ -302,17 +305,17 @@ class IndexController extends Controller
         $dao = new StudentProfileDao;
         $userDao = new UserDao;
         $teacherDao = new TeacherProfileDao;
-        if ($user->isStudent()) {
+        if ($user->isStudent() && !empty($userProfile)) {
             $result = $dao->updateStudentProfile($user->id, $userProfile);
         }
-        if ($user->isTeacher()) {
+        if ($user->isTeacher() && !empty($userProfile)) {
             $result = $teacherDao->updateTeacherProfile($user->id, $userProfile);
         }
         if ($userInfo) {
             $result = $userDao->updateUserInfo($user->id, $userInfo);
         }
 
-        if ($result) {
+        if (!isset($result) || $result) {
             return JsonBuilder::Success('修改成功');
         } else {
             return JsonBuilder::Success('修改失败');

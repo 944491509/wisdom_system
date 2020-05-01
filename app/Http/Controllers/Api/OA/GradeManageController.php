@@ -194,15 +194,16 @@ class GradeManageController extends Controller
         $dao = new StudentProfileDao;
         $gradeManagerDao = new GradeManagerDao;
         $userDao = new UserDao;
-        if ($data['email']) {
+        if (isset($data['email'])) {
             $result = $userDao->getUserByEmail($data['email']);
             if ($result  && $result['id'] != $studentId) {
                 return  JsonBuilder::Error('邮箱已经有人用了');
             }
+            $userResult = $userDao->updateEmail($studentId, $data['email']);
         }
-
-        $userResult = $userDao->updateEmail($studentId, $data['email']);
-        unset($data['email']);
+        if (isset($data['email'])) {
+            unset($data['email']);
+        }
         $studentResult =  $dao->updateStudentProfile($studentId, $data);
         if ($monitor['monitor_id'] != 0) {
             $gradeResult = $gradeManagerDao->updateGradeManger($monitor['grade_id'], $monitor);
@@ -221,6 +222,7 @@ class GradeManageController extends Controller
             return JsonBuilder::Error('修改失败');
         }
     }
+
 
   /**
    * 是否为班主任
