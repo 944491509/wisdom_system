@@ -6,16 +6,10 @@
           <el-input v-model="form.meet_title" placeholder="请输入会议主题"></el-input>
         </el-form-item>
         <el-form-item label="会议时间">
-          <el-date-picker
-            v-model="form.timeRange"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
+          <date-time-range v-model="form.timeRange" />
         </el-form-item>
         <el-form-item label="会议地点">
-          <el-select v-model="form.room_id" placeholder="请输入">
+          <el-select v-model="form.room" placeholder="请输入">
             <el-option
               v-for="item in addressOptions"
               :key="item.value"
@@ -45,8 +39,8 @@
           <el-input
             placeholder="请输入"
             :value="
-              form.member_userids.length > 0
-                ? form.member_userids.length + '人'
+              form.user.length > 0
+                ? form.user.length + '人'
                 : ''
             "
             @click.native="goSetMember"
@@ -60,10 +54,11 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="开始签到时间">
+        <el-form-item label="开始签到时间" v-if="form.signin_status">
           <el-date-picker
             v-model="form.signinRange"
             type="datetimerange"
+            format="yyyy-MM-dd HH:mm"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -76,10 +71,11 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="结束签退时间">
+        <el-form-item label="结束签退时间" v-if="form.signout_status">
           <el-date-picker
             v-model="form.signoutRange"
             type="datetimerange"
+            format="yyyy-MM-dd HH:mm"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -88,6 +84,30 @@
 
         <el-form-item label="会议说明">
           <el-input type="textarea" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
+        </el-form-item>
+
+        <el-form-item label>
+          <div class="file-box" v-for="(file, index) in filelist" :key="index">
+            <div class="name">{{file.name}}</div>
+            <div class="info">
+              <span class="delete" @click="removeFile(index)">删除</span>
+              <span class="size">{{file.size}}</span>
+            </div>
+          </div>
+          <div class="add-files">
+            <label for="fileInput">
+              <i class="el-icon-paperclip"></i> 添加附件
+            </label>
+            <input
+              type="file"
+              id="fileInput"
+              @change="onFileSelected"
+              hidden
+              ref="referenceUpload"
+              multiple="multiple"
+              style="display: none"
+            />
+          </div>
         </el-form-item>
       </el-form>
       <div class="btn-box">
@@ -98,50 +118,101 @@
   </div>
 </template>
 <script>
-import { MeetingApi } from "../common/api";
+import { MeetingApi, addMeeting } from "../common/api";
 import { Util } from "../../../../common/utils";
 // import MemberSelect from "./member-chose";
 import MemberSelect from "../../teacher_oa_tasks/components/setmember";
 import { searchMemberDebounce } from "../../teacher_oa_tasks/common/utils";
+import { deepClone } from "../common/utils";
+import { converSize } from "../../teacher_oa_message/common/utils";
 import moment from "moment";
+import DateTimeRange from './date-time-range'
 
 export default {
   name: "task-form",
   components: {
-    MemberSelect
+    MemberSelect,
+    DateTimeRange
   },
   methods: {
     onSubmit() {
-      if (!this.form.task_title) {
-        this.$message.error("请输入任务标题");
+      if (!this.form.meet_title) {
+        this.$message.error("请输入会议主题");
         return;
       }
-      if (!this.form.end_time) {
-        this.$message.error("请选择任务时间");
-        return;
-      }
-      if (!this.form.leader_userid) {
+      if (!this.form.approve_userid) {
         this.$message.error("请选择负责人");
         return;
       }
-      if (!this.form.member_userids || this.form.member_userids.length < 1) {
-        this.$message.error("请选择任务成员");
+      if (!this.form.user || this.form.user.length < 1) {
+        this.$message.error("请选择参会人员");
         return;
       }
-      let formdata = JSON.parse(JSON.stringify(this.form));
-      formdata.end_time = moment(formdata.end_time).format(
-        "YYYY-MM-DD hh:mm:ss"
+      if (this.form.signin_status && !this.form.signinRange) {
+        this.$message.error("请选择签到时间");
+      }
+      if (this.form.signout_status && !this.form.signoutRange) {
+        this.$message.error("请选择签退时间");
+        return
+      }
+      if (!this.form.meet_content) {
+        this.$message.error("请填写会议说明");
+        return
+      }
+      let formdata = deepClone(this.form);
+      formdata.meet_start = moment(this.form.timeRange[0]).format(
+        "YYYY-MM-DD hh:mm"
       );
-      formdata.member_userids = formdata.member_userids.toString();
-      MeetingApi.excute("addOaTaskInfo", formdata).then(res => {
-        this.$emit("done");
+      formdata.meet_end = moment(this.form.timeRange[1]).format(
+        "YYYY-MM-DD hh:mm"
+      );
+      if (this.form.signin_status) {
+        formdata.signin_start = moment(this.form.signinRange[0]).format(
+          "YYYY-MM-DD hh:mm"
+        );
+        formdata.signin_end = moment(this.form.signinRange[1]).format(
+          "YYYY-MM-DD hh:mm"
+        );
+      }
+      if (this.form.signout_status) {
+        formdata.signout_start = moment(this.form.signoutRange[0]).format(
+          "YYYY-MM-DD hh:mm"
+        );
+        formdata.signout_end = moment(this.form.signoutRange[1]).format(
+          "YYYY-MM-DD hh:mm"
+        );
+      }
+      delete formdata.signoutRange;
+      delete formdata.signinRange;
+      delete formdata.timeRange;
+      delete formdata.user;
+      formdata.type = 1;
+      let form = new FormData();
+      form.append("type", 1);
+      Object.keys(formdata).forEach(key => {
+        form.append(key, formdata[key]);
+      });
+      if (this.filelist.length > 0) {
+        this.filelist.forEach(file => {
+          form.append("file[]", file.file);
+        });
+      }
+      this.form.user.forEach(id => {
+        form.append("user[]", id);
+      });
+      addMeeting(form).then(res => {
+        if (res.data && res.data.code == 1000) {
+          this.$emit("done");
+        } else {
+          this.$message.error((res.data && res.data.message) || "");
+        }
       });
     },
     goSetMember() {
       this.selectMb = true;
     },
     setMemberList(list) {
-      this.form.member_userids = list;
+      this.form.user = list;
       this.selectMb = false;
     },
     remoteLeader(val) {
@@ -156,27 +227,44 @@ export default {
           });
         }
       });
+    },
+    onFileSelected(e) {
+      for (let index = 0; index < e.target.files.length; index++) {
+        const file = e.target.files[index];
+        this.filelist.push({
+          name: file.name,
+          size: converSize(file.size),
+          file
+        });
+      }
+      this.$refs.referenceUpload.value = null;
+    },
+    removeFile(index) {
+      this.filelist.splice(index, 1);
     }
   },
   data() {
     let that = this;
     return {
       form: {
-        member_userids: []
+        user: [],
+        signout_status: 0,
+        signin_status: 0,
+        meet_content: ""
       },
       selectMb: false,
       leaderOptions: [],
       addressOptions: [],
-      currentUserId: 0
+      currentUserId: 0,
+      filelist: []
     };
   },
   created() {
-    MeetingApi.excute("getMeetRoomList").then(res => {
-      debugger
-      this.addressOptions = res.data.data.map(pro => {
+    MeetingApi.excute("getMeetRoomList", {}, { methods: "get" }).then(res => {
+      this.addressOptions = res.data.data.map(room => {
         return {
-          label: pro.project_title,
-          value: pro.projectid
+          label: room.name,
+          value: room.building_id
         };
       });
     });
@@ -210,12 +298,59 @@ export default {
     .el-date-editor {
       width: 100%;
     }
+
+    .add-files {
+      color: #4ea5fe;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      label {
+        cursor: pointer;
+      }
+      i {
+        font-size: 20px;
+      }
+    }
   }
 
   .btn-box {
     flex: none;
     padding: 12px;
     text-align: center;
+  }
+}
+
+.file-box {
+  display: flex;
+  flex-direction: row;
+  padding: 2px 12px;
+  background: #f3f9ff;
+  margin-bottom: 8px;
+  line-height: 30px;
+  .name {
+    flex: auto;
+    align-self: center;
+    color: #666666;
+    /* white-space: nowrap; */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-all;
+    padding-right: 24px;
+  }
+  .info {
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    text-align: right;
+    .delete {
+      cursor: pointer;
+      color: #409eff;
+      font-size: 14px;
+    }
+    .size {
+      font-size: 12px;
+      color: #cccccc;
+    }
   }
 }
 .task-form {

@@ -26,12 +26,13 @@
             <el-drawer
               ref="addMeetingDrawer"
               :destroy-on-close="true"
+              :before-close="checkClose"
               :visible.sync="addDrawer"
               direction="rtl">
               <template slot="title">
                   <div class="add-Meeting-title"><span class="title-icon"></span>创建会议</div>
               </template>
-              <Meeting-form ref="addMeetingForm" @done="onMeetingCreated"/>
+              <Meeting-form ref="addMeetingForm" @done="onMeetingCreated" :currentUserId="currentUserId"/>
             </el-drawer>
         </div>
     <div id="app-init-data-holder"

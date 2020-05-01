@@ -248,6 +248,9 @@ Route::prefix('teacher')->group(function () {
             // 会议
             Route::get('meetings','LY\OaController@meetings')
                 ->name('teacher.ly.oa.meetings');
+                // 会议
+            Route::get('meeting/detail','LY\OaController@meeting_detail')
+                ->name('teacher.ly.oa.meeting_detail');
             // 任务
             Route::get('tasks','LY\OaController@tasks')
                 ->name('teacher.ly.oa.tasks');

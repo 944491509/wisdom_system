@@ -1,8 +1,8 @@
 <template>
   <div>
     <div>
-      <div class="list-item" v-for="(meeting, index) in list" :key="index">
-        <div class="meeting" @click="checkDetail(meeting)">
+      <div class="list-item" v-for="(meeting, index) in list" :key="index" @click="checkDetail(meeting)">
+        <div class="meeting">
           <div class="meet-list">
             <div class="item">
               <span class="title">参会主题</span>
@@ -35,20 +35,6 @@
       :current-page="pagination.page"
       @current-change="onPageChange"
     ></el-pagination>
-
-    <el-drawer
-      ref="meetingDetailDrawer"
-      :destroy-on-close="true"
-      :visible.sync="showDetail"
-      direction="rtl"
-    >
-      <template slot="title">
-        <div class="meeting-detail-title">
-          <span class="title-icon"></span> 详情
-        </div>
-      </template>
-      <!-- <meeting-detail ref="meetingDetail" @go="go" @close="closeDetail" /> -->
-    </el-drawer>
   </div>
 </template>
 <script>
@@ -72,7 +58,6 @@ export default {
   data() {
     return {
       list: [],
-      showDetail: false,
       meetingId: "",
       pagination: {
         page: 1,
@@ -86,14 +71,8 @@ export default {
     }
   },
   methods: {
-    getDetail(id) {
-      return new Promise(resolve => {
-        MeetingApi.excute("getMeetingDetail", {
-          id
-        }).then(res => {
-          resolve(res.data.data);
-        });
-      });
+    checkDetail(meeting) {
+      window.location.href = "/teacher/ly/oa/meeting/detail?id=" + meeting.meet_id + '&type='+this.mode;
     },
     getMeetingList() {
       MeetingApi.excute(
@@ -114,6 +93,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.list-item:hover {
+  box-shadow: 1px 1px 12px #cccccc;
+}
 .list-item {
   font-size: 14px;
   border-bottom: 1px solid #eaedf2;

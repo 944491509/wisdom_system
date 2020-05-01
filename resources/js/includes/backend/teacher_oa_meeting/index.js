@@ -6,6 +6,7 @@ import {
 } from './common/enum'
 import MeetingList from './components/meeting'
 import MeetingForm from './components/meeting-form'
+import { MeetingApi } from './common/api'
 
 const APPID = 'teacher-oa-meeting-app'
 let app = document.getElementById(APPID)
@@ -40,6 +41,13 @@ if (app) {
       showCreateModal(){
         this.addDrawer = true
       },
+      checkClose(close) {
+        if (!this.$refs.addMeetingDrawer.$children[0].selectMb) {
+          close()
+        } else {
+          this.$refs.addMeetingDrawer.$children[0].selectMb = false
+        }
+      },
     },
     data() {
       return {
@@ -52,13 +60,14 @@ if (app) {
         formTitle: '',
         formTitleIcon: '',
         addDrawer: false,
+        currentUserId: ''
       }
     },
     created() {
       this.activeName = 'unfinished'
-      // MeetingApi.excute("getTeacherInfo").then(res => {
-      //   InnerStorage.set('userId', res.data.data.user_id)
-      // });
+      MeetingApi.excute("getTeacherInfo").then(res => {
+        this.currentUserId = res.data.data.user_id;
+      });
     }
   })
 }

@@ -6,7 +6,12 @@ const meeting = Vue.prototype.$meeting
 
 const API_MAP = {
   list: '/api/meeting/',
-  getMeetRoomList: '/api/meeting/getMeetRoomList'
+  getMeetRoomList: '/api/meeting/getMeetRoomList',
+  getTeacherInfo: '/api/user/getTeacherInfo',
+  addMeeting: '/api/meeting/addMeeting',
+  meetDetails: '/api/meeting/meetDetails',
+  getMeetSummary: '/api/meeting/getMeetSummary',
+  myMeetSummary: '/api/meeting/myMeetSummary'
 }
 
 const toGet = function (obj) {
@@ -44,4 +49,16 @@ export const MeetingApi = {
       });
     })
   }
+}
+
+
+export const addMeeting = function (data) {
+  return axios({
+    method: 'post',
+    url: API_MAP.addMeeting,
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
+    },
+    data
+  })
 }
