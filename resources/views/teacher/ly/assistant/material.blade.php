@@ -203,6 +203,7 @@
      data-teacher='{!! $teacher !!}'
 ></div>
 <style>
+
   .row {
     display: flex;
     flex-wrap: wrap;
@@ -228,6 +229,13 @@
     border-radius: 10px;
     min-height: 700px;
   }
+
+.blade_container .el-checkbox-button__inner{
+    margin-right:8px;
+    border: 1px solid #DCDFE6;
+    border-radius:4px !impsortant;
+}
+
   .blade_container.bg-none{
     background:none;
   }
