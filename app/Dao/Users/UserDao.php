@@ -11,6 +11,7 @@ use App\Models\Users\GradeUser;
 use App\User;
 use App\Models\Acl\Role;
 use App\Utils\JsonBuilder;
+use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\MessageBag;
 use Carbon\Carbon;
 use Exception;
@@ -26,6 +27,68 @@ class UserDao
     public function createUser($data){
         return User::create($data);
     }
+
+
+    /**
+     * 获取平台管理员
+     * @return mixed
+     */
+    public function getAdminPage() {
+        return User::where('type',Role::SUPER_ADMIN)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
+    /**
+     * 添加平台管理员
+     * @param $data
+     * @return MessageBag
+     * @throws Exception
+     */
+    public function addAdmin($data) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        // 查询账号是否存在
+        $info = $this->getUserByMobile($data['mobile']);
+        if(!is_null($info)) {
+            $bag->setMessage('该账号已存在');
+            return $bag;
+        }
+        $add = [
+            'mobile'=>$data['mobile'],
+            'uuid'=>Uuid::uuid4()->toString(),
+            'api_token'=>Uuid::uuid4()->toString(),
+            'password'=>Hash::make($data['password']),
+            'status'=>User::STATUS_VERIFIED,
+            'type'=>Role::SUPER_ADMIN,
+            'name' => $data['name'],
+        ];
+
+        $re = User::create($add);
+        if($re) {
+            $bag->setMessage('创建成功');
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+        } else {
+            $bag->setMessage('创建失败');
+        }
+        return $bag;
+    }
+
+
+    /**
+     * 编辑管理员
+     * @param $userId
+     * @param $name
+     * @param $password
+     * @return mixed
+     */
+    public function updateAdminByUserId($userId, $name, $password) {
+        $upd = ['name' => $name];
+        if(!is_null($password)) {
+            $upd['password'] = Hash::make($password);
+        }
+        return User::where('id', $userId)->update($upd);
+    }
+
 
     /**
      * 根据用户的电话号码获取用户
@@ -200,59 +263,98 @@ class UserDao
 
     /**
      * 创建学校管理员账户
-     * @param School $school
+     * @param $schoolId
      * @param $mobile
-     * @param $passwordInPlainText
+     * @param $password
      * @param $name
-     * @param $email
+     * @param $userType
      * @return MessageBag
      */
-    public function createSchoolManager($school, $mobile, $passwordInPlainText,$name, $email){
+    public function createSchoolManager($schoolId, $mobile, $password,$name, $userType){
         $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        // 判断账号是否存在
+        $info = $this->getUserByMobile($mobile);
+        if(!is_null($info)) {
+            $bag->setMessage('该账号已存在');
+            return $bag;
+        }
+
         DB::beginTransaction();
         try{
             $data = [
                 'mobile'=>$mobile,
                 'name'=>$name,
-                'email'=>$email,
                 'api_token'=>Uuid::uuid4()->toString(),
                 'uuid'=>Uuid::uuid4()->toString(),
-                'password'=>Hash::make($passwordInPlainText),
+                'password'=>Hash::make($password),
                 'status'=>User::STATUS_VERIFIED,
-                'type'=>Role::SCHOOL_MANAGER,
+                'type'=>$userType,
                 'mobile_verified_at'=>Carbon::now(),
             ];
+
             $user = User::create($data);
 
-            if($user){
-                // 创建 grade user 的记录
-                $gradeUserDao = new GradeUserDao();
-                $gradeUserDao->addGradUser([
-                    'user_id'=>$user->id,
-                    'name'=>$name,
-                    'user_type'=>Role::SCHOOL_MANAGER,
-                    'school_id'=>$school->id,
-                ]);
-                // 创建他的资料账户
-                $teacherProfileDao = new TeacherProfileDao();
-                $teacherProfileDao->createProfile([
-                    'uuid'=>Uuid::uuid4()->toString(),
-                    'user_id'=>$user->id,
-                    'school_id'=>$school->id,
-                    'serial_number'=>'n.a',
-                    'group_name'=>'管理',
-                    'title'=>'易同学管理员',
-                    'avatar'=>User::DEFAULT_USER_AVATAR,
-                ]);
-                DB::commit();
-                $bag->setCode(JsonBuilder::CODE_SUCCESS);
-            }else{
-                $bag->setMessage('无法创建用户');
-            }
+            // 创建 grade user 的记录
+            $gradeUserDao = new GradeUserDao();
+            $gradeUserDao->addGradUser([
+                'user_id'=>$user->id,
+                'name'=>$name,
+                'user_type'=>$userType,
+                'school_id'=>$schoolId,
+            ]);
+            // 创建他的资料账户
+            $teacherProfileDao = new TeacherProfileDao();
+            $teacherProfileDao->createProfile([
+                'uuid'=>Uuid::uuid4()->toString(),
+                'user_id'=>$user->id,
+                'school_id'=>$schoolId,
+                'serial_number'=>'n.a',
+                'group_name'=>'管理',
+                'title'=>'易同学管理员',
+                'avatar'=>User::DEFAULT_USER_AVATAR,
+            ]);
+            DB::commit();
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setMessage('创建成功');
+
         }
         catch (Exception $exception){
             DB::rollBack();
             $bag->setMessage($exception->getMessage());
+        }
+        return $bag;
+    }
+
+
+    /**
+     * 编辑管理员
+     * @param $userId
+     * @param $mobile
+     * @param $password
+     * @param $name
+     * @param $userType
+     * @return MessageBag
+     */
+    public function updateSchoolManager($userId, $mobile, $password, $name, $userType) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        $save = ['name'=>$name, 'type'=>$userType, 'mobile'=>$mobile];
+        if(!is_null($password)) {
+            $save['password'] = Hash::make($password);
+        }
+        try {
+            DB::beginTransaction();
+            // 修改用户表
+            User::where('id', $userId)->update($save);
+            // 修改gradeUser
+            $upd = ['name'=>$name, 'user_type'=>$userType];
+            GradeUser::where('user_id', $userId)->update($upd);
+            DB::commit();
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setMessage('编辑成功');
+        } catch (Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
         }
         return $bag;
     }

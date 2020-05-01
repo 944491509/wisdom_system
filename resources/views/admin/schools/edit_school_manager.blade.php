@@ -12,14 +12,16 @@ use App\Utils\UI\Button;
                     <header>学校管理员账户: {{ $school->name }}</header>
                 </div>
                 <div class="card-body " id="bar-parent">
-                    <form action="{{ route('admin.create.school-manager') }}" method="post">
+                    <form action="{{ route('admin.edit.school-manager') }}" method="post">
+                        <input type="hidden" name="user[user_id]" value="{{ $user->user_id }}">
+
                         <div class="form-group">
                             <label>登陆账户名</label>
-                            <input required type="text" class="form-control" value="" placeholder="必填: 登陆账号" name="user[mobile]">
+                            <input required type="text" class="form-control" value="{{$user->user->mobile ?? old('mobile')}}" placeholder="必填: 登陆账号" name="user[mobile]" readonly="true">
                         </div>
                         <div class="form-group">
                             <label>登陆密码</label>
-                            <input required type="password" class="form-control" value="" placeholder="登陆密码, 必填" name="user[password]">
+                            <input  type="password" class="form-control" value="" placeholder="登陆密码, 为空表示密码不修改" name="user[password]">
                         </div>
                         @include('admin.schools._form')
                         <?php
