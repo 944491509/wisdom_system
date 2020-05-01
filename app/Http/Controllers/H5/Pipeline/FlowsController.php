@@ -197,7 +197,7 @@ class FlowsController extends Controller
                 $value = '';
                 switch ($option['type']) {
                     case 'date-date':
-                        if ($optionRet) {
+                        if ($optionRet && $optionRet != '无') {
                             $optionRet = explode('~', $optionRet);
                             $value = $optionRet[0];
                             if (!empty($optionRet[1])) {
@@ -214,7 +214,7 @@ class FlowsController extends Controller
                         }
                         break;
                     case 'radio':
-                        if ($optionRet) {
+                        if ($optionRet && $optionRet != '无') {
                             $optionRet = json_decode($optionRet, true);
                             if (!empty($optionRet)) {
                                 $value = $optionRet['itemText'];
@@ -222,7 +222,7 @@ class FlowsController extends Controller
                         }
                         break;
                     case 'checkbox':
-                        if ($optionRet) {
+                        if ($optionRet && $optionRet != '无') {
                             $optionRet = json_decode($optionRet, true);
                             if (!empty($optionRet)) {
                                 foreach ($optionRet as $ret) {
@@ -233,12 +233,12 @@ class FlowsController extends Controller
                         break;
 
                     case 'image':
-                        if ($optionRet) {
+                        if ($optionRet && $optionRet != '无') {
                             $value = explode(',', $optionRet);
                         }
                         break;
                     case 'files':
-                        if ($optionRet) {
+                        if ($optionRet && $optionRet != '无') {
                             $value = Media::whereIn('id', explode(',', $optionRet))->select(['file_name','url'])->get()->toArray();
                         }
                         break;
