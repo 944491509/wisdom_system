@@ -9,9 +9,6 @@
                     <hr>
                         <el-form :model="formCourseInfo" label-width="80px" class="course-form" style="margin-top: 20px;">
 
-                            <el-form-item label="标题">
-                                <el-input placeholder="必填: 标题" v-model="formCourseInfo.title"></el-input>
-                            </el-form-item>
                             <el-form-item label="课节">
                                 <el-select v-model="formCourseInfo.idx" placeholder="请选择" style="width: 100%" @change="getCourseGradeList">
                                     <el-option
@@ -22,10 +19,13 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
+                            <el-form-item label="标题">
+                                <el-input placeholder="必填: 标题" v-model="formCourseInfo.title" maxlength="50"></el-input>
+                            </el-form-item>
 
                             <el-form-item label="班级">
-                                <el-checkbox-group v-model="formCourseInfo.grade_id">
-                                    <el-checkbox-button v-for="item in grades" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
+                                <el-checkbox-group v-model="formCourseInfo.grade_id" size="small">
+                                    <el-checkbox-button  v-for="item in grades" :label="item.grade_id" :key="item.grade_id">{{ item.grade_name }}</el-checkbox-button>
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-form>
@@ -48,13 +48,13 @@
                                                 外部链接
                                                 <span>
                                                     <a :href="material.url" target="_blank">
-                                                        {{ material.list[0].url}}
+                                                        {{  material.list[0].url}}
                                                     </a>
                                                 </span>
                                             </el-tag>
                                             <span v-else>
                                                 <span v-if="material.media">{{ material.list[0].file_name }}</span>
-                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].url}}</a>
+                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].file_name}}</a>
                                             </span>
                                         </p>
                                         <!-- <p style="font-size: 10px;color: #cccccc;" class="text-right">
@@ -83,9 +83,9 @@
             <div class="card" v-show="showMaterialForm">
                 <div class="card-body">
                     <el-form :model="courseMaterialModel" label-width="120px" class="course-form" style="margin-top: 20px;">
-                        <el-form-item label="当前类型">
+                        <!-- <el-form-item label="当前类型">
                             <p class="text-primary">{{ courseMaterialModel.typeName }}</p>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="课件描述">
                             <el-input placeholder="选填: 课件的描述" type="textarea" v-model="courseMaterialModel.description"></el-input>
                         </el-form-item>
@@ -98,17 +98,16 @@
                             <el-button type="primary" size="tiny" icon="el-icon-picture" v-on:click="showFileManagerFlag=true">
                                 从我的云盘添加
                             </el-button>
+                            <p class="text-danger ">注意: 课件只能是外部链接或者云盘文件中的一种</p>
                             <p v-if="selectedFile" class="mt-4">
-                                已选择的文件:
                                 <a :href="selectedFile.url">
                                     {{ selectedFile.description }}
                                 </a>
-                                &
-                                <el-button type="text" @click="selectedFile = null"><span class="text-danger">放弃</span></el-button>
+                                &nbsp;&nbsp;
+                                 <el-button type="danger" @click="selectedFile = null" icon="el-icon-delete"></el-button>
                             </p>
                         </el-form-item>
 
-                        <p class="text-danger text-right">注意: 课件只能是外部链接或者云盘文件中的一种</p>
                         <el-button icon="el-icon-upload" style="margin-left: 10px;" size="small" type="success" @click="saveInfo(courseMaterialModel.index)">确定</el-button>
                         <el-button icon="el-icon-close" style="margin-left: 10px;" size="small" @click="showMaterialForm = false">取消</el-button>
                     </el-form>

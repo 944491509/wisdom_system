@@ -2,7 +2,9 @@
 @section('content')
 <div id="teacher-assistant-material-app" class="material-box">
   <div class="teacher-container">
-    <div class="blade_title">教学资料</div>
+    <div class="blade_title">教学资料
+        <el-button class="pull-right" v-if="activeIndex == 3 || activeIndex == 4" type="primary" size="small" @click="activeIndex = 1">返回</el-button>
+    </div>
     <div class="blade_container" :class="{'bg-none':activeIndex === 3}">
 
       <!--我的课程/教学资料--->
@@ -78,8 +80,9 @@
               <el-tag v-for="(item1,key1) in item.types" @click="showDrawer(item, item1)">@{{ item1.name }}@{{ item1.num }}</el-tag>
             </div>
             <el-row class="button">
-              <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button>
-              <el-button type="primary" size="mini" @click="changeMeans(4,item)">添加资料</el-button>
+              <!-- <el-button type="primary" icon="el-icon-edit" size="mini" class="button-edit" @click="changeMeans(3,item)"></el-button> -->
+              <el-button type="primary" size="mini" @click="changeMeans(3,item)">教学计划日志</el-button>
+              <el-button type="success" size="mini" @click="changeMeans(4,item)">添加/编辑资料</el-button>
             </el-row>
           </div>
         </el-row>

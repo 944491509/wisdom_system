@@ -165,21 +165,32 @@ $(document).ready(function(){
         },
         deleteRow(row) {
           console.log(row)
-          axios.post(
-            '/api/study/delete-material',
-            { lecture_id: row.lecture_id, type_id: row.type_id }
-          ).then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.$message({
-                type: 'success',
-                message: '删除成功'
-              });
-              this.getMyMaterialsListInfo()
-              // window.location.reload();
-            }
-            else {
-              this.$message.error('删除操作失败');
-            }
+          this.$confirm('是否确认删除?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            axios.post(
+              '/api/study/delete-material',
+              { lecture_id: row.lecture_id, type_id: row.type_id }
+            ).then(res => {
+              if (Util.isAjaxResOk(res)) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功'
+                });
+                this.getMyMaterialsListInfo()
+                // window.location.reload();
+              }
+              else {
+                this.$message.error('删除操作失败');
+              }
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });          
           });
         },
         // activeTable: function (tab) {
