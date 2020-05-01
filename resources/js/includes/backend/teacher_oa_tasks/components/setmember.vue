@@ -5,7 +5,7 @@
         <el-input placeholder="请输入" v-model="keywords"></el-input>
       </el-form-item>
       <el-form-item label="部门">
-        <el-cascader :props="memberOptions" @expand-change="onNodeChange"></el-cascader>
+        <el-cascader :props="memberOptions" v-model="selectedGroups" @change="onNodeSelect" @expand-change="onNodeChange"></el-cascader>
       </el-form-item>
     </el-form>
     <div class="members">
@@ -86,8 +86,12 @@ export default {
         })
       );
     },
+    onNodeSelect(val) {
+      this.currentNodeId = val[val.length - 1];
+    },
     onNodeChange(val) {
       this.currentNodeId = val.pop();
+      this.selectedGroups = []
       this.filtBy = "group";
     },
     selectMember(member) {
@@ -109,6 +113,7 @@ export default {
     return {
       currentNodeId: "",
       membersMap: {},
+      selectedGroups: [],
       filtBy: "",
       memberOptions: {
         lazy: true,
