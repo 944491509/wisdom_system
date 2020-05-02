@@ -1,6 +1,6 @@
 <?php
 // 管理后台路由: 超级管理员专有的路由, 这里定义的路由, 其他任何角色都不能访问到
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('simpleacl')->group(function () {
     // 学校管理
     Route::get('schools/statistic', 'SchoolsController@statistic')->name('admin.schools.statistic'); // 显示学校的统计信息
     Route::get('schools/add', 'SchoolsController@add')->name('admin.schools.add');    // 显示创建学校的界面
@@ -11,6 +11,15 @@ Route::prefix('admin')->group(function () {
     Route::get('roles/list', 'RolesController@index')->name('admin.roles.list');
     Route::get('roles/edit', 'RolesController@edit')->name('admin.roles.edit');
     Route::post('roles/update_permission', 'RolesController@update_permission')->name('admin.roles.update_permission');
+
+    //新的权限管理
+    Route::get('simpleacl/manager', 'SimpleaclController@index')->name('admin.simpleacl.manager');
+    Route::post('simpleacl/list', 'SimpleaclController@lists')->name('admin.simpleacl.list');
+    Route::post('simpleacl/delete', 'SimpleaclController@delete')->name('admin.simpleacl.delete');
+    Route::post('simpleacl/add', 'SimpleaclController@add')->name('admin.simpleacl.add');
+    Route::post('simpleacl/add-role', 'SimpleaclController@add_role')->name('admin.simpleacl.add-role');
+    Route::post('simpleacl/add-permission', 'SimpleaclController@add_permission')->name('admin.simpleacl.add-permission');
+    Route::post('simpleacl/menu-permission', 'SimpleaclController@menu_permission')->name('admin.simpleacl.menu-permission');
 
     //版本管理
     Route::get('versions/list', 'VersionController@index')->name('admin.versions.list');
