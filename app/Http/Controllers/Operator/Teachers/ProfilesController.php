@@ -150,6 +150,7 @@ class ProfilesController extends Controller
             $qualification = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
             $this->dataForView['qualification'] = $qualification;
 //            dd($this->dataForView);
+
             return view('teacher.profile.edit', $this->dataForView);
         }
     }
