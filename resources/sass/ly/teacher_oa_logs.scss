@@ -53,6 +53,7 @@
             }
 
             .el-drawer__body {
+                overflow: auto;
                 .demo-drawer__content {
                     .el-form {
                         .el-form-item {
