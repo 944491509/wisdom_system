@@ -149,28 +149,32 @@ $theYears = \App\Utils\Time\GradeAndYearUtil::GetAllYears(1);
                     <header>行政职务</header>
                 </div>
                 <div class="card-body " id="bar-parent">
-                        @if($userOrganization)
-                            <p>{{ $userOrganization->title }}</p>
+                        @if(count($userOrganization) > 0 )
+                            @foreach($userOrganization as $key => $item)
+                            <p>{{ $item->title }}</p>
+                            @endforeach
                         @else
                             <p>还未设置任何职务</p>
                         <hr>
                             @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())
                                 <form action="" method="post">
                                     @csrf
-                                    <input type="hidden" name="id" value="{{ $userOrganization->id??null }}">
                                     <div class="form-group">
                                         <label for="attendance-title-input">部门</label>
                                         <select class="form-control" name="organization_id" id="">
+                                            <option  value="0">请选择</option>
                                             @foreach($organizations as $org)
-                                                <option {{ $org->id === ($userOrganization->organization_id??null) ? 'selected' : null }} value="{{ $org->id }}">{{ $org->name }}</option>
+                                                <option  value="{{ $org->id }}">{{ $org->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="task-detail">职务</label>
                                         <select class="form-control" name="title_id" id="">
+                                            <option  value="0">请选择</option>
                                             @foreach($titles as $tid=>$title)
-                                                <option {{ $tid === ($userOrganization->title_id??null) ? 'selected' : null }} value="{{ $tid }}">{{ $title }}</option>
+
+                                                <option  value="{{ $tid }}">{{ $title }}</option>
                                             @endforeach
                                         </select>
                                     </div>

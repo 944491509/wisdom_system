@@ -51,8 +51,11 @@ use App\User;
                                             <img style="width: 60px;border-radius: 50%;" src="{{ $gradeUser->teacherProfile->avatar }}" alt="">
                                         </td>
                                         <td>
-                                            @if($duties['organization'])
-                                            <span class="text-primary">{{ $duties['organization']->title }}</span>
+                                            @if(count($duties['organization']) >
+0 )
+                                                @foreach($duties['organization'] as $key => $item)
+                                            <span class="text-primary">{{ $item->title }}</span>
+                                                @endforeach
                                             @endif
                                         </td>
                                         <td>
