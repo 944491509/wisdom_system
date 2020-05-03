@@ -7,14 +7,14 @@
                 <p>日志</p>
                 <p @click="drawer = true" type="primary">添加</p>
             </div>
-            <el-drawer title="添加日志" :before-close="handleClose" :visible.sync="drawer" custom-class="demo-drawer" ref="drawer">
+            <el-drawer title="添加日志"  :before-close="handleClose" :visible.sync="drawer" custom-class="demo-drawer" ref="drawer">
                 <div class="demo-drawer__content">
                     <el-form :model="log">
                         <el-form-item label="标题">
                             <el-input v-model="log.title" placeholder="请输入标题" autocomplete="off"></el-input>
                         </el-form-item>
                         <el-form-item label="内容">
-                            <el-input type="textarea" placeholder="请输入日志内容..." v-model="log.content"></el-input>
+                            <el-input type="textarea"  placeholder="请输入日志内容..." v-model="log.content"></el-input>
                         </el-form-item>
                     </el-form>
                     <div class="demo-drawer__footer">
