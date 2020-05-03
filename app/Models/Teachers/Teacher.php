@@ -30,7 +30,7 @@ class Teacher extends User
     }
 
     public static function myUserOrganization($userId){
-        return UserOrganization::where('user_id', $userId)->first();
+        return UserOrganization::where('user_id', $userId)->get();
     }
 
     /**
