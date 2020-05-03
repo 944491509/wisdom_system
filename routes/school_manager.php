@@ -496,7 +496,7 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::prefix('teachers')->group(function(){
         Route::get('add-new','Teachers\ProfilesController@add_new')
             ->name('school_manager.teachers.add-new');
-        Route::get('edit-profile','Teachers\ProfilesController@edit')
+        Route::any('edit-profile','Teachers\ProfilesController@edit')
             ->name('school_manager.teachers.edit-profile');
         Route::any('edit-avatar','Teachers\ProfilesController@avatar')
             ->name('school_manager.teachers.edit-avatar');
