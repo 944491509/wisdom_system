@@ -157,10 +157,10 @@ $theYears = \App\Utils\Time\GradeAndYearUtil::GetAllYears(1);
                             @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())
                                 <form action="" method="post">
                                     @csrf
-                                    <input type="hidden" name="ug[id]" value="{{ $userOrganization->id??null }}">
+                                    <input type="hidden" name="id" value="{{ $userOrganization->id??null }}">
                                     <div class="form-group">
                                         <label for="attendance-title-input">部门</label>
-                                        <select class="form-control" name="ug[organization_id]" id="">
+                                        <select class="form-control" name="organization_id" id="">
                                             @foreach($organizations as $org)
                                                 <option {{ $org->id === ($userOrganization->organization_id??null) ? 'selected' : null }} value="{{ $org->id }}">{{ $org->name }}</option>
                                             @endforeach
@@ -168,7 +168,7 @@ $theYears = \App\Utils\Time\GradeAndYearUtil::GetAllYears(1);
                                     </div>
                                     <div class="form-group">
                                         <label for="task-detail">职务</label>
-                                        <select class="form-control" name="ug[title_id]" id="">
+                                        <select class="form-control" name="title_id" id="">
                                             @foreach($titles as $tid=>$title)
                                                 <option {{ $tid === ($userOrganization->title_id??null) ? 'selected' : null }} value="{{ $tid }}">{{ $title }}</option>
                                             @endforeach
