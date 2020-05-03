@@ -53,7 +53,10 @@
             <img :src="detail.image" alt="" v-if="detail.type != 1">
             <div class="demo-drawer__content_enclosure" v-if="attachments.length">
                 <p class="word">附件</p>
-                <p class="enclosure">@{{ attachments[0].file_name}}</p>
+                <p v-for="att in attachments" :key="att.id" class="enclosure"  >
+                    @{{ att.file_name}}
+                    <a class="view_more" target="_blank" :href="att.url">查看</a>
+                </p>
             </div>
         </div>
     </el-drawer>
