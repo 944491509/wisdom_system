@@ -304,7 +304,7 @@ class IndexController extends Controller
         $result = pageReturn($return);
 
         foreach ($result['list'] as $key => $item) {
-            $material = $item->lectureMaterials->orderBy('id','desc')->first();
+            $material = $item->lectureMaterials->first();
             $result['list'][$key] = [
                 'id' => $material->id,
                 'lecture_id' => $material->lecture_id,
