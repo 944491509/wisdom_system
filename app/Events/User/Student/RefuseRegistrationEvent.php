@@ -60,7 +60,7 @@ class RefuseRegistrationEvent extends AbstractRegistrationEvent
         $dao = new OrganizationDao;
         $result = $dao->getByName($this->form->school_id, '招生办');
         if ($result) {
-            return $result->name;
+            return $result->phone;
         }
     }
 
