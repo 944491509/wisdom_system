@@ -155,4 +155,19 @@ class GradeUser extends Model
         return $instituteStr.$deptStr.$majorStr.$gradeStr;
     }
 
+
+    /**
+     * 用户类型
+     * @return mixed|string
+     */
+    public function userTypeText() {
+        $data = [
+            Role::SCHOOL_MANAGER => Role::ADMINISTRATOR_TEXT,
+            Role::TEACHER => Role::TEACHER_TEXT,
+            Role::VERIFIED_USER_STUDENT => Role::VERIFIED_USER_STUDENT_TEXT,
+        ];
+
+        return $data[$this->user_type] ?? '';
+    }
+
 }

@@ -4,6 +4,7 @@
  */
 namespace App\Http\Controllers\Teacher;
 
+use App\Dao\Users\GradeUserDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MyStandardRequest;
 use App\Models\Teachers\Teacher;
@@ -75,6 +76,7 @@ class ProfileController extends Controller
             return view('teacher.profile.edit_profile', $this->dataForView);
         }
         elseif ($request->method()==='POST'){
+            $all = $request->all();
             $profileData = $request->get('profile');
             $teacherData = $request->get('teacher');
 
@@ -89,6 +91,8 @@ class ProfileController extends Controller
                 $user->$k = $v;
             }
             $user->save();
+            $gradeUserDao = new GradeUserDao();
+            $gradeUserDao->updateDataByUserId($user->id,['name'=>$teacherData['name']]);
 
             FlashMessageBuilder::Push($request, 'success',$user->name.'档案数据更新成功');
             /**

@@ -199,6 +199,9 @@ class Flow extends Model implements IFlow
             $organizationDao = new OrganizationDao();
             foreach ($nameArr as $value) {
                 $organization = Organization::where(['school_id' => $schoolId, 'name' => $value])->first();
+                if (empty($organization)) {
+                    continue;
+                }
                 $nowLevel = $organization->level;
                 $return = [$organization->id];
                 $parentid = $organization->parent_id;

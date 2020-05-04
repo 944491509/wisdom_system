@@ -57,11 +57,11 @@ class Role extends BaseRole
     const OPERATOR_TEXT              = '日常操作人员';  // 日常操作人员
     const VISITOR_TEXT               = '未注册用户';  // 未注册用户
     const REGISTERED_USER_TEXT       = '已注册用户';  // 已注册用户
-    const VERIFIED_USER_STUDENT_TEXT             = '已认证的用户 学生';  // 已认证的用户 学生
+    const VERIFIED_USER_STUDENT_TEXT             = '学生';  // 已认证的用户 学生
     const VERIFIED_USER_CLASS_LEADER_TEXT        = '已认证的用户 班长';  // 已认证的用户 班长
     const VERIFIED_USER_CLASS_SECRETARY_TEXT     = '已认证的用户 团支书';  // 已认证的用户 团支书
 
-    const TEACHER_TEXT               = '已认证的教师';   // 已认证的教师
+    const TEACHER_TEXT               = '教师';   // 已认证的教师
     const EMPLOYEE_TEXT              = '已认证的教工';  // 已认证的教工
     const SCHOOL_MANAGER_TEXT        = '已认证的部门管理员 (日常教学管理岗)';  // 已认证的管理员 (日常教学管理岗)
     const COMPANY_TEXT               = '已认证的企业 招生的用人单位';  // 已认证的企业 招生的用人单位等

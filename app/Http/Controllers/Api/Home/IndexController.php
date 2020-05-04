@@ -237,8 +237,9 @@ class IndexController extends Controller
             $gradeManger = '';
         }
 
-        if ($allDuties['organization']) {
-            $organization = $allDuties['organization']->title;
+        if (count($allDuties['organization']) > 0) {
+            $title = $allDuties['organization']->pluck('title')->toArray();
+            $organization = implode(',',$title);
         } else {
             $organization = '';
         }

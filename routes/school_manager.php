@@ -1,6 +1,6 @@
 <?php
 
-Route::prefix('school_manager')->group(function () {
+Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     // 学校管理
     Route::get('school/view', 'CampusController@school')->name('school_manager.school.view'); // 显示学校的统计信息
     Route::get('school/institutes', 'SchoolsController@institutes')->name('school_manager.school.institutes'); // 显示学校的所有学院
@@ -496,7 +496,7 @@ Route::prefix('school_manager')->group(function () {
     Route::prefix('teachers')->group(function(){
         Route::get('add-new','Teachers\ProfilesController@add_new')
             ->name('school_manager.teachers.add-new');
-        Route::get('edit-profile','Teachers\ProfilesController@edit')
+        Route::any('edit-profile','Teachers\ProfilesController@edit')
             ->name('school_manager.teachers.edit-profile');
         Route::any('edit-avatar','Teachers\ProfilesController@avatar')
             ->name('school_manager.teachers.edit-avatar');

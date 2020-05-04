@@ -272,4 +272,28 @@ class GradeUserDao
     }
 
 
+    /**
+     * 获取学校管理员
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getSchoolManagerBySchoolId($schoolId) {
+        return GradeUser::where('school_id', $schoolId)
+            ->whereIn('user_type', [Role::SCHOOL_MANAGER, Role::TEACHER])
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
+    /**
+     * 根据用户ID修改信息
+     * @param $userId
+     * @param $data
+     * @return mixed
+     */
+    public function updateDataByUserId($userId, $data) {
+        return GradeUser::where('user_id', $userId)
+            ->update($data);
+    }
+
+
 }
