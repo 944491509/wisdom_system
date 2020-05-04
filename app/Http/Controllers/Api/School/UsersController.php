@@ -80,7 +80,7 @@ class UsersController extends Controller
                         /**
                          * @var GradeUser $gradeUser
                          */
-                        if($gradeUser->user_type === Role::VERIFIED_USER_STUDENT){
+                        if($gradeUser->user_type === Role::VERIFIED_USER_STUDENT || $gradeUser->user_type == Role::REGISTERED_USER) {
                             $item = [
                                 'id'=>$gradeUser->user_id,
                                 'value'=>$gradeUser->name . ' - ' . $gradeUser->grade->name . ' ' . $gradeUser->major->name,
