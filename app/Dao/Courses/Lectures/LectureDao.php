@@ -279,10 +279,7 @@ class LectureDao
             ['teacher_id', '=', $teacherId],
             ['media_id', '<>', 0]
         ];
-        return LectureMaterial::where($map)
-            ->select('lecture_id')
-            ->distinct('distinct')
-            ->get();
+        return LectureMaterial::where($map)->get();
     }
 
 
@@ -295,11 +292,13 @@ class LectureDao
      */
     public function getMaterialByCourseIdAndTeacher($courseId, $type, $teacherId) {
         $re = $this->getMaterialByCourseId($courseId, $type, $teacherId);
+
         if(count($re) == 0) {
             return null;
         }
 
         $lectureIds = $re->pluck('lecture_id')->toArray();
+        array_unique($lectureIds);
         return Lecture::where('id', $lectureIds)
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
