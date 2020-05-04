@@ -275,11 +275,21 @@ class LectureDao
      */
     public function getMaterialByCourseId($courseId, $type, $teacherId, $isPage = true) {
         $map = [
-            'course_id'=>$courseId,
-            'type'=>$type,
-            'teacher_id'=>$teacherId
+            ['course_id', '=', $courseId],
+            ['type', '=', $type],
+            ['teacher_id', '=', $teacherId],
+            ['media_id', '<>', 0]
         ];
-        $result = LectureMaterial::where($map)->where('media_id','<>', 0);
+        $re = LectureMaterial::where($map)
+            ->select('lecture_id')
+            ->distinct('distinct')
+            ->get();
+
+        if(count($re) == 0) {
+            return null;
+        }
+        $lectureIds = $re->pluck('lecture_id')->toArray();
+        $result = LectureMaterial::whereIn('lecture_id', $lectureIds);
 
         if($isPage) {
             return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
