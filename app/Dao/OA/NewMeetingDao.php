@@ -139,17 +139,17 @@ class NewMeetingDao
 //            ->orWhere($where)
 //            ->whereIn('id', $meetIds)
 //            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
-        NewMeeting::whereIn('id', $meetIds)
+        return NewMeeting::whereIn('id', $meetIds)
             ->where(function ($que) use($now) {
                 $que->where(function ($que) use($now) {
-                    $que->where('new_meetings.meet_end', '>=', $now)
-                        ->where('new_meetings.status', '=', NewMeeting::STATUS_PASS)
-                        ->where('new_meetings.signout_status', '=', NewMeeting::NOT_SIGNOUT);
-                } )
+                    $que->where('meet_end', '>=', $now)
+                        ->where('status', '=', NewMeeting::STATUS_PASS)
+                        ->where('signout_status', '=', NewMeeting::NOT_SIGNOUT);
+                })
                     ->orWhere(function ($que) use($now) {
-                    $que->where('new_meetings.signout_end', '>=', $now)
-                        ->where('new_meetings.status', '=', NewMeeting::STATUS_PASS)
-                        ->where('new_meetings.signout_status', '=', NewMeeting::SIGNOUT);
+                    $que->where('signout_end', '>=', $now)
+                        ->where('status', '=', NewMeeting::STATUS_PASS)
+                        ->where('signout_status', '=', NewMeeting::SIGNOUT);
                     });
             })->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
