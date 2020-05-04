@@ -4,7 +4,7 @@ use App\Utils\UI\Button;
 ?>
 @extends('layouts.app')
 @section('content')
-    <div class="row">
+    <div class="row" id="enrol-note-manager-app">
         <div class="col-sm-10 col-md-12 col-xl-12">
             <div class="card-box">
                 <div class="card-head">
@@ -19,7 +19,8 @@ use App\Utils\UI\Button;
                         </div>
                         <div class="form-group">
                             <label for="building-name-input">内容</label>
-                            <textarea required class="form-control" name="infos[notice_content]" id="questionnaire-desc-input" cols="30" rows="10" placeholder="">{{ old('infos.notice_content') }}</textarea>
+                            <Redactor v-model="content" placeholder="请填写内容" :config="configOptions" name="infos[notice_content]" />
+                            @{{ content }}
                         </div>
                         <?php
                             Button::Print(['id'=>'btn-create-building','text'=>trans('general.submit')], Button::TYPE_PRIMARY);

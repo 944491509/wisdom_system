@@ -209,6 +209,7 @@ class TeacherApplyElectiveCourseDao
             $weekList[$week->getname()] = $week;
         }
         $tmp = [
+            'year' => $item->year,
             'applyid' => $item->id,
             'name' => $item->name,
             'teacher_name' => $item->teacher_name,
@@ -283,6 +284,7 @@ class TeacherApplyElectiveCourseDao
     {
         $item = TeacherApplyElectiveCourse::where('id', '=', $applyid)->first();
         $tmp = [
+            'year' => $item->year,
             'applyid' => $item->id,
             'name' => $item->name,
             'teacher_name' => $item->teacher_name,
@@ -712,6 +714,11 @@ class TeacherApplyElectiveCourseDao
             if (TeacherApplyElectiveCourse::STATUS_VERIFIED === $status) {
                 $apply->status = TeacherApplyElectiveCourse::STATUS_VERIFIED;
                 $apply->reply_content .= $content;
+
+                //创建个报名表 避免找不到表的错误
+                $tableName = 'student_enrolled_optional_courses_' . $apply->start_year . '_' . $apply->term;
+                $this->createEnrollTable($tableName);
+
             } elseif (in_array($status, [TeacherApplyElectiveCourse::STATUS_WAITING_FOR_REJECTED, TeacherApplyElectiveCourse::STATUS_PUBLISHED])) {
                 $apply->status = $status;
             } else {

@@ -92,4 +92,17 @@ class GradesController extends Controller
             return view('school_manager.grade.set_adviser',$this->dataForView);
         }
     }
+
+    /**
+     * @param GradeRequest $request
+     * @return string
+     */
+    public function searchGrade(GradeRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $name = $request->get('grade_name');
+        $dao = new GradeDao;
+        $data = $dao->searchByName($name, $schoolId);
+        return JsonBuilder::Success($data);
+    }
 }

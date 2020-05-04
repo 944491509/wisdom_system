@@ -62,6 +62,9 @@ class CloudController extends Controller
                     'video' => $school->video,
                     'size'  => '',
                     'type'  => $type,
+                ],
+                'card' => [
+                    'address' => $facility->room->building->name.'-'.$facility->room->name,
                 ]
             ]
         ];
@@ -84,28 +87,35 @@ class CloudController extends Controller
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
 
-        /**
-         * @var  Facility $facility
-         */
         $room = $facility->room;
-
         $timeSlotDao = new TimeSlotDao;
-
-        $item = $timeSlotDao->getItemByRoomForNow($room);
-
-        if (empty($item)) {
-            return JsonBuilder::Error('暂无课程');
+        /**
+         * 公有班牌
+         */
+        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+             $item = $timeSlotDao->getItemByRoomForNow($room);
+             if (empty($item)) {
+                return JsonBuilder::Error('暂无课程');
+             } else {
+                 $grade = $item->grade;
+             }
+        }
+        /**
+         *  私有班牌
+         */
+        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+            $grade = $facility->grade;
         }
 
 
-        $gradeUser = $item->grade->gradeUser;
+        $gradeUser = $grade->gradeUser;
         $userIds   = $gradeUser->pluck('user_id');
 
         $studentProfileDao = new  StudentProfileDao;
         $gradeRes = new GradeResourceDao;
         $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
         $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
-        $gradeResource = $gradeRes->getResourceByGradeId($item->grade_id);
+        $gradeResource = $gradeRes->getResourceByGradeId($grade->id);
 
         $photo = [];
         foreach ($gradeResource as $key => $value) {
@@ -118,9 +128,9 @@ class CloudController extends Controller
 
         $data = [
             'grade'    => [
-                'name' => $item->grade->name,
-                'teacher' => $item->grade->gradeManager->adviser_name ?? '未设置班主任',
-                'monitor' => $item->grade->gradeManager->monitor_name ?? '未设置班长',
+                'name' => $grade->name,
+                'teacher' => $grade->gradeManager->adviser_name ?? '未设置班主任',
+                'monitor' => $grade->gradeManager->monitor_name ?? '未设置班长',
             ],
             'number'  => [
                 'total' => $man + $woman,
@@ -144,17 +154,27 @@ class CloudController extends Controller
         $code     = $request->get('code');
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
+
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        /**
-         * @var  Facility $facility
-         */
-        $room = $facility->room;
 
         $timeSlotDao = new TimeSlotDao;
+        /**
+         * 公有班牌
+         */
+        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+            $room = $facility->room;
+            $items = $timeSlotDao->getItemByRoomForNow($room, null,1);
+        }
+        /**
+         *  私有班牌
+         */
+        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+            $grade = $facility->grade;
+            $items =  $timeSlotDao->getTimeSlotByGrade($grade);
+        }
 
-        $items = $timeSlotDao->getTimeSlotByRoom($room);
         if (!$items) {
              return JsonBuilder::Error('现在是休息时间');
         }
@@ -168,7 +188,7 @@ class CloudController extends Controller
             $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
             $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
             $data[$key]['course_teacher'] = $item->teacher->name;
-            $data[$key]['course_name']   = $item->course->name;
+            $data[$key]['course_name']   = $item->course->name ?? '';
         }
 
         return JsonBuilder::Success($data);
@@ -202,14 +222,16 @@ class CloudController extends Controller
         }
 
         // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
-        $codeStr = base64_encode(json_encode(['app' => UserCodeRecord::IDENTIFICATION_CLOUD,
-                                              'school_id' => $item->school_id,
-                                              'grade_id' => $item->grade_id,
-                                              'teacher_id' => $item->teacher_id,
-                                              'timetable_id' => $item->id,
-                                              'course_id' => $item->course_id,
-                                              'term' => $item->term,
-                                              'time' => time()]));
+        $codeStr = base64_encode(json_encode([
+            'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
+            'school_id' => $item->school_id,
+            'grade_id' => $item->grade_id,
+            'teacher_id' => $item->teacher_id,
+            'timetable_id' => $item->id,
+            'course_id' => $item->course_id,
+            'term' => $item->term,
+            'time' => time()
+        ]));
         $qrCode = new QrCode($codeStr);
         $qrCode->setSize(400);
         $qrCode->setLogoPath(public_path('assets/img/logo.png'));

@@ -14,7 +14,7 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                         {{ session('school.name') }} - {{ $parent->name??'' }} {{ isset($year) ? $year.'级' : null }}
                         @if(isset($yearManager))
                             <a href="{{ route('school_manager.school.set-year-manager',['year'=>$year]) }}">{{ $yearManager->user->name ?? '设置年级组长' }}</a>
-                        @else
+                        @endif
                             @if(isset($year))
                                 <a href="{{ route('school_manager.school.set-year-manager',['year'=>$year]) }}">设置年级组长</a>
 
@@ -24,7 +24,6 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                 @endforeach
                                 </p>
                             @endif
-                        @endif
                     </header>
                 </div>
                 <div class="card-body">
@@ -106,7 +105,8 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                 </tbody>
                             </table>
                             @if(!isset($parent))
-                                {{ $grades->links() }}
+
+                                {{ $grades->appends(['year'=>$year ?? ''])->links() }}
                             @endif
                         </div>
                     </div>

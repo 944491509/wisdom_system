@@ -27,7 +27,7 @@ if (document.getElementById('teacher-oa-index-app')) {
                     { tit: "待审批" },
                     { tit: "已审批" },
                     { tit: "我发起的" },
-                    { tit: "我抄送的" }
+                    { tit: "抄送我的" }
                 ], // 右边nav
                 page: 1, // 当前页
                 size: 10, // 条数

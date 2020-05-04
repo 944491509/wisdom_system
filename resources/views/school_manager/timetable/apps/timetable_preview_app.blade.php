@@ -10,6 +10,7 @@
                     v-on:new-item-created="newItemCreatedHandler"
                     v-on:item-updated="itemUpdatedHandler"
                     v-on:timetable-refresh="refreshTimetableHandler"
+                    v-on:grade-change="gradeChange"
                     :reloading="reloading"
                     :init-weekday-index="shared.initWeekdayIndex"
                     :init-time-slot-id="shared.initTimeSlotId"

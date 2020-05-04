@@ -1,6 +1,6 @@
 import { Mixins } from "../Mixins";
 import Organization from "./Organization";
-import ManagerMent from "./ManagerMent";
+import ManagerMents from "./ManagerMents";
 
 import { _save_attendance, catchErr } from "../api/index";
 Vue.component("AttendanceForm", {
@@ -45,7 +45,7 @@ Vue.component("AttendanceForm", {
     </div>
     </el-form-item>
      <Organization/>
-     <ManagerMent ref="managerMent" />
+     <ManagerMents ref="ManagerMents" v-if="visibleFormDrawer"/>
     </el-form>
     <div class="btn-create">
         <el-button  @click="_add()" :loading="isLoading" type="primary" size="mini">保存</el-button>

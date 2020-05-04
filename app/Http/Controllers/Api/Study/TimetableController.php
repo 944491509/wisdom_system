@@ -31,8 +31,8 @@ class TimetableController extends Controller
     {
         $user = $request->user();
         $date = $request->getDate();
-
-        $return = $this->timetable($user, $date);
+        $grade = $user->gradeUser->grade;
+        $return = $this->timetable($user, $date, $grade->gradeYear());
         $item = $return['item'];
 
         $dao = new LectureDao();
@@ -92,10 +92,11 @@ class TimetableController extends Controller
         $date = $request->getDate();
 
         $return = $this->timetable($user, $date);
-        $item = $return['item'];
-        $forStudyingSlots = $return['forStudyingSlots'];
 
-        $timetable = $this->courseDataProcessing($item, $forStudyingSlots);
+        $item = $return['item'];
+//        $forStudyingSlots = $return['forStudyingSlots'];
+
+        $timetable = $this->courseDataProcessing($item);
         $result = [
             'date' => $date,
             'week' => $return['week'],
@@ -112,9 +113,10 @@ class TimetableController extends Controller
      * 获取课程表
      * @param $user
      * @param $date
+     * @param null $gradeYear
      * @return array
      */
-    public function timetable($user, $date)
+    public function timetable($user, $date, $gradeYear = null)
     {
         $schoolId = $user->getSchoolId();
         $schoolDao = new SchoolDao();
@@ -130,15 +132,17 @@ class TimetableController extends Controller
         $timetableItemDao = new TimetableItemDao();
         // 获取当天的课程
         // 学生
+        $forStudyingSlots = [];
         if($user->isStudent()) {
             $gradeId = $user->gradeUser->grade_id;
             $item = $timetableItemDao->getItemsByWeekDayIndex($weekdayIndex,$year,$term,$oddWeek,$gradeId);
+            $timeSlotDao = new TimeSlotDao();
+            $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId, $gradeYear);
         } else {
             $item = $timetableItemDao->getItemsByWeekDayIndexForTeacherView($weekdayIndex, $year, $term, $oddWeek, $user->id);
         }
 
-        $timeSlotDao = new TimeSlotDao();
-        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId);
+
 
 
         return [
@@ -222,6 +226,7 @@ class TimetableController extends Controller
     public function teacherWeek(TimetableRequest $request)
     {
         $user = $request->user();
+        $gradeYear = $request->get('year', 1);  // 默认为一年级课程表
         $schoolId = $user->getSchoolId();
         $date = $request->getDate();
         $schoolDao = new SchoolDao();
@@ -242,7 +247,7 @@ class TimetableController extends Controller
 
         $day = Carbon::parse($end)->diffInDays($start) + 1;
         $timeSlotDao = new TimeSlotDao();
-        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId);
+        $forStudyingSlots = $timeSlotDao->getAllStudyTimeSlots($schoolId, $gradeYear);
 
 
         $timetableItemDao = new TimetableItemDao();
@@ -281,26 +286,14 @@ class TimetableController extends Controller
     /**
      * 课程数据处理
      * @param $item
-     * @param $forStudyingSlots
      * @return array
      */
-    public function courseDataProcessing($item, $forStudyingSlots)
+    public function courseDataProcessing($item)
     {
 
         $dao = new LectureDao();
         $timetable = [];
         foreach ($item as $key => $value) {
-            $time_slot_name = '';
-            $from = '';
-            $to = '';
-
-            foreach ($forStudyingSlots as $k => $val) {
-                if($value['time_slot_id'] == $val->id) {
-                    $time_slot_name = $val->name;
-                    $from = $val->from;
-                    $to = $val->to;
-                }
-            }
 
             // 查询当前老师在该班级上传的资料
             $types = $dao->getMaterialTypeByCourseId($value['course_id'],$value['teacher_id'],$value['grade_id']);
@@ -309,6 +302,7 @@ class TimetableController extends Controller
                 $label[] = $v->materialType->name;
             }
 
+            $timeSlot = $value['time_slot'];
             $timetable[] = [
                 'time_table_id' => $value['id'],
                 'time_slot_id' => $value['time_slot_id'],
@@ -316,9 +310,9 @@ class TimetableController extends Controller
                 'idx' => '', // 课节
                 'room' => $value['building'].$value['room'],
                 'course' => $value['course'],
-                'time_slot_name' => $time_slot_name,
-                'from' => $from,
-                'to' => $to,
+                'time_slot_name' => $timeSlot->name,
+                'from' => $timeSlot->from,
+                'to' => $timeSlot->to,
                 'label' => $label,
             ];
         }
