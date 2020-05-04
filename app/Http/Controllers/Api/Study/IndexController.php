@@ -291,17 +291,27 @@ class IndexController extends Controller
         }
 
         $dao = new LectureDao();
-        $return = $dao->getMaterialByCourseId($courseId, $type, $userId);
+        $return = $dao->getMaterialByCourseIdAndTeacher($courseId, $type, $userId);
+        if($return == null) {
+            $result = [
+                'currentPage' => 0,
+                'lastPage'    => 0,
+                'total'       => 0,
+                'list'        => []
+            ];
+            return JsonBuilder::Success($result);
+        }
         $result = pageReturn($return);
 
         foreach ($result['list'] as $key => $item) {
+            $material = $item->lectureMaterials->orderBy('id','desc')->first();
             $result['list'][$key] = [
-                'id' => $item->id,
-                'lecture_id' => $item->lecture_id,
-                'type' => $item->media->getTypeText(),
-                'type_id' => $item->type,
-                'file_name' => $item->media->file_name,
-                'url' => $item->url,
+                'id' => $material->id,
+                'lecture_id' => $material->lecture_id,
+                'type' => $material->media->getTypeText(),
+                'type_id' => $material->type,
+                'file_name' => $material->media->file_name,
+                'url' => $material->url,
             ];
         }
 

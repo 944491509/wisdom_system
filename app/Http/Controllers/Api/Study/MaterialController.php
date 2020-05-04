@@ -80,7 +80,7 @@ class MaterialController extends Controller
 
         $lectureDao = new LectureDao();
 
-        $return = $lectureDao->getMaterialByCourseId($courseId, $typeId, $user->id, false);
+        $return = $lectureDao->getMaterialByCourseId($courseId, $typeId, $user->id);
 
         $material = [];
         $grade = [];
