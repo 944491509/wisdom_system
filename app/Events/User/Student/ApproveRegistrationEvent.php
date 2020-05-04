@@ -3,6 +3,7 @@
 namespace App\Events\User\Student;
 
 use App\Dao\Schools\MajorDao;
+use App\Dao\Schools\OrganizationDao;
 use App\Events\CanReachByMobilePhone;
 use App\Models\Misc\SystemNotification;
 use App\Models\RecruitStudent\RegistrationInformatics;
@@ -64,8 +65,11 @@ class ApproveRegistrationEvent extends AbstractRegistrationEvent
 
     public function getAdmissionOfficeMobile()
     {
-        // todo: 实现获取招生办电话的方法
-        return 100000;
+        $dao = new OrganizationDao;
+        $result = $dao->getByName($this->form->school_id, '招生办');
+        if ($result) {
+            return $result->name;
+        }
     }
 
     /**

@@ -12,6 +12,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Dao\Schools\SchoolDao;
 use App\Dao\Schools\MajorDao;
+use App\Dao\Schools\OrganizationDao;
 
 class RefuseRegistrationEvent extends AbstractRegistrationEvent
 {
@@ -56,7 +57,11 @@ class RefuseRegistrationEvent extends AbstractRegistrationEvent
 
     public function getAdmissionOfficeMobile()
     {
-        return 100000;
+        $dao = new OrganizationDao;
+        $result = $dao->getByName($this->form->school_id, '招生办');
+        if ($result) {
+            return $result->name;
+        }
     }
 
     public function getForm(): RegistrationInformatics
