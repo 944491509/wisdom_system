@@ -30,7 +30,7 @@
               :visible.sync="addDrawer"
               direction="rtl">
               <template slot="title">
-                  <div class="add-Meeting-title"><span class="title-icon"></span>创建会议</div>
+                  <div class="add-meeting-title"><span class="title-icon"></span>创建会议</div>
               </template>
               <Meeting-form ref="addMeetingForm" @done="onMeetingCreated" :currentUserId="currentUserId"/>
             </el-drawer>

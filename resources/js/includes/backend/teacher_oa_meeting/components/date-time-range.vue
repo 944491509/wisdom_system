@@ -29,6 +29,8 @@
   </div>
 </template>
 <script>
+import moment from "moment";
+
 export default {
   name: "date-time-picker",
   data() {
@@ -46,8 +48,13 @@ export default {
       deep: true,
       handler(val) {
         if (val.startTime && val.endTime && val.date) {
-            debugger
-          this.$emit("input", 123);
+          let datestr = moment(val.date).format("YYYY-MM-DD");
+          this.$emit("input", [
+            datestr + " " + val.startTime,
+            datestr + " " + val.endTime
+          ]);
+        } else {
+          this.$emit("input", "");
         }
       }
     }
@@ -65,8 +72,8 @@ export default {
     flex: 1;
     ::v-deep .el-input__inner {
       border: none;
-      height: 32px;
-      line-height: 32px;
+      // height: 32px;
+      // line-height: 32px;
       border-radius: 0;
       border-right: 1px solid #efefef;
       padding-right: 0;
@@ -78,8 +85,8 @@ export default {
     .split {
       flex: none;
     }
-    .split.disabled{
-        background-color: #F5F7FA;
+    .split.disabled {
+      background-color: #f5f7fa;
     }
     .el-date-editor--time-select {
       flex: 1;

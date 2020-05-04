@@ -55,14 +55,7 @@
         </el-form-item>
 
         <el-form-item label="开始签到时间" v-if="form.signin_status">
-          <el-date-picker
-            v-model="form.signinRange"
-            type="datetimerange"
-            format="yyyy-MM-dd HH:mm"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
+          <date-time-range v-model="form.signinRange" />
         </el-form-item>
         <el-form-item label="会议结束签退">
           <el-radio-group v-model="form.signout_status">
@@ -70,22 +63,12 @@
             <el-radio :label="1">需要</el-radio>
           </el-radio-group>
         </el-form-item>
-
         <el-form-item label="结束签退时间" v-if="form.signout_status">
-          <el-date-picker
-            v-model="form.signoutRange"
-            type="datetimerange"
-            format="yyyy-MM-dd HH:mm"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
+          <date-time-range v-model="form.signoutRange" />
         </el-form-item>
-
         <el-form-item label="会议说明">
           <el-input type="textarea" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
         </el-form-item>
-
         <el-form-item label>
           <div class="file-box" v-for="(file, index) in filelist" :key="index">
             <div class="name">{{file.name}}</div>
@@ -126,7 +109,7 @@ import { searchMemberDebounce } from "../../teacher_oa_tasks/common/utils";
 import { deepClone } from "../common/utils";
 import { converSize } from "../../teacher_oa_message/common/utils";
 import moment from "moment";
-import DateTimeRange from './date-time-range'
+import DateTimeRange from "./date-time-range";
 
 export default {
   name: "task-form",
@@ -153,34 +136,22 @@ export default {
       }
       if (this.form.signout_status && !this.form.signoutRange) {
         this.$message.error("请选择签退时间");
-        return
+        return;
       }
       if (!this.form.meet_content) {
         this.$message.error("请填写会议说明");
-        return
+        return;
       }
       let formdata = deepClone(this.form);
-      formdata.meet_start = moment(this.form.timeRange[0]).format(
-        "YYYY-MM-DD hh:mm"
-      );
-      formdata.meet_end = moment(this.form.timeRange[1]).format(
-        "YYYY-MM-DD hh:mm"
-      );
+      formdata.meet_start = this.form.timeRange[0];
+      formdata.meet_end = this.form.timeRange[1];
       if (this.form.signin_status) {
-        formdata.signin_start = moment(this.form.signinRange[0]).format(
-          "YYYY-MM-DD hh:mm"
-        );
-        formdata.signin_end = moment(this.form.signinRange[1]).format(
-          "YYYY-MM-DD hh:mm"
-        );
+        formdata.signin_start = this.form.signinRange[0];
+        formdata.signin_end = this.form.signinRange[1];
       }
       if (this.form.signout_status) {
-        formdata.signout_start = moment(this.form.signoutRange[0]).format(
-          "YYYY-MM-DD hh:mm"
-        );
-        formdata.signout_end = moment(this.form.signoutRange[1]).format(
-          "YYYY-MM-DD hh:mm"
-        );
+        formdata.signout_start = this.form.signoutRange[0];
+        formdata.signout_end = this.form.signoutRange[1];
       }
       delete formdata.signoutRange;
       delete formdata.signinRange;

@@ -35,6 +35,22 @@
       <span class="title">会议说明</span>
       <span class="content">{{meeting.meet_content}}</span>
     </div>
+    <div class="detail-item" v-if="meeting.fields && meeting.fields.length > 0">
+      <span class="title">附件</span>
+      <span class="content">
+        <div class="message-files">
+          <div class="files">
+            <div class="file" v-for="(file, index) in meeting.fields" :key="index">
+              <div class="file-name">{{file.file_name}}</div>
+              <div class="file-info">
+                <span class="download" @click="downloadFile(file)"></span>
+                <!-- <span class="size">{{file.size}}</span> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </span>
+    </div>
     <div class="btn-box">
       <el-button size="small" class="info" v-if="isMine || finished" @click="check('info')">会议纪要</el-button>
       <el-button
@@ -65,10 +81,10 @@
     >
       <template slot="title">
         <div class="meeting-detail-title">
-          <span class="title-icon"></span> 详情
+          <title-icon :type="infoType" />详情
         </div>
       </template>
-      <info :type="infoType" :stateType="type" :meetid="meetingId"/>
+      <info :type="infoType" :stateType="type" :meetid="meetingId" />
     </el-drawer>
   </div>
 </template>
@@ -76,24 +92,30 @@
 import { MeetingApi } from "../common/api";
 import { MeetingMode } from "../common/enum";
 import Info from "../components/info";
+import TitleIcon from "./title-icon";
 import { getQueryString } from "../../teacher_oa_tasks/common/utils";
+import { DownLoadUtil } from "../../teacher_oa_message/common/utils";
 export default {
   name: "meeting-detail",
   components: {
-    Info
+    Info,
+    TitleIcon
   },
   data() {
     return {
       meeting: {},
       statusText: "",
       type: "",
-      infoType: '',
+      infoType: "",
       showDetail: false
     };
   },
   computed: {
     isMine() {
       return this.type === MeetingMode.oneselfCreate.status;
+    },
+    finished() {
+      return this.type === MeetingMode.accomplish.status;
     }
   },
   methods: {
@@ -110,8 +132,26 @@ export default {
       });
     },
     check(type) {
-        this.infoType = type
-        this.showDetail = true
+      this.infoType = type;
+      this.showDetail = true;
+    },
+    downloadFile(file) {
+      window
+        .axios({
+          url: file.url,
+          method: "GET",
+          responseType: "blob" // important
+        })
+        .then(response => {
+          DownLoadUtil.download(new Blob([response.data]), file.name);
+        })
+        .catch(e => {
+          if (e.response.status === 404) {
+            this.$message.error("附件不存在");
+          } else {
+            this.$message.error("附件下载失败");
+          }
+        });
     }
   },
   created() {
@@ -184,5 +224,48 @@ export default {
     border-color: #fe7b1c;
     color: #ffffff;
   }
+}
+.message-files {
+  .files {
+    .file {
+      display: flex;
+      margin-top: 12px;
+      background: #f2f9ff;
+      padding: 14px;
+
+      .file-name {
+        flex: 1;
+        color: #414a5a;
+        align-self: center;
+      }
+
+      .file-info {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .download {
+          background-image: url("../../teacher_oa_message/assets/download.png");
+          background-size: contain;
+          background-repeat: no-repeat;
+          display: inline-block;
+          width: 22px;
+          height: 22px;
+          cursor: pointer;
+        }
+
+        .size {
+          color: #c5cad0;
+          margin-top: 6px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+.meeting-detail-title {
+  display: flex;
+  align-items: center;
 }
 </style>
