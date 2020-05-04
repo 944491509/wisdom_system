@@ -122,23 +122,36 @@ class NewMeetingDao
         }
         $meetIds = array_column($meetUser, 'meet_id');
         // 不需要签退
-        $map = [
-            ['new_meetings.meet_end', '>=', $now],
-            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
-            ['new_meetings.signout_status', '=', NewMeeting::NOT_SIGNOUT],
-        ];
-        // 需要签退
-        $where = [
-            ['new_meetings.signout_end', '>=', $now],
-            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
-            ['new_meetings.signout_status', '=', NewMeeting::SIGNOUT],
-        ];
+//        $map = [
+//            ['new_meetings.meet_end', '>=', $now],
+//            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
+//            ['new_meetings.signout_status', '=', NewMeeting::NOT_SIGNOUT],
+//        ];
+//        // 需要签退
+//        $where = [
+//            ['new_meetings.signout_end', '>=', $now],
+//            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
+//            ['new_meetings.signout_status', '=', NewMeeting::SIGNOUT],
+//        ];
 
 
-        return NewMeeting::where($map)
-            ->orWhere($where)
-            ->whereIn('id', $meetIds)
-            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+//        return NewMeeting::where($map)
+//            ->orWhere($where)
+//            ->whereIn('id', $meetIds)
+//            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        NewMeeting::whereIn('id', $meetIds)
+            ->where(function ($que) use($now) {
+                $que->where(function ($que) use($now) {
+                    $que->where('new_meetings.meet_end', '>=', $now)
+                        ->where('new_meetings.status', '=', NewMeeting::STATUS_PASS)
+                        ->where('new_meetings.signout_status', '=', NewMeeting::NOT_SIGNOUT);
+                } )
+                    ->orWhere(function ($que) use($now) {
+                    $que->where('new_meetings.signout_end', '>=', $now)
+                        ->where('new_meetings.status', '=', NewMeeting::STATUS_PASS)
+                        ->where('new_meetings.signout_status', '=', NewMeeting::SIGNOUT);
+                    });
+            })->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
 
