@@ -298,8 +298,8 @@ class LectureDao
         }
 
         $lectureIds = $re->pluck('lecture_id')->toArray();
-        array_unique($lectureIds);
-        return Lecture::where('id', $lectureIds)
+        $lectureIds = array_unique($lectureIds);
+        return Lecture::whereIn('id', $lectureIds)
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
