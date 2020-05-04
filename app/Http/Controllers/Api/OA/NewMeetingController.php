@@ -70,6 +70,15 @@ class NewMeetingController extends Controller
     public function addMeeting(MeetingRequest $request) {
         $user = $request->user();
         $data = $request->all();
+        $schoolId = $request->user()->getSchoolId();
+        $dao = new NewMeetingDao();
+        // 判断当前会议室是否被占用
+        if($data['type'] == NewMeeting::TYPE_MEETING_ROOM) {
+            $re = $dao->getMeetingByTime($data['room'], $data['meet_start'], $data['meet_end']);
+            if(!is_null($re)) {
+                return JsonBuilder::Error('当前时间段该会议室有会议');
+            }
+        }
 
         // 签退时间应大于会议时间
         if($data['signout_status'] == NewMeeting::SIGNOUT) {
@@ -90,12 +99,12 @@ class NewMeetingController extends Controller
         }
 
         $data['user_id'] = $user->id;
-        $data['school_id'] = $request->user()->getSchoolId();
+        $data['school_id'] = $schoolId;
         $users = $data['user'];
         unset($data['user']);
         unset($data['file']);
         $file = $request->file('file');
-        $dao = new NewMeetingDao();
+
 
         array_push($users, $data['approve_userid']);
         $users = array_unique($users);
@@ -669,6 +678,21 @@ class NewMeetingController extends Controller
 
 
         return JsonBuilder::Success($data);
+    }
+
+
+    /**
+     * 获取会议室列表
+     * @param MeetingRequest $request
+     * @return string
+     */
+    public function getMeetRoomList(MeetingRequest $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $roomDao = new RoomDao();
+        $type = Room::TYPE_MEETING_ROOM;
+        $list = $roomDao->getRoomByType($schoolId,$type);
+        return JsonBuilder::Success($list);
     }
 
 

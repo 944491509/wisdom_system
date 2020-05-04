@@ -38,6 +38,10 @@ class OaController extends Controller
         return view('teacher.ly.oa.meetings',$this->dataForView);
     }
 
+    public function meeting_detail(Request $request){
+        return view('teacher.ly.oa.meeting_detail',$this->dataForView);
+    }
+
     public function tasks(Request $request){
         return view('teacher.ly.oa.tasks',$this->dataForView);
     }

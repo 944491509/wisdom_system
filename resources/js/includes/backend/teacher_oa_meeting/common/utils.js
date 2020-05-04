@@ -53,102 +53,6 @@ const searchMember = function (keyword, call) {
   })
 }
 
-export class DownLoadUtil {
-  static download(blob, filename) {
-		let b = DownLoadUtil.getBrowser();
-		switch (b) {
-			case "ie":
-				navigator.msSaveBlob(blob, filename);
-				break;
-			case "edge":
-				navigator.msSaveBlob(blob, filename);
-				break;
-			case "opera":
-				DownLoadUtil.fetchDown(blob, filename);
-				break;
-			case "maxthon win":
-				DownLoadUtil.fetchDown(blob, filename);
-				break;
-			// case "maxthon":
-			// 	call(url);
-			// 	break;
-			case "firefox":
-				DownLoadUtil.fetchClickDown(blob, filename);
-				break;
-			// case "safari":
-			// 	call(url);
-			// 	break;
-			case "chrome":
-				DownLoadUtil.fetchDown(blob, filename);
-				break;
-			default:
-				try {
-					DownLoadUtil.fetchDown(blob, filename);
-				} catch (e) {
-					alert(e);
-					//TODO handle the exception
-				}
-				break;
-		}
-	}
-
-	static fetchDown(blob, filename) {
-		var urlObject = window.URL || window.webkitURL || window;
-		var a = document.createElement('a');
-		var url = urlObject.createObjectURL(blob);
-		a.href = url;
-		a.download = filename;
-		a.click();
-		window.URL.revokeObjectURL(url)
-	}
-
-	static fetchClickDown(blob, filename) {
-		var urlObject = window.URL || window.webkitURL || window;
-		var save_link = document.createElement("a");
-		save_link.href = urlObject.createObjectURL(blob);
-		save_link.download = filename;
-		DownLoadUtil.fakeClick(save_link)
-	}
-
-	static fakeClick (obj) {
-		var ev = document.createEvent("MouseEvents");
-		ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		obj.dispatchEvent(ev)
-	}
-
-	static getBrowser () {
-		if (!!window.ActiveXObject || "ActiveXObject" in window) {
-			return "ie"
-		}
-		var userAgent = navigator.userAgent.toLocaleLowerCase();
-		if (userAgent.indexOf("opr") > -1) {
-			return "opera";
-		}
-		if (userAgent.indexOf("maxthon") > -1) {
-			if (userAgent.indexOf("windows") > -1) {
-				return "maxthon win"
-			}
-			return "maxthon"
-		}
-		if (userAgent.indexOf("edge") > -1) {
-			return "edge"
-		}
-		if (userAgent.indexOf("firefox") > -1) {
-			return "firefox"
-		}
-		if (userAgent.indexOf("safari") > -1 && userAgent.indexOf("chrome") == -1) {
-			return "safari"
-		}
-
-		if (userAgent.indexOf("chrome") > -1) {
-			return "chrome"
-		}
-		return 'other';
-	};
-
-}
-
-
 export function converSize(limit) {
   var size = "";
   if (limit < 0.1 * 1024) { //如果小于0.1KB转化成B  
@@ -171,16 +75,32 @@ export function converSize(limit) {
 }
 
 export const InnerStorage = (() => {
-	var storage = {}
-	return {
-		set(key,val){
-			storage[key] = val
-			return this
-		},
-		get(key){
-			return storage[key]
-		}
-	}
+  var storage = {}
+  return {
+    set(key, val) {
+      storage[key] = val
+      return this
+    },
+    get(key) {
+      return storage[key]
+    }
+  }
 })()
 
 export const searchMemberDebounce = debounce(searchMember, 500)
+
+export function deepClone(obj) {
+  var objClone = Array.isArray(obj) ? [] : {};
+  if (obj && typeof obj === "object") {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (obj[key] && typeof obj[key] === "object") {
+          objClone[key] = deepClone(obj[key]);
+        } else {
+          objClone[key] = obj[key];
+        }
+      }
+    }
+  }
+  return objClone;
+}
