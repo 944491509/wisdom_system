@@ -10,6 +10,7 @@ use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
 use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\Users\GradeUser;
+use App\User;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -110,6 +111,17 @@ class UsersController extends Controller
                             'scope'=>'registration',
                         ];
 
+                        if(!empty($nextAction)){
+                            $item['nextAction'] = $nextAction;
+                        }
+                    }
+                    elseif ($gradeUser instanceof User) {
+                        //超级管理员没有gradeuser
+                        $item = [
+                            'id' => $gradeUser->id,
+                            'value' => $gradeUser->name,
+                            'scope' => 'super'
+                        ];
                         if(!empty($nextAction)){
                             $item['nextAction'] = $nextAction;
                         }

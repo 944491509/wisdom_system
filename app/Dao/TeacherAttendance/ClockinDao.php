@@ -311,7 +311,7 @@ class ClockinDao
             $clocksets[$clockset->week] = $clockset;
         }
 
-        $groupDays = $dao->groupDayArray($attendance, $monthStart, $monthEnd);
+
         //出勤临时列表
         $clockinList = [];
         //迟到+严重列表
@@ -329,11 +329,12 @@ class ClockinDao
         //出差列表
         $travelList = ['num' => 0, 'list' => []];
 
-        $leaveALl = $attendance->leaves()->where([
-            ['user_id', '=', $userId],
-            ['start', '<=', $monthStart->format('Y-m-d H:i:s')],
-            ['end', '>=', $monthEnd->format('Y-m-d H:i:s')]
-        ])->get();
+        $leaveALl = $attendance->leaves()->where('user_id', '=', $userId)->where(function ($query) use($monthStart, $monthEnd) {
+            $query->where([['start', '>=', $monthStart->format('Y-m-d H:i:s')], ['start', '<=', $monthEnd->format('Y-m-d H:i:s')]])
+                ->orWhere([['end', '>=', $monthStart->format('Y-m-d H:i:s')], ['end', '<=', $monthEnd->format('Y-m-d H:i:s')]]);
+        })->get();
+
+        $groupDays = $dao->groupDayArray($attendance, $monthStart, $monthEnd);
 
         if ($leaveALl) {
             foreach ($leaveALl as $leave) {

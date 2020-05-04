@@ -15,7 +15,7 @@ class Action extends Model implements IAction
     public $table = 'pipeline_actions';
     protected $fillable = [
         'flow_id','node_id',
-        'result','content','user_id','urgent',
+        'result','content','user_id','urgent','is_start',
         'transaction_id', // 标识动作属于同一流程的唯一识别号
     ];
 
