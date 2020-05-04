@@ -270,32 +270,38 @@ class LectureDao
      * @param $courseId
      * @param $type
      * @param $teacherId
-     * @param bool $isPage
      * @return mixed
      */
-    public function getMaterialByCourseId($courseId, $type, $teacherId, $isPage = true) {
+    public function getMaterialByCourseId($courseId, $type, $teacherId) {
         $map = [
             ['course_id', '=', $courseId],
             ['type', '=', $type],
             ['teacher_id', '=', $teacherId],
             ['media_id', '<>', 0]
         ];
-        $re = LectureMaterial::where($map)
+        return LectureMaterial::where($map)
             ->select('lecture_id')
             ->distinct('distinct')
             ->get();
+    }
 
+
+    /**
+     * 根据课程查询老师上传的学习资料
+     * @param $courseId
+     * @param $type
+     * @param $teacherId
+     * @return |null
+     */
+    public function getMaterialByCourseIdAndTeacher($courseId, $type, $teacherId) {
+        $re = $this->getMaterialByCourseId($courseId, $type, $teacherId);
         if(count($re) == 0) {
             return null;
         }
+
         $lectureIds = $re->pluck('lecture_id')->toArray();
-        $result = LectureMaterial::whereIn('lecture_id', $lectureIds);
-
-        if($isPage) {
-            return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
-        }
-
-        return $result->get();
+        return Lecture::where('id', $lectureIds)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
     /**
