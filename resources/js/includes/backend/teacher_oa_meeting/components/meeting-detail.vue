@@ -2,6 +2,7 @@
   <div class="detail detail-panel">
     <div class="title">
       <span>{{statusText}}</span>
+      <span class="return-back" @click="goback"></span>
     </div>
     <div class="detail-item">
       <span class="title">会议主题</span>
@@ -84,7 +85,7 @@
           <title-icon :type="infoType" />详情
         </div>
       </template>
-      <info :type="infoType" :stateType="type" :meetid="meetingId" />
+      <info :type="infoType" :stateType="type" :meetid="meetingId" :detail="meeting" />
     </el-drawer>
   </div>
 </template>
@@ -152,6 +153,10 @@ export default {
             this.$message.error("附件下载失败");
           }
         });
+    },
+    goback() {
+      window.localStorage.setItem('meetingMode', this.type)
+      window.location.href = "/teacher/ly/oa/meetings"
     }
   },
   created() {
@@ -176,6 +181,18 @@ export default {
 
     .el-button {
       float: right;
+    }
+    .return-back {
+      background-image: url(../assets/icon-return.png);
+      height: 30px;
+      width: 30px;
+      float: right;
+      background-size: contain;
+      cursor: pointer;
+      transition: all 0.4s;
+    }
+    .return-back:hover {
+      transform: scale(1.1);
     }
   }
 

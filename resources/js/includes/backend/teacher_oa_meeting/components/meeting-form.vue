@@ -3,12 +3,12 @@
     <div class="form">
       <el-form ref="form" :model="form" label-width="120px">
         <el-form-item class="is-required" label="会议主题">
-          <el-input v-model="form.meet_title" placeholder="请输入会议主题"></el-input>
+          <el-input v-model="form.meet_title" placeholder="请输入会议主题" maxlength="20"></el-input>
         </el-form-item>
-        <el-form-item label="会议时间">
+        <el-form-item class="is-required" label="会议时间">
           <date-time-range v-model="form.timeRange" />
         </el-form-item>
-        <el-form-item label="会议地点">
+        <el-form-item class="is-required" label="会议地点">
           <el-select v-model="form.room" placeholder="请输入">
             <el-option
               v-for="item in addressOptions"
@@ -66,8 +66,8 @@
         <el-form-item label="结束签退时间" v-if="form.signout_status">
           <date-time-range v-model="form.signoutRange" />
         </el-form-item>
-        <el-form-item label="会议说明">
-          <el-input type="textarea" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
+        <el-form-item class="is-required" label="会议说明">
+          <el-input type="textarea" :rows="5" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
         </el-form-item>
         <el-form-item label>
           <div class="file-box" v-for="(file, index) in filelist" :key="index">
@@ -112,7 +112,7 @@ import moment from "moment";
 import DateTimeRange from "./date-time-range";
 
 export default {
-  name: "task-form",
+  name: "meeting-form",
   components: {
     MemberSelect,
     DateTimeRange
@@ -123,8 +123,12 @@ export default {
         this.$message.error("请输入会议主题");
         return;
       }
-      if (!this.form.approve_userid) {
-        this.$message.error("请选择负责人");
+      if (!this.form.timeRange || this.form.timeRange.length === 0) {
+        this.$message.error("请选择会议时间");
+        return;
+      }
+      if (null == this.form.room || undefined == this.form.room || '' == this.form.room) {
+        this.$message.error("请选择会议地点");
         return;
       }
       if (!this.form.user || this.form.user.length < 1) {

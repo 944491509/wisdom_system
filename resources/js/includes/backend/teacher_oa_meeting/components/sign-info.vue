@@ -33,14 +33,14 @@
               <avatar :src="sign.avatar" />
             </div>
             <span class="name">{{sign.user_name}}</span>
-            <div class="sign-desc">
+            <div class="sign-desc" :style="!detail.signin_time?{visibility: 'hidden'}:{}">
               <div class="sign-title">会前</div>
               <div
                 class="status"
                 :class="{'checked': sign.signin_status}"
               >{{sign.signin_status?'已签到':'未签到'}}</div>
             </div>
-            <div class="sign-desc">
+            <div class="sign-desc" :style="!detail.signout_time?{visibility: 'hidden'}:{}">
               <div class="sign-title">会后</div>
               <div
                 class="status"
@@ -99,7 +99,8 @@ export default {
       signInfo: {},
       signStat: {},
       record: [],
-      page: 1
+      page: 1,
+      detail: {}
     };
   },
   computed: {
@@ -146,6 +147,7 @@ export default {
   created() {
     this.type = this.$attrs.type;
     this.meetid = this.$attrs.meetid;
+    this.detail = this.$attrs.detail || {};
     this.init();
   }
 };

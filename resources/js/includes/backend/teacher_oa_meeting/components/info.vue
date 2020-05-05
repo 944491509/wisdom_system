@@ -1,5 +1,5 @@
 <template>
-    <component :is="current" :type='stateType' :meetid="meetid" :view="type"/>
+    <component :is="current" :type='stateType' :meetid="meetid" :view="type" :detail="detail"/>
 </template>
 <script>
 import SignInfo from './sign-info.vue'
@@ -20,6 +20,10 @@ export default {
         },
         meetid: {
             default: null
+        },
+        detail: {
+            type: Object,
+            default: Object
         }
     },
     components: {
