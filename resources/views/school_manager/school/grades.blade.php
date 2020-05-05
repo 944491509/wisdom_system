@@ -91,8 +91,8 @@ $years = \App\Utils\Time\GradeAndYearUtil::GetAllYears();
                                         </td>
                                         <td class="text-center">
                                             <a class="students-counter" href="{{ route('teacher.grade.users',['type'=>User::TYPE_STUDENT,'by'=>'grade','uuid'=>$grade->id]) }}">{{ $grade->studentsCount() }}</a>
-                                            <a class="students-counter" href="{{ route('teacher.grade.students',['type'=>User::STATUS_SUSPENSION,'grade_id'=>$grade->id]) }}">{{ $grade->studentsOutOfSchoolCount() }}</a>
-                                            <a class="students-counter" href="{{ route('teacher.grade.students',['type'=>User::STATUS_DROP_OUT,'grade_id'=>$grade->id]) }}">{{ $grade->studentsSuspensionSchoolCount() }}</a>
+                                            <a class="students-counter" style="color: #f58a04" href="{{ route('teacher.grade.students',['type'=>User::STATUS_SUSPENSION,'grade_id'=>$grade->id]) }}">{{ $grade->studentsSuspensionSchoolCount() }}</a>
+                                            <a class="students-counter" style="color: #ff0000" href="{{ route('teacher.grade.students',['type'=>User::STATUS_DROP_OUT ,'grade_id'=>$grade->id]) }}">{{ $grade->studentsOutOfSchoolCount() }}</a>
                                         </td>
                                         <td class="text-center">
                                             <a target="_blank" href="{{ route('school_manager.textbook.grade',['type'=>User::TYPE_STUDENT,'by'=>'grade','uuid'=>$grade->id]) }}" class="btn btn-round btn-primary btn-view-timetable">
