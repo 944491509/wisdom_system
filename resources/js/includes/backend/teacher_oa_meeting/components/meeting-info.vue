@@ -10,6 +10,7 @@
           <div
             class="item summary-image"
             v-for="(item, index) in summary.summaries"
+            @click="showImageViewer(summary.summaries, index)"
             :key="index"
             :style="{backgroundImage: `url(${item.url})`}"
           ></div>
@@ -19,11 +20,19 @@
     <template v-else>
       <div class="one-summary">
         <div class="item" v-for="(item, index) in oneSummary" :key="'common'+index">
-          <div class="img summary-image" :style="{backgroundImage: `url(${item.url})`}"></div>
+          <div
+            class="img summary-image"
+            @click="showImageViewer(oneSummary, index)"
+            :style="{backgroundImage: `url(${item.url})`}"
+          ></div>
           <div class="name">{{item.file_name}}</div>
         </div>
         <div class="item" v-for="(item, index) in oneSummaryTosubmit" :key="'upload'+index">
-          <div class="img" :style="{backgroundImage: `url(${item.src})`}"></div>
+          <div
+            class="img"
+            @click="showImageViewer(oneSummaryTosubmit, index, 'src')"
+            :style="{backgroundImage: `url(${item.src})`}"
+          ></div>
           <div class="name">{{item.name}}</div>
           <div class="delete" @click="remove(index)">删除</div>
         </div>
@@ -53,21 +62,34 @@
         >确定</el-button>
       </div>
     </template>
+    <el-image-viewer
+      ref="imageViewer"
+      v-if="showViewer"
+      :on-close="closeViewer"
+      :url-list="viewList"
+    />
   </div>
 </template>
 <script>
 import { MeetingMode } from "../common/enum";
 import { MeetingApi, submitSummary } from "../common/api";
 import { getFileURL } from "../../teacher_oa_tasks/common/utils";
+import ElImageViewer from "element-ui/packages/image/src/image-viewer";
+
 export default {
   name: "MeetingInfo",
+  components: {
+    ElImageViewer
+  },
   data() {
     return {
       type: "",
       submiting: false,
       allSummary: [],
       oneSummary: [],
-      oneSummaryTosubmit: []
+      oneSummaryTosubmit: [],
+      viewList: [],
+      showViewer: false
     };
   },
   computed: {
@@ -125,6 +147,18 @@ export default {
         } else {
           this.oneSummary = res.data.data;
         }
+      });
+    },
+    closeViewer() {
+      this.showViewer = false;
+    },
+    showImageViewer(summarys, index, key) {
+      this.showViewer = true;
+      this.viewList = summarys.map(item => {
+        return key ? item[key] : item.url;
+      });
+      this.$nextTick(() => {
+        this.$refs.imageViewer.index = index;
       });
     }
   },
