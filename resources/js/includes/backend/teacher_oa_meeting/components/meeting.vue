@@ -1,7 +1,12 @@
 <template>
   <div>
     <div>
-      <div class="list-item" v-for="(meeting, index) in list" :key="index" @click="checkDetail(meeting)">
+      <div
+        class="list-item"
+        v-for="(meeting, index) in list"
+        :key="index"
+        @click="checkDetail(meeting)"
+      >
         <div class="meeting">
           <div class="meet-list">
             <div class="item">
@@ -20,13 +25,21 @@
               <span class="title">会议时间</span>
               <span class="content">{{ meeting.meet_time }}</span>
             </div>
-            <div class="item">
+            <div class="item" v-if="meeting.is_signin">
               <span class="title">签到时间</span>
               <span class="content">{{ meeting.signin_time }}</span>
             </div>
             <div class="sign-info" v-if="isAcomplished">
-              <div class="sign-in" :class="{checked: meeting.signin_status}">{{meeting.signin_status?'按时签到':'未签到'}}</div>
-              <div class="sign-in" :class="{checked: meeting.signin_status}">{{meeting.signin_status?'按时签退':'未签退'}}</div>
+              <div
+                class="sign-in"
+                v-if="meeting.is_signin"
+                :class="{checked: meeting.signin_status}"
+              >{{meeting.signin_status?'按时签到':'未签到'}}</div>
+              <div
+                class="sign-in"
+                v-if="meeting.is_signout"
+                :class="{checked: meeting.signin_status}"
+              >{{meeting.signin_status?'按时签退':'未签退'}}</div>
             </div>
           </div>
         </div>
@@ -56,8 +69,8 @@ export default {
     }
   },
   computed: {
-    isAcomplished(){
-      return this.mode === MeetingMode.accomplish.status
+    isAcomplished() {
+      return this.mode === MeetingMode.accomplish.status;
     }
   },
   data() {
@@ -77,13 +90,17 @@ export default {
   },
   methods: {
     checkDetail(meeting) {
-      window.location.href = "/teacher/ly/oa/meeting/detail?id=" + meeting.meet_id + '&type='+this.mode;
+      window.location.href =
+        "/teacher/ly/oa/meeting/detail?id=" +
+        meeting.meet_id +
+        "&type=" +
+        this.mode;
     },
     getMeetingList() {
       MeetingApi.excute(
         "list",
         {
-          page: this.pagination.page,
+          page: this.pagination.page
         },
         { url: this.mode, methods: "get" }
       ).then(res => {
@@ -126,8 +143,8 @@ export default {
           color: #333333;
         }
       }
-      .sign-info{
-        .sign-in{
+      .sign-info {
+        .sign-in {
           display: inline-block;
           padding: 8px 24px;
           color: #b7b7b7;
@@ -135,9 +152,9 @@ export default {
           border: 1px dashed #b7b7b7;
           margin-right: 14px;
         }
-        .sign-in.checked{
-          color: #6DCC58;
-          border-color: #6DCC58;
+        .sign-in.checked {
+          color: #6dcc58;
+          border-color: #6dcc58;
           background-color: #ebfee3;
         }
       }

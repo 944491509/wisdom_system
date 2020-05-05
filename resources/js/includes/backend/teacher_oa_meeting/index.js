@@ -6,7 +6,12 @@ import {
 } from './common/enum'
 import MeetingList from './components/meeting'
 import MeetingForm from './components/meeting-form'
-import { MeetingApi } from './common/api'
+import {
+  MeetingApi
+} from './common/api'
+import {
+  getQueryString
+} from "../teacher_oa_tasks/common/utils";
 
 const APPID = 'teacher-oa-meeting-app'
 let app = document.getElementById(APPID)
@@ -38,7 +43,7 @@ if (app) {
           this.$refs[val][0].getMeetingList()
         }
       },
-      showCreateModal(){
+      showCreateModal() {
         this.addDrawer = true
       },
       checkClose(close) {
@@ -64,7 +69,13 @@ if (app) {
       }
     },
     created() {
-      this.activeName = 'unfinished'
+      let mode = window.localStorage.getItem('meetingMode')
+      if (mode) {
+        this.activeName = mode
+        window.localStorage.setItem('meetingMode', '')
+      } else {
+        this.activeName = 'unfinished'
+      }
       MeetingApi.excute("getTeacherInfo").then(res => {
         this.currentUserId = res.data.data.user_id;
       });
