@@ -40,6 +40,17 @@ class Organization extends Model
         ];
     }
 
+
+    /**
+     * 获取title
+     * @param $titleId
+     * @return mixed|string
+     */
+    public static function getTitleByTitleId($titleId) {
+        $all = self::AllTitles();
+        return $all[$titleId] ?? '';
+    }
+
     /**
      * 部门的成员
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

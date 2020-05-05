@@ -302,7 +302,10 @@ class NewMeetingController extends Controller
 
         $fields = [];
         foreach ($info->files as $item) {
-            $fields[] = $item->url;
+            $fields[] = [
+                'url'=>$item->url,
+                'file_name' => $item->file_name,
+            ];
         }
 
         $status = 0;  // 隐藏

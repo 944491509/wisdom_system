@@ -36,10 +36,10 @@
             </li>
         </ul>
 
-        @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())
+{{--        @if(\Illuminate\Support\Facades\Auth::user()->isSchoolAdminOrAbove())--}}
         <p class="mt-4">
             <a href="{{ route('teacher.profile.modify',['uuid'=>$profile->uuid]) }}" class="btn btn-primary">修改</a>
         </p>
-        @endif
+{{--        @endif--}}
     </div>
 </div>

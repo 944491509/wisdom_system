@@ -1,5 +1,5 @@
 <?php
-Route::prefix('manager_welcome')->group(function ()
+Route::prefix('manager_welcome')->middleware('simpleacl')->group(function ()
 {
     // 迎新配置
     Route::get('/welcome-config/index','Welcome\WelcomeConfigController@index')
