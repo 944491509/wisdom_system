@@ -295,5 +295,19 @@ class GradeUserDao
             ->update($data);
     }
 
+    /**
+     * 获取退学休学的学生
+     * @param $gradeId
+     * @param $type
+     * @return mixed
+     */
+    public function getStudentsByGradeId($gradeId, $type)
+    {
+        return GradeUser::where('grade_id', $gradeId)
+            ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->where('grade_users.user_type', Role::REGISTERED_USER)
+            ->where('users.status', $type)
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
 
 }

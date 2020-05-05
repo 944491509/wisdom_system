@@ -140,7 +140,8 @@ class Role extends BaseRole
 
     public static function GetStudentUserTypes(){
         return [
-            Role::VERIFIED_USER_STUDENT, Role::VERIFIED_USER_CLASS_LEADER, Role::VERIFIED_USER_CLASS_SECRETARY, Role::REGISTERED_USER
+            // Role::REGISTERED_USER
+            Role::VERIFIED_USER_STUDENT, Role::VERIFIED_USER_CLASS_LEADER, Role::VERIFIED_USER_CLASS_SECRETARY
         ];
     }
 

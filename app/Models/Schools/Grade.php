@@ -29,6 +29,33 @@ class Grade extends Model
         return GradeUser::where('grade_id', $this->id)->whereIn('user_type',Role::GetStudentUserTypes())->count();
     }
 
+
+    /**
+     * 退学
+     * @return mixed
+     */
+    public function studentsOutOfSchoolCount()
+    {
+        return GradeUser::where('grade_id', $this->id)
+            ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->where('grade_users.user_type', Role::REGISTERED_USER)
+            ->where('users.status', User::STATUS_DROP_OUT)
+            ->count();
+    }
+
+    /**
+     * 休学
+     * @return mixed
+     */
+    public function studentsSuspensionSchoolCount()
+    {
+        return GradeUser::where('grade_id', $this->id)
+            ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->where('grade_users.user_type', Role::REGISTERED_USER)
+            ->where('users.status', User::STATUS_SUSPENSION)
+            ->count();
+    }
+
     public function gradeUser()
     {
         return $this->hasMany(GradeUser::class);
