@@ -232,7 +232,10 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
             // 教师或者职工
             return $this->hasOne(TeacherProfile::class,'user_id');
         } elseif (in_array($this->type, Role::GetStudentUserTypes())){
-            // 已认证学生 或者 已注册未认证
+            // 已认证学生
+            return $this->hasOne(StudentProfile::class,'user_id');
+        } elseif ($this->type ==  Role::REGISTERED_USER) {
+            // 已注册未认证
             return $this->hasOne(StudentProfile::class,'user_id');
         }
         else{

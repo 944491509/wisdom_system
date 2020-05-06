@@ -348,7 +348,7 @@ class IndexController extends Controller
         }
 
         if ($type == UserVerification::PURPOSE_2 && empty($user)) {
-            return JsonBuilder::Error('该手机号还未注册');
+            return JsonBuilder::Error('账号未注册,请联系管理员绑定手机号');
         }
         if ($type == UserVerification::PURPOSE_3 && !empty($user)) {
             return JsonBuilder::Error('该手机号已经注册过了');
