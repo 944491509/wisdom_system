@@ -527,13 +527,22 @@ class NewMeetingController extends Controller
         $meetId = $request->getMeetId();
         $userId = $request->user()->id;
         $dao = new NewMeetingDao();
+        $meet = $dao->getMeetByMeetId($meetId);
+        if(is_null($meet)) {
+            return JsonBuilder::Error('该会议不存在');
+        }
         $return = $dao->getMeetUser($meetId, $userId);
-        $result = [
-            'signin_status' => $return->signin_status,
-            'signin_time' => $return->getUserSignInTime(),
-            'signout_status' => $return->signout_status,
-            'signout_time' => $return->getUserSignOutTime()
-        ];
+        $result = [];
+        // 判断是否需要签到
+        if($meet->signin_status == NewMeeting::SIGNIN) {
+            $result['signin_status'] = $return->signout_status;
+            $result['signin_time'] = $return->getUserSignInTime();
+        }
+        // 判断是否需要签退
+        if($meet->signout_status == NewMeeting::SIGNOUT) {
+            $result['signout_status'] = $return->signout_status;
+            $result['signout_time'] = $return->getUserSignOutTime();
+        }
 
         return JsonBuilder::Success($result);
     }

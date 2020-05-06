@@ -12,6 +12,11 @@
             <div class="item">
               <span class="title">参会主题</span>
               <span class="content">{{ meeting.meet_title }}</span>
+              <span
+                class="meeting-status"
+                v-if="isOneselfCreate"
+                :class="'status'+meeting.status"
+              >{{getStatusText(meeting.status)}}</span>
             </div>
             <div class="item">
               <span class="title">组织人</span>
@@ -71,6 +76,27 @@ export default {
   computed: {
     isAcomplished() {
       return this.mode === MeetingMode.accomplish.status;
+    },
+    isOneselfCreate() {
+      return this.mode === MeetingMode.oneselfCreate.status;
+    },
+    getStatusText() {
+      return function(status) {
+        switch (status) {
+          case 0:
+            return "审核中";
+          case 1:
+            return "已拒绝";
+          case 2:
+            return "待开始";
+          case 3:
+            return "进行中";
+          case 4:
+            return "已结束";
+          default:
+            return "";
+        }
+      };
     }
   },
   data() {
@@ -126,6 +152,7 @@ export default {
   cursor: pointer;
   display: flex;
   .meeting {
+    width: 100%;
     .meet-list {
       flex: 1;
       .item {
@@ -141,6 +168,19 @@ export default {
         .content {
           flex: 1;
           color: #333333;
+        }
+        .meeting-status {
+          float: right;
+          color: #B5B5B5;
+        }
+        .meeting-status.status0{
+          color: #FE7E21;
+        }
+        .meeting-status.status2{
+          color: #FE7E21;
+        }
+        .meeting-status.status3{
+          color: #6DCC58;
         }
       }
       .sign-info {

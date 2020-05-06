@@ -67,7 +67,7 @@
           <date-time-range v-model="form.signoutRange" />
         </el-form-item>
         <el-form-item class="is-required" label="会议说明">
-          <el-input type="textarea" :rows="5" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
+          <el-input type="textarea" :maxlength="500" :rows="5" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
         </el-form-item>
         <el-form-item label>
           <div class="file-box" v-for="(file, index) in filelist" :key="index">
