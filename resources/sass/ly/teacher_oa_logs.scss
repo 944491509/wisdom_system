@@ -53,6 +53,7 @@
             }
 
             .el-drawer__body {
+                overflow: auto;
                 .demo-drawer__content {
                     .el-form {
                         .el-form-item {
@@ -274,7 +275,7 @@
                     font-size: 14px;
                 }
             }
-            li:not(:frist-child){
+            li:not(:first-child){
                 margin-top: 5px;
             }
         }

@@ -217,6 +217,7 @@
             border-top: 1px solid #eaedf2;
           }
           .enclosure {
+            display: block;
             width: 92%;
             height: 65px;
             font-size: 14px;
@@ -225,6 +226,9 @@
             line-height: 65px;
             margin: 0 20px;
             background-color: #f2f9ff;
+            .view_more{
+                float: right;
+            }
           }
         }
       }
