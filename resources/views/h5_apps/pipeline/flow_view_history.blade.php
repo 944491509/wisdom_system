@@ -110,7 +110,7 @@
             </h3>
             <div class="block" style="padding: 0 15px;">
                 <el-timeline>
-                    
+
                     <el-timeline-item key="0" icon="el-icon-circle-check" type='success'>
                         <div style="display: flex;justify-content: space-between;align-items: center;">
                             <img src="@if ($startUser->profile){{ $startUser->profile->avatar }} @endif" alt="" style="width: 40px; height: 40px;border-radius: 50%;vertical-align: middle;">
@@ -226,8 +226,12 @@
         color: #fff;
         margin: 0 auto;
         background-image: url("{{asset('assets/img/bgImg.png')}}");
-        background-size: 100%;
+        background-size: 100% 100%;
         background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
     }
 </style>
 @endsection
