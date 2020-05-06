@@ -53,8 +53,8 @@
                                                 </span>
                                             </el-tag>
                                             <span v-else>
-                                                <span v-if="material.media">{{ material.list[0].file_name }}</span>
-                                                <a v-else :href="material.list[0].url" target="_blank">{{material.list[0].file_name}}</a>
+                                                <!-- <a v-if="material.list[0].file_name">{{ material.list[0].file_name }}</a> -->
+                                                <a :href="material.list[0].url" target="_blank">{{material.list[0].file_name ? material.list[0].file_name : material.list[0].url}}</a>
                                             </span>
                                         </p>
                                         <!-- <p style="font-size: 10px;color: #cccccc;" class="text-right">
@@ -315,7 +315,7 @@
                 return typeId === typeIdx+1;
             },
 
-            // 显示添加的课件信息
+            // 左边模块保存数据到右边
             addMaterial: function(val){
                 if (!this.formCourseInfo.idx) {
                     this.$message.error('请选择课节');
@@ -333,11 +333,15 @@
                     this.courseMaterialModel.type = materialsByTypeId.type || 0;
                     this.courseMaterialModel.description = materialsByTypeId.desc || '';
                     if(materialsByTypeId.list[0].media_id === 0){
+                      // console.log('走的11')
                         this.courseMaterialModel.url =  materialsByTypeId.list[0].url || '';
                     }else{
+                      // console.log('走的22')
+                        // this.courseMaterialModel.media_id = materialsByTypeId.list[0].media_id
                         this.selectedFile = {
                             url: materialsByTypeId.list[0].url,
-                            description: materialsByTypeId.list[0].url
+                            description: materialsByTypeId.list[0].url,
+                            id: materialsByTypeId.list[0].media_id,
                         }
                     }
 
@@ -362,13 +366,15 @@
                     }
                 })
             },
-            // 确认保存到缓存中
+            // 右边模块保存数据到左边
             saveInfo: function(index){
                 // this.formCourseInfo.materialArr[index] = JSON.parse(JSON.stringify(this.courseMaterialModel));
                 // console.log(index, this.formCourseInfo.materialArr[index])
                 let tmp = JSON.parse(JSON.stringify(this.courseMaterialModel));
+                // console.log('AAAAAA', tmp)
                 let tmpMaterial = {}
                 if (this.selectedFile) {
+                  // console.log('走的1')
                     tmpMaterial = {
                         type_id: tmp.index,
                         desc: tmp.description,
@@ -379,15 +385,17 @@
                         }]
                     }
                 } else {
+                  // console.log('走的2')
                     tmpMaterial = {
                         type_id: tmp.index,
                         desc: tmp.description,
                         list: [{
                             url: tmp.url,
-                            media_id: 0,
+                            media_id: tmp.media_id ? tmp.media_id : 0,
                             file_name: tmp.url
                         }]
                     }
+                    // console.log('BBBB',tmpMaterial)
                 }
 
                 console.log('this.materials',this.materials)
