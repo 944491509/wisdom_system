@@ -159,7 +159,7 @@ return [
     'record-list'=>'学生评教列表',
     'grade-list'=>'班级列表',
     'student-list'=>'学生列表',
-    'meeting'=>'会议管理',
+    'meetings'=>'会议管理',
     'importer' => '导入管理',
     'result' => '结果',
     'consult' => '招生咨询',

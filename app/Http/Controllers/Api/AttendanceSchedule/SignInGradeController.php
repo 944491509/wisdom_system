@@ -289,6 +289,7 @@ class SignInGradeController extends Controller
             $detail = $dao->getSignInByYearTerm($item->user_id, $year, $term);
             $mold = $detail->pluck('mold')->toArray();
             $scores = $detail->pluck('score')->toArray();
+            $scores = array_diff($scores, [0]);
             if(count($scores) == 0) {
                 $score = 0;
             } else {
