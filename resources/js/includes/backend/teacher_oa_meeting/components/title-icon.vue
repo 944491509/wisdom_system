@@ -35,4 +35,13 @@ export default {
 .bg-icon.signoutQr {
   background-image: url(../assets/icon-qrout.png);
 }
+.bg-icon.unfinished {
+  background-image: url(../assets/icon-unfinished.png);
+}
+.bg-icon.accomplish {
+  background-image: url(../assets/icon-accomplish.png);
+}
+.bg-icon.oneselfCreate {
+  background-image: url(../assets/icon-oneselfCreate.png);
+}
 </style>
