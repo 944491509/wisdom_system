@@ -664,9 +664,17 @@ class NewMeetingController extends Controller
                 'user_id' => $item->user_id,
                 'user_name' => $item->user->name,
                 'avatar' => $item->user->profile->avatar,
-                'signin_status' => $item->signin_status,
-                'signout_status' => $item->signout_status,
+//                'signin_status' => $item->signin_status,
+//                'signout_status' => $item->signout_status,
             ];
+            // 判断是否需要签到
+            if($meet->signin_status == NewMeeting::SIGNIN) {
+                $list[$key]['signin_status'] = $item->signin_status;
+            }
+            // 判断是否需要签退
+            if($meet->signout_status == NewMeeting::SIGNOUT) {
+                $list[$key]['signout_status'] = $item->signout_status;
+            }
         }
 
         $record['list'] = $list;
