@@ -268,16 +268,16 @@ class TaskDao
                 ProjectTaskMember::create($data);
             }
 
-            $task = $this->getProjectTaskById($taskId);
+//            $task = $this->getProjectTaskById($taskId);
 
             // 当前用户不是创建者
-            if($task->create_user != $userId) {
+//            if($task->create_user != $userId) {
                 // 当前用户任务结束
                 $map = ['task_id'=>$taskId, 'user_id'=>$userId];
                 $now = Carbon::now()->toDateTimeString();
                 $upd = ['status'=>ProjectTaskMember::STATUS_CLOSED,'end_time'=>$now];
                 ProjectTaskMember::where($map)->update($upd);
-            }
+//            }
 
             // 添加日志
             $name = implode(',', $name);
