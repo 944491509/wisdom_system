@@ -66,7 +66,7 @@
         <div
           class="status"
           :class="{'signed': signInfo.signin_status===1,'late': signInfo.signin_status===2}"
-        >{{signInfo.signin_status?(signInfo.signin_status===1?'已签到':'迟到'): '未签到'}}</div>
+        >{{signinTextMap[signInfo.signin_status]}}</div>
         <div class="time" v-if="signInfo.signin_status">{{signInfo.signin_time}}</div>
       </div>
     </div>
@@ -100,7 +100,12 @@ export default {
       signStat: {},
       record: [],
       page: 1,
-      detail: {}
+      detail: {},
+      signinTextMap: {
+        0: "未签到",
+        1: "按时签到",
+        2: "迟到"
+      }
     };
   },
   computed: {
