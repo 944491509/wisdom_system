@@ -532,7 +532,12 @@ class NewMeetingController extends Controller
             return JsonBuilder::Error('该会议不存在');
         }
         $return = $dao->getMeetUser($meetId, $userId);
-        $result = [];
+        $result = [
+            'signin_status' => 3, // 默认不展示
+            'signin_time' => '',
+            'signout_status' => 3, // 默认不展示
+            'signout_time' => ''
+        ];
         // 判断是否需要签到
         if($meet->signin_status == NewMeeting::SIGNIN) {
             $result['signin_status'] = $return->signout_status;
@@ -673,8 +678,8 @@ class NewMeetingController extends Controller
                 'user_id' => $item->user_id,
                 'user_name' => $item->user->name,
                 'avatar' => $item->user->profile->avatar,
-//                'signin_status' => $item->signin_status,
-//                'signout_status' => $item->signout_status,
+                'signin_status' => 3, // 默认不展示
+                'signout_status' => 3, // 默认不展示
             ];
             // 判断是否需要签到
             if($meet->signin_status == NewMeeting::SIGNIN) {
