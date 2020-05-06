@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers\Teacher;
 use App\Dao\Teachers\TeacherProfileDao;
+use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\School\GradeRequest;
 use App\Dao\Schools\GradeDao;
 use App\Models\Schools\GradeManager;
+use App\Models\Users\GradeUser;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use App\BusinessLogic\UsersListPage\Factory;
@@ -134,7 +136,26 @@ class GradesController extends Controller
         return view($logic->getViewPath(),array_merge($this->dataForView, $logic->getUsers()));
     }
 
-    public function load_students(GradeRequest $request){
+
+    /**
+     * 退学,休学列表
+     * @param GradeRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function students(GradeRequest $request)
+    {
+        $type = $request->get('type');
+        $gradeId = $request->get('grade_id');
+
+        $dao = new GradeUserDao;
+        $data = $dao->getStudentsByGradeId($gradeId, $type);
+        $this->dataForView['students'] = $data;
+        return view('teacher.users.list', $this->dataForView);
+    }
+
+
+    public function load_students(GradeRequest $request)
+    {
         $gradeDao = new GradeDao();
         $grade = $gradeDao->getGradeById($request->getGradeId());
 
