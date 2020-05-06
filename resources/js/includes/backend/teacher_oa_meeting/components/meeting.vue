@@ -39,7 +39,7 @@
                 class="sign-in"
                 v-if="meeting.is_signin"
                 :class="{checked: meeting.signin_status === 1, late: meeting.signin_status === 2}"
-              >{{meeting.signin_status?(meeting.signin_status === 1?'按时签到':'迟到'):'未签到'}}</div>
+              >{{signinTextMap[meeting.signin_status] || ''}}</div>
               <div
                 class="sign-in"
                 v-if="meeting.is_signout"
@@ -106,6 +106,11 @@ export default {
       pagination: {
         page: 1,
         pageCount: 0
+      },
+      signinTextMap: {
+        0: "未签到",
+        1: "按时签到",
+        2: "迟到"
       }
     };
   },
@@ -171,16 +176,16 @@ export default {
         }
         .meeting-status {
           float: right;
-          color: #B5B5B5;
+          color: #b5b5b5;
         }
-        .meeting-status.status0{
-          color: #FE7E21;
+        .meeting-status.status0 {
+          color: #fe7e21;
         }
-        .meeting-status.status2{
-          color: #FE7E21;
+        .meeting-status.status2 {
+          color: #fe7e21;
         }
-        .meeting-status.status3{
-          color: #6DCC58;
+        .meeting-status.status3 {
+          color: #6dcc58;
         }
       }
       .sign-info {
