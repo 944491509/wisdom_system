@@ -14,7 +14,7 @@ $(document).ready(function(){
           myCourseList: [], // 我的课程数据
           myMaterialsList: [], // 教学资料数据
           myMaterialsListData: [], // 教学资料内容展示数据
-  
+
           // 计划日志
           showEditor: false, // 是否显示富文本编辑器
           showMaterialForm: true, // 是否显示富文本编辑器
@@ -24,7 +24,7 @@ $(document).ready(function(){
             teacher_notes: ''
           },
           logs: [], // 当前课程的教学日志
-         
+
           types: [],
           courseMaterialModel: {
             id: null,
@@ -71,10 +71,10 @@ $(document).ready(function(){
         this.teacher = JSON.parse(dom.dataset.teacher); // 老师信息
         this.courseMaterialModel.teacher_id = this.teacher.id; // 老师id
         this.changeMeans(1); // 默认选中我的课程
-        this.getMyCourseListInfo(); // 我的课程数据
-        this.getMyMaterialsListInfo(); // 教学资料数据
+        // this.getMyCourseListInfo(); // 我的课程数据
+        // this.getMyMaterialsListInfo(); // 教学资料数据
         // this.myMaterialsListDataInfo(0); // 教学资料默认展示数据
-        
+
       },
       computed:{
         configOptions(){
@@ -104,11 +104,13 @@ $(document).ready(function(){
           */
           if (val == 1) {
             // this.activeNames = [0]
-            // this.myMaterialsListDataInfo(tab);
+            this.getMyMaterialsListInfo();
+            this.getMyCourseListInfo(); // 我的课程数据
           }
           if (val == 2) {
             this.activeNames = [0]
-          //   this.activeTable(1)
+            //   this.activeTable(1)
+            this.getMyMaterialsListInfo(); // 教学资料数据
           }
           // 显示教学计划和教学日志数据页
           if (val == 3) {
@@ -165,21 +167,32 @@ $(document).ready(function(){
         },
         deleteRow(row) {
           console.log(row)
-          axios.post(
-            '/api/study/delete-material',
-            { lecture_id: row.lecture_id, type_id: row.type_id }
-          ).then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.$message({
-                type: 'success',
-                message: '删除成功'
-              });
-              this.getMyMaterialsListInfo()
-              // window.location.reload();
-            }
-            else {
-              this.$message.error('删除操作失败');
-            }
+          this.$confirm('是否确认删除?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            axios.post(
+              '/api/study/delete-material',
+              { lecture_id: row.lecture_id, type_id: row.type_id }
+            ).then(res => {
+              if (Util.isAjaxResOk(res)) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功'
+                });
+                this.getMyMaterialsListInfo()
+                // window.location.reload();
+              }
+              else {
+                this.$message.error('删除操作失败');
+              }
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
         },
         // activeTable: function (tab) {
@@ -193,7 +206,7 @@ $(document).ready(function(){
         //   this.myMaterialsListData = (this.myMaterialsList[index] || {}).list;
         //   console.log('this.myMaterialsListData',this.myMaterialsListData)
         // },
-  
+
         //------------------------------添加计划日志------------------------------------------------------
         // 获取教学计划和教学日志
         loadTeacherNoteOrLogInfo: function () {
@@ -275,8 +288,19 @@ $(document).ready(function(){
         deleteLog: function (log) {
           console.log("---------删除教学日志-----------");
           console.log(log);
-          this.logs.splice(Util.GetItemIndexById(log.id, this.logs), 1);
-          // TODO....未调用接口
+          this.$confirm('是否确认删除?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.logs.splice(Util.GetItemIndexById(log.id, this.logs), 1);
+            // TODO....未调用接口
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
         },
         editMaterial: function (id) {
           loadMaterial(id).then(res => {
@@ -336,5 +360,5 @@ $(document).ready(function(){
       }
     });
   }
-  
+
 })
