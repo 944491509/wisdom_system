@@ -137,7 +137,7 @@ if (document.getElementById('teacher-homepage-app')) {
                     '/api/school/all-events'
                 ).then(res => {
                     if (Util.isAjaxResOk(res)) {
-                        this.schooleventsList = res.data.data.events.reverse().slice(0, 6)
+                        this.schooleventsList = res.data.data.events.slice(0, 6)
                         this.schoolalleventsList = res.data.data.events
                     }
                 })
