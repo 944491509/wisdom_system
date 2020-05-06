@@ -238,8 +238,15 @@ if (document.getElementById('pipeline-flow-open-app')) {
         let params = new FormData();
         params.append("file[]", img.file)
         const url = '/api/Oa/message-upload-files';
+        const loading = this.$loading({
+          lock: true,
+          text: '上传中...',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
         axios.post(url, params).then((res) => {
+          loading.close();
           if (Util.isAjaxResOk(res)) {
+
             let data = res.data.data;
             if (!item.values) {
               item.values = [];
@@ -260,6 +267,7 @@ if (document.getElementById('pipeline-flow-open-app')) {
             });
           }
         }).catch((err) => {
+          loading.close();
           this.$message({
             message: '上传失败',
             type: 'warning'

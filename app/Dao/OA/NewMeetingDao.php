@@ -121,24 +121,20 @@ class NewMeetingDao
             return null;
         }
         $meetIds = array_column($meetUser, 'meet_id');
-        // 不需要签退
-        $map = [
-            ['new_meetings.meet_end', '>=', $now],
-            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
-            ['new_meetings.signout_status', '=', NewMeeting::NOT_SIGNOUT],
-        ];
-        // 需要签退
-        $where = [
-            ['new_meetings.signout_end', '>=', $now],
-            ['new_meetings.status', '=', NewMeeting::STATUS_PASS],
-            ['new_meetings.signout_status', '=', NewMeeting::SIGNOUT],
-        ];
 
-
-        return NewMeeting::where($map)
-            ->orWhere($where)
-            ->whereIn('id', $meetIds)
-            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        return NewMeeting::whereIn('id', $meetIds)
+            ->where(function ($que) use($now) {
+                $que->where(function ($que) use($now) {
+                    $que->where('meet_end', '>=', $now)
+                        ->where('status', '=', NewMeeting::STATUS_PASS)
+                        ->where('signout_status', '=', NewMeeting::NOT_SIGNOUT);
+                })
+                ->orWhere(function ($que) use($now) {
+                    $que->where('signout_end', '>=', $now)
+                        ->where('status', '=', NewMeeting::STATUS_PASS)
+                        ->where('signout_status', '=', NewMeeting::SIGNOUT);
+                    });
+            })->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
 
 
@@ -363,6 +359,24 @@ class NewMeetingDao
         return NewMeeting::where('school_id',$schoolId)
             ->orderBy('created_at','desc')
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
+    /**
+     * 获取当前会议室当前时间段内是否有会议
+     * @param $roomId
+     * @param $meetStart
+     * @param $meetEnd
+     * @return mixed
+     */
+    public function getMeetingByTime($roomId, $meetStart, $meetEnd) {
+        $map = [
+            ['room_id','=',$roomId],
+            ['meet_start','<',$meetEnd],
+            ['meet_end', '>', $meetStart],
+            ['status', '=', NewMeeting::STATUS_PASS]
+        ];
+        return NewMeeting::where($map)->first();
     }
 
 

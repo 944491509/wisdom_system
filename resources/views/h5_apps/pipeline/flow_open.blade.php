@@ -2,7 +2,7 @@
 @section('content')
 <div id="app-init-data-holder" data-apitoken="{{ $api_token }}" data-uuid="{{ $user->uuid }}" data-flowid="{{ $flow->id }}" data-nodeid="{{ $node->id }}" data-school="{{ $user->getSchoolId() }}" data-nodeoptions="{{ $node->options }}" data-apprequest="1"></div>
 <div id="{{ $appName }}" class="school-intro-container">
-    <div class="main" style="overflow:hidden;">
+    <div class="main" style="overflow:hidden;padding-bottom:30px;">
         <van-form @submit="onSubmit">
            <!-- <h5 style="background:white;margin:0;padding: 10px;margin-bottom:5px;">申请人: {{ $user->name }}</h5> -->
 
@@ -254,7 +254,7 @@
 
 
           <div style="width: 100%;background: white;text-align: center;margin-top:10px;padding-top:10px;padding-bottom:10px">
-                    <van-button class="flowSub" style=" background-image: linear-gradient(to right, #66D9FF, #4EA5FE); border: none;height: 35px;line-height: 35px;width: 238px;margin: 0 auto" round block type="info" native-type="submit">
+                    <van-button class="flowSub" style=" background-image: linear-gradient(to right, #66D9FF, #4EA5FE); border: none;height: 35px;line-height: 35px;width: 238px;margin: 0 auto;display: flex;justify-content: center;align-items: center;" round block type="info" native-type="submit">
                          提交
                     </van-button>
           </div>
