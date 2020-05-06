@@ -1,0 +1,38 @@
+<template>
+  <div class="bg-icon" :class="type"></div>
+</template>
+<script>
+export default {
+  name: "title-icon",
+  props: {
+    type: {
+      default: String,
+      type: String
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+.bg-icon {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-right: 5px;
+}
+.bg-icon.info {
+  background-image: url(../assets/icon-summary.png);
+}
+.bg-icon.record {
+  background-image: url(../assets/icon-sign.png);
+}
+
+.bg-icon.signinQr {
+  background-image: url(../assets/icon-qrin.png);
+}
+.bg-icon.signoutQr {
+  background-image: url(../assets/icon-qrout.png);
+}
+</style>

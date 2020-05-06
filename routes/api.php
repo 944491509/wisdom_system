@@ -1127,6 +1127,9 @@ Route::prefix('meeting')->middleware('auth:api')->group(function(){
     // 我创建的-签到记录
     Route::get('/mySignInRecord','Api\OA\NewMeetingController@mySignInRecord')
         ->name('api.meeting.mySignInRecord');
+    // 会议室列表
+    Route::get('/getMeetRoomList','Api\OA\NewMeetingController@getMeetRoomList')
+        ->name('api.meeting.getMeetRoomList');
 });
 
 // PC办公页
