@@ -33,8 +33,8 @@
               <div
                 class="sign-in"
                 v-if="meeting.is_signin"
-                :class="{checked: meeting.signin_status}"
-              >{{meeting.signin_status?'按时签到':'未签到'}}</div>
+                :class="{checked: meeting.signin_status === 1, late: meeting.signin_status === 2}"
+              >{{meeting.signin_status?(meeting.signin_status === 1?'按时签到':'迟到'):'未签到'}}</div>
               <div
                 class="sign-in"
                 v-if="meeting.is_signout"
@@ -156,6 +156,11 @@ export default {
           color: #6dcc58;
           border-color: #6dcc58;
           background-color: #ebfee3;
+        }
+        .sign-in.late {
+          color: #fe7b1c;
+          border-color: #fe7b1c;
+          background-color: #fbe8d8;
         }
       }
     }

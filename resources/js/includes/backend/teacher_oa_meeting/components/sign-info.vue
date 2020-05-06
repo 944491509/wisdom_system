@@ -37,8 +37,8 @@
               <div class="sign-title">会前</div>
               <div
                 class="status"
-                :class="{'checked': sign.signin_status}"
-              >{{sign.signin_status?'已签到':'未签到'}}</div>
+                :class="{'checked': sign.signin_status === 1, 'late': sign.signin_status === 2}"
+              >{{sign.signin_status?(sign.signin_status===1?'已签到':'迟到'):'未签到'}}</div>
             </div>
             <div class="sign-desc" :style="!detail.signout_time?{visibility: 'hidden'}:{}">
               <div class="sign-title">会后</div>
@@ -65,8 +65,8 @@
       <div class="info">
         <div
           class="status"
-          :class="{'signed': signInfo.signin_status}"
-        >{{signInfo.signin_status?'已签到': '未签到'}}</div>
+          :class="{'signed': signInfo.signin_status===1,'late': signInfo.signin_status===2}"
+        >{{signInfo.signin_status?(signInfo.signin_status===1?'已签到':'迟到'): '未签到'}}</div>
         <div class="time" v-if="signInfo.signin_status">{{signInfo.signin_time}}</div>
       </div>
     </div>
@@ -179,6 +179,9 @@ export default {
     }
     .status.signed {
       color: #6dcc58;
+    }
+    .status.late {
+      color: #fa7921;
     }
     .time {
       font-size: 14px;
