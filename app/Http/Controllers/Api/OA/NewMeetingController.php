@@ -171,7 +171,7 @@ class NewMeetingController extends Controller
                 'meet_id' => $item->id,
                 'meet_title' => $item->meet_title,
                 'approve_user' => $item->approve->name,
-                'room' => $item->room_id ? $item->room->name : $item->room_text,
+                'room' => $item->room_id ? $item->room->description : $item->room_text,
                 'meet_time' => $item->getMeetTime(),
                 'signin_time' =>'',
                 'signin_status' => $status,
