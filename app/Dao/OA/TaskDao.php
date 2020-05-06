@@ -274,8 +274,7 @@ class TaskDao
 //            if($task->create_user != $userId) {
                 // 当前用户任务结束
                 $map = ['task_id'=>$taskId, 'user_id'=>$userId];
-                $now = Carbon::now()->toDateTimeString();
-                $upd = ['status'=>ProjectTaskMember::STATUS_CLOSED,'end_time'=>$now];
+                $upd = ['status'=>ProjectTaskMember::STATUS_CLOSED];
                 ProjectTaskMember::where($map)->update($upd);
 //            }
 
