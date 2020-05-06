@@ -51,7 +51,7 @@ class GradeUserDao
             }
         }
 
-        return $query->take(ConfigurationTool::DEFAULT_PAGE_SIZE_QUICK_SEARCH)->get();
+        return $query->get();
     }
 
     /**
