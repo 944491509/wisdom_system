@@ -211,7 +211,7 @@ class RoomDao
         if($buildingId){
             $where[] = ['building_id','=',$buildingId];
         }
-        return Room::select(['building_id','name','seats','description'])->where($where)->with('building:id,name')
+        return Room::select(['id as room_id','building_id','name','seats','description'])->where($where)->with('building:id,name')
             ->orderBy('building_id','asc')->get();
     }
 
