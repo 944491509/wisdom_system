@@ -527,13 +527,27 @@ class NewMeetingController extends Controller
         $meetId = $request->getMeetId();
         $userId = $request->user()->id;
         $dao = new NewMeetingDao();
+        $meet = $dao->getMeetByMeetId($meetId);
+        if(is_null($meet)) {
+            return JsonBuilder::Error('该会议不存在');
+        }
         $return = $dao->getMeetUser($meetId, $userId);
         $result = [
-            'signin_status' => $return->signin_status,
-            'signin_time' => $return->getUserSignInTime(),
-            'signout_status' => $return->signout_status,
-            'signout_time' => $return->getUserSignOutTime()
+            'signin_status' => 3, // 默认不展示
+            'signin_time' => '',
+            'signout_status' => 3, // 默认不展示
+            'signout_time' => ''
         ];
+        // 判断是否需要签到
+        if($meet->signin_status == NewMeeting::SIGNIN) {
+            $result['signin_status'] = $return->signout_status;
+            $result['signin_time'] = $return->getUserSignInTime();
+        }
+        // 判断是否需要签退
+        if($meet->signout_status == NewMeeting::SIGNOUT) {
+            $result['signout_status'] = $return->signout_status;
+            $result['signout_time'] = $return->getUserSignOutTime();
+        }
 
         return JsonBuilder::Success($result);
     }
@@ -664,9 +678,17 @@ class NewMeetingController extends Controller
                 'user_id' => $item->user_id,
                 'user_name' => $item->user->name,
                 'avatar' => $item->user->profile->avatar,
-                'signin_status' => $item->signin_status,
-                'signout_status' => $item->signout_status,
+                'signin_status' => 3, // 默认不展示
+                'signout_status' => 3, // 默认不展示
             ];
+            // 判断是否需要签到
+            if($meet->signin_status == NewMeeting::SIGNIN) {
+                $list[$key]['signin_status'] = $item->signin_status;
+            }
+            // 判断是否需要签退
+            if($meet->signout_status == NewMeeting::SIGNOUT) {
+                $list[$key]['signout_status'] = $item->signout_status;
+            }
         }
 
         $record['list'] = $list;

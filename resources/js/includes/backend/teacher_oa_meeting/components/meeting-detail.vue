@@ -1,7 +1,8 @@
 <template>
   <div class="detail detail-panel">
     <div class="title">
-      <span>{{statusText}}</span>
+      <!-- <span>{{statusText}}</span> -->
+      <span class="title-text"><title-icon :type="type" /> <span>详情</span></span>
       <span class="return-back" @click="goback"></span>
     </div>
     <div class="detail-item">
@@ -53,9 +54,9 @@
       </span>
     </div>
     <div class="btn-box">
-      <el-button size="small" class="info" v-if="isMine || finished" @click="check('info')">会议纪要</el-button>
+      <el-button size="small" class="info" v-if="isMine || finished" @click="check('info', '会议纪要')">会议纪要</el-button>
       <el-button
-        @click="check('record')"
+        @click="check('record', '签到记录')"
         size="small"
         class="record"
         v-if="(meeting.signin_status||meeting.signout_status) && (isMine || finished)"
@@ -64,13 +65,13 @@
         size="small"
         class="signin"
         v-if="isMine && meeting.signin_status"
-        @click="check('signinQr')"
+        @click="check('signinQr', '签到二维码')"
       >签到二维码</el-button>
       <el-button
         size="small"
         class="signout"
         v-if="isMine && meeting.signout_status"
-        @click="check('signoutQr')"
+        @click="check('signoutQr', '签退二维码')"
       >签退二维码</el-button>
     </div>
 
@@ -82,7 +83,7 @@
     >
       <template slot="title">
         <div class="meeting-detail-title">
-          <title-icon :type="infoType" />详情
+          <title-icon :type="infoType" /><span>{{infoTitle}}</span>
         </div>
       </template>
       <info :type="infoType" :stateType="type" :meetid="meetingId" :detail="meeting" />
@@ -108,6 +109,7 @@ export default {
       statusText: "",
       type: "",
       infoType: "",
+      infoTitle: '',
       showDetail: false
     };
   },
@@ -132,8 +134,9 @@ export default {
         this.meeting = res.data.data;
       });
     },
-    check(type) {
+    check(type, title) {
       this.infoType = type;
+      this.infoTitle = title;
       this.showDetail = true;
     },
     downloadFile(file) {
@@ -178,7 +181,10 @@ export default {
     font-size: 18px;
     color: #4ea5fe;
     padding: 14px;
-
+    .title-text{
+      display: inline-flex;
+      align-items: center;
+    }
     .el-button {
       float: right;
     }
