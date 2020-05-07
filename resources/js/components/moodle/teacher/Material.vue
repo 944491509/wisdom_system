@@ -525,6 +525,7 @@
                 this.selectedFile = payload.file;
                 this.showFileManagerFlag = false;
                 console.log('添加的可见信息',payload)
+                this.courseMaterialModel.description =this.selectedFile.file_name
             },
             // 当选择的班级发生变化, 则去更新作业的数据
             onSelectedGradesChangedHandler: function(updatedGrades){
