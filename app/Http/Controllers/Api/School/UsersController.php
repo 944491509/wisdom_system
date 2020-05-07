@@ -51,11 +51,11 @@ class UsersController extends Controller
      * @param Request $request
      * @return string
      */
-    public function quick_search_users(Request $request){
+    public function quick_search_users(Request $request)
+    {
         $logic = Factory::GetInstance($request);
 
         $data = [];
-
         if($logic){
             $users = $logic->getUsers();
             $facilities = $logic->getFacilities();
@@ -73,6 +73,7 @@ class UsersController extends Controller
                     $data[] = $item;
                 }
             }
+
             if($users){
                 foreach ($users as $gradeUser) {
                     $nextAction = $logic->getNextAction($gradeUser);

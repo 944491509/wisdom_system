@@ -12,6 +12,11 @@
             <div class="item">
               <span class="title">参会主题</span>
               <span class="content">{{ meeting.meet_title }}</span>
+              <span
+                class="meeting-status"
+                v-if="isOneselfCreate"
+                :class="'status'+meeting.status"
+              >{{getStatusText(meeting.status)}}</span>
             </div>
             <div class="item">
               <span class="title">组织人</span>
@@ -33,8 +38,8 @@
               <div
                 class="sign-in"
                 v-if="meeting.is_signin"
-                :class="{checked: meeting.signin_status}"
-              >{{meeting.signin_status?'按时签到':'未签到'}}</div>
+                :class="{checked: meeting.signin_status === 1, late: meeting.signin_status === 2}"
+              >{{signinTextMap[meeting.signin_status] || ''}}</div>
               <div
                 class="sign-in"
                 v-if="meeting.is_signout"
@@ -71,6 +76,27 @@ export default {
   computed: {
     isAcomplished() {
       return this.mode === MeetingMode.accomplish.status;
+    },
+    isOneselfCreate() {
+      return this.mode === MeetingMode.oneselfCreate.status;
+    },
+    getStatusText() {
+      return function(status) {
+        switch (status) {
+          case 0:
+            return "审核中";
+          case 1:
+            return "已拒绝";
+          case 2:
+            return "待开始";
+          case 3:
+            return "进行中";
+          case 4:
+            return "已结束";
+          default:
+            return "";
+        }
+      };
     }
   },
   data() {
@@ -80,6 +106,11 @@ export default {
       pagination: {
         page: 1,
         pageCount: 0
+      },
+      signinTextMap: {
+        0: "未签到",
+        1: "按时签到",
+        2: "迟到"
       }
     };
   },
@@ -126,6 +157,7 @@ export default {
   cursor: pointer;
   display: flex;
   .meeting {
+    width: 100%;
     .meet-list {
       flex: 1;
       .item {
@@ -142,6 +174,19 @@ export default {
           flex: 1;
           color: #333333;
         }
+        .meeting-status {
+          float: right;
+          color: #b5b5b5;
+        }
+        .meeting-status.status0 {
+          color: #fe7e21;
+        }
+        .meeting-status.status2 {
+          color: #fe7e21;
+        }
+        .meeting-status.status3 {
+          color: #6dcc58;
+        }
       }
       .sign-info {
         .sign-in {
@@ -156,6 +201,11 @@ export default {
           color: #6dcc58;
           border-color: #6dcc58;
           background-color: #ebfee3;
+        }
+        .sign-in.late {
+          color: #fe7b1c;
+          border-color: #fe7b1c;
+          background-color: #fbe8d8;
         }
       }
     }
