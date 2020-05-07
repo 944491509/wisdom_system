@@ -39,6 +39,16 @@ if (document.getElementById('facility-form')){
                 })
             }
         }
+     },
+     mounted(){
+         let type = this.$refs.facilityInitType.getAttribute('value')
+         if(!isNaN(type)){
+             this.type = parseInt(type)
+             let card_type = this.$refs.facilityInitCardType.getAttribute('value')
+             if(!isNaN(type)){
+                 this.card_type = card_type
+             }
+         }
      }
     });
 }
