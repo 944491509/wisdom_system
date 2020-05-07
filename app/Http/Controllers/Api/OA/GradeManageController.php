@@ -183,6 +183,7 @@ class GradeManageController extends Controller
      * 教师修改学生信息
      * @param MyStandardRequest $request
      * @return string
+     * @throws \Exception
      */
     public function updateStudentInfo(MyStandardRequest $request)
     {
@@ -190,33 +191,19 @@ class GradeManageController extends Controller
         $data = $request->get('data');
         $monitor = $request->get('monitor');
         $group = $request->get('group');
+        $email = $request->get('email');
 
         $dao = new StudentProfileDao;
-        $gradeManagerDao = new GradeManagerDao;
         $userDao = new UserDao;
-        if (isset($data['email'])) {
+        if (isset($data['email']) && !empty($data['email']) && !is_null($data['email'])) {
             $result = $userDao->getUserByEmail($data['email']);
             if ($result  && $result['id'] != $studentId) {
                 return  JsonBuilder::Error('邮箱已经有人用了');
             }
-            $userResult = $userDao->updateEmail($studentId, $data['email']);
-        }
-        if (isset($data['email'])) {
-            unset($data['email']);
-        }
-        $studentResult =  $dao->updateStudentProfile($studentId, $data);
-        if ($monitor['monitor_id'] != 0) {
-            $gradeResult = $gradeManagerDao->updateGradeManger($monitor['grade_id'], $monitor);
-        } else {
-            $gradeResult = true;
-        }
-        if ($group['group_id'] != 0) {
-           $groupResult = $gradeManagerDao->updateGradeManger($group['grade_id'], $group);
-        } else {
-            $gradeResult = true;
         }
 
-        if ($gradeResult !==false || $studentResult !==false || $groupResult !==false || $userResult !==false ) {
+        $result = $dao->updateStudentInfoAndClassPositionByUserId($studentId, $data, array_merge($monitor, $group));
+        if ($result->isSuccess()) {
             return JsonBuilder::Success('修改成功');
         } else {
             return JsonBuilder::Error('修改失败');
