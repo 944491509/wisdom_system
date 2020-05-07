@@ -215,7 +215,13 @@ class StudentProfileDao
             unset($profile['email']);
             DB::beginTransaction();
             $this->updateStudentProfile($userId, $profile);
-            $gradeManagerDao->updateGradeManger($gradeManager['grade_id'], $gradeManager);
+
+            if ($gradeManager['monitor']['monitor_id'] !=0) {
+                $gradeManagerDao->updateGradeManger($gradeManager['monitor']['grade_id'], $gradeManager['monitor']);
+            }
+            if ($gradeManager['group']['group_id'] !=0) {
+                $gradeManagerDao->updateGradeManger($gradeManager['group']['grade_id'], $gradeManager['group']);
+            }
             DB::commit();
             return new MessageBag(JsonBuilder::CODE_SUCCESS,'修改成功');
         } catch (\Exception $e) {
