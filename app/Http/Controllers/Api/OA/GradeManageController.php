@@ -191,7 +191,6 @@ class GradeManageController extends Controller
         $data = $request->get('data');
         $monitor = $request->get('monitor');
         $group = $request->get('group');
-        $email = $request->get('email');
 
         $dao = new StudentProfileDao;
         $userDao = new UserDao;
@@ -201,8 +200,11 @@ class GradeManageController extends Controller
                 return  JsonBuilder::Error('邮箱已经有人用了');
             }
         }
-
-        $result = $dao->updateStudentInfoAndClassPositionByUserId($studentId, $data, array_merge($monitor, $group));
+        $manger = [
+            'monitor' => $monitor,
+            'group' => $group
+        ];
+        $result = $dao->updateStudentInfoAndClassPositionByUserId($studentId, $data, $manger);
         if ($result->isSuccess()) {
             return JsonBuilder::Success('修改成功');
         } else {
