@@ -182,9 +182,35 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
         ->name('teacher.student.edit-avatar');
 
     // 一码通
-    // 使用列表
-    Route::get('/code-list','Code\CodeController@list')
-        ->name('teacher.code.list');
+    Route::prefix('qr')->group(function (){
+        // 开通设置
+        Route::get('/code-set','Code\CodeController@set')
+            ->name('teacher.code.set');
+        // 开通添加
+        Route::get('/code-add','Code\CodeController@add')
+            ->name('teacher.code.add');
+        // 开通编辑
+        Route::get('/code-edit','Code\CodeController@edit')
+            ->name('teacher.code.edit');
+        // 使用列表
+        Route::get('/code-list','Code\CodeController@list')
+            ->name('teacher.code.list');
+        // 保存
+        Route::post('/code-save','Code\CodeController@save')
+            ->name('teacher.code.save');
+        // 所有用户二维码
+        Route::get('/all-code','Code\CodeController@userCode')
+            ->name('teacher.user.code.list');
+        // 二维码
+        Route::get('/all-code','Code\CodeController@userCode')
+            ->name('teacher.user.code.list');
+    });
+
+
+
+
+
+
 
     // 为前端刘杨开发所设定的新路由，配合新的教师PC端需求
     Route::prefix('ly')->group(function (){
