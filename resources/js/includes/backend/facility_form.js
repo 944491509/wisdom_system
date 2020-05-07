@@ -55,11 +55,11 @@ if (document.getElementById('facility-form')) {
         this.type = parseInt(type)
         let card_type = this.$refs.facilityInitCardType.getAttribute('value')
         if (!isNaN(type)) {
-          this.card_type = card_type
+          this.card_type = parseInt(card_type)
           this.initGrades()
           let value = this.$refs.facilityInitCardValue.getAttribute('value')
           if(!isNaN(type)){
-              this.value = value
+              this.value = parseInt(value)
           }
         }
       }

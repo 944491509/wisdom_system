@@ -17,7 +17,7 @@
 </div>
 <div id="facility-form">
     <div class="form-group">
-        <label for="facility-name-input" ref="facilityInitType" value="{{$facility['type']}}">类型</label>
+        <label for="facility-name-input" ref="facilityInitType" value="{{$facility['type']?? ''}}">类型</label>
         <select required type="select" class="form-control"  value="" placeholder="类型" name="facility[type]" v-model="type">
             <option value="">请选择</option>
             @foreach($type as $key => $val)
@@ -28,14 +28,14 @@
         </select>
     </div>
     <div class="form-group" v-show="type == 3">
-        <label for="facility-name-input" ref="facilityInitCardType" value="{{$facility['card_type']}}">班牌类型</label>
+        <label for="facility-name-input" ref="facilityInitCardType" value="{{$facility['card_type'] ?? ''}}">班牌类型</label>
         <select type="select" class="form-control"  value="" placeholder="班牌类型" name="facility[card_type]" v-model="card_type">
             <option value="">请选择</option>
             <option value="0">公共班牌</option>
             <option value="1">独立班牌</option>
         </select>
     </div>
-    <span style="display: none;" ref='facilityInitCardValue' value="{{$facility['grade_id']}}"></span>
+    <span style="display: none;" ref='facilityInitCardValue' value="{{$facility['grade_id'] ?? ''}}"></span>
     <el-select v-model="value"  filterable  remote placeholder="请选择班级或搜索" class="search-grade" :loading="loading" :loading-text="loading_text"  v-show="card_type == 1">
     <el-option
       v-for="item in options"
