@@ -19,7 +19,7 @@
 <div id="facility-form">
     <div class="form-group">
         <label for="facility-name-input">类型</label>
-        <select required type="select" class="form-control"  value="" placeholder="类型" name="facility[type]" v-model="type">
+        <select required type="select" class="form-control"  value="" placeholder="类型" name="facility[type]">
             <option value="">请选择</option>
             @foreach($type as $key => $val)
             <option value="{{$val['id']}}"
