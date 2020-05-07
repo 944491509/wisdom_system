@@ -35,8 +35,8 @@
             <option value="1">独立班牌</option>
         </select>
     </div>
-
-    <el-select v-model="value"  filterable  remote placeholder="请选择班级或搜索" class="search-grade" :remote-method="searchGrade" :loading="loading" :loading-text="loading_text"  v-show="card_type == 1">
+    <span style="display: none;" ref='facilityInitCardValue' value="{{$facility['grade_id']}}"></span>
+    <el-select v-model="value"  filterable  remote placeholder="请选择班级或搜索" class="search-grade" :loading="loading" :loading-text="loading_text"  v-show="card_type == 1">
     <el-option
       v-for="item in options"
       :label="item.name"
