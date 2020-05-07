@@ -68,13 +68,13 @@ class SystemNotificationDao
    */
   public function getNotificationList($param = [], $page = 1 )
   {
-    $condition[] = ['id', '>', 0];
+    $condition[] = ['uuid', '<>', ''];
     if ($param['school_id']) {
       $condition[] = ['school_id', '=', $param['school_id']];
     }
     if ($param['keywords']) {
       $condition[] = ['title', 'like', '%'.trim($param['keywords']).'%'];
-    } 
+    }
     return SystemNotification::where($condition)
       ->whereIn('to',$param['to'])
       ->orderBy('id', 'desc')
