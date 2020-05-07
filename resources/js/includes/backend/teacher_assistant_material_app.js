@@ -341,6 +341,7 @@ $(document).ready(function(){
         pickFileHandler: function (payload) {
           this.selectedFile = payload.file;
           this.showFileManagerFlag = false;
+          this.courseMaterialModel.description =this.selectedFile.file_name
         },
         //------------------------------添加资料------------------------------------------------------
         // 获取资料信息，用于传递子组件使用
