@@ -59,7 +59,7 @@
 
                     <div class="clearfix"></div>
                     <div class="form-group mt-4">
-                        <label>春季开学, 学生可以在一下时间段选择选修课</label>
+                        <label>春季开学, 学生可以在以下时间段选择选修课</label>
                         <div class="clearfix"></div>
                         <select class="form-control pull-left mr-2" name="ec2[from][month]" style="width: 20%;">
                             @foreach($months as $month)
