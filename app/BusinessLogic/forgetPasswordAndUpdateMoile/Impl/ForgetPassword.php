@@ -55,7 +55,7 @@ class ForgetPassword
         }
 
         $userDao = new UserDao;
-        $result = $userDao->updateUser($user->id, null, Hash::make($this->password));
+        $result = $userDao->updateUser($user->id, null, $this->password);
         if ($result) {
              $this->updateToken($user->id);
              return  new MessageBag(JsonBuilder::CODE_SUCCESS, '密码修改成功,请重新登录');
