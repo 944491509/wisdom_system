@@ -4,6 +4,8 @@
     "/css/app.css": "/css/app.css",
     "/js/h5/student.js": "/js/h5/student.js",
     "/js/h5/teacher.js": "/js/h5/teacher.js",
+    "/ex2Excel/ex2Excel.js": "/ex2Excel/ex2Excel.js",
+    "/vendors~ex2Excel/ex2Excel.js": "/vendors~ex2Excel/ex2Excel.js",
     "/css/extra_page.css": "/css/extra_page.css",
     "/js/extra_page.js": "/js/extra_page.js"
 }
