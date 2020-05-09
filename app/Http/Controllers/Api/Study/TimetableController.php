@@ -372,10 +372,32 @@ class TimetableController extends Controller
                                 'old_course' => '', // 调课时显示原课程名称
                             ];
                         } else {
-                            $course = [
-                                'switching' => true,
-                                'old_course' => $val['course'],
-                            ];
+                            if($specials->teacher_id == $teacherId) {
+                                $course = [
+                                    'time_table_id' => $specials['id'],
+                                    'name' => $specials->course->name,
+                                    'room' => $specials->building->name.$specials->room->description,
+                                    'teacher' => $specials->teacher->name,
+                                    'grade' => [
+                                        [
+                                            'grade_id'=>$specials['grade_id'],
+                                            'grade_name'=>$specials->grade->name
+                                        ],
+
+                                    ],
+                                    'label' => $label,
+                                    'optional' => $specials['optional'],  // true必修课 false选修课
+                                    'repeat_unit' => $specials['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
+                                    'switching' => true,
+                                    'old_course' => $specials->course->name,
+                                ];
+                            } else {
+
+                                $course = [
+                                    'switching' => true,
+                                    'old_course' => $val['course'],
+                                ];
+                            }
                         }
                     }
                 }
