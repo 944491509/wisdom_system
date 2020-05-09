@@ -257,7 +257,7 @@ class TimetableController extends Controller
             $time = Carbon::parse($start)->addDays($i);
             $weekdayIndex = $time->dayOfWeekIso;  // 周几
             $item = $timetableItemDao->getItemsByWeekDayIndexForTeacherView($weekdayIndex, $year, $term, $oddWeek, $user->id);
-            $course = $this->slotDataProcessing($item, $forStudyingSlots,$user->id,$weekdayIndex);
+            $course = $this->slotDataProcessing($item, $forStudyingSlots,$user->id,$weekdayIndex, $time);
             $table = [
                 'week_index' => CalendarDay::GetWeekDayIndex($weekdayIndex),
                 'date' => $time->format('m月d日'),
@@ -330,15 +330,15 @@ class TimetableController extends Controller
      * @param $weekdayIndex
      * @return array
      */
-    public function slotDataProcessing($item, $forStudyingSlots, $teacherId, $weekdayIndex) {
+    public function slotDataProcessing($item, $forStudyingSlots, $teacherId, $weekdayIndex, Carbon $time) {
         $dao = new LectureDao();
         $timetable = [];
         $timetableDao = new TimetableItemDao();
-
         foreach ($forStudyingSlots as $key => $value) {
             $course = (object)[];
             // 判断当前课节是否在课程里
             $timeSlotIds = array_column($item,'time_slot_id');
+
             if(in_array($value->id, $timeSlotIds)){
                 foreach ($item as $k => $val) {
                     // 当前时间有课
@@ -350,7 +350,7 @@ class TimetableController extends Controller
                             $label[] = $v->materialType->name;
                         }
                         // 查询当前课是否有调课
-                        $specials = $timetableDao->getTimeTableItemByToReplace($val['id']);
+                        $specials = $timetableDao->getTimeTableItemByToReplace($val['id'], $time);
 
                         if(is_null($specials)) {
                             $course = [
@@ -402,7 +402,7 @@ class TimetableController extends Controller
                     }
                 }
             } else {
-                $specials = $timetableDao->getTimeTableItemByTimeSlotId($value->id,$teacherId, $weekdayIndex);
+                $specials = $timetableDao->getTimeTableItemByTimeSlotId($value->id,$teacherId, $weekdayIndex, $time);
                 if(!is_null($specials)) {
                     // 查询当前老师在该班级上传的资料
                     $types = $dao->getMaterialTypeByCourseId($specials['course_id'],$specials['teacher_id'],$specials['grade_id']);
