@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use App\Models\Timetable\TimeSlot;
 use App\Utils\Time\GradeAndYearUtil;
 use App\Models\Timetable\TimetableItem;
+use Illuminate\Support\Facades\DB;
 
 class TimetableItemDao
 {
@@ -364,7 +365,7 @@ class TimetableItemDao
                 'grade'=> $row->grade->name,
                 'grade_id'=> $row->grade_id,
                 'building'=>$row->building->name,
-                'room'=>$row->room->name,
+                'room'=>$row->room->description,
                 'room_id'=>$row->room_id,
                 'id'=>$row->id,
                 'published'=>$row->published,
@@ -1042,6 +1043,50 @@ class TimetableItemDao
             ->select('course_id')
             ->distinct('course_id')
             ->get();
+    }
+
+
+    /**
+     * 查询调课
+     * @param $timeTableId
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByToReplace($timeTableId, Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['to_replace', '=', $timeTableId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
+    }
+
+
+    /**
+     * 查询调课
+     * @param $timeSlotId
+     * @param $teacherId
+     * @param $weekIndex
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByTimeSlotId($timeSlotId, $teacherId,$weekIndex,Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['time_slot_id', '=', $timeSlotId],
+            ['weekday_index', '=', $weekIndex],
+            ['teacher_id', '=', $teacherId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
     }
 
 
