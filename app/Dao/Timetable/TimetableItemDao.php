@@ -336,7 +336,6 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $rows = TimetableItem::where($where)
             ->leftJoin('time_slots',function ($join) {
