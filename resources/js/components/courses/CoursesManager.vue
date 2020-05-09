@@ -31,6 +31,7 @@
       :visible.sync="showCourseFormFlag"
       :fullscreen="true"
       custom-class="course-form-drawer"
+      :before-close="closeFunction"
     >
       <el-form
         :model="courseModel"
@@ -126,8 +127,8 @@
             loading-text="正在查找 ..."
           >
             <el-option
-              v-for="(teacher, idx) in teachers"
-              :key="idx"
+              v-for="(teacher) in teachers"
+              :key="teacher.id"
               :label="teacher.name"
               :value="teacher.id"
             ></el-option>
@@ -139,7 +140,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="saveCourse">保存</el-button>
-          <el-button @click="showCourseFormFlag = false">取消</el-button>
+          <el-button @click="showCourseFormFlag = false; teachers = []">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -311,6 +312,10 @@ export default {
     });
   },
   methods: {
+    closeFunction() {
+      this.teachers = []
+      this.showCourseFormFlag = false
+    },
     onPageChange(page) {
       this.pagination.page = page;
     },
@@ -498,6 +503,7 @@ export default {
             });
             this._getAllCourses();
             this.onDrawerClosed();
+            this.teachers = []
           } else {
             this.$notify.error({
               title: "错误",
