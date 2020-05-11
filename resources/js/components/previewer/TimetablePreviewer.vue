@@ -49,7 +49,7 @@
                 <el-button type="primary" @click="confirmCloneAction">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="调课表单" :visible.sync="specialCaseFormVisible">
+        <el-dialog :title="'调课表单-'+subTitle" :visible.sync="specialCaseFormVisible" :close-on-click-modal="false">
             <timetable-item-special-form
                 :user-uuid="userUuid"
                 :school-id="schoolId"
@@ -186,6 +186,7 @@
                     room_id: '',
                     published: false,
                     to_replace: 0,
+                    type: 0
                 },
                 toBeReplacedItem: {},
                 coursesForSpecial:[],
