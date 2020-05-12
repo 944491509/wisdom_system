@@ -33,7 +33,7 @@
                                 <td>
                                     <button type="button"
                                             class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-circle btn-primary">
-                                        <a href="{{$item->lectureMaterials[0]->url}}"><div style="color: #FFFFFF"> 下   载 </div></a></button>
+                                        <a href="{{$item->lectureMaterials[0]->url ?? ''}}"><div style="color: #FFFFFF"> 下   载 </div></a></button>
                                 </td>
                             </tr>
                             @endforeach
