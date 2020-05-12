@@ -848,17 +848,19 @@ class TimetableItemDao
      * @param $weekDayIndex int  周几
      * @return mixed
      */
-    public function getTimetableItemByTime($schoolId, $year, $term, $teacherId, $gradeId, $weekDayIndex) {
+    public function getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDayIndex, $teacherId= null) {
         $field = ['timetable_items.*','time_slots.id as time_slot_id','time_slots.name'];
-        $map = [
-                ['time_slots.school_id', '=', $schoolId],
-                ['timetable_items.year','=', $year],
-                ['term', '=', $term],
-                ['teacher_id', '=', $teacherId],
-                ['grade_id', '=', $gradeId],
-                ['weekday_index', '=', $weekDayIndex]
-            ];
 
+        $map = [
+                'time_slots.school_id'  => $schoolId,
+                'timetable_items.year' => $year,
+                'term'  => $term,
+                'grade_id'  => $gradeId,
+                'weekday_index'  => $weekDayIndex
+        ];
+        if (!is_null($teacherId)) {
+            $map['teacher_id'] = $teacherId;
+        }
         return TimetableItem::join('time_slots',function ($join) use ($map) {
             $join->on('timetable_items.time_slot_id', '=', 'time_slots.id')
                 ->where($map);

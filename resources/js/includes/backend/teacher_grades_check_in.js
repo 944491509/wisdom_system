@@ -62,7 +62,7 @@ if (document.getElementById('teacher-assistant-grades-check-in-app')) {
       },
       getGradeList: function () {
         const url = Util.buildUrl(Constants.API.TEACHER_WEB.GRADE_LIST);
-        axios.get(url).then((res) => {
+        axios.get(url+'?school_id='+this.schoolId).then((res) => {
           if (Util.isAjaxResOk(res)) {
             let data = res.data.data;
             this.gradeOptions = [];
