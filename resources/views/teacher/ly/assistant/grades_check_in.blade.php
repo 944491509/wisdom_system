@@ -18,9 +18,9 @@
                             <el-select size="small" v-model="gradeValue" placeholder="请选择班级">
                                 <el-option
                                         v-for="item in gradeOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                             <el-button type="primary" size="small" @click="searchList()">查询</el-button>
