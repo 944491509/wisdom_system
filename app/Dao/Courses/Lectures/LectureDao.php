@@ -370,6 +370,7 @@ class LectureDao
             'teacher_id' => $data['user_id'],
             'idx' => $data['idx'],
             'title' => $data['title'],
+            'school_id' => $data['school_id'],
         ];
 
         try{
@@ -569,5 +570,28 @@ class LectureDao
             ->select('type')
             ->distinct('type')
             ->get();
+    }
+
+
+    /**
+     * 根据学校ID查询已上传资料的老师
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getLectureTeacherBySchoolId($schoolId) {
+        return Lecture::where('school_id',$schoolId)
+            ->select('teacher_id')
+            ->distinct('teacher_id')
+            ->get();
+    }
+
+
+    /**
+     * 根据教师获取资料
+     * @param $teacherId
+     * @return mixed
+     */
+    public function getLectureByTeacherId($teacherId) {
+        return Lecture::where('teacher_id', $teacherId)->first();
     }
 }
