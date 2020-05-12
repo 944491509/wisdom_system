@@ -9,12 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Lecture extends Model
 {
     protected $fillable = [
-        'course_id',
-        'teacher_id',
-        'idx',
-        'title',
-        'summary',
-        'tags',
+        'course_id', 'teacher_id', 'idx', 'title', 'summary',
+        'tags', 'school_id',
     ];
 
     public function course(){
