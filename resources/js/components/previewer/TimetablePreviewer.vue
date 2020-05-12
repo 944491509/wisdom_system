@@ -49,7 +49,7 @@
                 <el-button type="primary" @click="confirmCloneAction">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="调课表单" :visible.sync="specialCaseFormVisible">
+        <el-dialog :title="'调课表单-'+subTitle" :visible.sync="specialCaseFormVisible" :close-on-click-modal="false">
             <timetable-item-special-form
                 :user-uuid="userUuid"
                 :school-id="schoolId"
@@ -186,6 +186,9 @@
                     room_id: '',
                     published: false,
                     to_replace: 0,
+                    type: 0,
+                    class_id: '',
+                    week_id: '',
                 },
                 toBeReplacedItem: {},
                 coursesForSpecial:[],
@@ -288,28 +291,30 @@
                 this.toBeReplacedItem = {}; // 获取到被调课的项
             },
             confirmSpecialCaseHandler: function(){
-                axios.post(
-                    Constants.API.TIMETABLE.CREATE_SPECIAL_CASE,
-                    {specialCase: this.specialCase, user: this.userUuid}
-                ).then(res=>{
-                    if(Util.isAjaxResOk(res)){
-                        // 创建成功, 去刷新课程表的表单
-                        this.$emit('timetable-refresh',{});
-                        this.$notify({
-                            title: '成功',
-                            message: '调课操作成功, 正为您刷新课程表 ...',
-                            type: 'success',
-                            position: 'bottom-right'
-                        });
-                        this.specialCaseFormVisible = false;
-                    }else{
-                        this.$notify.error({
-                            title: '系统错误',
-                            message: '调课操作失败, 请稍候再试 ...',
-                            position: 'bottom-right'
-                        });
-                    }
-                })
+              console.log('AA',this.specialCase)
+              console.log('AA',this.userUuid)
+                // axios.post(
+                //     Constants.API.TIMETABLE.CREATE_SPECIAL_CASE,
+                //     {specialCase: this.specialCase, user: this.userUuid}
+                // ).then(res=>{
+                //     if(Util.isAjaxResOk(res)){
+                //         // 创建成功, 去刷新课程表的表单
+                //         this.$emit('timetable-refresh',{});
+                //         this.$notify({
+                //             title: '成功',
+                //             message: '调课操作成功, 正为您刷新课程表 ...',
+                //             type: 'success',
+                //             position: 'bottom-right'
+                //         });
+                //         this.specialCaseFormVisible = false;
+                //     }else{
+                //         this.$notify.error({
+                //             title: '系统错误',
+                //             message: '调课操作失败, 请稍候再试 ...',
+                //             position: 'bottom-right'
+                //         });
+                //     }
+                // })
             },
             // 发布调课信息
             handleSpecialCasePublish: function(idx, row){
