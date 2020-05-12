@@ -369,15 +369,22 @@ class SignInGradeController extends Controller
      * @param AttendanceRequest $request
      * @return string
      */
-    public function gradeList(AttendanceRequest $request) {
-        $userId = $request->user()->id;
-        $dao = new GradeManagerDao();
-        $return = $dao->getGradeManagerByAdviserId($userId);
+    public function gradeList(AttendanceRequest $request)
+    {
+        $user = $request->user();
+        $gradeManagerDao = new GradeManagerDao;
+        $dao = new GradeDao;
+        if ($user->isSuperAdmin() || $user->isOperatorOrAbove() || $user->isSchoolAdminOrAbove()) {
+            $return = $dao->getAllBySchool($user->getSchoolId());
+        } else {
+            $return = $gradeManagerDao->getGradeManagerByAdviserId($user->id);
+        }
         if(empty($return)) {
             return JsonBuilder::Error('您不是班主任');
         }
         $result = [];
         foreach ($return as $key => $item) {
+
             $result[] = [
                 'grade_id' => $item->grade_id,
                 'grade_name' => $item->grade->name
