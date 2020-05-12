@@ -107,20 +107,20 @@
                         </el-form-item>
                       </div>
                         <el-form-item label="调课类型">
-                          <el-radio-group v-model="specialTimeTableItem.type" @change="selectChange">
+                          <el-radio-group v-model="specialTimeTableItem.type" @change="selectChange" style="    line-height: 48px;">
                             <el-radio label=0>教师代表</el-radio>
                             <el-radio label=1>本班教师课节互换</el-radio>
                             <el-radio label=2>其他班互换课</el-radio>
                           </el-radio-group>
                         </el-form-item>
                         <el-form-item label="班级" v-if="selectType3">
-                            <el-select v-model="specialTimeTableItem.course_id" style="width: 50%;">
+                            <el-select v-model="specialTimeTableItem.class_id" style="width: 50%;">
                                 <el-option :label="course.name" :value="course.id" :key="course.id" v-for="course in courses"></el-option>
                             </el-select>
                             <!-- <span class="help-text">说明: 请选择要教授哪门课程</span> -->
                         </el-form-item>
                         <el-form-item label="星期" v-if="selectType2 || selectType3">
-                            <el-select v-model="specialTimeTableItem.course_id" style="width: 50%;">
+                            <el-select v-model="specialTimeTableItem.week_id" style="width: 50%;">
                                 <el-option :label="course.name" :value="course.id" :key="course.id" v-for="course in courses"></el-option>
                             </el-select>
                             <!-- <span class="help-text">说明: 请选择要教授哪门课程</span> -->
@@ -278,6 +278,9 @@
         },
         created(){
             this._getAllBuildings();
+        },
+        mounted() {
+            this.specialTimeTableItem.type = '0'
         },
         methods: {
             // 获取学校的所有建筑, 按校区分组
