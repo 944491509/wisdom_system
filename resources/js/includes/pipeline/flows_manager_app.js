@@ -564,7 +564,28 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                     });
                 }
             },
-
+            deletecopy() {
+              axios.post('/school_manager/pipeline/flows/save-copy', {
+                flow_id: this.returnId,
+                users: []
+            }).then((res) => {
+                if (Util.isAjaxResOk(res)) {
+                    this.copy = res.data.data.copy
+                    this.teacher = ''
+                    this.members = []
+                    this.$message({
+                        message: '保存成功',
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify.error(
+                        { title: '保存失败', message: res.data.message, duration: 0 }
+                    );
+                }
+            }).catch((err) => {
+                console.log(err)
+            });
+            },
 
 
             // 步骤所需要的必填项的管理
