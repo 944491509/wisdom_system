@@ -569,6 +569,7 @@ if (document.getElementById('pipeline-flows-manager-app')) {
                                 message: '保存成功',
                                 type: 'success'
                             });
+                            this.show2 = false
                         } else {
                             this.$notify.error(
                                 { title: '保存失败', message: res.data.message, duration: 0 }
