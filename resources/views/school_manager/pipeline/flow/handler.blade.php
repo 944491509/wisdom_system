@@ -22,10 +22,11 @@
                     <img src="{{asset('assets/img/pipeline/addTo@2x.png')}}" alt="" @click="prev(item.node_id)" style="position: relative;left: 45%;vertical-align: baseline;margin-top: 10px">
                 </div>
 
-                <div class="card-body-approver">
+                <div class="card-body-approver" style="position: relative;">
                     <div style="padding: 5px;background-color: #4EA5FE">
                         <img src="{{asset('assets/img/pipeline/chaosongrenyuan@3x.png')}}" alt="" class="portrait">
                         <span style="color: #fff">&nbsp;&nbsp;抄送人</span>
+                        <img src="{{asset('assets/img/pipeline/close@2x.png')}}" alt="" style="width: 20px;position: absolute;left: 97%;top: -7px;" @click="deletecopy">
                     </div>
                     <div style="border: 1px solid #4EA5FE; color: #313B4C; padding: 10px 6px;cursor: pointer;" @click="show2 = !show2">
                         <p v-if="copy.length == 0">请选择抄送人</p>
