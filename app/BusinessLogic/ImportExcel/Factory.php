@@ -3,6 +3,7 @@
 
 namespace App\BusinessLogic\ImportExcel;
 
+use App\BusinessLogic\ImportExcel\Impl\ImporterStudentAccommodation;
 use App\BusinessLogic\ImportExcel\Impl\ImporterUsers;
 use App\BusinessLogic\ImportExcel\Impl\UpdateTeacherPhone;
 
@@ -16,7 +17,10 @@ class Factory
             $instance = new ImporterUsers($configArr);
         } elseif ($configArr['importerName'] == 'update_teacher_phone') {
             $instance = new UpdateTeacherPhone();
-        } else {
+        } elseif ($configArr['importerName'] == 'importer_student_accommodation') {
+            $instance = new ImporterStudentAccommodation();
+        }
+        else {
             $adapterName = $configArr['importerName'];
             $instance = new $adapterName($configArr);
         }
