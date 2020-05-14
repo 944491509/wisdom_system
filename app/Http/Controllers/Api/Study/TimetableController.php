@@ -431,4 +431,22 @@ class TimetableController extends Controller
         $timeSlot = $timeSlotDao->getAllStudyTimeSlots($grade->school_id, $grade->gradeYear(), false);
         return JsonBuilder::Success($timeSlot);
     }
+
+
+    /**
+     * 获取年级下的班级
+     * @param TimetableRequest $request
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function gradeListByYear(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $gradeList = $gradeDao->gradeListByYear($grade->school_id, $grade->year);
+        return JsonBuilder::Success($gradeList);
+    }
 }

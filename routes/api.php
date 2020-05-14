@@ -201,6 +201,9 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
     // 根据班级获取课节
     Route::post('/timeslot','Api\Study\TimetableController@timeslot')
         ->name('api.timetable.timeslot');
+    // 年级的班级列表
+    Route::post('/gradeList','Api\Study\TimetableController@gradeListByYear')
+        ->name('api.timetable.gradeList');
 });
 
 // 招生API

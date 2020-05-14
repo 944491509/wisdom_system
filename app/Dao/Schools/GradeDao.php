@@ -180,4 +180,17 @@ class GradeDao
             . $data->category_code
             . $number;
     }
+
+
+    /**
+     * 获取年级下的班级
+     * @param $schoolId
+     * @param $year
+     * @return mixed
+     */
+    public function gradeListByYear($schoolId, $year) {
+        $map = ['school_id'=>$schoolId, 'year'=>$year];
+        $field = ['id as grade_id', 'name', 'year'];
+        return Grade::where($map)->select($field)->get();
+    }
 }
