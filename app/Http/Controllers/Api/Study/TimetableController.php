@@ -371,4 +371,45 @@ class TimetableController extends Controller
     }
 
 
+    /**
+     * 调课
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function switchingCheck(TimetableRequest $request) {
+        $user = $request->user();
+        $rules = [
+            'timetable_id' => 'required|int',
+            'at_special_datetime' => 'required|date|after_or_equal:today',
+            'to_special_datetime' => 'required|date|after_or_equal:at_special_datetime',
+            'type' => 'required|int',
+            'affirm' => 'required|boolean'
+        ];
+
+        $this->validate($request,$rules);
+
+        $all = $request->all();
+
+        $dao = new TimetableItemDao();
+        // 为验证
+        if($all['affirm'] == false) {
+            $result = $dao->switchingCheck($all, $user->id);
+        } else {
+            // 保存
+
+        }
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
+        } else {
+            $code = $result->getCode();
+            return JsonBuilder::Error($msg, $code);
+        }
+
+
+
+    }
+
+
 }

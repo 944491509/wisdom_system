@@ -9,6 +9,8 @@
 namespace App\Dao\Timetable;
 
 use App\User;
+use App\Utils\JsonBuilder;
+use App\Utils\ReturnData\MessageBag;
 use Carbon\Carbon;
 use App\Dao\Schools\SchoolDao;
 use App\Utils\Time\CalendarWeek;
@@ -1043,6 +1045,99 @@ class TimetableItemDao
             ->distinct('course_id')
             ->get();
     }
+
+
+    public function switchingCheck($data, $userId) {
+        switch ($data['type']) {
+            case 1 : return $this->_restTeacher($data, $userId);
+            case 2 : ;
+            case 3 : ;
+        }
+    }
+
+
+    /**
+     * 调课给其他代课老师
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _restTeacher($data, $userId) {
+        // 判断教师
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        if(!isset($data['teacher_id']) || empty($data['teacher_id'])) {
+            $bag->setMessage('teacher_id不能为空');
+            return $bag;
+        }
+        if(!isset($data['building_id']) || empty($data['building_id'])) {
+            $bag->setMessage('building_id不能为空');
+            return $bag;
+        }
+        if(!isset($data['room_id']) || empty($data['room_id'])) {
+            $bag->setMessage('room_id不能为空');
+            return $bag;
+        }
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        if(is_null($timetableItem)) {
+            $bag->setMessage('当前课程不存在');
+            return $bag;
+        }
+        if($timetableItem->teacher_id == $data['teacher_id']) {
+            $bag->setMessage('课程表教师与要调课的教师是同一个人');
+            return $bag;
+        }
+        // 判断该老师当前时间是否有课
+        // 判断不是调课的课程
+        $map = [
+            'time_slot_id' => $timetableItem->time_slot_id,
+            'year' => $timetableItem->year,
+            'term' => $timetableItem->term,
+            'weekday_index' => $timetableItem->weekday_index,
+            'teacher_id' => $data['teacher_id'],
+            'published' => true,
+            'to_replace' => 0
+        ];
+        $item = TimetableItem::where($map)->first();
+        if(!is_null($item)) {
+            $bag->setMessage('当前老师该时间段内有课程');
+            $bag->setCode(1001);
+            return $bag;
+        }
+        // 判断该时间段内是否有调课
+        unset($map['to_replace']);
+        $time = [
+            ['to_replace', '>', 0],
+            ['at_special_datetime', '<=', $data['to_special_datetime']],
+            ['to_special_datetime','>=', $data['at_special_datetime']]
+        ];
+        $item = TimetableItem::where($map)->where($time)->first();
+        if(!is_null($item)) {
+            $bag->setMessage('当前老师该时间段内有课程');
+            $bag->setCode(1001);
+            return $bag;
+        }
+        // 保存
+        $timetableItemId = $timetableItem['id'];
+        unset($timetableItem['id']);
+        $timetableItem->building_id = $data['building_id'] ;
+        $timetableItem['room_id'] = $data['room_id'] ;
+        $timetableItem['teacher_id'] = $data['teacher_id'] ;
+        $timetableItem['to_replace'] = $timetableItemId ;
+        $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+        $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+        $timetableItem['last_updated_by'] = $userId;
+        $re = TimetableItem::create($timetableItem->toArray());
+        if($re) {
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setMessage('调课成功');
+        } else {
+            $bag->setMessage('调课失败');
+        }
+        return $bag;
+    }
+
+
 
 
 }
