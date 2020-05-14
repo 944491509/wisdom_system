@@ -56,6 +56,10 @@ class TimeSlot extends Model
         'school_id','name','from','to','type','season', 'year'
     ];
 
+    public $hidden = [
+        'created_at', 'updated_at', 'deleted_at'
+    ];
+
     public static function AllTypes(){
         return [
             self::TYPE_WAKE_UP => self::TYPE_WAKE_UP_TXT,

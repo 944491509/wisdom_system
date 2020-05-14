@@ -199,8 +199,8 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
     Route::post('/switchingCheck','Api\Study\TimetableController@switchingCheck')
         ->name('api.timetable.switchingCheck');
     // 根据班级获取课节
-    Route::post('/switchingCheck','Api\Study\TimetableController@switchingCheck')
-        ->name('api.timetable.switchingCheck');
+    Route::post('/timeslot','Api\Study\TimetableController@timeslot')
+        ->name('api.timetable.timeslot');
 });
 
 // 招生API

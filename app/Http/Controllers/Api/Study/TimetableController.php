@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Api\Study;
 
 
+use App\Dao\Schools\GradeDao;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
@@ -412,4 +413,22 @@ class TimetableController extends Controller
     }
 
 
+    /**
+     * 获取当前班级上级的时间段
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function timeslot(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $timeSlotDao = new TimeSlotDao();
+        $timeSlot = $timeSlotDao->getAllStudyTimeSlots($grade->school_id, $grade->gradeYear(), false);
+        return JsonBuilder::Success($timeSlot);
+    }
 }
