@@ -204,6 +204,9 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
     // 年级的班级列表
     Route::post('/gradeList','Api\Study\TimetableController@gradeListByYear')
         ->name('api.timetable.gradeList');
+    // 判断是否可以调课
+    Route::get('/isSwitching','Api\Study\TimetableController@isSwitching')
+        ->name('api.timetable.isSwitching');
 });
 
 // 招生API

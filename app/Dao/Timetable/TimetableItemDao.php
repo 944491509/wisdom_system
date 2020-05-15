@@ -1322,4 +1322,14 @@ class TimetableItemDao
 
     }
 
+
+    /**
+     * 查询调课
+     * @param $map
+     * @return mixed
+     */
+    public function getTimetable($map) {
+        return TimetableItem::where($map)->first();
+    }
+
 }

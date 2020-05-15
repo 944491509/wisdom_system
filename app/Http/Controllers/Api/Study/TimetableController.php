@@ -446,4 +446,26 @@ class TimetableController extends Controller
         $gradeList = $gradeDao->gradeListByYear($grade->school_id, $grade->year);
         return JsonBuilder::Success($gradeList);
     }
+
+
+    public function isSwitching(TimetableRequest $request) {
+        $rules = [
+            'timetable_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $timetableId = $request->get('timetable_id');
+        $dao = new TimetableItemDao();
+        $today = Carbon::today()->toDateTimeString();
+
+        $map = [
+            ['to_replace','=', $timetableId],
+            ['to_special_datetime', '>=', $today]
+        ];
+        $result = $dao->getTimetable($map);
+        if(is_null($result)) {
+            return JsonBuilder::Success('可以调课');
+        } else {
+            return JsonBuilder::Error('不可以调课');
+        }
+    }
 }
