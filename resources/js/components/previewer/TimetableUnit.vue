@@ -100,7 +100,23 @@
             },
             // 创建调课的事件
             createSpecialCase: function (){
-                this.$emit('create-special-case',{unit: this.unit});
+               axios.get(
+                    `${Constants.API.TIMETABLE.SWITCH_ITEM}?timetable_id=${this.unit.id}`
+                ).then(res=>{
+                    if(Util.isAjaxResOk(res)){
+                      console.log(res)
+                      if(res.data.code == 1000){
+                        this.$emit('create-special-case',{unit: this.unit});
+                      }else{
+                        this.$confirm(res.data.message, '提示', {
+                            confirmButtonText: '确定',
+                            type: 'warning'
+                        })
+                      }
+                    }else{
+                        this.$message.error('请重试！');
+                    }
+                });
             },
             // 删除当前项
             deleteUnit: function() {

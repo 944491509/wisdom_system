@@ -55,6 +55,7 @@
                 :school-id="schoolId"
                 :courses="coursesForSpecial"
                 :specialTimeTableItem="specialCase"
+                :timeTableItem = "timeTableItem"
                 :to-be-replaced-item="toBeReplacedItem"
                 :subtitle="subTitle"
                 :special-case-cancelled="cancelSpecialCaseHandler"
@@ -131,6 +132,11 @@
             }
         },
         props: {
+            // 传递来的表单数据
+            timeTableItem: {
+                type: Object,
+                required: true,
+            },
             timetable: {
                 type: Array,
                 required: true
