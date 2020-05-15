@@ -1052,7 +1052,7 @@ class TimetableItemDao
         switch ($data['type']) {
             case 1 : return $this->_restTeacher($data, $userId);
             case 2 : return $this->_timeslotChange($data, $userId);
-            case 3 : ;
+            case 3 : return $this->_gradeTimeslotChange($data, $userId);
         }
     }
 
@@ -1207,5 +1207,80 @@ class TimetableItemDao
         return $bag;
     }
 
+
+    /**
+     * 替他班级课节互调
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _gradeTimeslotChange($data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        if(!isset($data['grade_id']) || empty($data['grade_id'])) {
+            $bag->setMessage('班级不能为空');
+            return $bag;
+        }
+        if(!isset($data['weekday_index']) || empty($data['weekday_index'])) {
+            $bag->setMessage('星期不能为空');
+            return $bag;
+        }
+        if(!isset($data['time_slot_id']) || empty($data['time_slot_id'])) {
+            $bag->setMessage('课节不能为空');
+            return $bag;
+        }
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        if(is_null($timetableItem)) {
+            $bag->setMessage('当前课程不存在');
+            return $bag;
+        }
+        // 查询要调的课表
+        $map = [
+            'time_slot_id' => $data['time_slot_id'],
+            'grade_id' => $data['grade_id'],
+            'weekday_index' => $data['weekday_index'],
+            'year' => $timetableItem['year'],
+            'term' => $timetableItem['term'],
+        ];
+
+        $item = TimetableItem::where($map)->first();
+        try{
+            DB::beginTransaction();
+            if(!is_null($item)) {
+                $newItem = $item;
+                $newItemId = $newItem['id'];
+                unset($newItem['id']);
+                $newItem['grade_id'] = $timetableItem['grade_id'];
+                $newItem['time_slot_id'] = $timetableItem['time_slot_id'];
+                $newItem['weekday_index'] = $timetableItem['weekday_index'];
+                $newItem['to_replace'] = $newItemId;
+                $newItem['at_special_datetime'] = $data['at_special_datetime'];
+                $newItem['to_special_datetime'] = $data['to_special_datetime'];
+                $newItem['last_updated_by'] = $userId;
+
+                TimetableItem::create($newItem->toArray());
+            }
+            $timetableItemId = $timetableItem['id'];
+            unset($timetableItem['id']);
+            $timetableItem['grade_id'] = $data['grade_id'];
+            $timetableItem['time_slot_id'] = $data['time_slot_id'];
+            $timetableItem['weekday_index'] = $data['weekday_index'];
+            $timetableItem['to_replace'] = $timetableItemId;
+            $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+            $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+            $timetableItem['last_updated_by'] = $userId;
+
+            TimetableItem::create($timetableItem->toArray());
+            DB::commit();
+            $bag->setMessage('调课成功');
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+        }
+        return $bag;
+
+    }
 
 }
