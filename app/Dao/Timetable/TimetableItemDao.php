@@ -1048,12 +1048,47 @@ class TimetableItemDao
     }
 
 
+    /**
+     * 调课验证
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
     public function switchingCheck($data, $userId) {
         switch ($data['type']) {
             case 1 : return $this->_restTeacher($data, $userId);
             case 2 : return $this->_timeslotChange($data, $userId);
             case 3 : return $this->_gradeTimeslotChange($data, $userId);
         }
+    }
+
+
+    /**
+     * 确认调课
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function affirmSave($data, $userId) {
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        $timetableItemId = $timetableItem['id'];
+        unset($timetableItem['id']);
+        $timetableItem->building_id = $data['building_id'] ;
+        $timetableItem['room_id'] = $data['room_id'] ;
+        $timetableItem['teacher_id'] = $data['teacher_id'] ;
+        $timetableItem['to_replace'] = $timetableItemId ;
+        $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+        $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+        $timetableItem['last_updated_by'] = $userId;
+        $re = TimetableItem::create($timetableItem->toArray());
+        $bag = new MessageBag();
+        if($re) {
+            $bag->setMessage('调课成功');
+        } else {
+            $bag->setMessage('调课失败');
+            $bag->setCode(JsonBuilder::CODE_ERROR);
+        }
+        return $bag;
     }
 
 
@@ -1101,7 +1136,7 @@ class TimetableItemDao
         ];
         $item = TimetableItem::where($map)->first();
         if(!is_null($item)) {
-            $bag->setMessage('当前老师该时间段内有课程');
+            $bag->setMessage('当前老师在'.$item->grade->name.'有课程');
             $bag->setCode(1001);
             return $bag;
         }
@@ -1114,7 +1149,7 @@ class TimetableItemDao
         ];
         $item = TimetableItem::where($map)->where($time)->first();
         if(!is_null($item)) {
-            $bag->setMessage('当前老师该时间段内有课程');
+            $bag->setMessage('当前老师在'.$item->grade->name.'有课程');
             $bag->setCode(1001);
             return $bag;
         }
@@ -1137,6 +1172,10 @@ class TimetableItemDao
         }
         return $bag;
     }
+
+
+
+
 
 
     /**

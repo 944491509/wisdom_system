@@ -398,7 +398,7 @@ class TimetableController extends Controller
             $result = $dao->switchingCheck($all, $user->id);
         } else {
             // 保存
-
+            $result = $dao->affirmSave($all, $user->id);
         }
         $msg = $result->getMessage();
         if($result->isSuccess()) {
@@ -407,9 +407,6 @@ class TimetableController extends Controller
             $code = $result->getCode();
             return JsonBuilder::Error($msg, $code);
         }
-
-
-
     }
 
 
