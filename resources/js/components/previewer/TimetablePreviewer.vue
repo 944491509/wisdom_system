@@ -51,6 +51,7 @@
         </el-dialog>
         <el-dialog :title="'调课表单-'+subTitle" :visible.sync="specialCaseFormVisible" :close-on-click-modal="false">
             <timetable-item-special-form
+                v-if="specialCaseFormVisible"
                 :user-uuid="userUuid"
                 :school-id="schoolId"
                 :courses="coursesForSpecial"
@@ -299,6 +300,40 @@
             confirmSpecialCaseHandler: function(){
               console.log('AA',this.specialCase)
               console.log('AA',this.userUuid)
+               axios.post(
+                      `/api/timetable/switchingCheck`,
+                    {
+                      timetable_id: this.specialCase.to_replace,
+                      at_special_datetime: this.specialCase.at_special_datetime,
+                      to_special_datetime: this.specialCase.to_special_datetime,
+                      type:this.specialCase.type || 0,
+                      affirm: Number(this.specialCase.published),
+                      teacher_id:this.specialCase.teacher_id || '',
+                      building_id:this.specialCase.building_id || '',
+                      room_id:this.specialCase.room_id || '',
+                      weekday_index:this.specialCase.week_id || '',
+                      time_slot_id:this.specialCase.course_id || '',
+                      grade_id:this.specialCase.class_id || '',
+                    }
+                ).then(res=>{
+                    if(Util.isAjaxResOk(res)){
+                        // 创建成功, 去刷新课程表的表单
+                        this.$emit('timetable-refresh',{});
+                        this.$notify({
+                            title: '成功',
+                            message: '调课操作成功, 正为您刷新课程表 ...',
+                            type: 'success',
+                            position: 'bottom-right'
+                        });
+                        this.specialCaseFormVisible = false;
+                    }else{
+                        this.$notify.error({
+                            title: '系统错误',
+                            message: '调课操作失败, 请稍候再试 ...',
+                            position: 'bottom-right'
+                        });
+                    }
+                })
                 // axios.post(
                 //     Constants.API.TIMETABLE.CREATE_SPECIAL_CASE,
                 //     {specialCase: this.specialCase, user: this.userUuid}

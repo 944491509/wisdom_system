@@ -112,6 +112,7 @@
 								<el-date-picker
 									v-model="specialTimeTableItem.to_special_datetime"
 									type="date"
+                  value-format="yyyy-MM-dd"
 									:picker-options="endPickerOptions"
 									placeholder="选择日期"
 								></el-date-picker>
@@ -192,9 +193,9 @@
 							<!-- <span class="help-text">说明: 请选择上面选择的楼的那个房间上课</span> -->
 						</el-form-item>
 						<el-divider></el-divider>
-						<p class="text-center">
+						<!-- <p class="text-center">
 							<el-switch v-model="specialTimeTableItem.published" active-text="立即生效" inactive-text="存为草稿"></el-switch>
-						</p>
+						</p> -->
 					</div>
 				</div>
 			</div>
