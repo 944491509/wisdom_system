@@ -29,6 +29,10 @@ class TimetableItem extends Model
         'school_id', 'published', 'available_only'
     ];
 
+    protected $hidden = [
+        'created_at', 'updated_at', 'deleted_at',
+    ];
+
     public $casts = [
         'available_only' => 'array', // 如果是特定区间的课程, 那么表示在哪些周
         'published' => 'boolean', // 是否本 item 是发布状态

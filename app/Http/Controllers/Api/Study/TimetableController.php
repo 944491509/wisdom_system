@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Api\Study;
 
 
+use App\Dao\Schools\GradeDao;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
@@ -439,4 +440,100 @@ class TimetableController extends Controller
     }
 
 
+    /**
+     * 调课
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function switchingCheck(TimetableRequest $request) {
+        $user = $request->user();
+        $rules = [
+            'timetable_id' => 'required|int',
+            'at_special_datetime' => 'required|date|after_or_equal:today',
+            'to_special_datetime' => 'required|date|after_or_equal:at_special_datetime',
+            'type' => 'required|int',
+            'affirm' => 'required|boolean'
+        ];
+
+        $this->validate($request,$rules);
+
+        $all = $request->all();
+
+        $dao = new TimetableItemDao();
+        // 为验证
+        if($all['affirm'] == false) {
+            $result = $dao->switchingCheck($all, $user->id);
+        } else {
+            // 保存
+            $result = $dao->affirmSave($all, $user->id);
+        }
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
+        } else {
+            $code = $result->getCode();
+            return JsonBuilder::Error($msg, $code);
+        }
+    }
+
+
+    /**
+     * 获取当前班级上级的时间段
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function timeslot(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $timeSlotDao = new TimeSlotDao();
+        $timeSlot = $timeSlotDao->getAllStudyTimeSlots($grade->school_id, $grade->gradeYear(), false);
+        return JsonBuilder::Success($timeSlot);
+    }
+
+
+    /**
+     * 获取年级下的班级
+     * @param TimetableRequest $request
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function gradeListByYear(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $gradeList = $gradeDao->gradeListByYear($grade->school_id, $grade->year);
+        return JsonBuilder::Success($gradeList);
+    }
+
+
+    public function isSwitching(TimetableRequest $request) {
+        $rules = [
+            'timetable_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $timetableId = $request->get('timetable_id');
+        $dao = new TimetableItemDao();
+        $today = Carbon::today()->toDateTimeString();
+
+        $map = [
+            ['to_replace','=', $timetableId],
+            ['to_special_datetime', '>=', $today]
+        ];
+        $result = $dao->getTimetable($map);
+        if(is_null($result)) {
+            return JsonBuilder::Success('可以调课');
+        } else {
+            return JsonBuilder::Error('不可以调课');
+        }
+    }
 }
