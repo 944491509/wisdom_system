@@ -329,18 +329,18 @@ export default {
 			}
 		},
 		"specialTimeTableItem.course_id": function(newVal, oldVal) {
-			// if (newVal !== oldVal) {
-			// 	// 去加载老师
-			// 	this._getTeachersByCourse(newVal);
-			// }
+			if (newVal !== oldVal) {
+				// 去加载老师
+				this._getTeachersByCourse(newVal);
+			}
 		}
 	},
 	created() {
-    this._getAllBuildings();
-    console.log(this.specialTimeTableItem,this.timeTableItem);
-    this.getGrageListByGrade_id();
-    this._getTeachersByCourse(this.specialTimeTableItem.course_id);
-    this.getTimeslot();
+		this._getAllBuildings();
+	
+		this.getGrageListByGrade_id();
+		this._getTeachersByCourse(this.toBeReplacedItem.course_id);
+		this.getTimeslot();
 	},
 	mounted() {
 		this.specialTimeTableItem.type = "0";
@@ -383,14 +383,24 @@ export default {
 				this.selectType1 = true;
 				this.selectType2 = false;
 				this.selectType3 = false;
+				this.specialTimeTableItem.class_id = ''
+				this.specialTimeTableItem.week_id = ''
+				this.specialTimeTableItem.course_id = ''
 			} else if (val === "1") {
 				this.selectType1 = false;
 				this.selectType2 = true;
 				this.selectType3 = false;
+				this.specialTimeTableItem.class_id = ''
+				this.specialTimeTableItem.teacher_id = ''
+				this.specialTimeTableItem.building_id = ''
+				this.specialTimeTableItem.room_id = ''
 			} else if (val === "2") {
 				this.selectType1 = false;
 				this.selectType2 = false;
 				this.selectType3 = true;
+				this.specialTimeTableItem.teacher_id = ''
+				this.specialTimeTableItem.building_id = ''
+				this.specialTimeTableItem.room_id = ''
 			}
 		},
 		_getAllBuildings: function() {

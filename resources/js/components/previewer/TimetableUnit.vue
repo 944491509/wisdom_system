@@ -114,7 +114,11 @@
                         })
                       }
                     }else{
-                        this.$message.error('请重试！');
+                        // this.$message.error('请重试！');
+                        this.$confirm(res.data.message, '提示', {
+                            confirmButtonText: '确定',
+                            type: 'warning'
+                        })
                     }
                 });
             },
