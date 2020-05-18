@@ -54,7 +54,7 @@ class UploadStudentPhoto extends Command
                 $path = storage_path('app/student_photo/' . $grade->name);
                 $fileArr = $this->myScanDir($path);
                 if (!is_array($fileArr)) {
-                     Log::info($grade->name.'不是个数组'.PHP_EOL);
+                     Log::channel('face_log')->info($grade->name.'不是个数组'.PHP_EOL);
                      continue;
                 }
                 foreach ($fileArr as $k => $val) {
@@ -62,22 +62,22 @@ class UploadStudentPhoto extends Command
                     // 根据班级id , 学生姓名判断班级是否有该学生, 如果有重名的 先记录下来单独处理
                     $studentNum = GradeUser::where(['grade_id' => $grade->id, 'name' => $studentName])->count();
                     if ($studentNum > 1) {
-                        Log::info($grade->name . '中有重名的学生----' . $val);
+                        Log::channel('face_log')->info($grade->name . '中有重名的学生----' . $val);
                         continue;
                     } elseif($studentNum == 0) {
-                        Log::info($grade->name . '中沒有找到该学生----' . $val);
+                        Log::channel('face_log')->info($grade->name . '中沒有找到该学生----' . $val);
                         continue;
                     } else {
                         // 上传照片
                         $openApi = new CloudOpenApi;
                         $result = $openApi->makePostUploadFaceImg($path.'/'.$val);
                         if ($result['code'] != CloudOpenApi::ERROR_CODE_OPEN_API_OK) {
-                            Log::info($grade->name.'中'.$val. '错误原因:'. $result['message']);
+                            Log::channel('face_log')->info($grade->name.'中'.$val. '-----错误原因:'. $result['message']. '---code:'. $result['code']);
                         } else {
                             $gradeUser = GradeUser::where(['grade_id' => $grade->id, 'name' => $studentName])->first();
                             $studentProfile = StudentProfile::where('user_id', $gradeUser->user_id)->update(['face_code' => $result['data']['face_code']]);
                             if (!$studentProfile) {
-                                Log::info($grade->name.'中'.$val. '修改失败:'. 'face_code:'. $result['code']);
+                                Log::channel('face_log')->info($grade->name.'中'.$val. '修改失败:'. 'face_code:'. $result['code']);
                             }
                         }
                     }
@@ -87,7 +87,7 @@ class UploadStudentPhoto extends Command
             }
             echo '总次数:'.$num.PHP_EOL;
         } catch (\Exception $exception) {
-            Log::info('异常错误'. $exception. '----'.$grade->name);
+            Log::channel('face_log')->info('异常错误'. $exception. '----'.$grade->name);
         }
         $this->info('任务结束');
     }
@@ -112,7 +112,7 @@ class UploadStudentPhoto extends Command
             closedir($dh);
             return $tmpArr;
         } catch (\Exception $exception) {
-            Log::info('没有找到'. $dir.PHP_EOL);
+            Log::channel('face_log')->info('没有找到'. $dir.PHP_EOL);
         }
     }
 }

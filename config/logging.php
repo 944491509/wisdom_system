@@ -97,6 +97,14 @@ return [
             'level' => 'debug',
             'days' => 14,
         ],
+
+        // 上传华三人脸识别
+        'face_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/face_log.log'),
+            'level' => 'debug',
+            'days' => 1,
+        ],
     ],
 
 ];
