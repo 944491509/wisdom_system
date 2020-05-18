@@ -85,10 +85,10 @@ class UploadStudentPhoto extends Command
                 }
                 echo $grade->name. '循环完成'.PHP_EOL;
             }
+            echo '总次数:'.$num.PHP_EOL;
         } catch (\Exception $exception) {
             Log::info('异常错误'. $exception. '----'.$grade->name);
         }
-        echo $num;
         $this->info('任务结束');
     }
 
