@@ -72,6 +72,7 @@ class TimeSlotDao
         $slots = TimeSlot::where('school_id',$schoolId)
             ->where('season',$seasonType)
             ->where('year',$gradeYear)
+            ->where('status', TimeSlot::STATUS_SHOW)  // 显示
             ->whereIn('type',[TimeSlot::TYPE_STUDYING, TimeSlot::TYPE_PRACTICE, TimeSlot::TYPE_FREE_TIME])
             ->orderBy('from','asc')
             ->get();
@@ -144,6 +145,7 @@ class TimeSlotDao
             ['timetable_items.year', '=', $year],
             ['term', '=', $term],
             ['weekday_index', '=', $date->dayOfWeekIso],
+            ['time_slots.status', '=', TimeSlot::STATUS_SHOW]
         ];
 
         return TimetableItem::where($where)
@@ -186,7 +188,8 @@ class TimeSlotDao
 
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
-                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
+                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id')
+                ->where('time_slots.status', '=', TimeSlot::STATUS_SHOW);
             })
             ->select($field)
             ->orderBy('time_slots.from','asc')
@@ -248,6 +251,7 @@ class TimeSlotDao
             ['from', '<', $time],
             ['to', '>', $time],
             ['season', '=', $season],
+            ['status', '=', TimeSlot::STATUS_SHOW]
 //            ['type', '=', TimeSlot::TYPE_STUDYING]
         ];
         return TimeSlot::where($map)->first();

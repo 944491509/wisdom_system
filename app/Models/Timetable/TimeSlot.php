@@ -53,8 +53,11 @@ class TimeSlot extends Model
     const SEASONS_SUMMER_AND_AUTUMN_TEXT = '夏季/秋季';
 
     protected $fillable = [
-        'school_id','name','from','to','type','season', 'year'
+        'school_id','name','from','to','type','season', 'year', 'status'
     ];
+
+    const STATUS_HIDE = 0; // 隐藏
+    const STATUS_SHOW = 1; // 显示
 
     public static function AllTypes(){
         return [

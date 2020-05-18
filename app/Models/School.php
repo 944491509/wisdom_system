@@ -59,7 +59,11 @@ class School extends Model
         $config = $this->configuration;
         $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
         $field = ['id','name','type','from','to','season'];
-        $map = ['year' => $year,'school_id'=>$this->id, 'season'=>$seasonType];
+        $map = [
+            'year' => $year,
+            'school_id'=>$this->id,
+            'season'=>$seasonType
+        ];
         $slots = TimeSlot::select($field)
             ->where($map)
             ->orderBy('from','asc')->get();

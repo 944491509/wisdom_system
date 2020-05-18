@@ -438,6 +438,7 @@ class TimetableItemDao
             ['timetable_items.term','=',$term],
             ['timetable_items.weekday_index','=',$weekDayIndex],
             ['timetable_items.to_replace','=',0], // 不需要调课记录
+            ['time_slots.status', '=', TimeSlot::STATUS_SHOW] // 作息时间的显示
         ];
 
         foreach ($by as $k=>$v) {
