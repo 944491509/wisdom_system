@@ -325,7 +325,7 @@ export default {
 		"specialTimeTableItem.building_id": function(newVal, oldVal) {
 			if (newVal !== oldVal) {
 				// 去加载房间
-				this._getRoomsByBuilding(newVal);
+        this._getRoomsByBuilding(newVal);
 			}
 		},
 		"specialTimeTableItem.course_id": function(newVal, oldVal) {
@@ -337,7 +337,7 @@ export default {
 	},
 	created() {
 		this._getAllBuildings();
-	
+
 		this.getGrageListByGrade_id();
 		this._getTeachersByCourse(this.toBeReplacedItem.course_id);
 		this.getTimeslot();
@@ -413,18 +413,18 @@ export default {
 				});
 		},
 		// 获取某个建筑的所有房间
-		_getRoomsByBuilding: function(buildingId) {
+		_getRoomsByBuilding: function() {
 			// 获取房间时, 要根据前面一个步骤选择的时间段来进行判断.
 			// 如果给定年度的, 给定学期的, 给定时间段, 给定的建筑物内,
 			// 某个教室是可能被占用的, 因此被占用的不可以被返回
 			axios
-				.post(Constants.API.LOAD_AVAILABLE_ROOMS_BY_BUILDING, {
-					itemId: this.toBeReplacedItem.id,
-					as: "timetable-item-id"
+				.post(`/api/school/load-building-rooms`, {
+					building: this.specialTimeTableItem.building_id,
 				})
 				.then(res => {
 					if (Util.isAjaxResOk(res)) {
-						this.rooms = res.data.data.rooms;
+            this.rooms = res.data.data.rooms;
+            this.specialTimeTableItem.room_id = ''
 					} else {
 						this.rooms = [];
 					}
