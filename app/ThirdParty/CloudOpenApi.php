@@ -12,7 +12,6 @@ class CloudOpenApi
 
     const ERROR_CODE_OPEN_API_OK = 0; // 华三接口正常返回code
 
-
 	public $appId;
 
 	public $appSecret;
@@ -21,7 +20,7 @@ class CloudOpenApi
 
     public $apiUrl;
 
-    public $schoolUUid = 'ac446926-7ee4-49d0-88d2-06c7082b6098';
+    public $schoolUUid = '4b74dffc-e17c-4ba5-9f24-db0002639b82';
 
     public function __construct()
     {
@@ -35,20 +34,19 @@ class CloudOpenApi
     /**
      * 计算 AccessKey
      */
-    public function accessKey()
+    private function accessKey()
     {
         $test = $this->appId. $this->appSecret. $this->timestamp;
         return  md5($test);
     }
 
     /**
-     * @param $uuid
      * @param $imgPath
+     * @param null $faceCode 更新需要
      * @return string
      */
-    public function makePostUploadFaceImg($uuid, $imgPath)
+    public function makePostUploadFaceImg($imgPath, $faceCode = null)
     {
-
         error_reporting(0);
 
         $url   = '/open/nva/custom_upload_face_img/';
@@ -57,28 +55,31 @@ class CloudOpenApi
             'x-app-id'                => $this->appId,
             'x-access-key'            => $this->accessKey(),
             'x-time-stamp'            => $this->timestamp,
-            'X-Custom-Header-3School' => $this->schoolUUid // 学校UUID 后期多个学校可换成传参的形式
+            'X-Custom-Header-3School' => $this->schoolUUid
         ];
+        $data = [
+            [
+                'name'     => 'category',
+                'contents' => 'face'
+            ],
+            [
+                'name'     => 'file',
+                'contents' => fopen($imgPath, 'r')
+            ]
+        ];
+
+        if ($faceCode) {
+            array_push($data, [
+                'name'     => 'face_code',
+                'contents' => $faceCode
+            ]);
+        }
 
         $client   = new Client;
         $response = $client->request('POST', $this->apiUrl.$url, [
-        'headers'   => $headers,
-        'multipart' => [
-                [
-                    'name'     => 'student_id',
-                    'contents' => $uuid
-                ],
-                [
-                    'name'     => 'category',
-                    'contents' => 'face'
-                ],
-                [
-                    'name'     => 'file',
-                    'contents' => fopen($imgPath, 'r')
-                ]
-            ]
+            'headers'   => $headers,
+            'multipart' => $data
         ]);
-
         return  json_decode($response->getBody()->getContents(), true);
     }
 }
