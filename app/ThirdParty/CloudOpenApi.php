@@ -74,12 +74,12 @@ class CloudOpenApi
                 'contents' => $faceCode
             ]);
         }
+
         $client   = new Client;
         $response = $client->request('POST', $this->apiUrl.$url, [
             'headers'   => $headers,
             'multipart' => $data
         ]);
-
         return  json_decode($response->getBody()->getContents(), true);
     }
 }

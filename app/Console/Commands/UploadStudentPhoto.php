@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Schools\Grade;
+use App\Models\Students\StudentProfile;
 use App\Models\Users\GradeUser;
 use App\ThirdParty\CloudOpenApi;
 use Illuminate\Console\Command;
@@ -69,13 +70,20 @@ class UploadStudentPhoto extends Command
                     } else {
                         // 上传照片
                         $openApi = new CloudOpenApi;
-                        $result = $openApi->makePostUploadFaceImg($path.'/'.$val, '123');
+                        $result = $openApi->makePostUploadFaceImg($path.'/'.$val);
                         if ($result['code'] != CloudOpenApi::ERROR_CODE_OPEN_API_OK) {
-
+                            Log::info($grade->name.'中'.$val. '错误原因:'. $result['message']);
+                        } else {
+                            $gradeUser = GradeUser::where(['grade_id' => $grade->id, 'name' => $studentName])->first();
+                            $studentProfile = StudentProfile::where('user_id', $gradeUser->user_id)->update(['face_code' => $result['data']['face_code']]);
+                            if (!$studentProfile) {
+                                Log::info($grade->name.'中'.$val. '修改失败:'. 'face_code:'. $result['code']);
+                            }
                         }
                     }
                     $num ++;
                 }
+                echo $grade->name. '循环完成'.PHP_EOL;
             }
         } catch (\Exception $exception) {
             Log::info('异常错误'. $exception. '----'.$grade->name);
