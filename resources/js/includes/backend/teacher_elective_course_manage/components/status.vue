@@ -17,10 +17,10 @@ export default {
         3: "报名中",
         4: "待开课",
         5: "已结束",
-        6: "进行中",
+        6: "开课中",
         7: "异常状态",
         8: "待审核",
-        9: "被拒绝"
+        9: "未通过"
       }
     };
   }
@@ -42,10 +42,16 @@ export default {
 .status.status1 {
   color: #bac1cd;
 }
+.status.status5 {
+  color: #bac1cd;
+}
 .status.status9 {
   color: #fd2e2e;
 }
 .status.status6 {
+  color: #6dcc58;
+}
+.status.status3 {
   color: #6dcc58;
 }
 </style>

@@ -3,12 +3,9 @@
     <div class="list-item" v-for="(course, index) in list" :key="index">
       <span class="name">{{course.name}}</span>
       <span class="arrangement">
-        <div
-          v-for="(arrange, index) in course.arrangement"
-          :key="index"
-        >{{`第${arrange.week}周 周${arrange.day_index} ${arrange.time}`}}</div>
+        <Arranges :arranges="course.arrangement" />
       </span>
-      <span class="date">{{course.created_at}}</span>
+      <span class="date">{{course.elective_enrol_start_at}}</span>
       <course-status :status="course.status" />
       <span class="detail" @click="goDetail(course)">
         <span class="detail-btn">
@@ -29,12 +26,14 @@
 import { CourseApi } from "../common/api";
 import { CourseMode, CourseStatus } from "../common/enum";
 import { Util } from "../../../../common/utils";
+import Arranges from './arrange'
 import Status from './status'
 
 export default {
   name: "course-list",
   components: {
-    'course-status': Status
+    'course-status': Status,
+    Arranges
   },
   props: {
     mode: {

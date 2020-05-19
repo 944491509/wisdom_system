@@ -27,11 +27,11 @@ if (app) {
         }
       }
     },
-    // computed: {
-    //   activeNameText() {
-    //     return (CourseMode[this.activeName] || {}).text || ''
-    //   }
-    // },
+    computed: {
+      detailTypeText() {
+        return (CourseMode[this.courseMode] || {}).text || ''
+      }
+    },
     methods: {
       refreshList(val) {
         if (this.$refs[val]) {

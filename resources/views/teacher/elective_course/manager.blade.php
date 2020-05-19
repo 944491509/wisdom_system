@@ -28,7 +28,7 @@
             :visible.sync="coursedetailshow"
             direction="rtl">
             <template slot="title">
-                <div class="course-detail-title"><span class="title-icon"><span class="icon-pic"></span></span> 选课详情</div>
+                <div class="course-detail-title"><span class="title-icon"><span class="icon-pic"></span></span> @{{detailTypeText}}-详情</div>
             </template>
             <course-detail :courseid="courseId" :mode="courseMode"/>
           </el-drawer>
