@@ -493,10 +493,10 @@ class TimetableController extends Controller
         return JsonBuilder::Success($timeSlot);
     }
 
-
     /**
      * 获取年级下的班级
      * @param TimetableRequest $request
+     * @return string
      * @throws \Illuminate\Validation\ValidationException
      */
     public function gradeListByYear(TimetableRequest $request) {
@@ -512,6 +512,12 @@ class TimetableController extends Controller
     }
 
 
+    /**
+     * 判断是否可以调课
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function isSwitching(TimetableRequest $request) {
         $rules = [
             'timetable_id' => 'required|int',
