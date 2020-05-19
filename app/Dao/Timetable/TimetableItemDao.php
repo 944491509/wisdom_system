@@ -338,7 +338,6 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $rows = TimetableItem::where($where)
             ->leftJoin('time_slots',function ($join) {
@@ -367,7 +366,7 @@ class TimetableItemDao
                 'grade'=> $row->grade->name,
                 'grade_id'=> $row->grade_id,
                 'building'=>$row->building->name,
-                'room'=>$row->room->name,
+                'room'=>$row->room->description,
                 'room_id'=>$row->room_id,
                 'id'=>$row->id,
                 'published'=>$row->published,
@@ -1049,6 +1048,50 @@ class TimetableItemDao
 
 
     /**
+     * 查询调课
+     * @param $timeTableId
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByToReplace($timeTableId, Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['to_replace', '=', $timeTableId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
+    }
+
+
+    /**
+     * 查询调课
+     * @param $timeSlotId
+     * @param $teacherId
+     * @param $weekIndex
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByTimeSlotId($timeSlotId, $teacherId,$weekIndex,Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['time_slot_id', '=', $timeSlotId],
+            ['weekday_index', '=', $weekIndex],
+            ['teacher_id', '=', $teacherId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
+    }
+
+
+    /**
      * 调课验证
      * @param $data
      * @param $userId
@@ -1123,33 +1166,44 @@ class TimetableItemDao
             $bag->setMessage('课程表教师与要调课的教师是同一个人');
             return $bag;
         }
-        // 判断该老师当前时间是否有课
-        // 判断不是调课的课程
+
         $map = [
-            'time_slot_id' => $timetableItem->time_slot_id,
+            'time_slot_id' =>$timetableItem->time_slot_id,
+            'room_id' => $data['room_id'],
             'year' => $timetableItem->year,
             'term' => $timetableItem->term,
             'weekday_index' => $timetableItem->weekday_index,
-            'teacher_id' => $data['teacher_id'],
             'published' => true,
-            'to_replace' => 0
         ];
-        $item = TimetableItem::where($map)->first();
-        if(!is_null($item)) {
-            $bag->setMessage('当前老师在'.$item->grade->name.'有课程');
+        // 判断当前教室是否被占用
+        $room = TimetableItem::where($map)->where('grade_id','<>', $timetableItem->grade_id)
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0) // 没有调课的
+                ->orwhere(function ($que) use ($data) {
+                    $que->where('to_replace', '>', 0)
+                        ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                        ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                });
+            })->first();
+        if(!is_null($room)) {
+            $bag->setMessage('当前教室已被'.$room->grade->name.'占用');
             $bag->setCode(1001);
             return $bag;
         }
-        // 判断该时间段内是否有调课
-        unset($map['to_replace']);
-        $time = [
-            ['to_replace', '>', 0],
-            ['at_special_datetime', '<=', $data['to_special_datetime']],
-            ['to_special_datetime','>=', $data['at_special_datetime']]
-        ];
-        $item = TimetableItem::where($map)->where($time)->first();
-        if(!is_null($item)) {
-            $bag->setMessage('当前老师在'.$item->grade->name.'有课程');
+        // 判断该老师当前时间是否有课
+        unset($map['room_id']);
+        $map['teacher_id'] = $data['teacher_id'];
+        $teacher = TimetableItem::where($map)
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0)  // 没有调课的
+                ->orWhere(function ($que) use ($data) {
+                    $que->where('to_replace', '>', 0)
+                        ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                        ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                });
+            })->first();
+        if(!is_null($teacher)) {
+            $bag->setMessage('当前老师在'.$teacher->grade->name.'有课程');
             $bag->setCode(1001);
             return $bag;
         }
