@@ -139,10 +139,10 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
         ->name('teacher.registration.forms.enrol');
 
     // 教师申请开设一门选修课
-    /*Route::get('elective-course/create', 'ElectiveCoursesController@create')
+    Route::get('elective-course/create', 'ElectiveCoursesController@create')
         ->name('teacher.elective-course.create');
     Route::get('elective-course/edit', 'ElectiveCoursesController@edit')
-        ->name('teacher.elective-course.edit');*/
+        ->name('teacher.elective-course.edit');
     Route::get('elective-course/manager', 'ElectiveCoursesController@manager')
         ->name('teacher.elective-course.manager');
 
