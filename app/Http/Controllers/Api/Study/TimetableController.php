@@ -322,13 +322,13 @@ class TimetableController extends Controller
     }
 
 
-
     /**
      * 课节数据处理
      * @param $item
      * @param $forStudyingSlots
      * @param $teacherId
      * @param $weekdayIndex
+     * @param Carbon $time
      * @return array
      */
     public function slotDataProcessing($item, $forStudyingSlots, $teacherId, $weekdayIndex, Carbon $time) {
@@ -373,7 +373,9 @@ class TimetableController extends Controller
                                 'old_course' => '', // 调课时显示原课程名称
                             ];
                         } else {
-                            if($specials->teacher_id == $teacherId) {
+                            $date = $time->toDateTimeString();
+                            // 当前的调课是同个教师 调课时间段 当前课节
+                            if($specials->teacher_id == $teacherId  && $specials->at_special_datetime <= $date && $specials->to_special_datetime >= $date && $specials->time_slot_id == $value->id) {
                                 $course = [
                                     'time_table_id' => $specials['id'],
                                     'name' => $specials->course->name,
@@ -391,12 +393,6 @@ class TimetableController extends Controller
                                     'repeat_unit' => $specials['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
                                     'switching' => true,
                                     'old_course' => $specials->course->name,
-                                ];
-                            } else {
-
-                                $course = [
-                                    'switching' => true,
-                                    'old_course' => $val['course'],
                                 ];
                             }
                         }
