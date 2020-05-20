@@ -15,9 +15,11 @@ if(document.getElementById('school-time-slots-manager')){
                     to:'',
                     name:'',
                     type:'',
-                    grade_id:""
+                    grade_id:"",
+                    status:false
                 },
                 showEditForm: false,
+                mode:'add',
                 schoolUuid:'',
                 grades:[],
                 schoolid:''
@@ -25,15 +27,33 @@ if(document.getElementById('school-time-slots-manager')){
         },
         methods:{
             editTimeSlotHandler: function(payload){
-                const keys = Object.keys(payload.timeSlot);
-                keys.forEach(key => {
-                    this.currentTimeSlot[key] = payload.timeSlot[key];
-                });
-                console.log(payload)
-                // this.currentTimeSlot = payload.timeSlot;
-                this.schoolUuid = payload.schoolUuid;
-                // this.currentTimeSlot =
-                this.showEditForm = true;
+                this.mode = payload.type;
+                if(payload.type == 'add'){
+                  this.currentTimeSlot = {
+                    id:'',
+                    from:'',
+                    to:'',
+                    name:'',
+                    type:'',
+                    grade_id:"",
+                    status:false
+                  }
+                  this.showEditForm = true;
+                  return ;
+                }
+                if(payload.type == 'edit'){
+                  const keys = Object.keys(payload.timeSlot);
+                  keys.forEach(key => {
+                      this.currentTimeSlot[key] = payload.timeSlot[key];
+                  });
+                  console.log(payload)
+                  // this.currentTimeSlot = payload.timeSlot;
+                  this.schoolUuid = payload.schoolUuid;
+                  this.currentTimeSlot.grade_id = payload.grade.year;
+                  this.currentTimeSlot.from = payload.timeSlot.from;
+                  this.currentTimeSlot.to = payload.timeSlot.to;
+                  this.showEditForm = true;
+                }
             },
             onSubmit: function () {
                 if(this.currentTimeSlot.name.trim() === ''){
