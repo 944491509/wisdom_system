@@ -117,4 +117,12 @@ class TimeSlot extends Model
     public function getToAttribute($val) {
         return Carbon::parse($val)->format('H:i');
     }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function timeTableItems() {
+        return $this->hasMany(TimetableItem::class, 'time_slot_id');
+    }
 }

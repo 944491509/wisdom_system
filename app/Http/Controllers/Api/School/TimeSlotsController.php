@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\School;
 
+use App\Dao\Timetable\TimetableItemDao;
 use App\Models\Schools\SchoolConfiguration;
 use App\Models\Timetable\TimeSlot;
 use App\User;
@@ -203,6 +204,35 @@ class TimeSlotsController extends Controller
             return JsonBuilder::Success(['id'=>$result->id],'创建成功');
         } else {
             return JsonBuilder::Error('创建失败');
+        }
+    }
+
+
+    /**
+     * 删除课节
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function delTimeslot(MyStandardRequest $request) {
+        $rules = ['time_slot_id' => 'required|int'];
+        $this->validate($request,$rules);
+        $timeSlotId = $request->get('time_slot_id');
+        $timeSlotDao = new TimeSlotDao();
+        $timeSlot = $timeSlotDao->getById($timeSlotId);
+        if(is_null($timeSlot)) {
+            return JsonBuilder::Error('该节课不存在');
+        }
+        $timetableItems = $timeSlot->timeTableItems;
+        if(count($timetableItems) > 0) {
+            return JsonBuilder::Error('已经有课程表使用不能删除');
+        }
+        // 删除
+        $re = $timeSlotDao->delTimeSlot($timeSlotId);
+        if($re) {
+            return JsonBuilder::Success('删除成功');
+        } else {
+            return JsonBuilder::Error('删除失败');
         }
     }
 }

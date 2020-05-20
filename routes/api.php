@@ -118,6 +118,9 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 添加作息时间
     Route::post('/addTimeSlot', 'Api\School\TimeSlotsController@addTimeSlot')
         ->name('api.school.addTimeSlot');
+    // 删除作息时间 delTimeslot
+    Route::get('/delTimeslot', 'Api\School\TimeSlotsController@delTimeslot')
+        ->name('api.school.delTimeslot');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
