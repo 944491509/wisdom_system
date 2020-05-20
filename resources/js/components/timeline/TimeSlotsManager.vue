@@ -1,23 +1,24 @@
 <template>
   <div class="block">
     <div class="title-bar">作息时间 <el-button type="primary" @click="addTimeSlot">添加</el-button></div>
-    <div class="content"  v-for="(grade, index) in allTimeSlot" :key="index">
-      <div class="title"> <span :class="'tag style' +index"></span>{{grade.name}}</div>
-      <el-timeline class="frame-wrap">
-        <el-timeline-item
-          v-for="(activity, index) in grade.time_slot"
-          :key="index"
-          type="primary"
-          :color="activity.color"
-          :timestamp="activity.from + '-' + activity.to"
-        >
-          <p style="padding: 0;color: #409EFF;" @click="editTimeSlot(grade.name,activity)">
-            {{activity.name}}
-          </p>
-        </el-timeline-item>
-      </el-timeline>
+    <div class="row">
+      <div class="content col-3"  v-for="(grade, index) in allTimeSlot" :key="index">
+        <div class="title"> <span :class="'tag style' +index"></span>{{grade.year.text}}</div>
+        <el-timeline class="frame-wrap">
+          <el-timeline-item
+            v-for="(activity, index) in grade.time_slot"
+            :key="index"
+            type="primary"
+            :color="activity.color"
+            :timestamp="activity.from + '-' + activity.to"
+          >
+            <p style="padding: 0;color: #409EFF;" @click="editTimeSlot(grade.year,activity)">
+              {{activity.name}}
+            </p>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
     </div>
-
     <slot></slot>
   </div>
 </template>
