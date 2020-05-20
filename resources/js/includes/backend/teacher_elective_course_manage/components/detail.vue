@@ -4,31 +4,40 @@
       <div class="detail-item">
         <span class="title">课程名称</span>
         <span class="content">
-            <span>{{course.name}}</span>
-            <course-status style="float: right;" :status="course.status"/>
+          <span>{{course.name}}</span>
+          <course-status style="float: right;" :status="course.status" />
         </span>
       </div>
-      <template>
-        <div class="detail-item">
-          <span class="title">学分</span>
-          <span class="content">{{course.scores}}分</span>
-        </div>
-      </template>
       <div class="detail-item">
-        <span class="title">上课信息</span>
-        <span class="content">
-          <p v-for="(arrangement, index) in course.arrangement" :key="index" class="arrangement">
-            <span class="week">第{{(arrangement|| {}).week}}周</span>
-            <span
-              class="day"
-            >{{matchWeek[(arrangement|| {}).day_index]}} {{(arrangement|| {}).time}}</span>
-            <span class="address">{{(arrangement|| {}).building}} {{(arrangement|| {}).classroom}}</span>
-          </p>
-        </span>
+        <span class="title">教师名称</span>
+        <span class="content">{{course.teacher_name}}分</span>
+      </div>
+      <div class="detail-item">
+        <span class="title">教师名称</span>
+        <span class="content">{{course.teacher_name}}分</span>
+      </div>
+      <div class="detail-item">
+        <span class="title">学分</span>
+        <span class="content">{{course.scores}}分</span>
       </div>
       <div class="detail-item">
         <span class="title">学生人数</span>
-        <span class="content">{{course.max_num}}</span>
+        <span class="content">{{(course.user_list || []).length}}人</span>
+      </div>
+      <div class="detail-item">
+        <span class="title">开课人数</span>
+        <span class="content">满{{course.open_num}}人</span>
+      </div>
+      <div class="detail-item">
+        <span class="title">报名截止时间</span>
+        <span class="content">{{course.elective_expired_at}}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="title">上课信息</span>
+        <span class="content">
+          <Arranges :arranges="course.arrangement" />
+        </span>
       </div>
       <div class="detail-item">
         <span class="title">课程介绍</span>
@@ -56,26 +65,19 @@
 import { CourseApi } from "../common/api";
 import { CourseMode } from "../common/enum";
 import avatar from "../../teacher_oa_tasks/components/avatar";
-import CourseStatus from './status'
+import CourseStatus from "./status";
+import Arranges from './arrange'
 
 export default {
   name: "course-detail",
   components: {
     avatar,
-    CourseStatus
+    CourseStatus,
+    Arranges
   },
   data() {
     return {
-      course: {},
-      matchWeek: {
-        1: "周一",
-        2: "周二",
-        3: "周三",
-        4: "周四",
-        5: "周五",
-        6: "周六",
-        7: "周日"
-      }
+      course: {}
     };
   },
   watch: {
@@ -92,15 +94,15 @@ export default {
           }
         ).then(res => {
           this.course = res.data.data;
-        //   this.course.user_list = [
-        //     {
-        //       name: "白光玺",
-        //       avatar:
-        //         "https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=743072963,848806922&fm=85&app=92&f=JPEG?w=121&h=75&s=7040D31D46E35F15B824B1CF0300E0A0",
-        //       major: "电子技术应用",
-        //       created_at: "2020-02-18"
-        //     }
-        //   ];
+          //   this.course.user_list = [
+          //     {
+          //       name: "白光玺",
+          //       avatar:
+          //         "https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=743072963,848806922&fm=85&app=92&f=JPEG?w=121&h=75&s=7040D31D46E35F15B824B1CF0300E0A0",
+          //       major: "电子技术应用",
+          //       created_at: "2020-02-18"
+          //     }
+          //   ];
         });
       }
     }
@@ -140,7 +142,7 @@ export default {
 
       .title {
         display: inline-block;
-        width: 72px;
+        width: 100px;
         color: #8a93a1;
       }
 
@@ -196,12 +198,12 @@ export default {
       .major-in {
         flex: 1;
         text-align: right;
-        color: #313B4C;
+        color: #313b4c;
         font-size: 16px;
       }
     }
-    .user-item:last-child{
-        border: none;
+    .user-item:last-child {
+      border: none;
     }
   }
 }
