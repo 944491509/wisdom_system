@@ -56,6 +56,10 @@ class TimeSlot extends Model
         'school_id','name','from','to','type','season', 'year', 'status'
     ];
 
+    public $hidden = [
+        'created_at', 'updated_at', 'deleted_at'
+    ];
+
     const STATUS_HIDE = 0; // 隐藏
     const STATUS_SHOW = 1; // 显示
 

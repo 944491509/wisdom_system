@@ -251,4 +251,14 @@ class TimeSlotDao
         ];
         return TimeSlot::where($map)->first();
     }
+
+
+    /**
+     * 获取所有的作息时间
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getAllTimeSlots($schoolId) {
+        return TimeSlot::where('school_id', $schoolId)->orderBy('year')->orderBy('from')->get();
+    }
 }

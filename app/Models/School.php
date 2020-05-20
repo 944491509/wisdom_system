@@ -53,11 +53,6 @@ class School extends Model
 
 
     public function getCurrentTimeFrame($year){
-//        /**
-//         * @var SchoolConfiguration $config
-//         */
-//        $config = $this->configuration;
-//        $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
         $seasonType = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;  // 现在只使用一套作息时间 夏季作息时间
         $field = ['id','name','type','from','to','season'];
         $map = [
@@ -71,14 +66,6 @@ class School extends Model
         if(count($slots) == 0){
             // 还没有创建
             $dao = new TimeSlotDao();
-            // 不要冬季作息时间
-//            $frames = $dao->getDefaultTimeFrame(TimeSlot::SEASONS_WINTER_AND_SPRINT)['frames'];
-//            foreach ($frames as $frame) {
-//                $frame['school_id'] = $this->id;
-//                $frame['season'] = TimeSlot::SEASONS_WINTER_AND_SPRINT;
-//                $frame['year'] = $year;
-//                $dao->createTimeSlot($frame);
-//            }
             $frames = $dao->getDefaultTimeFrame(TimeSlot::SEASONS_SUMMER_AND_AUTUMN)['frames'];
             foreach ($frames as $frame) {
                 $frame['school_id'] = $this->id;

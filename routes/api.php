@@ -27,6 +27,10 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     Route::any('/load-time-slots','Api\School\TimeSlotsController@load_by_school')
         ->name('api.school.load.time.slots');
 
+    // 加载学校所有年级的作息时间表
+    Route::get('/getAllTimeSlot','Api\School\TimeSlotsController@getAllTimeSlot')
+        ->name('api.school.getAllTimeSlot');
+
     Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
         ->name('api.school.save.time.slot');
 
