@@ -16,7 +16,7 @@
     $winterStart= $config->winter_start_date ?? \Carbon\Carbon::now(); // 第2学期开学时间
 @endphp
 
-<div class="row" id="school-time-slots-manager">
+<div class="row" id="school-time-slots-manager" schoolid="{{$school->id}}">
     <div class="col-4">
         <div class="card">
             <div class="card-head">
@@ -186,6 +186,11 @@
             </div>
             <div class="card-body">
                 <el-form ref="form" :model="currentTimeSlot" label-width="80px">
+                    <el-form-item label="年级">
+                        <el-select v-model="currentTimeSlot.grade_id" >
+                            <el-option :label="grade.text" :value="grade.id" :key="grade.id" v-for="grade in grades"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item label="名称">
                         <el-input v-model="currentTimeSlot.name"></el-input>
                     </el-form-item>

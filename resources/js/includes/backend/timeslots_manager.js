@@ -1,6 +1,7 @@
 // 学校时间段管理
 import {saveTimeSlot} from "../../common/timetables";
 import {Util} from "../../common/utils";
+import { Constants } from "../../common/constants";
 
 if(document.getElementById('school-time-slots-manager')){
     new Vue({
@@ -13,10 +14,13 @@ if(document.getElementById('school-time-slots-manager')){
                     from:'',
                     to:'',
                     name:'',
-                    type:''
+                    type:'',
+                    grade_id:""
                 },
                 showEditForm: false,
                 schoolUuid:'',
+                grades:[],
+                schoolid:''
             }
         },
         methods:{
@@ -25,8 +29,10 @@ if(document.getElementById('school-time-slots-manager')){
                 keys.forEach(key => {
                     this.currentTimeSlot[key] = payload.timeSlot[key];
                 });
+                console.log(payload)
                 // this.currentTimeSlot = payload.timeSlot;
                 this.schoolUuid = payload.schoolUuid;
+                // this.currentTimeSlot =
                 this.showEditForm = true;
             },
             onSubmit: function () {
@@ -61,7 +67,21 @@ if(document.getElementById('school-time-slots-manager')){
                 if(to < this.currentTimeSlot.from){
                     this.$message.error('作息时间表的结束时间不可以早于开始时间');
                 }
+            },
+            getGradeList(){
+              let dom = document.getElementById('school-time-slots-manager');
+              this.schoolid = dom.getAttribute('schoolid');
+              axios
+                .get(Constants.API.LOAD_GRADE_OF_SCHOOL + "?school_id=" + this.schoolid)
+                .then(res => {
+                  if (Util.isAjaxResOk(res)) {
+                    this.grades = res.data.data;
+                  }
+                });
             }
+        },
+        mounted(){
+          this.getGradeList();
         }
     });
 }
