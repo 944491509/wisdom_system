@@ -298,8 +298,8 @@
                 this.toBeReplacedItem = {}; // 获取到被调课的项
             },
             confirmSpecialCaseHandler: function(e, affirm = 0){
-              console.log('AA',this.specialCase)
-              console.log('AA',this.userUuid)
+              // console.log('AA',this.specialCase)
+              // console.log('AA',this.userUuid)
               let params = {
                 timetable_id: this.specialCase.to_replace,
                 at_special_datetime: this.specialCase.at_special_datetime,
@@ -316,7 +316,6 @@
                axios.post( `/api/timetable/switchingCheck`, params).then(res=>{
                     if(Util.isAjaxResOk(res)){
                         if(res.data.code == 1000){
-                            console.log(12312);
                             // 创建成功, 去刷新课程表的表单
                             this.$emit('timetable-refresh',{});
                             this.$notify({
@@ -348,14 +347,30 @@
                                     position: 'bottom-right'
                                 });
                             }
-                            
+
                         }
                     }else{
-                        this.$notify.error({
-                            title: '提示',
-                            message: res.data.message,
-                            position: 'bottom-right'
-                        });
+                        if(params.type == 1){
+                          this.$confirm(res.data.message, '提示', {
+                              confirmButtonText: '继续保存',
+                              cancelButtonText: '取消',
+                              type: 'warning'
+                          }).then(() => {
+                              this.confirmSpecialCaseHandler(e,1)
+                          }).catch(()=>{
+                              this.$notify.error({
+                                  title: '提示',
+                                  message: '已取消保存',
+                                  position: 'bottom-right'
+                              });
+                          })
+                      }else{
+                          this.$notify.error({
+                              title: '提示',
+                              message: res.data.message,
+                              position: 'bottom-right'
+                          });
+                      }
                     }
                 })
                 // axios.post(
