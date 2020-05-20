@@ -31,9 +31,6 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     Route::get('/getAllTimeSlot','Api\School\TimeSlotsController@getAllTimeSlot')
         ->name('api.school.getAllTimeSlot');
 
-    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
-        ->name('api.school.save.time.slot');
-
     // 获取指定学校的所有老师的键值对数据
     Route::post('/teachers','Api\School\UsersController@teachers')
         ->name('api.school.get.teachers');
@@ -118,6 +115,12 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 添加作息时间
     Route::post('/addTimeSlot', 'Api\School\TimeSlotsController@addTimeSlot')
         ->name('api.school.addTimeSlot');
+    // 修改作息时间
+    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
+        ->name('api.school.save.time.slot');
+    // 删除作息时间 delTimeslot
+    Route::get('/delTimeslot', 'Api\School\TimeSlotsController@delTimeslot')
+        ->name('api.school.delTimeslot');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {

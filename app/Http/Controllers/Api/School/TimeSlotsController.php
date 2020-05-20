@@ -2,36 +2,43 @@
 
 namespace App\Http\Controllers\Api\School;
 
-use App\Models\Schools\SchoolConfiguration;
-use App\Models\Timetable\TimeSlot;
 use App\User;
 use App\Models\School;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
 use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\SchoolDao;
+use App\Models\Timetable\TimeSlot;
 use App\Dao\Timetable\TimeSlotDao;
 use App\Http\Controllers\Controller;
 use App\Utils\Misc\ConfigurationTool;
 use App\Http\Requests\MyStandardRequest;
+use App\Models\Schools\SchoolConfiguration;
 
 class TimeSlotsController extends Controller
 {
+
+    /**
+     * 编辑作息时间
+     * @param Request $request
+     * @return string
+     */
     public function save_time_slot(Request $request){
-        $dao = new SchoolDao();
-        $school = $dao->getSchoolByUuid($request->get('school'));
-        if($school){
-            $tsDao = new TimeSlotDao();
-            $timeSlot = $request->get('timeSlot');
-            $id = $timeSlot['id'];
-            $ts = $tsDao->getById($id);
-            if($ts && $ts->school_id === $school->id){
-                unset($timeSlot['id']);
-                $tsDao->update($id, $timeSlot);
-                return JsonBuilder::Success();
+        $tsDao = new TimeSlotDao();
+        $timeSlot = $request->all();
+        $id = $timeSlot['id'];
+        $ts = $tsDao->getById($id);
+        if(is_null($ts)){
+           return JsonBuilder::Error('该课节不存在');
+        } else {
+            unset($timeSlot['id']);
+            $re = $tsDao->update($id, $timeSlot);
+            if($re) {
+                return JsonBuilder::Success('编辑成功');
+            } else {
+                return JsonBuilder::Success('编辑失败');
             }
         }
-        return JsonBuilder::Error('系统繁忙, 请稍候再试!');
     }
 
 
@@ -203,6 +210,35 @@ class TimeSlotsController extends Controller
             return JsonBuilder::Success(['id'=>$result->id],'创建成功');
         } else {
             return JsonBuilder::Error('创建失败');
+        }
+    }
+
+
+    /**
+     * 删除课节
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function delTimeslot(MyStandardRequest $request) {
+        $rules = ['time_slot_id' => 'required|int'];
+        $this->validate($request,$rules);
+        $timeSlotId = $request->get('time_slot_id');
+        $timeSlotDao = new TimeSlotDao();
+        $timeSlot = $timeSlotDao->getById($timeSlotId);
+        if(is_null($timeSlot)) {
+            return JsonBuilder::Error('该节课不存在');
+        }
+        $timetableItems = $timeSlot->timeTableItems;
+        if(count($timetableItems) > 0) {
+            return JsonBuilder::Error('已经有课程表使用不能删除');
+        }
+        // 删除
+        $re = $timeSlotDao->delTimeSlot($timeSlotId);
+        if($re) {
+            return JsonBuilder::Success('删除成功');
+        } else {
+            return JsonBuilder::Error('删除失败');
         }
     }
 }

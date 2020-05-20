@@ -261,4 +261,14 @@ class TimeSlotDao
     public function getAllTimeSlots($schoolId) {
         return TimeSlot::where('school_id', $schoolId)->orderBy('year')->orderBy('from')->get();
     }
+
+
+    /**
+     * 删除课节
+     * @param $timeSlotId
+     * @return mixed
+     */
+    public function delTimeSlot($timeSlotId) {
+        return TimeSlot::where('id', $timeSlotId)->delete();
+    }
 }

@@ -231,7 +231,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">保存</el-button>
-                    <el-button v-if="mode == 'edit'" type="danger" @click="showEditForm = false">删除</el-button>
+                    <el-button v-if="mode == 'edit'" type="danger" @click="deleteItem">删除</el-button>
                 </el-form-item>
             </el-form>
         </div>
