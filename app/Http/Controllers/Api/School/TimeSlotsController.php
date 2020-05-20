@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\School;
 
 use App\Models\Schools\SchoolConfiguration;
+use App\Models\Timetable\TimeSlot;
 use App\User;
 use App\Models\School;
 use App\Utils\JsonBuilder;
@@ -155,6 +156,24 @@ class TimeSlotsController extends Controller
             $data[$item->year]['time_slot'][] = $item;
         }
         $data = array_merge($data);
+        return JsonBuilder::Success($data);
+    }
+
+
+    /**
+     * 获取课节的所有类型
+     * @param MyStandardRequest $request
+     * @return string
+     */
+    public function getTimeSlotType(MyStandardRequest $request) {
+        $allType = TimeSlot::AllTypes();
+        $data = [];
+        foreach ($allType as $key => $item) {
+            $data[] = [
+                'id' => $key,
+                'name' => $item
+            ];
+        }
         return JsonBuilder::Success($data);
     }
 }

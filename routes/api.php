@@ -111,6 +111,10 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 搜索班级
     Route::any('/search-grade', 'Operator\GradesController@searchGrade')
         ->name('api.school.search.grade');
+
+    // 加载作息时间的类型
+    Route::get('/getTimeSlotType', 'Api\School\TimeSlotsController@getTimeSlotType')
+        ->name('api.school.getTimeSlotType');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {

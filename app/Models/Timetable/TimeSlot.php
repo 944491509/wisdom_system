@@ -65,14 +65,6 @@ class TimeSlot extends Model
 
     public static function AllTypes(){
         return [
-            self::TYPE_WAKE_UP => self::TYPE_WAKE_UP_TXT,
-            self::TYPE_BREAKFAST => self::TYPE_BREAKFAST_TXT,
-            self::TYPE_MORNING_READ => self::TYPE_MORNING_READ_TXT,
-            self::TYPE_PREPARE => self::TYPE_PREPARE_TXT,
-            self::TYPE_LUNCH => self::TYPE_LUNCH_TXT,
-            self::TYPE_DINNER => self::TYPE_DINNER_TXT,
-            self::TYPE_PRACTICE_EVENING => self::TYPE_PRACTICE_EVENING_TXT,
-            self::TYPE_DAY_END => self::TYPE_DAY_END_TXT,
             self::TYPE_STUDYING => self::TYPE_STUDYING_TXT,
             self::TYPE_BREAK => self::TYPE_BREAK_TXT,
             self::TYPE_PRACTICE => self::TYPE_PRACTICE_TXT,
@@ -80,6 +72,14 @@ class TimeSlot extends Model
             self::TYPE_EXERCISE => self::TYPE_EXERCISE_TXT,
             self::TYPE_FREE_TIME => self::TYPE_FREE_TIME_TXT,
             self::TYPE_TIME_POINT => self::TYPE_TIME_POINT_TXT,
+            self::TYPE_BREAKFAST => self::TYPE_BREAKFAST_TXT,
+            self::TYPE_WAKE_UP => self::TYPE_WAKE_UP_TXT,
+            self::TYPE_MORNING_READ => self::TYPE_MORNING_READ_TXT,
+            self::TYPE_LUNCH => self::TYPE_LUNCH_TXT,
+            self::TYPE_PREPARE => self::TYPE_PREPARE_TXT,
+            self::TYPE_DAY_END => self::TYPE_DAY_END_TXT,
+            self::TYPE_DINNER => self::TYPE_DINNER_TXT,
+            self::TYPE_PRACTICE_EVENING => self::TYPE_PRACTICE_EVENING_TXT,
             self::TYPE_ANIMAL_HEAT_EXAMINE => self::TYPE_ANIMAL_HEAT_EXAMINE_TXT,
             self::TYPE_EYE_EXERCISES => self::TYPE_EYE_EXERCISES_TXT,
         ];
