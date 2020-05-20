@@ -10,11 +10,7 @@
       </div>
       <div class="detail-item">
         <span class="title">教师名称</span>
-        <span class="content">{{course.teacher_name}}分</span>
-      </div>
-      <div class="detail-item">
-        <span class="title">教师名称</span>
-        <span class="content">{{course.teacher_name}}分</span>
+        <span class="content">{{course.teacher_name}}</span>
       </div>
       <div class="detail-item">
         <span class="title">学分</span>
@@ -54,7 +50,7 @@
         <avatar :src="user.avatar" />
         <div class="user-info">
           <span class="name">{{user.name}}</span>
-          <span class="time">{{Date.now()}}</span>
+          <span class="time">{{user.created_at}}</span>
         </div>
         <div class="major-in">{{user.major}}</div>
       </div>
