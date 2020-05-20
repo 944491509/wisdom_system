@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\School;
 
 use App\Models\Schools\SchoolConfiguration;
+use App\Models\Timetable\TimeSlot;
 use App\User;
 use App\Models\School;
 use App\Utils\JsonBuilder;
@@ -129,5 +130,50 @@ class TimeSlotsController extends Controller
      */
     private function _getStudyWeeksCount($school, $dao){
         $dao->getSchoolConfig($school, ConfigurationTool::KEY_STUDY_WEEKS_PER_TERM);
+    }
+
+
+    /**
+     * 获取所有的作息时间
+     * @param MyStandardRequest $request
+     * @return string
+     */
+    public function getAllTimeSlot(MyStandardRequest $request) {
+        $schoolId = $request->get('school_id');
+        if(empty($schoolId)) {
+            return JsonBuilder::Error('school_id 不能为空');
+        }
+        $timeSlotDao = new TimeSlotDao();
+        $timeslots = $timeSlotDao->getAllTimeSlots($schoolId);
+        $configuration = SchoolConfiguration::where('school_id',$schoolId)->first();
+        $year = $configuration->yearText();
+        $data = [];
+        if(count($timeslots) == 0) {
+            return JsonBuilder::Success($data);
+        }
+        foreach ($timeslots as $key => $item) {
+            $data[$item->year]['name'] = $year[$item->year - 1]['text'];
+            $data[$item->year]['time_slot'][] = $item;
+        }
+        $data = array_merge($data);
+        return JsonBuilder::Success($data);
+    }
+
+
+    /**
+     * 获取课节的所有类型
+     * @param MyStandardRequest $request
+     * @return string
+     */
+    public function getTimeSlotType(MyStandardRequest $request) {
+        $allType = TimeSlot::AllTypes();
+        $data = [];
+        foreach ($allType as $key => $item) {
+            $data[] = [
+                'id' => $key,
+                'name' => $item
+            ];
+        }
+        return JsonBuilder::Success($data);
     }
 }
