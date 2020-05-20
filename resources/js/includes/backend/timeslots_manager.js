@@ -1,5 +1,5 @@
 // 学校时间段管理
-import {saveTimeSlot} from "../../common/timetables";
+import {saveTimeSlot, addTimeSlot,editTimeSlot} from "../../common/timetables";
 import {Util} from "../../common/utils";
 import { Constants } from "../../common/constants";
 
@@ -56,6 +56,7 @@ if(document.getElementById('school-time-slots-manager')){
                 }
             },
             onSubmit: function () {
+              console.log(this.currentTimeSlot);
                 if(this.currentTimeSlot.name.trim() === ''){
                     this.$message.error('作息时间表的名称不可以为空');
                     return;
@@ -68,20 +69,42 @@ if(document.getElementById('school-time-slots-manager')){
                     this.$message.error('作息时间表的结束时间不可以早于开始时间');
                     return;
                 }
-
-                saveTimeSlot(this.schoolUuid, this.currentTimeSlot)
-                    .then(res => {
-                        if(Util.isAjaxResOk(res)){
-                            this.$message({
-                                message: '修改成功, 作息表正在重新加载 ...',
-                                type: 'success'
-                            });
-                            window.location.reload();
-                        }
-                        else{
-                            this.$message.error('错了哦，这是一条错误消息');
-                        }
-                    });
+                if(this.mode == 'add'){
+                  addTimeSlot({
+                    year:this.currentTimeSlot.grade_id,
+                    school_id:this.schoolid,
+                    type:this.currentTimeSlot.type,
+                    from:this.currentTimeSlot.from,
+                    to:this.currentTimeSlot.to,
+                    name:this.currentTimeSlot.name
+                  }).then(res =>{
+                    if(Util.isAjaxResOk(res)){
+                        this.$message({
+                            message: '修改成功, 作息表正在重新加载 ...',
+                            type: 'success'
+                        });
+                        window.location.reload();
+                    }
+                    else{
+                        this.$message.error('错了哦，这是一条错误消息');
+                    }
+                  })
+                }
+                if(this.mode == 'edit'){
+                  saveTimeSlot(this.schoolUuid, this.currentTimeSlot)
+                  .then(res => {
+                      if(Util.isAjaxResOk(res)){
+                          this.$message({
+                              message: '修改成功, 作息表正在重新加载 ...',
+                              type: 'success'
+                          });
+                          window.location.reload();
+                      }
+                      else{
+                          this.$message.error('错了哦，这是一条错误消息');
+                      }
+                  });
+                }
             },
             toChangedHandler: function (to) {
                 if(to < this.currentTimeSlot.from){
@@ -89,8 +112,6 @@ if(document.getElementById('school-time-slots-manager')){
                 }
             },
             getGradeList(){
-              let dom = document.getElementById('school-time-slots-manager');
-              this.schoolid = dom.getAttribute('schoolid');
               axios
                 .get(Constants.API.LOAD_GRADE_OF_SCHOOL + "?school_id=" + this.schoolid)
                 .then(res => {
@@ -101,7 +122,10 @@ if(document.getElementById('school-time-slots-manager')){
             }
         },
         mounted(){
+          let dom = document.getElementById('school-time-slots-manager');
+          this.schoolid = dom.getAttribute('schoolid');
           this.getGradeList();
+
         }
     });
 }

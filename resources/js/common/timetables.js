@@ -17,6 +17,18 @@ export function saveTimeSlot(schoolUuid, timeSlot) {
     );
 }
 
+export function addTimeSlot(timeSlot) {
+  return axios.post(
+      'api/school/addTimeSlot',timeSlot
+  );
+}
+
+export function editTimeSlot(schoolUuid, timeSlot) {
+  return axios.post(
+      Constants.API.SAVE_TIME_SLOT,{school: schoolUuid, timeSlot: timeSlot}
+  );
+}
+
 export function getCourses(schoolId, page) {
     return axios.post(
         Constants.API.LOAD_COURSES_BY_SCHOOL,{school: schoolId, page: page}

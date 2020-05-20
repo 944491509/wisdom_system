@@ -194,16 +194,18 @@
                     <el-time-picker
                             style="width:49%;"
                             v-model="currentTimeSlot.from"
+                            format="HH:mm"
                             value-format="HH:mm"
-                            :picker-options="{selectableRange: '05:00 - 22:00', format: 'HH:mm'}"
+                            :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
                             placeholder="起始时间">
                     </el-time-picker>
                     <el-time-picker
                             arrow-control
                             style="width:49%;"
                             v-model="currentTimeSlot.to"
+                            format="HH:mm"
                             value-format="HH:mm"
-                            :picker-options="{selectableRange: '05:00 - 22:00', format: 'HH:mm'}"
+                            :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
                             @change="toChangedHandler"
                             placeholder="结束时间">
                     </el-time-picker>
