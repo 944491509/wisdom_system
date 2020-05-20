@@ -89,7 +89,7 @@ if (document.getElementById("school-time-slots-manager")) {
         if (this.mode == "add") {
           addTimeSlot({
             year: this.currentTimeSlot.grade_id,
-            school_id: this.schoolid,
+            school_id: Number(this.schoolid),
             type: this.currentTimeSlot.type,
             from: this.currentTimeSlot.from,
             to: this.currentTimeSlot.to,
@@ -143,7 +143,7 @@ if (document.getElementById("school-time-slots-manager")) {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteTimeSlot({time_slot_id:this.currentTimeSlot.id }).then((res) => {
+          deleteTimeSlot(this.currentTimeSlot.id).then((res) => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
                 message: "删除成功, 作息表正在重新加载 ...",

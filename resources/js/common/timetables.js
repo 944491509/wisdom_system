@@ -19,13 +19,13 @@ export function saveTimeSlot(schoolUuid, timeSlot) {
 
 export function addTimeSlot(timeSlot) {
   return axios.post(
-      'api/school/addTimeSlot',timeSlot
+      '/api/school/addTimeSlot',timeSlot
   );
 }
 
-export function deleteTimeSlot(timeSlot) {
-  return axios.post(
-      'api/school/delTimeslot',timeSlot
+export function deleteTimeSlot(time_slot_id) {
+  return axios.get(
+      `/api/school/delTimeslot?time_slot_id=${time_slot_id}`,
   );
 }
 
