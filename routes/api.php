@@ -115,6 +115,9 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 加载作息时间的类型
     Route::get('/getTimeSlotType', 'Api\School\TimeSlotsController@getTimeSlotType')
         ->name('api.school.getTimeSlotType');
+    // 添加作息时间
+    Route::post('/addTimeSlot', 'Api\School\TimeSlotsController@addTimeSlot')
+        ->name('api.school.addTimeSlot');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {

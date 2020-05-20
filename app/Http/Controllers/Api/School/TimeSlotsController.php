@@ -147,15 +147,17 @@ class TimeSlotsController extends Controller
         $timeslots = $timeSlotDao->getAllTimeSlots($schoolId);
         $configuration = SchoolConfiguration::where('school_id',$schoolId)->first();
         $year = $configuration->yearText();
+
         $data = [];
+        foreach ($year as $key => $val) {
+            $data[$key]['year'] = $val;
+        }
         if(count($timeslots) == 0) {
             return JsonBuilder::Success($data);
         }
         foreach ($timeslots as $key => $item) {
-            $data[$item->year]['name'] = $year[$item->year - 1]['text'];
-            $data[$item->year]['time_slot'][] = $item;
+            $data[$item->year-1]['time_slot'][] = $item;
         }
-        $data = array_merge($data);
         return JsonBuilder::Success($data);
     }
 
@@ -175,5 +177,32 @@ class TimeSlotsController extends Controller
             ];
         }
         return JsonBuilder::Success($data);
+    }
+
+    /**
+     * 添加作息时间
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function addTimeSlot(MyStandardRequest $request) {
+        $rules = [
+            'school_id' => 'required|int',
+            'type' => 'required|int',
+            'from' => 'required|date_format:H:i',
+            'to' => 'required|date_format:H:i|after_or_equal:from',
+            'name' => 'required',
+            'year' => 'required|int',
+        ];
+
+        $this->validate($request,$rules);
+        $data = $request->all();
+        $timeSlotDao = new TimeSlotDao();
+        $result = $timeSlotDao->createTimeSlot($data);
+        if($result) {
+            return JsonBuilder::Success(['id'=>$result->id],'创建成功');
+        } else {
+            return JsonBuilder::Error('创建失败');
+        }
     }
 }
