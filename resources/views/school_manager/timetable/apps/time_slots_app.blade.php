@@ -130,7 +130,7 @@
                     <div class="clearfix"></div>
                     <hr>
 
-                    <div class="form-group mt-4">
+                    {{--<div class="form-group mt-4">
                         <label>夏季/秋季作息时间开始日期</label>
                         <div class="clearfix"></div>
                         <select class="form-control pull-left mr-2" name="summer_start_date[month]" style="width: 20%;">
@@ -162,7 +162,7 @@
                         </select>
                     </div>
                     <div class="clearfix"></div>
-                    <hr>
+                    <hr>--}}
                     <?php
                     Button::Print(['id'=>'btn-save-school-config','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
                     ?>&nbsp;
