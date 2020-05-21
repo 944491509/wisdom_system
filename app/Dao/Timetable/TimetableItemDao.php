@@ -526,7 +526,8 @@ class TimetableItemDao
             ['year','=',$year],
             ['term','=',$term],
             ['to_replace','>',0], // 只加载调课记录
-            ['at_special_datetime','>=',$today->format('Y-m-d').' 00:00:00'], // 今天或者今天以后的
+            ['at_special_datetime','<=',$today->format('Y-m-d').' 00:00:00'], // 今天或者今天以后的
+            ['to_special_datetime','>=',$today->format('Y-m-d').' 00:00:00'], // 今天或者今天以后的
         ];
 
         foreach ($by as $k=>$v) {
