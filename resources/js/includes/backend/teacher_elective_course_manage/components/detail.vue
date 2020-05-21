@@ -41,16 +41,20 @@
       </div>
       <div class="detail-item">
         <span class="title">申请理由</span>
-        <span class="content">{{course.reply_content}}</span>
+        <span class="content">{{course.apply_content}}</span>
       </div>
     </div>
-    <div class="apply-detail">
+    <div class="reject" v-if="course.status == 9">
+      <div class="title">原因</div>
+      <div class="content">{{course.reply_content}}</div>
+    </div>
+    <div class="apply-detail" v-if="course.user_list && course.user_list.length">
       <div class="title">报名详情（{{course.user_list?course.user_list.length:0}}/{{course.max_num}}）</div>
       <div class="user-item" v-for="(user, index) in course.user_list" :key="index">
         <avatar :src="user.avatar" />
         <div class="user-info">
           <span class="name">{{user.name}}</span>
-          <span class="time">{{user.created_at}}</span>
+          <span class="time">{{(user.created_at || '').substring(0,10)}}</span>
         </div>
         <div class="major-in">{{user.major}}</div>
       </div>
@@ -62,7 +66,7 @@ import { CourseApi } from "../common/api";
 import { CourseMode } from "../common/enum";
 import avatar from "../../teacher_oa_tasks/components/avatar";
 import CourseStatus from "./status";
-import Arranges from './arrange'
+import Arranges from "./arrange";
 
 export default {
   name: "course-detail",
@@ -110,6 +114,13 @@ export default {
 .detail-container {
   flex: 1;
   overflow-y: auto;
+  .reject {
+    margin: 0 20px;
+    .title,
+    .content {
+      color: #fd3434 !important;
+    }
+  }
   .detail-panel {
     flex: 1;
     background-color: #ffffff;
