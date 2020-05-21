@@ -529,10 +529,10 @@ class TimetableController extends Controller
 
         $map = [
             ['to_replace','=', $timetableId],
-            ['to_special_datetime', '>=', $today]
+            ['to_special_datetime', '>=', $today],
         ];
         $result = $dao->getTimetable($map);
-        if(is_null($result)) {
+        if(count($result) == 0) {
             return JsonBuilder::Success('可以调课');
         } else {
             return JsonBuilder::Error('不可以调课');
