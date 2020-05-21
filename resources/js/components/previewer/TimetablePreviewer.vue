@@ -80,6 +80,12 @@
                 <el-table-column property="course" label="课程" width="120"></el-table-column>
                 <el-table-column property="location" label="上课地点" width="120"></el-table-column>
                 <el-table-column property="teacher" label="授课教师"></el-table-column>
+                <el-table-column property="grade" label="班级">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.grade.name }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column property="end_time" label="结束日期"></el-table-column>
                 <el-table-column property="updated_by" label="操作人"></el-table-column>
                 <el-table-column label="操作" width="150">
                     <template slot-scope="scope">
