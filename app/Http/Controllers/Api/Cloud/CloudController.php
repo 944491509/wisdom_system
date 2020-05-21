@@ -12,6 +12,7 @@ use App\Dao\Timetable\TimeSlotDao;
 use App\Dao\Timetable\TimetableItemDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudRequest;
+use App\Models\Acl\Role;
 use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Models\School;
 use App\Models\Schools\Facility;
@@ -107,8 +108,7 @@ class CloudController extends Controller
             $grade = $facility->grade;
         }
 
-
-        $gradeUser = $grade->gradeUser;
+        $gradeUser = $grade->gradeUser->where('user_type', Role::VERIFIED_USER_STUDENT);
         $userIds   = $gradeUser->pluck('user_id');
 
         $studentProfileDao = new  StudentProfileDao;
