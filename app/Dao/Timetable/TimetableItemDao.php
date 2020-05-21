@@ -8,6 +8,7 @@
 
 namespace App\Dao\Timetable;
 
+use App\Dao\Schools\GradeDao;
 use App\User;
 use App\Utils\JsonBuilder;
 use App\Utils\ReturnData\MessageBag;
@@ -1327,6 +1328,16 @@ class TimetableItemDao
             $bag->setMessage('当前课程不存在');
             return $bag;
         }
+        // 判断调课的班级是否有这个课
+        $courseId = $timetableItem->course_id;
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($data['grade_id']);
+        $course = $grade->major->courseMajors->where('course_id', $courseId)->first();
+        if(is_null($course)) {
+            $bag->setMessage($grade->name.'所在专业没有'.$timetableItem->course->name);
+            return $bag;
+        }
+
         // 查询要调的课表
         $map = [
             'time_slot_id' => $data['time_slot_id'],
@@ -1337,6 +1348,16 @@ class TimetableItemDao
         ];
 
         $item = TimetableItem::where($map)->first();
+        if(!is_null($item)) {
+            // 查询当前班级是否有被调班级的课程
+            $courseId = $item->course_id;
+            $grade = $timetableItem->grade;
+            $course = $grade->major->courseMajors->where('course_id', $courseId)->first();
+            if(is_null($course)) {
+                $bag->setMessage($grade->name.'所在专业没有'.$item->course->name);
+                return $bag;
+            }
+        }
         try{
             DB::beginTransaction();
             if(!is_null($item)) {
