@@ -188,7 +188,9 @@
 						</el-form-item>
 						<el-form-item label="教室/地点" v-if="selectType1">
 							<el-select v-model="specialTimeTableItem.room_id" style="width: 50%;">
-								<el-option :label="room.description" :value="room.id" :key="room.id" v-for="room in rooms"></el-option>
+								<el-option :value="room.id" :key="room.id" v-for="room in rooms">
+                  {{room.name+': '+room.description+'(可容纳: '+room.seats+'人)'}}
+                </el-option>
 							</el-select>
 							<!-- <span class="help-text">说明: 请选择上面选择的楼的那个房间上课</span> -->
 						</el-form-item>
