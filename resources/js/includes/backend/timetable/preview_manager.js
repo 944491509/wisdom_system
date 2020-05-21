@@ -53,6 +53,7 @@ if(document.getElementById('school-timetable-previewer-app')){
         methods: {
             // 来自 Preview 格子元素的点击事件最终处理函数
             createNewByClickHandler: function(payload){
+                console.log(payload);
                 Util.pageScrollTo();
                 // 检查现在是否已经选择了班级, 如果没有选择, 提示无法创建
                 if(Util.isEmpty(this.timeTableItem.grade_id)){
@@ -60,7 +61,8 @@ if(document.getElementById('school-timetable-previewer-app')){
                 }
                 else{
                     this.timeTableItem.weekday_index = parseInt(payload.weekday);
-                    this.timeTableItem.time_slot_id = parseInt(payload.timeSlotId);
+                    let timeSlotId =   this.timeSlots[payload.timeSlotId].id
+                    this.timeTableItem.time_slot_id = parseInt(timeSlotId);
                     this.timeTableItem.id = null;
                 }
             },

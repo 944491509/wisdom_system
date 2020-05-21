@@ -33,6 +33,11 @@ class SpecialItemsLoadLogic
             $result[] = [
                 'id'        =>$item->id,
                 'date'      =>$item->at_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
+                'end_time'  => $item->to_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
+                'grade' => [
+                    'id' => $item->grade_id,
+                    'name' => $item->grade->name,
+                ],
                 'course'    =>$item->course->name,
                 'teacher'   =>$item->teacher->name,
                 'location'  =>$item->building->name . ' - ' .$item->room->name,

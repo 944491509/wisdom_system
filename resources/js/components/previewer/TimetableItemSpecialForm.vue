@@ -1,82 +1,4 @@
 <template>
-	<!-- <div class="timetable-item-form-wrap">
-        <h5>临时调课表: {{ subtitle }}</h5>
-        <p>
-            <span>{{ toBeReplacedItem.course }}</span>;
-            <span>{{ toBeReplacedItem.building }}</span> -
-            <span>{{ toBeReplacedItem.room }}</span>;
-            <span>授课: {{ toBeReplacedItem.teacher }}</span>
-        </p>
-        <el-divider></el-divider>
-        <el-form ref="specialTimeTableItemForm" :model="specialTimeTableItem" label-width="80px" class="the-form">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card" style="margin-left:11px;box-shadow:none;padding-right:11px;padding-top:14px;border:none;">
-                        <el-form-item label="开始日期">
-                            <el-date-picker
-                                    v-model="specialTimeTableItem.at_special_datetime"
-                                    value-format="yyyy-MM-dd"
-                                    type="date"
-                                    :editable="false"
-                                    placeholder="选择日期">
-                            </el-date-picker>
-                            <span class="help-text">说明: 表示调课安排是在哪天开始</span>
-                        </el-form-item>
-                        <el-form-item label="结束日期">
-                            <el-date-picker
-                                    v-model="specialTimeTableItem.to_special_datetime"
-                                    type="date"
-                                    placeholder="选择日期">
-                            </el-date-picker>
-                            <span class="help-text">说明: 表示调课安排是在哪天结束. 如果只有一次, 那么请选择与开始日期相同的日期</span>
-                        </el-form-item>
-                        <el-form-item label="课程">
-                            <el-select v-model="specialTimeTableItem.course_id" style="width: 50%;">
-                                <el-option :label="course.name" :value="course.id" :key="course.id" v-for="course in courses"></el-option>
-                            </el-select>
-                            <span class="help-text">说明: 请选择要教授哪门课程</span>
-                        </el-form-item>
-                        <el-form-item label="授课教师">
-                            <el-select v-model="specialTimeTableItem.teacher_id" style="width: 50%;">
-                                <el-option :label="teacher.name" :value="teacher.id" :key="teacher.id" v-for="teacher in teachers"></el-option>
-                            </el-select>
-                            <span class="help-text">说明: 请选择授课的老师</span>
-                        </el-form-item>
-                        <el-form-item label="教学楼">
-                            <el-select v-model="specialTimeTableItem.building_id" placeholder="请选择" style="width: 50%;">
-                                <el-option-group
-                                        v-for="item in campuses"
-                                        :key="item.campus"
-                                        :label="item.campus">
-                                    <el-option
-                                            v-for="building in item.buildings"
-                                            :key="building.id"
-                                            :label="building.name"
-                                            :value="building.id">
-                                    </el-option>
-                                </el-option-group>
-                            </el-select>
-                            <span class="help-text">说明: 请选择在哪栋楼上课</span>
-                        </el-form-item>
-                        <el-form-item label="教室/地点">
-                            <el-select v-model="specialTimeTableItem.room_id" style="width: 50%;">
-                                <el-option :label="room.name" :value="room.id" :key="room.id" v-for="room in rooms"></el-option>
-                            </el-select>
-                            <span class="help-text">说明: 请选择上面选择的楼的那个房间上课</span>
-                        </el-form-item>
-                        <el-divider></el-divider>
-                        <p class="text-center">
-                            <el-switch
-                                    v-model="specialTimeTableItem.published"
-                                    active-text="立即生效"
-                                    inactive-text="存为草稿">
-                            </el-switch>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </el-form>
-	</div>-->
 	<div class="timetable-item-form-wrap">
 		<p style="display: flex;justify-content: space-between;margin-right: 40px;">
 			<span>课程: {{ toBeReplacedItem.course }}</span>
@@ -188,7 +110,7 @@
 						</el-form-item>
 						<el-form-item label="教室/地点" v-if="selectType1">
 							<el-select v-model="specialTimeTableItem.room_id" style="width: 50%;">
-								<el-option :value="room.id" :key="room.id" v-for="room in rooms">
+								<el-option :value="room.id" :label="room.name+': '+room.description+'(可容纳: '+room.seats+'人)'" :key="room.id" v-for="room in rooms">
                   {{room.name+': '+room.description+'(可容纳: '+room.seats+'人)'}}
                 </el-option>
 							</el-select>
