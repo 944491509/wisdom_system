@@ -221,7 +221,7 @@
                         @endforeach
                     </el-select>
                 </el-form-item>
-                <el-form-item label="状态">
+                <el-form-item label="状态" v-if="mode == 'edit'">
                     <el-switch
                     v-model="currentTimeSlot.status">
                     </el-switch>

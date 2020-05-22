@@ -94,7 +94,7 @@ if (document.getElementById("school-time-slots-manager")) {
             from: this.currentTimeSlot.from,
             to: this.currentTimeSlot.to,
             name: this.currentTimeSlot.name,
-            status: Number(this.currentTimeSlot.status)
+            // status: Number(this.currentTimeSlot.status)
           }).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
@@ -108,6 +108,7 @@ if (document.getElementById("school-time-slots-manager")) {
           });
         }
         if (this.mode == "edit") {
+          this.currentTimeSlot.status = Number(this.currentTimeSlot.status);
           saveTimeSlot(this.schoolUuid, this.currentTimeSlot).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
