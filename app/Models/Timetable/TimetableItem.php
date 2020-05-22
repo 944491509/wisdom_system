@@ -19,19 +19,19 @@ class TimetableItem extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'year', 'term',
-        'course_id', 'time_slot_id',
-        'building_id', 'room_id',
-        'teacher_id', 'grade_id',
-        'weekday_index', 'repeat_unit',
-        'at_special_datetime', 'to_special_datetime',
-        'to_replace', 'last_updated_by',
-        'school_id', 'published', 'available_only'
+        'year', 'term', 'course_id', 'time_slot_id', 'building_id', 'room_id',
+        'teacher_id', 'grade_id', 'weekday_index', 'repeat_unit','to_replace',
+        'at_special_datetime', 'to_special_datetime', 'last_updated_by',
+        'school_id', 'published', 'available_only', 'type' , 'substitute_id'
     ];
 
     protected $hidden = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    const TYPE_SUPPLY = 1;    // 代课
+    const TYPE_SUBSTITUTION = 2;  // 调课  本班课节互换
+    const TYPE_SUBSTITUTION_NOTHING = 3;  // 调课 他班互换
 
     public $casts = [
         'available_only' => 'array', // 如果是特定区间的课程, 那么表示在哪些周

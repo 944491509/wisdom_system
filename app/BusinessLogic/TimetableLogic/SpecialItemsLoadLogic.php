@@ -30,18 +30,27 @@ class SpecialItemsLoadLogic
         $result = [];
 
         foreach ($items as $item) {
+            $grade = [
+                'id' => $item->grade->id,
+                'name' => $item->grade->name,
+            ];
+            if($item->type == TimetableItem::TYPE_SUBSTITUTION_NOTHING) {
+                $toReplace = $item->to_replace;
+                $timetable = $dao->getItemById($toReplace);
+                $grade = [
+                    'id' => $timetable->grade->id,
+                    'name' => $timetable->grade->name,
+                ];
+            }
             $result[] = [
                 'id'        =>$item->id,
                 'date'      =>$item->at_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
                 'end_time'  => $item->to_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
-                'grade' => [
-                    'id' => $item->grade_id,
-                    'name' => $item->grade->name,
-                ],
-                'course'    =>$item->course->name,
-                'teacher'   =>$item->teacher->name,
-                'location'  =>$item->building->name . ' - ' .$item->room->name,
-                'updated_by'=>$item->updatedBy->name,
+                'grade' => $grade,
+                'course'    =>$item->course->name ?? '-',
+                'teacher'   =>$item->teacher->name ?? '-',
+                'location'  =>$item->room_id ? $item->building->name . ' - ' .$item->room->name :'-' ,
+                'updated_by'=>$item->updatedBy->name ?? '',
                 'published' =>$item->published,
             ];
         }

@@ -7,6 +7,7 @@
  */
 
 namespace App\BusinessLogic\TimetableViewLogic\Impl;
+use App\Models\Timetable\TimetableItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -37,6 +38,7 @@ class FromGradePoint extends AbstractPointView
             $re = $this->timetableItemDao->getItemsByWeekDayIndex(
                 $weekDayIndex, $this->year, $this->term, $this->weekType, $this->gradeId
             );
+
             // 查询是否有调课
             foreach ($re as $key => $val) {
                 if(!empty($val)) {
@@ -45,8 +47,22 @@ class FromGradePoint extends AbstractPointView
                         ['to_special_datetime', '>=', $today]
                     ];
                     $res = $this->timetableItemDao->getTimetable($map);
+
                     if(count($res) >0) {
-                        $re[$key]['specials'] = array_column($res->toArray(),'id');
+                        $specials = [];
+                        foreach ($res as $k => $item) {
+
+                            // 判断类型 代课
+                            if($item->type == TimetableItem::TYPE_SUPPLY) {
+                                $specials[$k] = $item->id;
+                            } else {
+                                // 调课 课程互换
+                                $specials[$k] = $item->substitute_id;
+                            }
+
+                        }
+
+                        $re[$key]['specials'] = $specials;
                     }
                 }
             }
