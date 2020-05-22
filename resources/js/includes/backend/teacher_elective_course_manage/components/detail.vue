@@ -54,7 +54,7 @@
         <avatar :src="user.avatar" />
         <div class="user-info">
           <span class="name">{{user.name}}</span>
-          <span class="time">{{(user.created_at || '').substring(0,10)}}</span>
+          <span class="time">{{(user.created_at || '').substring(0,16)}}</span>
         </div>
         <div class="major-in">{{user.major}}</div>
       </div>
