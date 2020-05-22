@@ -11,9 +11,9 @@ export function getTimeSlots(schoolId, noTime, grade_id, year) {
     );
 }
 
-export function saveTimeSlot(schoolUuid, timeSlot) {
+export function saveTimeSlot( timeSlot) {
     return axios.post(
-        Constants.API.SAVE_TIME_SLOT,{school: schoolUuid, timeSlot: timeSlot}
+        Constants.API.SAVE_TIME_SLOT, timeSlot
     );
 }
 

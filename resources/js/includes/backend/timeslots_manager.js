@@ -58,6 +58,7 @@ if (document.getElementById("school-time-slots-manager")) {
           this.currentTimeSlot.from = payload.timeSlot.from;
           this.currentTimeSlot.to = payload.timeSlot.to;
           this.currentTimeSlot.id = payload.timeSlot.id;
+          this.currentTimeSlot.status = payload.timeSlot.status || 0;
           this.showEditForm = true;
         }
       },
@@ -109,7 +110,7 @@ if (document.getElementById("school-time-slots-manager")) {
         }
         if (this.mode == "edit") {
           this.currentTimeSlot.status = Number(this.currentTimeSlot.status);
-          saveTimeSlot(this.schoolUuid, this.currentTimeSlot).then(res => {
+          saveTimeSlot(this.currentTimeSlot).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
                 message: "修改成功, 作息表正在重新加载 ...",

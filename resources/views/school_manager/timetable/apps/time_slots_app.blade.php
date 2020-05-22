@@ -182,7 +182,7 @@
     <el-drawer :title="mode == 'add'?'添加时间':'编辑时间'" :visible.sync="showEditForm">
         <div class="pr-4">
             <el-form ref="form" :model="currentTimeSlot" label-width="80px">
-                <el-form-item label="年级" >
+                <el-form-item label="年级" v-if="mode == 'add'" >
                     <el-select v-model="currentTimeSlot.grade_id" style="width:100%;">
                         <el-option :label="grade.text" :value="grade.year" :key="grade.year" v-for="grade in grades"></el-option>
                     </el-select>
