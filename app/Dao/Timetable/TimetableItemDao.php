@@ -367,7 +367,7 @@ class TimetableItemDao
                 'grade'=> $row->grade->name,
                 'grade_id'=> $row->grade_id,
                 'building'=>$row->building->name,
-                'room'=>$row->room->description,
+                'room'=>$row->room->name,
                 'room_id'=>$row->room_id,
                 'id'=>$row->id,
                 'published'=>$row->published,
