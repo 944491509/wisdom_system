@@ -2,7 +2,7 @@ import {
   Util
 } from "../../../../common/utils";
 
-const meeting = Vue.prototype.$meeting
+const message = Vue.prototype.$message
 
 const API_MAP = {
   list: '/api/meeting/',
@@ -36,7 +36,7 @@ export const MeetingApi = {
           if (Util.isAjaxResOk(res)) {
             resolve(res)
           } else {
-            meeting.error(res.data.meeting);
+            message.error(res.data.message);
             reject(res)
           }
         });
@@ -48,7 +48,7 @@ export const MeetingApi = {
         if (Util.isAjaxResOk(res)) {
           resolve(res)
         } else {
-          meeting.error(res.data.meeting);
+          message.error(res.data.message);
           reject(res)
         }
       });

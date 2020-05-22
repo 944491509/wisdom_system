@@ -22,6 +22,11 @@ class ElectiveCoursesController extends Controller
         $this->middleware('auth');
     }
 
+    public function manager(){
+        $this->dataForView['pageTitle'] = '选修课';
+        return view('teacher.elective_course.manager', $this->dataForView);
+    }
+
     /**
      * @param MyStandardRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View

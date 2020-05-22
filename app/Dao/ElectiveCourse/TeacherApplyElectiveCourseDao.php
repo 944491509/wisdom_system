@@ -331,6 +331,10 @@ class TeacherApplyElectiveCourseDao
             ->where('teacher_id', '=', $teacherId)
             ->where('status', TeacherApplyElectiveCourse::STATUS_PUBLISHED)
             ->where('course_id', '>', 0)->orderBy('id', 'desc')->get();
+        $total = TeacherApplyElectiveCourse::with('course')
+            ->where('teacher_id', '=', $teacherId)
+            ->where('status', TeacherApplyElectiveCourse::STATUS_PUBLISHED)
+            ->where('course_id', '>', 0)->count();
         $retList = [];
         $nowDate = Carbon::now()->timestamp;
         foreach ($list as $item) {
@@ -405,7 +409,7 @@ class TeacherApplyElectiveCourseDao
             }
             $i++;
         }
-        return $return;
+        return ['list' => $return, 'total' => $total];
     }
 
     /**
@@ -420,6 +424,10 @@ class TeacherApplyElectiveCourseDao
             ->whereIn('status', [TeacherApplyElectiveCourse::STATUS_WAITING_FOR_VERIFIED, TeacherApplyElectiveCourse::STATUS_WAITING_FOR_REJECTED])
             ->orderBy('id', 'desc')
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+
+        $total = TeacherApplyElectiveCourse::where('teacher_id', '=', $teacherId)
+            ->whereIn('status', [TeacherApplyElectiveCourse::STATUS_WAITING_FOR_VERIFIED, TeacherApplyElectiveCourse::STATUS_WAITING_FOR_REJECTED])
+            ->count();
         $retList = [];
         foreach ($list as $item) {
             $tmp = [
@@ -443,7 +451,7 @@ class TeacherApplyElectiveCourseDao
             }
             $retList[] = $tmp;
         }
-        return $retList;
+        return ['list' => $retList, 'total' => $total];
     }
 
     /**
