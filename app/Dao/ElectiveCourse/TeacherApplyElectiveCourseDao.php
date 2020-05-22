@@ -261,7 +261,7 @@ class TeacherApplyElectiveCourseDao
                 'name' => $user->user->name,
                 'avatar' => $user->user->profile->avatar,
                 'major' => $user->user->gradeUser->major->name,
-                'created_at' => $user->created_at
+                'created_at' => $user->created_at->toDateTimeString()
             ];
         }
 
