@@ -189,7 +189,7 @@ export default {
       float: right;
     }
     .return-back {
-      background-image: url(../assets/icon-return.png);
+      background-image: url(/assets/img/teacher/icon-return.png);
       height: 30px;
       width: 30px;
       float: right;
@@ -269,7 +269,7 @@ export default {
         align-items: center;
 
         .download {
-          background-image: url("../../teacher_oa_message/assets/download.png");
+          background-image: url("/assets/img/teacher/download.png");
           background-size: contain;
           background-repeat: no-repeat;
           display: inline-block;

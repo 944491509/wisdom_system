@@ -23,25 +23,25 @@ export default {
   margin-right: 5px;
 }
 .bg-icon.info {
-  background-image: url(../assets/icon-summary.png);
+  background-image: url(/assets/img/teacher/icon-summary.png);
 }
 .bg-icon.record {
-  background-image: url(../assets/icon-sign.png);
+  background-image: url(/assets/img/teacher/icon-sign.png);
 }
 
 .bg-icon.signinQr {
-  background-image: url(../assets/icon-qrin.png);
+  background-image: url(/assets/img/teacher/icon-qrin.png);
 }
 .bg-icon.signoutQr {
-  background-image: url(../assets/icon-qrout.png);
+  background-image: url(/assets/img/teacher/icon-qrout.png);
 }
 .bg-icon.unfinished {
-  background-image: url(../assets/icon-unfinished.png);
+  background-image: url(/assets/img/teacher/icon-unfinished.png);
 }
 .bg-icon.accomplish {
-  background-image: url(../assets/icon-accomplish.png);
+  background-image: url(/assets/img/teacher/icon-accomplish.png);
 }
 .bg-icon.oneselfCreate {
-  background-image: url(../assets/icon-oneselfCreate.png);
+  background-image: url(/assets/img/teacher/icon-oneselfCreate.png);
 }
 </style>
