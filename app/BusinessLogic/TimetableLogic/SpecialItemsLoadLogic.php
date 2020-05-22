@@ -35,8 +35,13 @@ class SpecialItemsLoadLogic
                 'name' => $item->grade->name,
             ];
             if($item->type == TimetableItem::TYPE_SUBSTITUTION_NOTHING) {
-                $toReplace = $item->to_replace;
-                $timetable = $dao->getItemById($toReplace);
+
+                if($item->to_replace != 0) {
+                    $timetable = $dao->getItemById($item->to_replace);
+
+                } else {
+                    $timetable = $dao->getItemById($item->substitute_id);
+                }
                 $grade = [
                     'id' => $timetable->grade->id,
                     'name' => $timetable->grade->name,

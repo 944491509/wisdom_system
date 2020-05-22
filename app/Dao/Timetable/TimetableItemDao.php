@@ -248,11 +248,11 @@ class TimetableItemDao
         $result = [];
 
         foreach ($this->timeSlots as $timeSlot) {
-            $result[$timeSlot->id] = '';
+            $result[$timeSlot->id] = [];
         }
 
         foreach ($rows as $row) {
-            // 要判断一下, 是否为调课的记录
+
             if($row->course && $row->teacher){
                 $result[$row->time_slot_id] = [
                     'course' => $row->course->name,
@@ -1284,12 +1284,14 @@ class TimetableItemDao
                 $newItem['to_replace'] = 0;
                 $newItem['course_id'] = 0;
                 $newItem['repeat_unit'] = 1;
+                $newItem['published'] = 1;
             }
             $newItem['time_slot_id'] = $timetableItem['time_slot_id'];
             $newItem['weekday_index'] = $timetableItem['weekday_index'];
             $newItem['at_special_datetime'] = $data['at_special_datetime'];
             $newItem['to_special_datetime'] = $data['to_special_datetime'];
             $newItem['last_updated_by'] = $userId;
+            $newItem['type'] = TimetableItem::TYPE_SUBSTITUTION; // 调课 本班课节互换
 
             $s1 = TimetableItem::create($newItem);
 
@@ -1391,6 +1393,7 @@ class TimetableItemDao
                 $newItem['to_replace'] = 0;
                 $newItem['course_id'] = 0;
                 $newItem['repeat_unit'] = 1;
+                $newItem['published'] = 1;
             }
             $newItem['grade_id'] = $timetableItem['grade_id'];
             $newItem['time_slot_id'] = $timetableItem['time_slot_id'];
