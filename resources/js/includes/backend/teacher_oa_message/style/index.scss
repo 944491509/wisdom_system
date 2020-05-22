@@ -23,16 +23,16 @@
         margin-right: 5px;
       }
       .icon.unread{
-        background-image: url(../assets/unread.png);
+        background-image: url(/assets/img/teacher/unread.png);
       }
       .icon.read{
-        background-image: url(../assets/read.png);
+        background-image: url(/assets/img/teacher/read.png);
       }
       .icon.sent{
-        background-image: url(../assets/sent.png);
+        background-image: url(/assets/img/teacher/sent.png);
       }
       .icon.temp{
-        background-image: url(../assets/temp.png);
+        background-image: url(/assets/img/teacher/temp.png);
       }
     }
     .el-button {
@@ -52,6 +52,6 @@
     background-size: contain;
     background-repeat: no-repeat;
     margin-right: 5px;
-    background-image: url(../assets/write.png);
+    background-image: url(/assets/img/teacher/write.png);
   }
 }
