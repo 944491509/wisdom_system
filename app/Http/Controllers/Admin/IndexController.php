@@ -83,11 +83,11 @@ class IndexController extends Controller
                         'icon' => asset('assets/img/teacher/ass-icon8.png'),
                         'url' => 'evaluation',
                     ],
-//                    [
-//                        'name'=> '选课',
-//                        'icon' => asset('assets/img/teacher/ass9.png'),
-//                        'url' => 'electives',
-//                    ],
+                   [
+                       'name'=> '选课',
+                       'icon' => asset('assets/img/teacher/ass9.png'),
+                       'url' => 'electives',
+                   ],
                ]
             ],
             ['name' => '班主任助手', 'helper_page' =>

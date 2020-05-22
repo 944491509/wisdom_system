@@ -28,7 +28,6 @@ _ide_helper_models.php
 querylog.txt
 log.txt
 yarn.lock
-composer.lock
 package-lock.json
 /public/redactor/*
 .DS_Store
