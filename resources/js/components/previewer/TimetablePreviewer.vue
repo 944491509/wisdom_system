@@ -68,7 +68,63 @@
             </div>
         </el-dialog>
         <el-dialog title="调课记录表" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
-            <el-table :data="specials">
+          <div class="tpItems">
+            <div class="tpLeft">
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft" style="color: #414A5A;font-size=:14px;">调课类型:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">开始时间:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">结束时间:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">实际开始时间:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">操作人:</span>
+                <span class="temRight"></span>
+              </div>
+            </div>
+            <div class="tpRight">
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft" style="color: #414A5A;font-size=:14px;">调课方式:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">课程名称:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">上课地点:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">授课老师:</span>
+                <span class="temRight"></span>
+              </div>
+              <div class="tpItem">
+                <img />
+                <span class="itemLeft">课程开源:</span>
+                <span class="temRight"></span>
+              </div>
+            </div>
+          </div>
+            <!-- <el-table :data="specials">
                 <el-table-column label="日期" width="150">
                     <template slot-scope="scope">
                         <i v-if="scope.row.published" class="el-icon-check"></i>
@@ -105,7 +161,7 @@
                         </el-button>
                     </template>
                 </el-table-column>
-            </el-table>
+            </el-table> -->
         </el-dialog>
 
         <el-dialog title="请求事宜表单" :visible.sync="makeEnquiryFormVisible">
@@ -522,5 +578,20 @@
         width: 12.5%;
         float: left;
     }
+}
+.tpItems {
+  .tpLeft {
+    float: left;
+    width: 50%;
+  }
+  .tpRight {
+
+  }
+  .itemLeft {
+    color: #8A93A1;
+  }
+  .temRight {
+    color: #414A5A;
+  }
 }
 </style>
