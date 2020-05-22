@@ -176,5 +176,7 @@ return [
     'material' =>'教学资料',
     'assistant'=>'助手',
     'check-in'=>'签到',
+
+    'simpleacl' => '权限列表',
 ];
 
