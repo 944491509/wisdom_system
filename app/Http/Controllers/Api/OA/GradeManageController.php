@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\OA;
 
+use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\GradeManagerDao;
 use App\Dao\Schools\GradeResourceDao;
 use App\Dao\Students\StudentProfileDao;
@@ -25,9 +26,21 @@ class GradeManageController extends Controller
     public function index(MyStandardRequest $request)
     {
         $teacher = $request->user();
-
-        $dao = new GradeManagerDao;
-        $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        $yearManger = $teacher->yearManger;
+        if ($yearManger) {
+            // 年级主任
+            $gradeDao = new GradeDao;
+            $yearGrades = $gradeDao->getGradesByYear($yearManger->year);
+            $grades = [];
+            foreach ($yearGrades as $key => $value) {
+                $grades[] = $value->GradeManager;
+            }
+        } else {
+            // 班主任
+            $dao = new GradeManagerDao;
+            $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        }
+        
         $data = [];
         foreach ($grades as $key => $val) {
              $data[$key]['grade_id'] = $val->grade->id;
@@ -92,9 +105,20 @@ class GradeManageController extends Controller
     public function gradesList(MyStandardRequest $request)
     {
         $teacher = $request->user();
-
-        $dao = new GradeManagerDao;
-        $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        $yearManger = $teacher->yearManger;
+        if ($yearManger) {
+            // 年级主任
+            $gradeDao = new GradeDao;
+            $yearGrades = $gradeDao->getGradesByYear($yearManger->year);
+            $grades = [];
+            foreach ($yearGrades as $key => $value) {
+                $grades[] = $value->GradeManager;
+            }
+        } else {
+            // 班主任
+            $dao = new GradeManagerDao;
+            $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        }
         $data = [];
         foreach ($grades as $key => $val) {
             $data[$key]['grade_id'] = $val->grade->id;

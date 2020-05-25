@@ -180,4 +180,14 @@ class GradeDao
             . $data->category_code
             . $number;
     }
+
+    /**
+     * 根据年 获取多个班级
+     * @param $ids
+     * @return Grade
+     */
+    public function getGradesByYear($year)
+    {
+        return Grade::where('year', $year)->get();
+    }
 }
