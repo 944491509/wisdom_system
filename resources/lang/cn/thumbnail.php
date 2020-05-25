@@ -176,5 +176,14 @@ return [
     'material' =>'教学资料',
     'assistant'=>'助手',
     'check-in'=>'签到',
+
+    'notices-center'=> '通知/公告/检查',
+    'internal-messages' => '内部信',
+    'tasks' => '任务',
+    'evaluation' => '评分',
+    'grades-manager' => '班级管理',
+    'students-manager' => '学生信息',
+    'grades-check-in' => '班级签到',
+    'grades-evaluations' => '班级评分',
 ];
 
