@@ -408,7 +408,6 @@ class CloudController extends Controller
         if ($result['code'] != CloudOpenApi::ERROR_CODE_OPEN_API_OK) {
             return JsonBuilder::Error('华三服务器出错了');
         }
-
         $studentProfileDao  = new StudentProfileDao;
         $update = $studentProfileDao->updateStudentProfile($user->id, ['face_code' => $result['data']['face_code']]);
 

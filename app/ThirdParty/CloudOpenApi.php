@@ -3,6 +3,7 @@
 namespace App\ThirdParty;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\App;
 
 /**
  * 华三云班牌接口
@@ -75,7 +76,9 @@ class CloudOpenApi
                 'contents' => $faceCode
             ]);
         }
-        dd($data);
+        if (App::environment('local')) {
+            return ['code' => 0, 'data' => ['face_code' => '123'], 'message' => '正常'];
+        }
         $client   = new Client;
         $response = $client->request('POST', $this->apiUrl.$url, [
             'headers'   => $headers,
