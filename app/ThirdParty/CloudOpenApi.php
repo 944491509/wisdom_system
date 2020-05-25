@@ -3,6 +3,7 @@
 namespace App\ThirdParty;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\App;
 
 /**
  * 华三云班牌接口
@@ -11,16 +12,17 @@ class CloudOpenApi
 {
 
     const ERROR_CODE_OPEN_API_OK = 0; // 华三接口正常返回code
+    const UPDATE_STUDENT_PHOTO = 1; // 更新照片
+    
+	private $appId;
 
-	public $appId;
+	private $appSecret;
 
-	public $appSecret;
+	private $timestamp;
 
-	public $timestamp;
+    private $apiUrl;
 
-    public $apiUrl;
-
-    public $schoolUUid = '4b74dffc-e17c-4ba5-9f24-db0002639b82';
+    private $schoolUUid = '4b74dffc-e17c-4ba5-9f24-db0002639b82';
 
     public function __construct()
     {
@@ -74,7 +76,9 @@ class CloudOpenApi
                 'contents' => $faceCode
             ]);
         }
-
+        if (App::environment('local')) {
+            return ['code' => 0, 'data' => ['face_code' => '123'], 'message' => '正常'];
+        }
         $client   = new Client;
         $response = $client->request('POST', $this->apiUrl.$url, [
             'headers'   => $headers,

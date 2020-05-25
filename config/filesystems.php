@@ -90,6 +90,13 @@ return [
             'url' => env('APP_URL').'/storage/public/banner',
             'visibility' => 'public',
         ],
+        // 学生人脸识别照片
+        'student_photo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/student_photo'),
+            'url' => env('APP_URL'). '/storage/student_photo',
+            'visibility' => 'public',
+        ],
     ],
 
 ];
