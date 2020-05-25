@@ -31,7 +31,7 @@ if (document.getElementById("school-time-slots-manager")) {
       };
     },
     methods: {
-      editTimeSlotHandler: function(payload) {
+      editTimeSlotHandler: function (payload) {
         this.mode = payload.type;
         if (payload.type == "add") {
           this.currentTimeSlot = {
@@ -62,7 +62,7 @@ if (document.getElementById("school-time-slots-manager")) {
           this.showEditForm = true;
         }
       },
-      onSubmit: function() {
+      onSubmit: function () {
         console.log(this.currentTimeSlot);
         if (this.currentTimeSlot.grade_id == "") {
           this.$message.error("年级不可以为空");
@@ -99,7 +99,7 @@ if (document.getElementById("school-time-slots-manager")) {
           }).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
-                message: "修改成功, 作息表正在重新加载 ...",
+                message: "添加成功, 作息表正在重新加载 ...",
                 type: "success"
               });
               window.location.reload();
@@ -110,7 +110,14 @@ if (document.getElementById("school-time-slots-manager")) {
         }
         if (this.mode == "edit") {
           this.currentTimeSlot.status = Number(this.currentTimeSlot.status);
-          saveTimeSlot(this.currentTimeSlot).then(res => {
+          saveTimeSlot({
+            id:this.currentTimeSlot.id,
+            type: this.currentTimeSlot.type,
+            from: this.currentTimeSlot.from,
+            to: this.currentTimeSlot.to,
+            name: this.currentTimeSlot.name,
+            status: Number(this.currentTimeSlot.status)
+          }).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
                 message: "修改成功, 作息表正在重新加载 ...",
@@ -123,7 +130,7 @@ if (document.getElementById("school-time-slots-manager")) {
           });
         }
       },
-      toChangedHandler: function(to) {
+      toChangedHandler: function (to) {
         if (to < this.currentTimeSlot.from) {
           this.$message.error("作息时间表的结束时间不可以早于开始时间");
         }
@@ -139,7 +146,7 @@ if (document.getElementById("school-time-slots-manager")) {
             }
           });
       },
-      deleteItem(){
+      deleteItem() {
         this.$confirm('此操作将永久该作息时间, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
