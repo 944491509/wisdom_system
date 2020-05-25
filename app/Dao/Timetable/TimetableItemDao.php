@@ -1402,6 +1402,7 @@ class TimetableItemDao
             $newItem['to_special_datetime'] = $data['to_special_datetime'];
             $newItem['last_updated_by'] = $userId;
             $newItem['type'] = TimetableItem::TYPE_SUBSTITUTION_NOTHING;
+            $newItem['initiative'] = TimetableItem::INITIATIVE; // 主动
             $s1 = TimetableItem::create($newItem);
 
 
@@ -1416,6 +1417,7 @@ class TimetableItemDao
             $timetableItem['last_updated_by'] = $userId;
             $timetableItem['type'] = TimetableItem::TYPE_SUBSTITUTION_NOTHING;
             $timetableItem['substitute_id'] = $s1->id;
+            $timetableItem['initiative'] = TimetableItem::PASSIVITY;  // 被动
 
             $s2 = TimetableItem::create($timetableItem->toArray());
             TimetableItem::where('id',$s1->id)->update(['substitute_id'=>$s2->id]);

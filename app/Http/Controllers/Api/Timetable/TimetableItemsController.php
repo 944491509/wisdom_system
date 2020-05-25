@@ -146,10 +146,10 @@ class TimetableItemsController extends Controller
     }
 
     public function load_special_cases(Request $request){
-        $ids = $request->get('ids');
+        $ids = $request->get('timetable_ids');
 
         $logic = new SpecialItemsLoadLogic($ids);
 
-        return JsonBuilder::Success(['specials'=>$logic->build()]);
+        return JsonBuilder::Success($logic->build());
     }
 }

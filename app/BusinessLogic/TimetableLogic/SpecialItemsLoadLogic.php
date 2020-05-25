@@ -9,6 +9,7 @@
 namespace App\BusinessLogic\TimetableLogic;
 use App\Dao\Timetable\TimetableItemDao;
 use App\Models\Timetable\TimetableItem;
+use App\Utils\Time\CalendarDay;
 use App\Utils\Time\GradeAndYearUtil;
 
 class SpecialItemsLoadLogic
@@ -30,10 +31,7 @@ class SpecialItemsLoadLogic
         $result = [];
 
         foreach ($items as $item) {
-            $grade = [
-                'id' => $item->grade->id,
-                'name' => $item->grade->name,
-            ];
+            $grade = $item->grade->name;
             if($item->type == TimetableItem::TYPE_SUBSTITUTION_NOTHING) {
 
                 if($item->to_replace != 0) {
@@ -42,21 +40,25 @@ class SpecialItemsLoadLogic
                 } else {
                     $timetable = $dao->getItemById($item->substitute_id);
                 }
-                $grade = [
-                    'id' => $timetable->grade->id,
-                    'name' => $timetable->grade->name,
-                ];
+                $grade = $timetable->grade->name;
             }
-            $result[] = [
-                'id'        =>$item->id,
-                'date'      =>$item->at_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
-                'end_time'  => $item->to_special_datetime->format(GradeAndYearUtil::DEFAULT_FORMAT_DATE),
-                'grade' => $grade,
-                'course'    =>$item->course->name ?? '-',
-                'teacher'   =>$item->teacher->name ?? '-',
-                'location'  =>$item->room_id ? $item->building->name . ' - ' .$item->room->name :'-' ,
-                'updated_by'=>$item->updatedBy->name ?? '',
-                'published' =>$item->published,
+            $start_time = $item->at_special_datetime;
+            $end_time = $item->to_special_datetime;
+            $days = CalendarDay::getDays($start_time, $end_time,$item->weekday_index);
+
+
+            $result = [
+                'timetable_id' => $item->id,
+                'type' => $item->getTypeText(),
+                'initiative' => $item->getInitiativeText(),
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+                'course' => $item->course->name ?? '-',
+                'room' => $item->room_id ?  $item->building->name . ' - ' .$item->room->name : '-',
+                'practical_start_time' => $days[0],
+                'teacher' => $item->teacher->name ?? '-',
+                'updated_by' => $item->updatedBy->name ?? '',
+                'course_source' => $grade.' '. CalendarDay::GetWeekDayIndex($item->weekday_index) . ' '. $item->timeSlot->name,
             ];
         }
 
