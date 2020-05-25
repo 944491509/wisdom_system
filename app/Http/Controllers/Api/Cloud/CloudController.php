@@ -3,27 +3,29 @@
 
 namespace App\Http\Controllers\Api\Cloud;
 
-use App\Dao\AttendanceSchedules\AttendancesDao;
-use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
-use App\Dao\FacilityManage\FacilityDao;
-use App\Dao\Schools\GradeResourceDao;
-use App\Dao\Students\StudentProfileDao;
-use App\Dao\Timetable\TimeSlotDao;
-use App\Dao\Timetable\TimetableItemDao;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Cloud\CloudRequest;
-use App\Models\Acl\Role;
-use App\Models\AttendanceSchedules\AttendancesDetail;
-use App\Models\School;
-use App\Models\Schools\Facility;
-use App\Models\Students\StudentProfile;
-use App\Models\Users\UserCodeRecord;
-use App\ThirdParty\CloudOpenApi;
-use App\Utils\JsonBuilder;
-use App\Utils\Time\GradeAndYearUtil;
+use App\User;
 use Carbon\Carbon;
+use App\Models\School;
+use App\Models\Acl\Role;
+use App\Utils\JsonBuilder;
 use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
+use App\Models\Schools\Facility;
+use App\ThirdParty\CloudOpenApi;
+use App\Dao\Timetable\TimeSlotDao;
+use App\Http\Controllers\Controller;
+use App\Models\Users\UserCodeRecord;
+use App\Utils\Time\GradeAndYearUtil;
+use App\Dao\Schools\GradeResourceDao;
+use App\Dao\FacilityManage\FacilityDao;
+use App\Dao\Students\StudentProfileDao;
+use App\Dao\Timetable\TimetableItemDao;
+use App\Models\Students\StudentProfile;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Cloud\CloudRequest;
+use App\Dao\AttendanceSchedules\AttendancesDao;
+use App\Models\AttendanceSchedules\AttendancesDetail;
+use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
 
 class CloudController extends Controller
 {
@@ -48,7 +50,7 @@ class CloudController extends Controller
         $school = $facility->school;
         $type = '';
         if (!is_null($school->video)) {
-             $type = substr($school->video,-3);
+            $type = substr($school->video, -3);
         }
         $data   = [
             'school' => [
@@ -65,7 +67,7 @@ class CloudController extends Controller
                     'type'  => $type,
                 ],
                 'card' => [
-                    'address' => $facility->room->building->name.'-'.$facility->room->name,
+                    'address' => $facility->room->building->name . '-' . $facility->room->name,
                 ]
             ]
         ];
@@ -94,12 +96,12 @@ class CloudController extends Controller
          * 公有班牌
          */
         if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
-             $item = $timeSlotDao->getItemByRoomForNow($room);
-             if (empty($item)) {
+            $item = $timeSlotDao->getItemByRoomForNow($room);
+            if (empty($item)) {
                 return JsonBuilder::Error('暂无课程');
-             } else {
-                 $grade = $item->grade;
-             }
+            } else {
+                $grade = $item->grade;
+            }
         }
         /**
          *  私有班牌
@@ -165,7 +167,7 @@ class CloudController extends Controller
          */
         if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
             $room = $facility->room;
-            $items = $timeSlotDao->getItemByRoomForNow($room, null,1);
+            $items = $timeSlotDao->getItemByRoomForNow($room, null, 1);
         }
         /**
          *  私有班牌
@@ -176,7 +178,7 @@ class CloudController extends Controller
         }
 
         if (!$items) {
-             return JsonBuilder::Error('现在是休息时间');
+            return JsonBuilder::Error('现在是休息时间');
         }
 
         if ($items->isEmpty()) {
@@ -185,8 +187,8 @@ class CloudController extends Controller
         $data = [];
         foreach ($items as $key => $item) {
             $data[$key]['course_number']   = $item->timeslot->name;
-            $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
-            $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
+            $data[$key]['course_time']     = $item->timeslot->from . ' - ' . $item->timeslot->to;
+            $data[$key]['course_room']     = $item->room->building->name . ' ' . $item->room->name;
             $data[$key]['course_teacher'] = $item->teacher->name;
             $data[$key]['course_name']   = $item->course->name ?? '';
         }
@@ -238,7 +240,7 @@ class CloudController extends Controller
         $qrCode->setLogoSize(60, 60);
         $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success(['code' => $code, 'status' => true],'签到二维码');
+        return JsonBuilder::Success(['code' => $code, 'status' => true], '签到二维码');
     }
 
     /**
@@ -276,7 +278,7 @@ class CloudController extends Controller
         $term = $configuration->guessTerm($month);
         $weeks = $configuration->getScheduleWeek($now, null, $term);
         if (is_null($weeks)) {
-              return JsonBuilder::Error('暂无课程');
+            return JsonBuilder::Error('暂无课程');
         }
 
         $week = $weeks->getScheduleWeekIndex();
@@ -322,43 +324,15 @@ class CloudController extends Controller
         $attendancesDetailsDao = new AttendancesDetailsDao;
         $attendancesDetail = $attendancesDetailsDao->getDetailByTimeTableIdAndStudentId($item, $student->user);
         if ($attendancesDetail) {
-            return JsonBuilder::Error('学生已经'. $attendancesDetail->typeText() .'了');
+            return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
         }
 
         $dao = new AttendancesDao;
         $attendanceInfo = $dao->arrive($item, $student->user, AttendancesDetail::TYPE_INTELLIGENCE);
-        if($attendanceInfo) {
+        if ($attendanceInfo) {
             return  JsonBuilder::Success('签到成功');
         } else {
             return  JsonBuilder::Error('服务器错误, 签到失败');
-        }
-    }
-
-
-    /**
-     * 上传云班牌人脸识别照片
-     * @param Request $request
-     * @return string
-     */
-    public function uploadFaceImage(Request $request)
-    {
-        $user = $request->user();
-
-        $file = $request->file('face_image');
-
-        $openApi = new CloudOpenApi;
-        $result = $openApi->makePostUploadFaceImg($user->profile->uuid, $file);
-        if ($result['code'] != CloudOpenApi::ERROR_CODE_OPEN_API_OK) {
-            return JsonBuilder::Error('服务器出错了');
-        }
-
-        $studentProfileDao  = new StudentProfileDao;
-        $update = $studentProfileDao->updateStudentProfile($user->id, ['face_code' => $result['data']['face_code']]);
-
-        if ($update) {
-            return  JsonBuilder::Success('上传成功');
-        } else {
-            return  JsonBuilder::Error('上传失败');
         }
     }
 
@@ -384,16 +358,64 @@ class CloudController extends Controller
         $attendancesDetailsDao = new AttendancesDetailsDao;
         $attendancesDetail = $attendancesDetailsDao->getDetailByTimeTableIdAndStudentId($item, $user);
         if ($attendancesDetail) {
-            return JsonBuilder::Error('学生已经'. $attendancesDetail->typeText() .'了');
+            return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
         }
 
         $dao = new AttendancesDao;
         $attendanceInfo = $dao->arrive($item, $user, AttendancesDetail::TYPE_SWEEP_CODE);
-        if($attendanceInfo) {
+        if ($attendanceInfo) {
             return  JsonBuilder::Success('签到成功');
         } else {
             return  JsonBuilder::Error('服务器错误, 签到失败');
         }
     }
 
+
+    /**
+     * 上传云班牌人脸识别照片
+     * @param Request $request
+     * @return string
+     */
+    public function uploadFaceImage(Request $request)
+    {
+        $user = User::find($request->get('user_id'));
+        $type = $request->get('type');
+
+        $gradeName = $user->gradeUser->grade->name;
+        $gradePath = storage_path('app/student_photo/' . $gradeName);
+        $studentPhotoPath = $gradePath . '/' . $user->name . '.jpg';
+
+        if ($type == CloudOpenApi::UPDATE_STUDENT_PHOTO) { // 更新
+            if (!is_file($studentPhotoPath)) {
+                return JsonBuilder::Error('更新 未找到之前的照片');
+            } else {
+                // 删除之前的照片
+                Storage::disk('student_photo')->delete($studentPhotoPath);
+            }
+        }
+
+        $file = $request->file('face_image')->storeAs('student_photo/' . $gradeName, $user->name . '.jpg');
+        if (!$file) {
+            return JsonBuilder::Error('上传失败');
+        }
+
+        $openApi = new CloudOpenApi;
+        if ($type == CloudOpenApi::UPDATE_STUDENT_PHOTO) {
+            $result = $openApi->makePostUploadFaceImg($studentPhotoPath, $user->profile->face_code);
+        } else {
+            $result = $openApi->makePostUploadFaceImg($studentPhotoPath);
+        }
+        if ($result['code'] != CloudOpenApi::ERROR_CODE_OPEN_API_OK) {
+            return JsonBuilder::Error('华三服务器出错了');
+        }
+
+        $studentProfileDao  = new StudentProfileDao;
+        $update = $studentProfileDao->updateStudentProfile($user->id, ['face_code' => $result['data']['face_code']]);
+
+        if ($update) {
+            return  JsonBuilder::Success('上传成功');
+        } else {
+            return  JsonBuilder::Error('上传失败');
+        }
+    }
 }

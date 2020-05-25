@@ -11,16 +11,17 @@ class CloudOpenApi
 {
 
     const ERROR_CODE_OPEN_API_OK = 0; // 华三接口正常返回code
+    const UPDATE_STUDENT_PHOTO = 1; // 更新照片
+    
+	private $appId;
 
-	public $appId;
+	private $appSecret;
 
-	public $appSecret;
+	private $timestamp;
 
-	public $timestamp;
+    private $apiUrl;
 
-    public $apiUrl;
-
-    public $schoolUUid = '4b74dffc-e17c-4ba5-9f24-db0002639b82';
+    private $schoolUUid = '4b74dffc-e17c-4ba5-9f24-db0002639b82';
 
     public function __construct()
     {
@@ -74,7 +75,7 @@ class CloudOpenApi
                 'contents' => $faceCode
             ]);
         }
-
+        dd($data);
         $client   = new Client;
         $response = $client->request('POST', $this->apiUrl.$url, [
             'headers'   => $headers,
