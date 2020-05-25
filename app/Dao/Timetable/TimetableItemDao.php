@@ -1117,7 +1117,7 @@ class TimetableItemDao
         $timetableItem = $this->getItemById($data['timetable_id']);
         $timetableItemId = $timetableItem['id'];
         unset($timetableItem['id']);
-        $timetableItem->building_id = $data['building_id'] ;
+        $timetableItem['building_id'] = $data['building_id'] ;
         $timetableItem['room_id'] = $data['room_id'] ;
         $timetableItem['teacher_id'] = $data['teacher_id'] ;
         $timetableItem['to_replace'] = $timetableItemId ;
