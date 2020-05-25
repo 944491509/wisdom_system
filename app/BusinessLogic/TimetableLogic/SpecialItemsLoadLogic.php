@@ -47,7 +47,7 @@ class SpecialItemsLoadLogic
             $days = CalendarDay::getDays($start_time, $end_time,$item->weekday_index);
 
 
-            $result = [
+            $result[] = [
                 'timetable_id' => $item->id,
                 'type' => $item->getTypeText(),
                 'initiative' => $item->getInitiativeText(),
