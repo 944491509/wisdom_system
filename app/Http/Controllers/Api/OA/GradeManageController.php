@@ -174,8 +174,9 @@ class GradeManageController extends Controller
         $data = $dao->paginateUserByGrade($gradeId, Role::VERIFIED_USER_STUDENT);
         $output = [];
         foreach ($data as $key => $val) {
-            $output[$key]['student_id'] = $val->user_id;
-            $output[$key]['name'] = $val->name;
+            $output[$key]['student_id']       = $val->user_id;
+            $output[$key]['name']             = $val->name;
+            $output[$key]['face_code_status'] = $val->studentProfile->face_code ? 1 : 0;
         }
         return [
             'code' => JsonBuilder::CODE_SUCCESS,
