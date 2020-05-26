@@ -53,23 +53,19 @@ class TimeSlot extends Model
     const SEASONS_SUMMER_AND_AUTUMN_TEXT = '夏季/秋季';
 
     protected $fillable = [
-        'school_id','name','from','to','type','season', 'year'
+        'school_id','name','from','to','type','season', 'year', 'status'
     ];
 
     public $hidden = [
         'created_at', 'updated_at', 'deleted_at'
     ];
 
+    const STATUS_HIDE = 0; // 隐藏
+    const STATUS_SHOW = 1; // 显示
+
+
     public static function AllTypes(){
         return [
-            self::TYPE_WAKE_UP => self::TYPE_WAKE_UP_TXT,
-            self::TYPE_BREAKFAST => self::TYPE_BREAKFAST_TXT,
-            self::TYPE_MORNING_READ => self::TYPE_MORNING_READ_TXT,
-            self::TYPE_PREPARE => self::TYPE_PREPARE_TXT,
-            self::TYPE_LUNCH => self::TYPE_LUNCH_TXT,
-            self::TYPE_DINNER => self::TYPE_DINNER_TXT,
-            self::TYPE_PRACTICE_EVENING => self::TYPE_PRACTICE_EVENING_TXT,
-            self::TYPE_DAY_END => self::TYPE_DAY_END_TXT,
             self::TYPE_STUDYING => self::TYPE_STUDYING_TXT,
             self::TYPE_BREAK => self::TYPE_BREAK_TXT,
             self::TYPE_PRACTICE => self::TYPE_PRACTICE_TXT,
@@ -77,6 +73,14 @@ class TimeSlot extends Model
             self::TYPE_EXERCISE => self::TYPE_EXERCISE_TXT,
             self::TYPE_FREE_TIME => self::TYPE_FREE_TIME_TXT,
             self::TYPE_TIME_POINT => self::TYPE_TIME_POINT_TXT,
+            self::TYPE_BREAKFAST => self::TYPE_BREAKFAST_TXT,
+            self::TYPE_WAKE_UP => self::TYPE_WAKE_UP_TXT,
+            self::TYPE_MORNING_READ => self::TYPE_MORNING_READ_TXT,
+            self::TYPE_LUNCH => self::TYPE_LUNCH_TXT,
+            self::TYPE_PREPARE => self::TYPE_PREPARE_TXT,
+            self::TYPE_DAY_END => self::TYPE_DAY_END_TXT,
+            self::TYPE_DINNER => self::TYPE_DINNER_TXT,
+            self::TYPE_PRACTICE_EVENING => self::TYPE_PRACTICE_EVENING_TXT,
             self::TYPE_ANIMAL_HEAT_EXAMINE => self::TYPE_ANIMAL_HEAT_EXAMINE_TXT,
             self::TYPE_EYE_EXERCISES => self::TYPE_EYE_EXERCISES_TXT,
         ];
@@ -113,5 +117,13 @@ class TimeSlot extends Model
 
     public function getToAttribute($val) {
         return Carbon::parse($val)->format('H:i');
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function timeTableItems() {
+        return $this->hasMany(TimetableItem::class, 'time_slot_id');
     }
 }

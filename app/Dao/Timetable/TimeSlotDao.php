@@ -61,17 +61,19 @@ class TimeSlotDao
     /**
      * 获取所有用于学习的时间段: 上课 + 自习 + 自由活动
      * @param $schoolId
-     * @param $gradeYear 年级
+     * @param int  $gradeYear 年级
      * @param boolean $simple
      * @param boolean $noTime 不要时间
      * @return array|Collection
      */
     public function getAllStudyTimeSlots($schoolId, $gradeYear, $simple = false, $noTime = false){
-        $config = SchoolConfiguration::where('school_id',$schoolId)->first();
-        $seasonType = GradeAndYearUtil::GetCurrentSeason($config);
+
+        // 现在只使用一套作息时间 夏季作息时间
+        $seasonType = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;
         $slots = TimeSlot::where('school_id',$schoolId)
             ->where('season',$seasonType)
             ->where('year',$gradeYear)
+            ->where('status', TimeSlot::STATUS_SHOW)  // 显示
             ->whereIn('type',[TimeSlot::TYPE_STUDYING, TimeSlot::TYPE_PRACTICE, TimeSlot::TYPE_FREE_TIME])
             ->orderBy('from','asc')
             ->get();
@@ -144,6 +146,7 @@ class TimeSlotDao
             ['timetable_items.year', '=', $year],
             ['term', '=', $term],
             ['weekday_index', '=', $date->dayOfWeekIso],
+            ['time_slots.status', '=', TimeSlot::STATUS_SHOW]
         ];
 
         return TimetableItem::where($where)
@@ -186,7 +189,8 @@ class TimeSlotDao
 
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
-                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
+                $join->on('timetable_items.time_slot_id', '=', 'time_slots.id')
+                ->where('time_slots.status', '=', TimeSlot::STATUS_SHOW);
             })
             ->select($field)
             ->orderBy('time_slots.from','asc')
@@ -228,28 +232,43 @@ class TimeSlotDao
     /**
      * 获取当前时间的第几节课
      * @param $schoolId
-     * @param $term
      * @param null $time
      * @return mixed
      */
-    public function getTimeSlotByCurrentTime($schoolId, $term = null, $time = null) {
-
-        if(is_null($term)) {
-            $schoolDao = new SchoolDao();
-            $school = $schoolDao->getSchoolById($schoolId);
-            $configuration = $school->configuration;
-            $season = GradeAndYearUtil::GetCurrentSeason($configuration, $time);
-        }
+    public function getTimeSlotByCurrentTime($schoolId, $time = null) {
         if(is_null($time)) {
             $time = Carbon::now()->toTimeString();
         }
+        // 现在作息时间只使用一套 默认夏季作息时间
+        $season = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;
         $map = [
             ['school_id', '=', $schoolId],
             ['from', '<', $time],
             ['to', '>', $time],
             ['season', '=', $season],
+            ['status', '=', TimeSlot::STATUS_SHOW]
 //            ['type', '=', TimeSlot::TYPE_STUDYING]
         ];
         return TimeSlot::where($map)->first();
+    }
+
+
+    /**
+     * 获取所有的作息时间
+     * @param $schoolId
+     * @return mixed
+     */
+    public function getAllTimeSlots($schoolId) {
+        return TimeSlot::where('school_id', $schoolId)->orderBy('year')->orderBy('from')->get();
+    }
+
+
+    /**
+     * 删除课节
+     * @param $timeSlotId
+     * @return mixed
+     */
+    public function delTimeSlot($timeSlotId) {
+        return TimeSlot::where('id', $timeSlotId)->delete();
     }
 }

@@ -16,7 +16,7 @@
     $winterStart= $config->winter_start_date ?? \Carbon\Carbon::now(); // 第2学期开学时间
 @endphp
 
-<div class="row" id="school-time-slots-manager">
+<div class="row" id="school-time-slots-manager" schoolid="{{$school->id}}">
     <div class="col-4">
         <div class="card">
             <div class="card-head">
@@ -130,7 +130,7 @@
                     <div class="clearfix"></div>
                     <hr>
 
-                    <div class="form-group mt-4">
+                    {{--<div class="form-group mt-4">
                         <label>夏季/秋季作息时间开始日期</label>
                         <div class="clearfix"></div>
                         <select class="form-control pull-left mr-2" name="summer_start_date[month]" style="width: 20%;">
@@ -162,7 +162,7 @@
                         </select>
                     </div>
                     <div class="clearfix"></div>
-                    <hr>
+                    <hr>--}}
                     <?php
                     Button::Print(['id'=>'btn-save-school-config','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
                     ?>&nbsp;
@@ -170,7 +170,7 @@
             </div>
         </div>
     </div>
-    <div class="col-3">
+    <div class="col-8">
         <div class="card">
             <time-slots-manager
                     school="{{ $school->uuid }}"
@@ -179,50 +179,61 @@
             ></time-slots-manager>
         </div>
     </div>
-    <div class="col-5" v-if="showEditForm">
-        <div class="card">
-            <div class="card-head">
-                <header>作息时间表</header>
-            </div>
-            <div class="card-body">
-                <el-form ref="form" :model="currentTimeSlot" label-width="80px">
-                    <el-form-item label="名称">
-                        <el-input v-model="currentTimeSlot.name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="时间段">
-                        <el-time-picker
-                                v-model="currentTimeSlot.from"
-                                value-format="HH:mm:ss"
-                                :picker-options="{selectableRange: '05:00:00 - 22:00:00', format: 'HH:mm:ss'}"
-                                placeholder="起始时间">
-                        </el-time-picker>
-                        <el-time-picker
-                                class="mt-4"
-                                arrow-control
-                                v-model="currentTimeSlot.to"
-                                value-format="HH:mm:ss"
-                                :picker-options="{selectableRange: '05:00:00 - 22:00:00', format: 'HH:mm:ss'}"
-                                @change="toChangedHandler"
-                                placeholder="结束时间">
-                        </el-time-picker>
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        <el-select v-model="currentTimeSlot.type" placeholder="请选择">
-                            @foreach(\App\Models\Timetable\TimeSlot::AllTypes() as $key=>$value)
-                            <el-option
-                                    :key="{{ $key }}"
-                                    label="{{ $value }}"
-                                    :value="{{ $key }}">
-                            </el-option>
-                            @endforeach
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="onSubmit">保存</el-button>
-                        <el-button @click="showEditForm = false">关闭</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
+    <el-drawer :title="mode == 'add'?'添加时间':'编辑时间'" :visible.sync="showEditForm">
+        <div class="pr-4">
+            <el-form ref="form" :model="currentTimeSlot" label-width="80px">
+                <el-form-item label="年级" v-if="mode == 'add'" >
+                    <el-select v-model="currentTimeSlot.grade_id" style="width:100%;">
+                        <el-option :label="grade.text" :value="grade.year" :key="grade.year" v-for="grade in grades"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="名称">
+                    <el-input v-model="currentTimeSlot.name"></el-input>
+                </el-form-item>
+                <el-form-item label="时间段">
+                    <el-time-picker
+                            style="width:49%;"
+                            v-model="currentTimeSlot.from"
+                            format="HH:mm"
+                            value-format="HH:mm"
+                            :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
+                            placeholder="起始时间">
+                    </el-time-picker>
+                    <el-time-picker
+                            arrow-control
+                            style="width:49%;"
+                            v-model="currentTimeSlot.to"
+                            format="HH:mm"
+                            value-format="HH:mm"
+                            :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
+                            @change="toChangedHandler"
+                            placeholder="结束时间">
+                    </el-time-picker>
+                </el-form-item>
+                <el-form-item label="类型">
+                    <el-select v-model="currentTimeSlot.type" placeholder="请选择" style="width:100%;">
+                        @foreach(\App\Models\Timetable\TimeSlot::AllTypes() as $key=>$value)
+                        <el-option
+                                :key="{{ $key }}"
+                                label="{{ $value }}"
+                                :value="{{ $key }}">
+                        </el-option>
+                        @endforeach
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="状态" v-if="mode == 'edit'">
+                    <el-switch
+                    v-model="currentTimeSlot.status">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item v-if="mode == 'edit'">
+                    <p><span style="color:red;">*</span>注: 已关联课程表，不可删除</p>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit">保存</el-button>
+                    <el-button v-if="mode == 'edit'" type="danger" @click="deleteItem">删除</el-button>
+                </el-form-item>
+            </el-form>
         </div>
-    </div>
+    </el-drawer>
 </div>

@@ -1,39 +1,24 @@
 <template>
   <div class="block">
-    <h2 class="title-bar">
-      作息时间表
-      <el-dropdown trigger="click" class="grades">
-        <span class="el-dropdown-link">
-          {{selectedGrade.text}}
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="(grade, index) in grades" :key="index">
-            <span @click="choseGrade(grade)" class="grade-item">{{grade.text}}</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </h2>
-    <el-timeline class="frame-wrap">
-      <el-timeline-item
-        v-for="(activity, index) in timeFrame"
-        :key="index"
-        :icon="activity.icon"
-        :type="activity.type"
-        :color="activity.color"
-        :size="activity.size"
-        :timestamp="activity.timestamp"
-      >
-        <p style="padding: 0;color: #409EFF;" v-on:click="editTimeSlot(activity, index)">
-          {{activity.content}}
-          &nbsp;
-          <i
-            class="el-icon-check"
-            v-if="index === highlightIdx"
-          ></i>
-        </p>
-      </el-timeline-item>
-    </el-timeline>
+    <div class="title-bar">作息时间 <el-button type="primary" @click="addTimeSlot">添加</el-button></div>
+    <div class="row">
+      <div class="content col-3"  v-for="(grade, index) in allTimeSlot" :key="index">
+        <div class="title"> <span :class="'tag style' +index"></span>{{grade.year.text}}</div>
+        <el-timeline class="frame-wrap">
+          <el-timeline-item
+            v-for="(activity, index) in grade.time_slot"
+            :key="index"
+            type="primary"
+            :color="activity.color"
+            :timestamp="activity.from + '-' + activity.to"
+          >
+            <p style="padding: 0;color: #409EFF;" @click="editTimeSlot(grade.year,activity)">
+              {{activity.name}}
+            </p>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+    </div>
     <slot></slot>
   </div>
 </template>
@@ -61,78 +46,112 @@ export default {
     return {
       timeFrame: [],
       highlightIdx: -1,
-      grades: [],
-      selectedGrade: {}
+      allTimeSlot:[],
     };
   },
   watch: {
-    selectedGrade: {
-      deep: true,
-      immediate: true,
-      handler(grade) {
-        if (!grade || !grade.year) {
-          return;
-        }
-        axios
-          .post(Constants.API.LOAD_TIME_SLOTS_BY_SCHOOL, {
-            school: this.school,
-            year: grade.year
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.timeFrame = [];
-              res.data.data.time_frame.forEach(item => {
-                this.timeFrame.push({
-                  timestamp: item.from + " - " + item.to,
-                  size: this.dotSize,
-                  // color: '#0bbd87',
-                  type: "primary",
-                  icon: "",
-                  content: item.name,
-                  id: item.id,
-                  origin: item
-                });
-              });
-            }
-          });
-      }
-    }
+
   },
   mounted() {
     axios
-      .get(Constants.API.LOAD_GRADE_OF_SCHOOL + "?school_id=" + this.schoolid)
+      .get('/api/school/getAllTimeSlot' + "?school_id=" + this.schoolid)
       .then(res => {
         if (Util.isAjaxResOk(res)) {
-          this.grades = res.data.data;
-          this.selectedGrade = this.grades[0];
+          this.allTimeSlot = res.data.data;
         }
       });
   },
   methods: {
-    editTimeSlot: function(activity, index) {
-      this.highlightIdx = index;
-      const timeSlot = Util.GetItemById(activity.id, this.timeFrame);
+    editTimeSlot: function(grade, activity) {
       this.$emit("edit-time-slot", {
-        timeSlot: timeSlot.origin,
-        schoolUuid: this.school
+        timeSlot: activity,
+        schoolUuid: this.school,
+        grade: grade,
+        type:'edit'
       });
     },
-    choseGrade(grade) {
-      this.selectedGrade = grade;
+    addTimeSlot:function(){
+      this.$emit("edit-time-slot", {
+        type:'add'
+      });
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
+
 .block {
   margin: 10px;
   .title-bar {
-    display: block;
-    line-height: 50px;
+    display: flex;
+    padding: 0 20px 9px;
+    line-height: 17px;
+    font-size: 20px;
+    border-radius: 2px 2px 0 0;
+    color: #3a405b;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
+  }
+  .title {
+    font-size: 18px;
+    .tag{
+        height: 20px;
+        width: 20px;
+        margin-right: 20px;
+        display: inline-block;
+        position: relative;
+        vertical-align: middle;
+        margin-top: -4px;
+        &::after{
+          border: 10px solid transparent;
+          content: "";
+          position: absolute;
+          right: -20px;
+          // border-left-color: antiquewhite;
+        }
+        &.style0{
+          background-color: #ed931b;
+           &::after{
+             border-left-color:#ed931b;
+          }
+        }
+        &.style1{
+          background-color: #3dc7dd;
+           &::after{
+             border-left-color:#3dc7dd;
+          }
+        }
+        &.style2{
+          background-color: #7c68e9;
+          &::after{
+            border-left-color:#7c68e9;
+          }
+        }
+        &.style3{
+          background-color: #e9689e;
+          &::after{
+            border-left-color:#e9689e;
+          }
+        }
+        &.style4{
+          background-color: #7ded85;
+          &::after{
+            border-left-color:#7ded85;
+          }
+        }
+
+
+    }
+  }
+  .content{
+    margin: 20px;
   }
   .frame-wrap {
     margin-top: 20px;
+    margin-left: 5px;
   }
 }
 
@@ -146,4 +165,5 @@ export default {
 .grade-item {
   cursor: pointer;
 }
+
 </style>

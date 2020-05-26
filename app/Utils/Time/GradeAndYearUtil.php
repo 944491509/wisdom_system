@@ -100,24 +100,6 @@ class GradeAndYearUtil
         return $slot;
     }
 
-  /**
-   * 获取当前的季节类型
-   * @param SchoolConfiguration $config
-   * @param null $now
-   * @return void
-   */
-    public static function GetCurrentSeason(SchoolConfiguration $config, Carbon $now = null){
-        if (empty($now)){
-            $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
-        }
-        $mockDate = Carbon::createFromFormat('Y-m-d',SchoolConfiguration::FAKE_YEAR.'-'.$now->month.'-'.$now->day)->format('Y-m-d');
-        $seasonType = TimeSlot::SEASONS_WINTER_AND_SPRINT;
-        if($config->summer_start_date->format('Y-m-d') <= $mockDate && $mockDate < $config->winter_start_date->format('Y-m-d')){
-            $seasonType = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;
-        }
-        return $seasonType;
-    }
-
     /**
      * 转换 js 提交的日期时间字符串为 carbon 对象
      * js 提交的日期时间字符串: Thu Oct 31 2019 00:00:00 GMT+0800 (China Standard Time)
