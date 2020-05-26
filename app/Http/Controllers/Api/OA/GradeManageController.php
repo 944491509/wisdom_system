@@ -14,6 +14,7 @@ use App\Models\Acl\Role;
 use App\Models\Schools\GradeManager;
 use App\Models\Schools\GradeResource;
 use App\Utils\JsonBuilder;
+use Exception;
 
 class GradeManageController extends Controller
 {
@@ -27,6 +28,7 @@ class GradeManageController extends Controller
     {
         $teacher = $request->user();
         $yearManger = $teacher->yearManger;
+
         $data = [];
         if ($yearManger) {
             // 年级主任
@@ -211,7 +213,7 @@ class GradeManageController extends Controller
      * 教师修改学生信息
      * @param MyStandardRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateStudentInfo(MyStandardRequest $request)
     {
