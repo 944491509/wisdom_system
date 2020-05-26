@@ -6,7 +6,7 @@
             </p>
         </div>
         <div v-else class="timetable-unit-wrap" :class="customCssRule()" @click="popupVisible = !popupVisible">
-        
+
             <el-popover
                     class="unit-content"
                     placement="right"
@@ -32,6 +32,9 @@
                     <p v-if="!isEmpty(unit.teacher)" class="text-center no-margin">老师: {{ unit.teacher }}</p>
                     <p class="text-center no-margin" v-if="unit.building">地点: {{ unit.building }}</p>
                     <p class="text-center no-margin">{{ unit.room }}</p>
+                    <p class="text-center mt-4" v-if="Object.keys((unit || {})).length == 2 && specialCasesCount > 0">
+                        <el-button v-if="asManager" round v-on:click="onEmptyUnitClicked">点击添加</el-button>
+                    </p>
                 </div>
             </el-popover>
         </div>
@@ -78,7 +81,7 @@
         },
         data(){
             return {
-               
+
             };
         },
         methods: {
@@ -92,7 +95,9 @@
                 else if(this.unit.published){
                     return 'confirmed';
                 }
-                else{
+                else if(Object.keys((this.unit || {})).length == 2 && this.specialCasesCount > 0) {
+                    return '';
+                }else{
                     return 'draft';
                 }
             },
@@ -100,7 +105,7 @@
             onEmptyUnitClicked: function(){
                 this.$emit('create-new-for-current-unit',{weekday: this.weekday+1, timeSlotId: this.rowIndex});
             },
-            editUnit: function(){ 
+            editUnit: function(){
                 this.popupVisible = false;
                 this.$emit('edit-for-current-unit',{unit: this.unit});
                 Util.pageScrollTo(0); // 移动到页面顶部
