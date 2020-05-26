@@ -27,30 +27,34 @@ class GradeManageController extends Controller
     {
         $teacher = $request->user();
         $yearManger = $teacher->yearManger;
+        $data = [];
         if ($yearManger) {
             // 年级主任
             $gradeDao = new GradeDao;
             $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
-            $grades = [];
             foreach ($yearGrades as $key => $value) {
-                $grades[] = $value->GradeManager;
+                 $data[$key]['grade_id'] = $value->id ?? '';
+                 $data[$key]['name'] = $value->name ?? '';
+                 $data[$key]['image'] = [];
+                 foreach ($value->gradeResource as $k => $v) {
+                    $data[$key]['image'][$k]['image_id'] = $v->id;
+                    $data[$key]['image'][$k]['path'] = $v->path;
+                 }
             }
         } else {
             // 班主任
             $dao = new GradeManagerDao;
             $grades = $dao->getAllGradesByAdviserId($teacher->id);
-        }
+            foreach ($grades as $key => $val) {
+                 $data[$key]['grade_id'] = $val->grade->id ?? '';
+                 $data[$key]['name'] = $val->grade->name ?? '';
 
-        $data = [];
-        foreach ($grades as $key => $val) {
-             $data[$key]['grade_id'] = $val->grade->id ?? '';
-             $data[$key]['name'] = $val->grade->name ?? '';
-
-             $data[$key]['image'] = [];
-             foreach ($val->grade->gradeResource as $k => $v) {
-                $data[$key]['image'][$k]['image_id'] = $v->id;
-                $data[$key]['image'][$k]['path'] = $v->path;
-             }
+                 $data[$key]['image'] = [];
+                 foreach ($val->grade->gradeResource as $k => $v) {
+                    $data[$key]['image'][$k]['image_id'] = $v->id;
+                    $data[$key]['image'][$k]['path'] = $v->path;
+                 }
+            }
         }
 
         return JsonBuilder::Success($data);
