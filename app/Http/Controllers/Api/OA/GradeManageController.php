@@ -43,8 +43,8 @@ class GradeManageController extends Controller
 
         $data = [];
         foreach ($grades as $key => $val) {
-             $data[$key]['grade_id'] = $val->grade->id;
-             $data[$key]['name'] = $val->grade->name;
+             $data[$key]['grade_id'] = $val->grade->id ?? '';
+             $data[$key]['name'] = $val->grade->name ?? '';
 
              $data[$key]['image'] = [];
              foreach ($val->grade->gradeResource as $k => $v) {
@@ -121,8 +121,8 @@ class GradeManageController extends Controller
         }
         $data = [];
         foreach ($grades as $key => $val) {
-            $data[$key]['grade_id'] = $val->grade->id;
-            $data[$key]['name'] = $val->grade->name;
+            $data[$key]['grade_id'] = $val->grade->id ?? '';
+            $data[$key]['name'] = $val->grade->name ?? '';
         }
 
         return JsonBuilder::Success($data);
