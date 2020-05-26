@@ -29,9 +29,9 @@ class GradeManageController extends Controller
         $yearManger = $teacher->yearManger;
         if ($yearManger) {
             // 年级主任
-            $gradeDao = new GradeDao;
+            $gradeDao   = new GradeDao;
             $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
-            $grades = [];
+            $grades     = [];
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;
             }
@@ -43,14 +43,14 @@ class GradeManageController extends Controller
 
         $data = [];
         foreach ($grades as $key => $val) {
-             $data[$key]['grade_id'] = $val->grade->id ?? '';
-             $data[$key]['name'] = $val->grade->name ?? '';
+            $data[$key]['grade_id'] = $val->grade->id ?? '';
+            $data[$key]['name']     = $val->grade->name ?? '';
 
-             $data[$key]['image'] = [];
-             foreach ($val->grade->gradeResource as $k => $v) {
+            $data[$key]['image'] = [];
+            foreach ($val->grade->gradeResource as $k => $v) {
                 $data[$key]['image'][$k]['image_id'] = $v->id;
-                $data[$key]['image'][$k]['path'] = $v->path;
-             }
+                $data[$key]['image'][$k]['path']     = $v->path;
+            }
         }
 
         return JsonBuilder::Success($data);
@@ -123,7 +123,7 @@ class GradeManageController extends Controller
         $data = [];
         foreach ($grades as $key => $val) {
             $data[$key]['grade_id'] = $val->grade->id ?? '';
-            $data[$key]['name'] = $val->grade->name ?? '';
+            $data[$key]['name']     = $val->grade->name ?? '';
         }
 
         return JsonBuilder::Success($data);
@@ -208,7 +208,7 @@ class GradeManageController extends Controller
      * 教师修改学生信息
      * @param MyStandardRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateStudentInfo(MyStandardRequest $request)
     {
