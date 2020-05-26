@@ -354,7 +354,6 @@ class TimetableController extends Controller
                         }
                         // 查询当前课是否有调课
                         $specials = $timetableDao->getTimeTableItemByToReplace($val['id'], $time);
-
                         if(is_null($specials)) {
                             $course = [
                                 'time_table_id' => $val['id'],
@@ -366,7 +365,6 @@ class TimetableController extends Controller
                                         'grade_id'=>$val['grade_id'],
                                         'grade_name'=>$val['grade']
                                     ],
-
                                 ],
                                 'label' => $label,
                                 'optional' => $val['optional'],  // true必修课 false选修课
@@ -399,7 +397,6 @@ class TimetableController extends Controller
                                     'old_course' => $specials->course->name,
                                 ];
 
-
                             }
 
                         }
@@ -408,7 +405,6 @@ class TimetableController extends Controller
             } else {
                 $specials = $timetableDao->getTimeTableItemByTimeSlotId($value->id,$teacherId, $weekdayIndex, $time);
 
-
                 if(!is_null($specials)) {
 
                     if($specials['type'] == 0 || $specials['type'] == TimetableItem::TYPE_SUPPLY) {
@@ -416,13 +412,11 @@ class TimetableController extends Controller
                         $room = $specials->building->name.$specials->room->name;
                     } else {
 
-//                        $timetable = $timetableDao->getItemById($specials->substitute_id);
+                        $timetableItem = $timetableDao->getItemById($specials->substitute_id);
 
-
-//                        $room = $timetable->room_id ? $timetable->building->name.$timetable->room->name : '-';
+                        $room = $timetableItem->room_id ? $timetableItem->building->name.$timetableItem->room->name : '-';
 
                     }
-                    $room = $specials->building->name.$specials->room->name;
                     // 查询当前老师在该班级上传的资料
                     $types = $dao->getMaterialTypeByCourseId($specials['course_id'],$specials['teacher_id'],$specials['grade_id']);
 
