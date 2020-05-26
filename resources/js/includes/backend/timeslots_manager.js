@@ -4,7 +4,7 @@ import {Util} from "../../common/utils";
 
 if(document.getElementById('school-time-slots-manager')){
     new Vue({
-        el: '#school-time-slots-manager',
+        el: '#',
         data(){
             return {
                 needReload: false,

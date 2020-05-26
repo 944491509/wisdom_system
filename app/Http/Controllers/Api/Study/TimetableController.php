@@ -352,7 +352,6 @@ class TimetableController extends Controller
                         }
                         // 查询当前课是否有调课
                         $specials = $timetableDao->getTimeTableItemByToReplace($val['id'], $time);
-
                         if(is_null($specials)) {
                             $course = [
                                 'time_table_id' => $val['id'],
@@ -374,8 +373,8 @@ class TimetableController extends Controller
                             ];
                         } else {
                             $date = $time->toDateTimeString();
-                            // 当前的调课是同个教师 调课时间段 当前课节
-                            if($specials->teacher_id == $teacherId  && $specials->at_special_datetime <= $date && $specials->to_special_datetime >= $date && $specials->time_slot_id == $value->id) {
+                            // 当前的调课是同个教师 调课时间段 当前课节  同一天
+                            if($specials->teacher_id == $teacherId  && $specials->at_special_datetime <= $date && $specials->to_special_datetime >= $date && $specials->time_slot_id == $value->id && $specials->weekday_index == $val['weekday_index']) {
                                 $course = [
                                     'time_table_id' => $specials['id'],
                                     'name' => $specials->course->name,
@@ -537,10 +536,10 @@ class TimetableController extends Controller
 
         $map = [
             ['to_replace','=', $timetableId],
-            ['to_special_datetime', '>=', $today]
+            ['to_special_datetime', '>=', $today],
         ];
         $result = $dao->getTimetable($map);
-        if(is_null($result)) {
+        if(count($result) == 0) {
             return JsonBuilder::Success('可以调课');
         } else {
             return JsonBuilder::Error('不可以调课');

@@ -56,6 +56,9 @@ Vue.component('grade-table', require('./components/moodle/teacher/GradeTable').d
 // 教师课件
 Vue.component('material', require('./components/moodle/teacher/Material').default);
 
+// 公共组件
+Vue.component('pf-icon', require('./components/common/icon').default);
+
 
 require('./includes/backend/school_calendar_app'); // 后台: 校历的管理
 require('./includes/backend/notice_manager_app'); // 后台: Notice 的管理

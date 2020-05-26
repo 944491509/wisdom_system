@@ -23,13 +23,13 @@
         margin-right: 5px;
       }
       .icon.unfinished{
-        background-image: url(../assets/unfinished.png);
+        background-image: url(/assets/img/teacher/unfinished.png);
       }
       .icon.accomplish{
-        background-image: url(../assets/accomplish.png);
+        background-image: url(/assets/img/teacher/accomplish.png);
       }
       .icon.oneselfCreate{
-        background-image: url(../assets/oneselfCreate.png);
+        background-image: url(/assets/img/teacher/oneselfCreate.png);
       }
     }
     .el-button {
@@ -49,6 +49,6 @@
     background-size: contain;
     background-repeat: no-repeat;
     margin-right: 5px;
-    background-image: url(../assets/icon-create.png);
+    background-image: url(/assets/img/teacher/icon-create.png);
   }
 }

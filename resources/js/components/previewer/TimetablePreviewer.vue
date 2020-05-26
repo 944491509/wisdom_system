@@ -67,39 +67,64 @@
                 <el-button type="primary" @click="confirmSpecialCaseHandler">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="调课记录表" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
-            <el-table :data="specials">
-                <el-table-column label="日期" width="150">
-                    <template slot-scope="scope">
-                        <i v-if="scope.row.published" class="el-icon-check"></i>
-                        <i v-else class="el-icon-video-pause"></i>
-                        <i class="el-icon-time"></i>
-                        <span>{{ scope.row.date }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column property="course" label="课程" width="120"></el-table-column>
-                <el-table-column property="location" label="上课地点" width="120"></el-table-column>
-                <el-table-column property="teacher" label="授课教师"></el-table-column>
-                <el-table-column property="updated_by" label="操作人"></el-table-column>
-                <el-table-column label="操作" width="150">
-                    <template slot-scope="scope">
-                        <el-button
-                                v-if="asManager"
-                                size="mini"
-                                type="danger"
-                                @click="handleSpecialCaseDelete(scope.$index, scope.row)">
-                            删除
-                        </el-button>
-                        <el-button
-                                v-if="!scope.row.published && asManager"
-                                size="mini"
-                                type="primary"
-                                @click="handleSpecialCasePublish(scope.$index, scope.row)">
-                            发布
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+        <el-dialog class="specialsListDialog" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
+          <div slot="title"><i class="fa fa-exchange title-icon"></i> 调课记录表</div>
+          <div class="tpItems" v-for="special in specials" :key="special.timetable_id">
+            <div class="tpLeft">
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/type.png" />
+                <span class="itemLeft first">调课类型:</span>
+                <span class="temRight first">{{special.type}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">开始时间:</span>
+                <span class="temRight">{{special.start_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">结束时间:</span>
+                <span class="temRight">{{special.end_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">实际开始时间:</span>
+                <span class="temRight">{{special.practical_start_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-user-circle-o icon"></i>
+                <span class="itemLeft">操作人:</span>
+                <span class="temRight">{{special.updated_by}}</span>
+              </div>
+            </div>
+            <div class="tpRight">
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/method.png" />
+                <span class="itemLeft first" >调课方式:</span>
+                <span class="temRight first">{{special.initiative}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-file-text-o icon"></i>
+                <span class="itemLeft">课程名称:</span>
+                <span class="temRight">{{special.course}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/room.png" />
+                <span class="itemLeft">上课地点:</span>
+                <span class="temRight">{{special.room}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/teacher.png" />
+                <span class="itemLeft">授课老师:</span>
+                <span class="temRight">{{special.teacher}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/resource.png" />
+                <span class="itemLeft">课程开源:</span>
+                <span class="temRight">{{special.course_source}}</span>
+              </div>
+            </div>
+          </div>
         </el-dialog>
 
         <el-dialog title="请求事宜表单" :visible.sync="makeEnquiryFormVisible">
@@ -256,12 +281,12 @@
             showSpecialCasesColumnHandler: function(payload){
                 axios.post(
                     Constants.API.TIMETABLE.LOAD_SPECIAL_CASES,
-                    {ids: payload}
+                    {timetable_ids: payload}
                 ).then(res => {
                     if (Util.isAjaxResOk(res)){
                         this.specialsListVisible = true;
                         this.anySpecialItemRemoved = false;
-                        this.specials = res.data.data.specials;
+                        this.specials = res.data.data;
                     }
                 });
             },
@@ -516,5 +541,69 @@
         width: 12.5%;
         float: left;
     }
+}
+
+
+.specialsListDialog{
+  .title-icon{
+    border-radius: 50%;
+    color: #fff;
+    background-color: #80dd57;
+    padding: 8px;
+  }
+  .tpItems{
+    display: flex;
+    padding: 0 15px;
+    .tpLeft, .tpRight{
+      width: 50%;
+    }
+    .tpItem{
+      width: 100%;
+      margin-bottom: 10px;
+      &:not(:last-child){
+        border-bottom: 1px solid #ddd;
+      }
+      .icon{
+        font-size: 17px;
+        color: #4EA5FE;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      img.icon-image {
+        margin-right: 6px;
+        width: 15px;
+      }
+      .itemLeft {
+        width: 120px;
+        display: inline-block;
+        font-size:14px;
+        font-weight:400;
+        color:rgba(138,147,161,1);
+        line-height:20px;
+        vertical-align: bottom;
+      }
+      .itemRight{
+        font-size:14px;
+        font-weight:400;
+        color:rgba(65,74,90,1);
+        line-height:20px;
+      }
+      .first{
+        font-size:16px;
+        font-weight:500;
+        color:rgba(65,74,90,1);
+        line-height:22px;
+      }
+    }
+  }
+}
+</style>
+<style>
+.specialsListDialog  .el-dialog__header{
+  border-bottom: 1px solid #ddd;
+}
+.specialsListDialog .el-dialog__body{
+  height: 57vh;
+  overflow-y: auto;
 }
 </style>

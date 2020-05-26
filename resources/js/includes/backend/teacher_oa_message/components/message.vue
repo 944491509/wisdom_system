@@ -362,6 +362,6 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   margin-right: 5px;
-  background-image: url(../assets/message-info.png) !important;
+  background-image: url(/assets/img/teacher/message-info.png) !important;
 }
 </style>

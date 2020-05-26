@@ -132,7 +132,7 @@ export default {
         height: 24px;
         width: 24px;
         background-size: contain;
-        background-image: url(../assets/icon-eye.png);
+        background-image: url(/assets/img/teacher/icon-eye.png);
       }
     }
   }

@@ -17,7 +17,7 @@ use App\Dao\Timetable\TimeSlotDao;
 
 class GradeAndYearUtil
 {
-    const DEFAULT_FORMAT_DATE = 'Y年m月d';
+    const DEFAULT_FORMAT_DATE = 'Y年m月d日';
     const DEFAULT_FORMAT_DATETIME = 'Y年m月d H时i分';
     const TIMEZONE_CN = 'Asia/Shanghai';
     // 和单双周相关
