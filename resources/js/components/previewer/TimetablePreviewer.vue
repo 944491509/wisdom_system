@@ -469,6 +469,7 @@
                             });
                             this.specials.splice(idx, 1);
                             this.anySpecialItemRemoved = true;
+                            this.$emit('timetable-refresh',{});
                         }else{
                           this.$notify({
                               title: '失败',
