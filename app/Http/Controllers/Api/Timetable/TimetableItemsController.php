@@ -71,9 +71,15 @@ class TimetableItemsController extends Controller
      */
     public function delete(Request $request){
         $dao = new TimetableItemDao();
-        $user = $this->userDao->getUserByUuid($request->get('user'));
-        $result = $dao->deleteItem($request->get('id'), $user);
-        return $result ? JsonBuilder::Success() : JsonBuilder::Error();
+        $timeTableId = $request->get('id');
+        $user = $request->user();
+        $result = $dao->deleteItem($timeTableId, $user);
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
+        } else {
+            return JsonBuilder::Error($msg);
+        }
     }
 
     /**

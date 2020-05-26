@@ -171,22 +171,56 @@ class TimetableItemDao
         return $found??false;
     }
 
+
+
     /**
-     * 删除
+     * 删除课程和相关的调课
      * @param $id
-     * @param User|null $doer
-     * @return bool|null
+     * @param User $user
+     * @return MessageBag
      */
-    public function deleteItem($id, $doer = null){
+    public function deleteItem($id, User $user){
+        $bag = new MessageBag();
         $item = $this->getItemById($id);
-        if($item){
-            if($doer){
-                // 记录下是谁删除的
-                $item->last_updated_by = $doer->id;
-                $item->save();
-            }
+        if(is_null($item)) {
+            $bag->setMessage('该课程已删除');
+            return $bag;
         }
-        return TimetableItem::where('id',$id)->delete();
+        try{
+            DB::beginTransaction();
+            // 记录下是谁删除的
+            $item->last_updated_by = $user->id;
+            $item->save();
+            // 判断当前的是课程还是调课
+            if($item->type == 0) {
+                // 删除调课
+                $switchingItems = TimetableItem::where('to_replace', $item->id)->get();
+                foreach ($switchingItems as $key => $val) {
+                    // 判断类型 调课
+                    if($val->type != TimetableItem::TYPE_SUPPLY) {
+                        // 调课与被调课的都要删除
+                        TimetableItem::where('id',$val->substitute_id)->delete();
+                    }
+                    TimetableItem::where('id',$val->id)->delete();
+                }
+                TimetableItem::where('id',$item->id)->delete();
+            } else {
+                // 判断代课还是调课
+                if($item->type != TimetableItem::TYPE_SUPPLY) {
+                    TimetableItem::where('id', $item->substitute_id)->delete();
+                }
+                TimetableItem::where('id', $item->id)->delete();
+            }
+
+            DB::commit();
+            $bag->setMessage('删除成功');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+            $bag->setCode(JsonBuilder::CODE_ERROR);
+        }
+        return $bag;
     }
 
     /**
@@ -1117,25 +1151,28 @@ class TimetableItemDao
      * @return MessageBag
      */
     public function affirmSave($data, $userId) {
+        // 查询当前课程
         $timetableItem = $this->getItemById($data['timetable_id']);
-        $timetableItemId = $timetableItem['id'];
-        unset($timetableItem['id']);
-        $timetableItem['building_id'] = $data['building_id'] ;
-        $timetableItem['room_id'] = $data['room_id'] ;
-        $timetableItem['teacher_id'] = $data['teacher_id'] ;
-        $timetableItem['to_replace'] = $timetableItemId ;
-        $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
-        $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
-        $timetableItem['last_updated_by'] = $userId;
-        $re = TimetableItem::create($timetableItem->toArray());
-        $bag = new MessageBag();
-        if($re) {
-            $bag->setMessage('调课成功');
-        } else {
-            $bag->setMessage('调课失败');
-            $bag->setCode(JsonBuilder::CODE_ERROR);
+        $map = [
+            'year' => $timetableItem['year'],
+            'term' => $timetableItem['term'],
+            'weekday_index' => $data['weekday_index'],
+            'time_slot_id' => $data['time_slot_id'],
+        ];
+        switch ($data['type']) {
+            case 1 : return $this->_restTeacherSave($timetableItem,$data, $userId);
+            case 2 :
+                // 查询要调的课
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $timetableItem['grade_id'])->first();
+                return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+            case 3 :
+                // 查询要调的课表
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $data['grade_id'])->first();
+                return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
         }
-        return $bag;
+
     }
 
 
@@ -1166,6 +1203,7 @@ class TimetableItemDao
             $bag->setMessage('当前课程不存在');
             return $bag;
         }
+
         if($timetableItem->teacher_id == $data['teacher_id']) {
             $bag->setMessage('课程表教师与要调课的教师是同一个人');
             return $bag;
@@ -1212,6 +1250,20 @@ class TimetableItemDao
             return $bag;
         }
         // 保存
+        return $this->_restTeacherSave($timetableItem, $data, $userId);
+
+    }
+
+
+    /**
+     * 代课保存
+     * @param $timetableItem
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _restTeacherSave(TimetableItem $timetableItem,$data,$userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         $timetableItemId = $timetableItem['id'];
         unset($timetableItem['id']);
         $timetableItem->building_id = $data['building_id'] ;
@@ -1310,7 +1362,21 @@ class TimetableItemDao
                 return $bag;
             }
         }
+         //保存
+        return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
 
+
+    /**
+     * 本班课节互换保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _timeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         try{
             DB::beginTransaction();
             if(!is_null($item)) {
@@ -1337,7 +1403,7 @@ class TimetableItemDao
             $newItem['to_special_datetime'] = $data['to_special_datetime'];
             $newItem['last_updated_by'] = $userId;
             $newItem['type'] = TimetableItem::TYPE_SUBSTITUTION; // 调课 本班课节互换
-
+            $newItem['initiative'] = TimetableItem::INITIATIVE; // 主动
             $s1 = TimetableItem::create($newItem);
 
             $timetableItemId = $timetableItem['id'];
@@ -1350,6 +1416,7 @@ class TimetableItemDao
             $timetableItem['last_updated_by'] = $userId;
             $timetableItem['type'] = TimetableItem::TYPE_SUBSTITUTION; // 调课 本班课节互换
             $timetableItem['substitute_id'] = $s1->id;
+            $timetableItem['initiative'] = TimetableItem::PASSIVITY; // 被动
 
             $s2 = TimetableItem::create($timetableItem->toArray());
             TimetableItem::where('id',$s1->id)->update(['substitute_id'=>$s2->id]);
@@ -1469,6 +1536,21 @@ class TimetableItemDao
                 return $bag;
             }
         }
+        // 保存
+        return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
+
+
+    /**
+     * 其他班级调课保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _gradeTimeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
 
         try{
             DB::beginTransaction();
@@ -1524,8 +1606,10 @@ class TimetableItemDao
             $bag->setMessage($msg);
         }
         return $bag;
-
     }
+
+
+
 
 
     /**

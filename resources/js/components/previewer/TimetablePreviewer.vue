@@ -352,7 +352,7 @@
                             });
                             this.specialCaseFormVisible = false;
                         }else{
-                            if(params.type == 1){
+                            if(res.data.code == 1001){
                                 this.$confirm(res.data.message, '提示', {
                                     confirmButtonText: '继续保存',
                                     cancelButtonText: '取消',
@@ -469,6 +469,7 @@
                             });
                             this.specials.splice(idx, 1);
                             this.anySpecialItemRemoved = true;
+                            this.$emit('timetable-refresh',{});
                         }else{
                           this.$notify({
                               title: '失败',
