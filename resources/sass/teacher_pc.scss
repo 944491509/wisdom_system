@@ -223,6 +223,18 @@
     .showDetail {
         float: right;
         margin-right: 20px;
+        .upload{
+            background-color: #66D9FF;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+        .uploaded-text{
+            color: #8A93A1;
+            font-size: 12px;
+        }
     }
 
     .showDetail img {
