@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Api\Study;
 
 
 use App\Dao\Schools\GradeDao;
+use App\Models\Timetable\TimetableItem;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
@@ -259,6 +260,7 @@ class TimetableController extends Controller
             $weekdayIndex = $time->dayOfWeekIso;  // 周几
             $item = $timetableItemDao->getItemsByWeekDayIndexForTeacherView($weekdayIndex, $year, $term, $oddWeek, $user->id);
             $course = $this->slotDataProcessing($item, $forStudyingSlots,$user->id,$weekdayIndex, $time);
+//            dump($course);
             $table = [
                 'week_index' => CalendarDay::GetWeekDayIndex($weekdayIndex),
                 'date' => $time->format('m月d日'),
@@ -269,6 +271,7 @@ class TimetableController extends Controller
             ];
 
         }
+//        dd($timetable);
         $weekdayIndex = $date->dayOfWeekIso;  // 周几
         $result = [
             'date' => $date,
@@ -339,7 +342,6 @@ class TimetableController extends Controller
             $course = (object)[];
             // 判断当前课节是否在课程里
             $timeSlotIds = array_column($item,'time_slot_id');
-
             if(in_array($value->id, $timeSlotIds)){
                 foreach ($item as $k => $val) {
                     // 当前时间有课
@@ -352,6 +354,7 @@ class TimetableController extends Controller
                         }
                         // 查询当前课是否有调课
                         $specials = $timetableDao->getTimeTableItemByToReplace($val['id'], $time);
+
                         if(is_null($specials)) {
                             $course = [
                                 'time_table_id' => $val['id'],
@@ -373,12 +376,14 @@ class TimetableController extends Controller
                             ];
                         } else {
                             $date = $time->toDateTimeString();
+
                             // 当前的调课是同个教师 调课时间段 当前课节  同一天
                             if($specials->teacher_id == $teacherId  && $specials->at_special_datetime <= $date && $specials->to_special_datetime >= $date && $specials->time_slot_id == $value->id && $specials->weekday_index == $val['weekday_index']) {
+
                                 $course = [
                                     'time_table_id' => $specials['id'],
                                     'name' => $specials->course->name,
-                                    'room' => $specials->building->name.$specials->room->description,
+                                    'room' => $specials->building->name.$specials->room->name,
                                     'teacher' => $specials->teacher->name,
                                     'grade' => [
                                         [
@@ -393,23 +398,44 @@ class TimetableController extends Controller
                                     'switching' => true,
                                     'old_course' => $specials->course->name,
                                 ];
+
+
                             }
+
                         }
                     }
                 }
             } else {
                 $specials = $timetableDao->getTimeTableItemByTimeSlotId($value->id,$teacherId, $weekdayIndex, $time);
+
+
                 if(!is_null($specials)) {
+
+                    if($specials['type'] == 0 || $specials['type'] == TimetableItem::TYPE_SUPPLY) {
+
+                        $room = $specials->building->name.$specials->room->name;
+                    } else {
+
+//                        $timetable = $timetableDao->getItemById($specials->substitute_id);
+
+
+//                        $room = $timetable->room_id ? $timetable->building->name.$timetable->room->name : '-';
+
+                    }
+                    $room = $specials->building->name.$specials->room->name;
                     // 查询当前老师在该班级上传的资料
                     $types = $dao->getMaterialTypeByCourseId($specials['course_id'],$specials['teacher_id'],$specials['grade_id']);
+
+
                     $label = [];
                     foreach ($types as $v) {
                         $label[] = $v->materialType->name;
                     }
+
                     $course = [
                         'time_table_id' => $specials['id'],
                         'name' => $specials->course->name,
-                        'room' => $specials->building->name.$specials->room->description,
+                        'room' => $room,
                         'teacher' => $specials->teacher->name,
                         'grade' => [
                             [
@@ -430,7 +456,6 @@ class TimetableController extends Controller
 
             $timetable[] = $course;
         }
-
         return $timetable;
     }
 
