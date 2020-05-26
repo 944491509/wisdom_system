@@ -1257,15 +1257,60 @@ class TimetableItemDao
             return $bag;
         }
 
-        // 查询要调的课表
+        // 查询当前老师在要调的时间是否有课
         $map = [
-            'time_slot_id' => $data['time_slot_id'],
-            'grade_id' => $timetableItem['grade_id'],
-            'weekday_index' => $data['weekday_index'],
-            'year' => $timetableItem['year'],
-            'term' => $timetableItem['term'],
+            ['weekday_index', '=', $data['weekday_index']],
+            ['time_slot_id', '=', $data['time_slot_id']],
+            ['year', '=', $timetableItem['year']] ,
+            ['term', '=', $timetableItem['term']],
         ];
-        $item = TimetableItem::where($map)->first();
+        $oneself = TimetableItem::where($map)
+            ->where('teacher_id', $timetableItem['teacher_id'])
+            ->where('grade_id', '<>', $timetableItem['grade_id'])
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0)
+                    ->orWhere(function ($que) use($data) {
+                        $que->where('to_replace', '>', 0)
+                            ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                            ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                    });
+
+            })
+            ->first();
+        if(!is_null($oneself)) {
+            $bag->setCode(1001);
+            $bag->setMessage('当前时间'.$oneself->teacher->name.'老师在'.$oneself->grade->name.'有课程');
+            return $bag;
+        }
+
+        // 查询要调的课
+        $item = TimetableItem::where($map)->where('grade_id', $timetableItem['grade_id'])->first();
+        // 判断被调老师在其他班有课程
+        $map = [
+            ['weekday_index', '=', $timetableItem['weekday_index']],
+            ['time_slot_id', '=', $timetableItem['time_slot_id']],
+            ['year', '=', $timetableItem['year']] ,
+            ['term', '=', $timetableItem['term']],
+            ['teacher_id', '=', $item['teacher_id']],
+            ['grade_id', '<>', $item['grade_id']],
+        ];
+        if(!is_null($item)) {
+            $other = TimetableItem::where($map)
+                ->where(function ($que) use($data) {
+                    $que->where('to_replace', '=', 0)
+                        ->orWhere(function ($que) use($data) {
+                            $que->where('to_replace', '>', 0)
+                                ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                                ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                        });
+                })->first();
+            if(!is_null($other)) {
+                $bag->setCode(1001);
+                $bag->setMessage('当前时间'.$other->teacher->name.'老师在'.$other->grade->name.'有课程');
+                return $bag;
+            }
+        }
+
         try{
             DB::beginTransaction();
             if(!is_null($item)) {
