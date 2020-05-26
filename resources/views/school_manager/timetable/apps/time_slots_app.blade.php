@@ -190,7 +190,7 @@
                 <el-form-item label="名称">
                     <el-input v-model="currentTimeSlot.name"></el-input>
                 </el-form-item>
-                <el-form-item label="时间段">
+                <el-form-item label="时间">
                     <el-time-picker
                             style="width:49%;"
                             v-model="currentTimeSlot.from"
@@ -207,7 +207,7 @@
                             value-format="HH:mm"
                             :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
                             @change="toChangedHandler"
-                            placeholder="截至时间">
+                            placeholder="截止时间">
                     </el-time-picker>
                 </el-form-item>
                 <el-form-item label="类型">
@@ -227,7 +227,7 @@
                     </el-switch>
                 </el-form-item>
                 <el-form-item v-if="mode == 'edit'">
-                    <p><span style="color:red;">* &nbsp; </span>&nbsp;注: 已关联课程表，不可删除</p>
+                    <p><span style="color:red;font-size: 22px;">* &nbsp; </span>&nbsp;注: 已关联课程表，不可删除</p>
                 </el-form-item>
                 <el-form-item style="text-align: center;
     margin-top: 200px;">
