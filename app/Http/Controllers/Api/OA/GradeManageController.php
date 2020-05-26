@@ -30,6 +30,7 @@ class GradeManageController extends Controller
         $yearManger = $teacher->yearManger;
 
         $data = [];
+
         if ($yearManger) {
             // 年级主任
             $gradeDao = new GradeDao;
