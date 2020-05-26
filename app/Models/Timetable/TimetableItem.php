@@ -23,7 +23,8 @@ class TimetableItem extends Model
         'year', 'term', 'course_id', 'time_slot_id', 'building_id', 'room_id',
         'teacher_id', 'grade_id', 'weekday_index', 'repeat_unit','to_replace',
         'at_special_datetime', 'to_special_datetime', 'last_updated_by',
-        'school_id', 'published', 'available_only', 'type' , 'substitute_id'
+        'school_id', 'published', 'available_only', 'type' , 'substitute_id',
+        'initiative',
     ];
 
     protected $hidden = [
