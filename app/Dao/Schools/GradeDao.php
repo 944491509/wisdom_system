@@ -182,12 +182,15 @@ class GradeDao
     }
 
     /**
-     * 根据年 获取多个班级
-     * @param $ids
-     * @return Grade
+     * 获取年级下的班级
+     * @param $schoolId
+     * @param $year
+     * @return mixed
      */
-    public function getGradesByYear($year)
+    public function gradeListByYear($schoolId, $year)
     {
-        return Grade::where('year', $year)->get();
+        $map   = ['school_id' => $schoolId, 'year' => $year];
+        $field = ['id', 'name', 'year'];
+        return Grade::where($map)->select($field)->get();
     }
 }
