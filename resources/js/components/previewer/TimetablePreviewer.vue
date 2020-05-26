@@ -120,7 +120,7 @@
               </div>
               <div class="tpItem">
                 <img class="icon-image" src="/assets/img/previewer/resource.svg" />
-                <span class="itemLeft">课程开源:</span>
+                <span class="itemLeft">课程来源:</span>
                 <span class="temRight">{{special.course_source}}</span>
               </div>
             </div>
