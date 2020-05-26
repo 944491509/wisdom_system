@@ -69,10 +69,10 @@
         </el-dialog>
         <el-dialog class="specialsListDialog" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
           <div slot="title"><i class="fa fa-exchange title-icon"></i> 调课记录表</div>
-          <div class="tpItems" v-for="special in specials" :key="special.timetable_id">
+          <div class="tpItems" v-for="(special,index) in specials" :key="special.timetable_id">
             <div class="tpLeft">
               <div class="tpItem">
-                <img class="icon-image" src="/assets/img/previewer/type.png" />
+                <img class="icon-image" src="/assets/img/previewer/type.svg" />
                 <span class="itemLeft first">调课类型:</span>
                 <span class="temRight first">{{special.type}}</span>
               </div>
@@ -99,7 +99,7 @@
             </div>
             <div class="tpRight">
               <div class="tpItem">
-                <img class="icon-image" src="/assets/img/previewer/method.png" />
+                <img class="icon-image" src="/assets/img/previewer/method.svg" />
                 <span class="itemLeft first" >调课方式:</span>
                 <span class="temRight first">{{special.initiative}}</span>
               </div>
@@ -109,21 +109,22 @@
                 <span class="temRight">{{special.course}}</span>
               </div>
               <div class="tpItem">
-                <img class="icon-image" src="/assets/img/previewer/room.png" />
+                <img class="icon-image" src="/assets/img/previewer/room.svg" />
                 <span class="itemLeft">上课地点:</span>
                 <span class="temRight">{{special.room}}</span>
               </div>
               <div class="tpItem">
-                <img class="icon-image" src="/assets/img/previewer/teacher.png" />
+                <img class="icon-image" src="/assets/img/previewer/teacher.svg" />
                 <span class="itemLeft">授课老师:</span>
                 <span class="temRight">{{special.teacher}}</span>
               </div>
               <div class="tpItem">
-                <img class="icon-image" src="/assets/img/previewer/resource.png" />
+                <img class="icon-image" src="/assets/img/previewer/resource.svg" />
                 <span class="itemLeft">课程开源:</span>
                 <span class="temRight">{{special.course_source}}</span>
               </div>
             </div>
+            <label class="delete-label"><i class="delete-icon fa fa-trash" @click="deleteSpecial(index,special)"></i></label>
           </div>
         </el-dialog>
 
@@ -450,14 +451,14 @@
                 });
             },
             // 删除调课项
-            handleSpecialCaseDelete: function(idx, row){
+            deleteSpecial: function(idx, row){
                 this.$confirm('此操作将永久删除该调课记录, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     axios.post(
-                        Constants.API.TIMETABLE.DELETE_ITEM,{id: row.id, user: this.userUuid}
+                        Constants.API.TIMETABLE.DELETE_ITEM,{id: row.timetable_id, user: this.userUuid}
                     ).then(res=>{
                         if(Util.isAjaxResOk(res)){
                             this.$notify({
@@ -468,6 +469,13 @@
                             });
                             this.specials.splice(idx, 1);
                             this.anySpecialItemRemoved = true;
+                        }else{
+                          this.$notify({
+                              title: '失败',
+                              message: '删除失败',
+                              type: 'error',
+                              position: 'bottom-right'
+                          });
                         }
                     });
                 }).catch(() => {
@@ -554,15 +562,30 @@
   .tpItems{
     display: flex;
     padding: 0 15px;
+    &:not(:last-child){
+      border-bottom: 1px solid #ddd;
+    }
     .tpLeft, .tpRight{
       width: 50%;
+    }
+    label.delete-label {
+      opacity: 0;
+      background-color: #FA3D3D;
+      align-self: self-start;
+      padding: 2px 13px;
+      color: #fff;
+      font-size: 15px;
+      border-radius: 11%;
+    }
+    &:hover{
+      label.delete-label{
+          opacity: 1;
+      }
     }
     .tpItem{
       width: 100%;
       margin-bottom: 10px;
-      &:not(:last-child){
-        border-bottom: 1px solid #ddd;
-      }
+
       .icon{
         font-size: 17px;
         color: #4EA5FE;
