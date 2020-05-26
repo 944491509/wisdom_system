@@ -30,7 +30,7 @@ class GradeManageController extends Controller
         if ($yearManger) {
             // 年级主任
             $gradeDao = new GradeDao;
-            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(),$yearManger->year);
+            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
             $grades = [];
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;
@@ -43,8 +43,8 @@ class GradeManageController extends Controller
 
         $data = [];
         foreach ($grades as $key => $val) {
-             $data[$key]['grade_id'] = $val->grade->id;
-             $data[$key]['name'] = $val->grade->name;
+             $data[$key]['grade_id'] = $val->grade->id ?? '';
+             $data[$key]['name'] = $val->grade->name ?? '';
 
              $data[$key]['image'] = [];
              foreach ($val->grade->gradeResource as $k => $v) {
@@ -110,6 +110,7 @@ class GradeManageController extends Controller
             // 年级主任
             $gradeDao = new GradeDao;
             $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId() ,$yearManger->year);
+
             $grades = [];
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;
@@ -121,8 +122,8 @@ class GradeManageController extends Controller
         }
         $data = [];
         foreach ($grades as $key => $val) {
-            $data[$key]['grade_id'] = $val->grade->id;
-            $data[$key]['name'] = $val->grade->name;
+            $data[$key]['grade_id'] = $val->grade->id ?? '';
+            $data[$key]['name'] = $val->grade->name ?? '';
         }
 
         return JsonBuilder::Success($data);
