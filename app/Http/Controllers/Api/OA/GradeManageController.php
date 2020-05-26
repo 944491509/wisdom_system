@@ -30,7 +30,7 @@ class GradeManageController extends Controller
         if ($yearManger) {
             // 年级主任
             $gradeDao = new GradeDao;
-            $yearGrades = $gradeDao->getGradesByYear($yearManger->year);
+            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
             $grades = [];
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;
@@ -40,7 +40,7 @@ class GradeManageController extends Controller
             $dao = new GradeManagerDao;
             $grades = $dao->getAllGradesByAdviserId($teacher->id);
         }
-        
+
         $data = [];
         foreach ($grades as $key => $val) {
              $data[$key]['grade_id'] = $val->grade->id;
@@ -109,7 +109,7 @@ class GradeManageController extends Controller
         if ($yearManger) {
             // 年级主任
             $gradeDao = new GradeDao;
-            $yearGrades = $gradeDao->getGradesByYear($yearManger->year);
+            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
             $grades = [];
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;

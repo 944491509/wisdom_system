@@ -388,7 +388,7 @@ class SignInGradeController extends Controller
         }elseif (!is_null($user->yearManger)) {
             $yearManger = $user->yearManger;
             $gradeDao = new GradeDao;
-            $yearGrades = $gradeDao->getGradesByYear($yearManger->year);
+            $yearGrades = $gradeDao->gradeListByYear($user->getSchoolId(), $yearManger->year);
             $result = [];
             foreach ($yearGrades as $key => $val) {
                 $result[] = [
