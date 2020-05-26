@@ -23,7 +23,8 @@ class TimetableItem extends Model
         'year', 'term', 'course_id', 'time_slot_id', 'building_id', 'room_id',
         'teacher_id', 'grade_id', 'weekday_index', 'repeat_unit','to_replace',
         'at_special_datetime', 'to_special_datetime', 'last_updated_by',
-        'school_id', 'published', 'available_only', 'type' , 'substitute_id'
+        'school_id', 'published', 'available_only', 'type' , 'substitute_id',
+        'initiative',
     ];
 
     protected $hidden = [
@@ -35,7 +36,7 @@ class TimetableItem extends Model
     const TYPE_SUBSTITUTION_NOTHING = 3;  // 调课 他班互换
     const TYPE_SUPPLY_TEXT = '教师代课';
     const TYPE_SUBSTITUTION_TEXT = '本班课程课节互换';
-    const TYPE_SUBSTITUTION_NOTHING_TEXT = '本班课程课节互换';
+    const TYPE_SUBSTITUTION_NOTHING_TEXT = '其他班互换课';
 
     const PASSIVITY = 0; // 被动调课
     const INITIATIVE = 1; // 主动调课
