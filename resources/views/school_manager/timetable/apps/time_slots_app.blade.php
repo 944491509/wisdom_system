@@ -197,7 +197,7 @@
                             format="HH:mm"
                             value-format="HH:mm"
                             :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
-                            placeholder="起始时间">
+                            placeholder="开始时间">
                     </el-time-picker>
                     <el-time-picker
                             arrow-control
@@ -207,7 +207,7 @@
                             value-format="HH:mm"
                             :picker-options="{selectableRange: '05:00:00 - 22:00:00'}"
                             @change="toChangedHandler"
-                            placeholder="结束时间">
+                            placeholder="截至时间">
                     </el-time-picker>
                 </el-form-item>
                 <el-form-item label="类型">
@@ -227,11 +227,12 @@
                     </el-switch>
                 </el-form-item>
                 <el-form-item v-if="mode == 'edit'">
-                    <p><span style="color:red;">*</span>注: 已关联课程表，不可删除</p>
+                    <p><span style="color:red;">* &nbsp; </span>&nbsp;注: 已关联课程表，不可删除</p>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="onSubmit">保存</el-button>
-                    <el-button v-if="mode == 'edit'" type="danger" @click="deleteItem">删除</el-button>
+                <el-form-item style="text-align: center;
+    margin-top: 200px;">
+                    <el-button type="primary" @click="onSubmit" style="padding: 13px 39px;">保存</el-button>
+                    <el-button v-if="mode == 'edit'" type="danger" @click="deleteItem" style="padding: 13px 39px;">删除</el-button>
                 </el-form-item>
             </el-form>
         </div>
