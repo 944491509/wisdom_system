@@ -29,11 +29,12 @@ class Rest
     private $Batch;  //时间sh
     private $BodyType = "xml";//包体格式，可填值：json 、xml
     private $enabeLog = true; //日志开关。可填值：true、
-    private $Filename = "../log.txt"; //日志文件
+    private $Filename; //日志文件
     private $Handle;
 
     function __construct($ServerIP, $ServerPort, $SoftVersion)
     {
+        $this->Filename    = storage_path('logs/sms/log.txt');
         $this->Batch       = date("YmdHis");
         $this->ServerIP    = $ServerIP;
         $this->ServerPort  = $ServerPort;
@@ -94,7 +95,7 @@ class Rest
     {
         //初始化curl
         $ch = curl_init();
-        //参数设置  
+        //参数设置
         $res = curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -139,14 +140,14 @@ class Rest
                   </SubAccount>";
         }
         $this->showlog("request body = " . $body);
-        // 大写的sig参数  
+        // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
         // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/SubAccounts?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐号Id + 英文冒号 + 时间戳
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头 
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发请求
         $result = $this->curl_post($url, $body, $header);
@@ -159,7 +160,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -180,7 +181,7 @@ class Rest
         $body = "
             <SubAccount>
               <appId>$this->AppId</appId>
-              <startNo>$startNo</startNo>  
+              <startNo>$startNo</startNo>
               <offset>$offset</offset>
             </SubAccount>";
         if ($this->BodyType == "json") {
@@ -189,19 +190,19 @@ class Rest
             $body = "
             <SubAccount>
               <appId>$this->AppId</appId>
-              <startNo>$startNo</startNo>  
+              <startNo>$startNo</startNo>
               <offset>$offset</offset>
             </SubAccount>";
         }
         $this->showlog("request body = " . $body);
-        // 大写的sig参数  
+        // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
         // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/GetSubAccounts?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头 
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -214,7 +215,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -242,14 +243,14 @@ class Rest
             </SubAccount>";
         }
         $this->showlog("request body = " . $body);
-        // 大写的sig参数  
+        // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
         // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/QuerySubAccountByName?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头 
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -262,7 +263,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -293,21 +294,21 @@ class Rest
                 $data = $data . "<data>" . $datas[$i] . "</data>";
             }
             $body = "<TemplateSMS>
-                    <to>$to</to> 
+                    <to>$to</to>
                     <appId>$this->AppId</appId>
                     <templateId>$tempId</templateId>
                     <datas>" . $data . "</datas>
                   </TemplateSMS>";
         }
         $this->showlog("request body = " . $body);
-        // 大写的sig参数 
+        // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL        
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/SMS/TemplateSMS?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -320,7 +321,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         //重新装填数据
         if ($datas->statusCode == 0) {
@@ -364,7 +365,7 @@ class Rest
             $body = "<LandingCall>
                     <to>$to</to>
                     <mediaName>$mediaName</mediaName>
-                    <mediaTxt>$mediaTxt</mediaTxt> 
+                    <mediaTxt>$mediaTxt</mediaTxt>
                     <appId>$this->AppId</appId>
                     <displayNum>$displayNum</displayNum>
                     <playTimes>$playTimes</playTimes>
@@ -380,12 +381,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/Calls/LandingCalls?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -398,7 +399,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -439,12 +440,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/Calls/VoiceVerify?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -457,7 +458,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -483,12 +484,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/ivr/dial?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/xml", "Content-Type:application/xml;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -497,7 +498,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -527,12 +528,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/BillRecords?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -545,7 +546,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -562,12 +563,12 @@ class Rest
         }
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/AccountInfo?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, "", $header, 0);
@@ -580,7 +581,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -602,31 +603,31 @@ class Rest
         } else {
             $body = "<Request>
                     <appId>$this->AppId</appId>
-                    <templateId>$templateId</templateId>  
+                    <templateId>$templateId</templateId>
                   </Request>";
         }
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/SMS/QuerySMSTemplate?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
         $this->showlog("response body = " . $result);
         if ($this->BodyType == "json") {//JSON格式
             $datas = json_decode($result);
-        } else { //xml格式 
+        } else { //xml格式
             $datas = simplexml_load_string(trim($result, " \t\n\r"));
         }
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -656,12 +657,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/ivr/call?sig=$sig&callid=$callid";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -674,7 +675,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -692,12 +693,12 @@ class Rest
         }
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/CallResult?sig=$sig&callsid=$callSid";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/$this->BodyType;charset=utf-8", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, "", $header, 0);
@@ -710,7 +711,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }
@@ -732,12 +733,12 @@ class Rest
         $this->showlog("request body = " . $body);
         // 大写的sig参数
         $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
-        // 生成请求URL  
+        // 生成请求URL
         $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/Calls/MediaFileUpload?sig=$sig&appid=$this->AppId&filename=$filename";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
         $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
-        // 生成包头  
+        // 生成包头
         $header = array("Accept:application/$this->BodyType", "Content-Type:application/octet-stream", "Authorization:$authen");
         // 发送请求
         $result = $this->curl_post($url, $body, $header);
@@ -750,7 +751,7 @@ class Rest
         //  if($datas == FALSE){
 //            $datas = new stdClass();
 //            $datas->statusCode = '172003';
-//            $datas->statusMsg = '返回包体错误'; 
+//            $datas->statusMsg = '返回包体错误';
 //        }
         return $datas;
     }

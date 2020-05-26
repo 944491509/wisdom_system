@@ -385,7 +385,18 @@ class SignInGradeController extends Controller
                     'grade_name' => $item->name
                 ];
             }
-        } else {
+        }elseif (!is_null($user->yearManger)) {
+            $yearManger = $user->yearManger;
+            $gradeDao = new GradeDao;
+            $yearGrades = $gradeDao->gradeListByYear($user->getSchoolId(), $yearManger->year);
+            $result = [];
+            foreach ($yearGrades as $key => $val) {
+                $result[] = [
+                    'grade_id' => $val->id,
+                    'grade_name' => $val->name,
+                ];
+            }
+        }else {
             $return = $gradeManagerDao->getGradeManagerByAdviserId($user->id);
             $result = [];
             foreach ($return as $key => $item) {

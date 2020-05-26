@@ -78,7 +78,7 @@ export default {
           page: this.pagination.page
         }).then(res => {
           this.list = res.data.data;
-          this.pagination.pageCount = res.data.lastPage;
+          this.pagination.pageCount = Math.ceil(res.data.total / 20);
         });
       } else {
         CourseApi.excute("list", {
@@ -86,7 +86,7 @@ export default {
           type: CourseMode[this.mode].code
         }).then(res => {
           this.list = res.data.data;
-          this.pagination.pageCount = res.data.lastPage;
+          this.pagination.pageCount = Math.ceil(res.data.total / 20);
         });
       }
     },

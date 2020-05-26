@@ -508,7 +508,15 @@ class TimetableController extends Controller
         $gradeDao = new GradeDao();
         $grade = $gradeDao->getGradeById($gradeId);
         $gradeList = $gradeDao->gradeListByYear($grade->school_id, $grade->year);
-        return JsonBuilder::Success($gradeList);
+        $result = [];
+        foreach ($gradeList as $key => $value) {
+            $result[] = [
+                'grade_id' => $value->id,
+                'name' => $value->name,
+                'year' => $value->year
+            ];
+        }
+        return JsonBuilder::Success($result);
     }
 
 

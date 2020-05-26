@@ -35,6 +35,8 @@ use Illuminate\Support\Facades\Cache;
 use Kodeine\Acl\Traits\HasRole;
 use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\NetworkDisk\Media;
+use App\Models\Schools\YearManager;
+
 use function foo\func;
 
 class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
@@ -525,5 +527,14 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
      */
     public function gradeUserOneInfo(){
         return $this->hasOne(GradeUser::class);
+    }
+
+    /**
+     * 年级主任
+     * @return void
+     */
+    public function yearManger()
+    {
+        return $this->hasOne(YearManager::class);
     }
 }
