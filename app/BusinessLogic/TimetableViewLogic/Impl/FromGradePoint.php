@@ -7,6 +7,7 @@
  */
 
 namespace App\BusinessLogic\TimetableViewLogic\Impl;
+use App\Models\Timetable\TimetableItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -37,6 +38,7 @@ class FromGradePoint extends AbstractPointView
             $re = $this->timetableItemDao->getItemsByWeekDayIndex(
                 $weekDayIndex, $this->year, $this->term, $this->weekType, $this->gradeId
             );
+
             // 查询是否有调课
             foreach ($re as $key => $val) {
                 if(!empty($val)) {
@@ -45,29 +47,45 @@ class FromGradePoint extends AbstractPointView
                         ['to_special_datetime', '>=', $today]
                     ];
                     $res = $this->timetableItemDao->getTimetable($map);
+
                     if(count($res) >0) {
-                        $re[$key]['specials'] = array_column($res->toArray(),'id');
+                        $specials = [];
+                        foreach ($res as $k => $item) {
+
+                            // 判断类型 代课
+                            if($item->type == TimetableItem::TYPE_SUPPLY) {
+                                $specials[$k] = $item->id;
+                            } else {
+                                // 调课 课程互换
+                                $specials[$k] = $item->substitute_id;
+                            }
+
+                        }
+
+                        $re[$key]['specials'] = $specials;
                     }
+                }
+                else {
+                    // 查询当前时间没有课 被调来来一节课
+                        $map = [
+                            ['to_replace', '>', 0],
+                            ['to_special_datetime', '>=', $today],
+                            ['time_slot_id', '=', $key],
+                            ['weekday_index','=',$weekDayIndex],
+                            ['grade_id', '=', $this->gradeId],
+                            ['year', '=', $this->year],
+                            ['term', '=', $this->term],
+                        ];
+                        $item = TimetableItem::where($map)->first();
+                        if(!is_null($item)) {
+                            $re[$key]['specials'] = [$item->id];
+                        }
                 }
             }
 
             $timetable[] = $re;
         }
-        // 检查从当前时刻起的特殊情况, 主要就是调课
 
-//        $specialCases = $this->timetableItemDao->getSpecialsAfterToday(
-//            $this->year, $this->term, $this->gradeId, $today
-//        );
-//
-//        $specialKeys = array_keys($specialCases);
-//        foreach ($timetable as $idx=>$column) {
-//            foreach ($column as $key=>$item) {
-//                if(!empty($item) && in_array($item['id'], $specialKeys)){
-//                    // 在 specials 放入所有调课的特殊 item 的 id 值数组
-//                    $timetable[$idx][$key]['specials'] = $specialCases[$item['id']];
-//                }
-//            }
-//        }
         return empty($timetable) ? '' : $timetable;
     }
 }
