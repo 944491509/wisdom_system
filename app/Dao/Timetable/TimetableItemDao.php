@@ -1114,25 +1114,28 @@ class TimetableItemDao
      * @return MessageBag
      */
     public function affirmSave($data, $userId) {
+        // 查询当前课程
         $timetableItem = $this->getItemById($data['timetable_id']);
-        $timetableItemId = $timetableItem['id'];
-        unset($timetableItem['id']);
-        $timetableItem['building_id'] = $data['building_id'] ;
-        $timetableItem['room_id'] = $data['room_id'] ;
-        $timetableItem['teacher_id'] = $data['teacher_id'] ;
-        $timetableItem['to_replace'] = $timetableItemId ;
-        $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
-        $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
-        $timetableItem['last_updated_by'] = $userId;
-        $re = TimetableItem::create($timetableItem->toArray());
-        $bag = new MessageBag();
-        if($re) {
-            $bag->setMessage('调课成功');
-        } else {
-            $bag->setMessage('调课失败');
-            $bag->setCode(JsonBuilder::CODE_ERROR);
+        $map = [
+            'year' => $timetableItem['year'],
+            'term' => $timetableItem['term'],
+            'weekday_index' => $data['weekday_index'],
+            'time_slot_id' => $data['time_slot_id'],
+        ];
+        switch ($data['type']) {
+            case 1 : return $this->_restTeacherSave($timetableItem,$data, $userId);
+            case 2 :
+                // 查询要调的课
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $timetableItem['grade_id'])->first();
+                return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+            case 3 :
+                // 查询要调的课表
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $data['grade_id'])->first();
+                return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
         }
-        return $bag;
+
     }
 
 
@@ -1163,6 +1166,7 @@ class TimetableItemDao
             $bag->setMessage('当前课程不存在');
             return $bag;
         }
+
         if($timetableItem->teacher_id == $data['teacher_id']) {
             $bag->setMessage('课程表教师与要调课的教师是同一个人');
             return $bag;
@@ -1209,6 +1213,20 @@ class TimetableItemDao
             return $bag;
         }
         // 保存
+        return $this->_restTeacherSave($timetableItem, $data, $userId);
+
+    }
+
+
+    /**
+     * 代课保存
+     * @param $timetableItem
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _restTeacherSave(TimetableItem $timetableItem,$data,$userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         $timetableItemId = $timetableItem['id'];
         unset($timetableItem['id']);
         $timetableItem->building_id = $data['building_id'] ;
@@ -1307,7 +1325,21 @@ class TimetableItemDao
                 return $bag;
             }
         }
+         //保存
+        return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
 
+
+    /**
+     * 本班课节互换保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _timeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
         try{
             DB::beginTransaction();
             if(!is_null($item)) {
@@ -1466,6 +1498,21 @@ class TimetableItemDao
                 return $bag;
             }
         }
+        // 保存
+        return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
+
+
+    /**
+     * 其他班级调课保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _gradeTimeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
 
         try{
             DB::beginTransaction();
@@ -1521,8 +1568,10 @@ class TimetableItemDao
             $bag->setMessage($msg);
         }
         return $bag;
-
     }
+
+
+
 
 
     /**
