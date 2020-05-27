@@ -3,32 +3,27 @@
 
 namespace App\Http\Controllers\Api\Cloud;
 
-use App\User;
-use Exception;
-use Carbon\Carbon;
-use App\Models\School;
+use App\Dao\AttendanceSchedules\AttendancesDao;
+use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
+use App\Dao\FacilityManage\FacilityDao;
+use App\Dao\Schools\GradeResourceDao;
+use App\Dao\Students\StudentProfileDao;
+use App\Dao\Timetable\TimeSlotDao;
+use App\Dao\Timetable\TimetableItemDao;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Cloud\CloudRequest;
 use App\Models\Acl\Role;
+use App\Models\AttendanceSchedules\AttendancesDetail;
+use App\Models\School;
+use App\Models\Schools\Facility;
+use App\Models\Students\StudentProfile;
+use App\Models\Users\UserCodeRecord;
+use App\ThirdParty\CloudOpenApi;
 use App\Utils\JsonBuilder;
+use App\Utils\Time\GradeAndYearUtil;
+use Carbon\Carbon;
 use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
-use App\Models\Schools\Facility;
-use App\ThirdParty\CloudOpenApi;
-use App\Dao\Timetable\TimeSlotDao;
-use App\Http\Controllers\Controller;
-use App\Models\Users\UserCodeRecord;
-use App\Utils\Time\GradeAndYearUtil;
-use App\Dao\Schools\GradeResourceDao;
-use App\Dao\FacilityManage\FacilityDao;
-use App\Dao\Students\StudentProfileDao;
-use App\Dao\Timetable\TimetableItemDao;
-use App\Models\Students\StudentProfile;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Cloud\CloudRequest;
-use App\Dao\AttendanceSchedules\AttendancesDao;
-use Endroid\QrCode\Exception\InvalidPathException;
-use App\Models\AttendanceSchedules\AttendancesDetail;
-use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
-
 use Illuminate\Support\Facades\Redis;
 
 class CloudController extends Controller
@@ -225,7 +220,7 @@ class CloudController extends Controller
      * 生成签到二维码
      * @param CloudRequest $request
      * @return string
-     * @throws InvalidPathException
+     * @throws \Endroid\QrCode\Exception\InvalidPathException
      */
     public function getQrCode(CloudRequest $request)
     {
@@ -236,42 +231,51 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        /**
-         * @var  Facility $facility
-         */
-        $room = $facility->room;
-        $timeSlotDao = new TimeSlotDao;
+        $res = Redis::get('qrcode:'.$code);
+        if(is_null($res)) {
+            /**
+             * @var  Facility $facility
+             */
+            $room = $facility->room;
+            $timeSlotDao = new TimeSlotDao;
 
-        $item = $timeSlotDao->getItemByRoomForNow($room);
-        if (empty($item)) {
-            return JsonBuilder::Error('暂无课程');
+            $item = $timeSlotDao->getItemByRoomForNow($room);
+            if (empty($item)) {
+                return JsonBuilder::Error('暂无课程');
+            }
+
+            // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
+            $codeStr = base64_encode(json_encode([
+                'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
+                'school_id' => $item->school_id,
+                'grade_id' => $item->grade_id,
+                'teacher_id' => $item->teacher_id,
+                'timetable_id' => $item->id,
+                'course_id' => $item->course_id,
+                'term' => $item->term,
+                'time' => time()
+            ]));
+            $qrCode = new QrCode($codeStr);
+            $qrCode->setSize(400);
+            $qrCode->setLogoPath(public_path('assets/img/logo.png'));
+            $qrCode->setLogoSize(60, 60);
+            $str = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
+            $data = ['code' => $str, 'status' => true];
+            // 默认 60s
+            Redis::setex('qrcode:'.$code, 60 * 10, json_encode($data));
+        } else {
+            $data = json_decode($res, true);
         }
 
-        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
-        $codeStr = base64_encode(json_encode([
-            'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
-            'school_id' => $item->school_id,
-            'grade_id' => $item->grade_id,
-            'teacher_id' => $item->teacher_id,
-            'timetable_id' => $item->id,
-            'course_id' => $item->course_id,
-            'term' => $item->term,
-            'time' => time()
-        ]));
-        $qrCode = new QrCode($codeStr);
-        $qrCode->setSize(400);
-        $qrCode->setLogoPath(public_path('assets/img/logo.png'));
-        $qrCode->setLogoSize(60, 60);
-        $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success(['code' => $code, 'status' => true], '签到二维码');
+        return JsonBuilder::Success($data,'签到二维码');
     }
 
     /**
      * 签到统计
      * @param CloudRequest $request
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     public function getAttendanceStatistic(CloudRequest $request)
     {
@@ -302,7 +306,7 @@ class CloudController extends Controller
         $term = $configuration->guessTerm($month);
         $weeks = $configuration->getScheduleWeek($now, null, $term);
         if (is_null($weeks)) {
-            return JsonBuilder::Error('暂无课程');
+              return JsonBuilder::Error('暂无课程');
         }
 
         $week = $weeks->getScheduleWeekIndex();
@@ -323,7 +327,7 @@ class CloudController extends Controller
      * 接收华三考勤数据
      * @param CloudRequest $request
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     public function  distinguish(CloudRequest $request)
     {
@@ -348,12 +352,12 @@ class CloudController extends Controller
         $attendancesDetailsDao = new AttendancesDetailsDao;
         $attendancesDetail = $attendancesDetailsDao->getDetailByTimeTableIdAndStudentId($item, $student->user);
         if ($attendancesDetail) {
-            return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
+            return JsonBuilder::Error('学生已经'. $attendancesDetail->typeText() .'了');
         }
 
         $dao = new AttendancesDao;
         $attendanceInfo = $dao->arrive($item, $student->user, AttendancesDetail::TYPE_INTELLIGENCE);
-        if ($attendanceInfo) {
+        if($attendanceInfo) {
             return  JsonBuilder::Success('签到成功');
         } else {
             return  JsonBuilder::Error('服务器错误, 签到失败');
@@ -364,7 +368,7 @@ class CloudController extends Controller
      * 手动扫云班牌码签到
      * @param Request $request
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     public function manual(Request $request)
     {
