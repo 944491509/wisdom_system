@@ -18,6 +18,7 @@
                         v-on:create-special-case-column="createSpecialCaseColumnHandler"
                         v-on:show-special-cases-column="showSpecialCasesColumnHandler"
                         v-on:make-enquiry-column="makeEnquiryColumnHandler"
+                        v-on:refresh="refresh"
                 ></timetable-column>
             </div>
         </div>
@@ -278,6 +279,9 @@
                         this.$emit('timetable-refresh',{});
                     }
                 });
+            },
+            refresh(){
+                this.$emit('timetable-refresh',{});
             },
             showSpecialCasesColumnHandler: function(payload){
                 axios.post(
