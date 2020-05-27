@@ -197,14 +197,16 @@ class GradeManageController extends Controller
     {
         $studentId = $request->get('student_id');
 
-        $dao = new  UserDao;
-        $user = $dao->getUserById($studentId);
-        $profile = $user->profile;
-        $gradeUser = $user->gradeUser;
-        $grade     = $user->gradeUser->grade;
-        $monitor   = $user->monitor;
-        $group     = $user->group;
-        $data = [
+        $dao              = new  UserDao;
+        $user             = $dao->getUserById($studentId);
+        $profile          = $user->profile;
+        $gradeUser        = $user->gradeUser;
+        $grade            = $user->gradeUser->grade;
+        $monitor          = $user->monitor;
+        $group            = $user->group;
+        $gradeName        = $grade->name;
+        $studentPhotoPath = asset('storage/student_photo/' . $gradeName . '/' . $user->getName() . '.jpg');
+        $data             = [
             'grade_id'       => $grade->id,
             'student_id'     => $user->id,
             'name'           => $user->name,  // 姓名
@@ -232,6 +234,7 @@ class GradeManageController extends Controller
             'year'           => $grade->year.'级',
             'monitor'        => $monitor == null ? false : true, // 班长
             'group'          => $group == null ? false : true,  // 团支书
+            'face_image'     => asset(empty($profile->face_code) ? '' : $studentPhotoPath)
         ];
 
         return JsonBuilder::Success($data);

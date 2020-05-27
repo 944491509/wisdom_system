@@ -226,7 +226,7 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
           item.detail = data[item.key];
         })
         try {
-          let src = data.img
+          let src = data.face_image
           let img = document.getElementById('student-photo-img')
           if (!img) {
             let tbodys = this.$refs.stuinfoTable.$el.getElementsByTagName('tbody')

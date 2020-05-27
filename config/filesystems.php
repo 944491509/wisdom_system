@@ -92,9 +92,9 @@ return [
         ],
         // 学生人脸识别照片
         'student_photo' => [
-            'driver' => 'local',
-            'root' => storage_path('app/student_photo'),
-            'url' => env('APP_URL'). '/storage/student_photo',
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/student_photo'),
+            'url'        => env('APP_URL') . '/storage/public/student_photo',
             'visibility' => 'public',
         ],
     ],

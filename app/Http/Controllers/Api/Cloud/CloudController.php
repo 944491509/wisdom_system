@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use App\Models\School;
 use App\Models\Acl\Role;
 use App\Utils\JsonBuilder;
+use Endroid\QrCode\Exception\InvalidPathException;
 use Endroid\QrCode\QrCode;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Schools\Facility;
 use App\ThirdParty\CloudOpenApi;
@@ -201,7 +203,7 @@ class CloudController extends Controller
      * 生成签到二维码
      * @param CloudRequest $request
      * @return string
-     * @throws \Endroid\QrCode\Exception\InvalidPathException
+     * @throws InvalidPathException
      */
     public function getQrCode(CloudRequest $request)
     {
@@ -247,7 +249,7 @@ class CloudController extends Controller
      * 签到统计
      * @param CloudRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAttendanceStatistic(CloudRequest $request)
     {
@@ -299,7 +301,7 @@ class CloudController extends Controller
      * 接收华三考勤数据
      * @param CloudRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function  distinguish(CloudRequest $request)
     {
@@ -340,7 +342,7 @@ class CloudController extends Controller
      * 手动扫云班牌码签到
      * @param Request $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function manual(Request $request)
     {
@@ -381,20 +383,20 @@ class CloudController extends Controller
         $user = User::find($request->get('user_id'));
         $type = $request->get('type');
 
-        $gradeName = $user->gradeUser->grade->name;
-        $gradePath = storage_path('app/student_photo/' . $gradeName);
+        $gradeName        = $user->gradeUser->grade->name;
+        $gradePath        = storage_path('app/public/student_photo/' . $gradeName);
         $studentPhotoPath = $gradePath . '/' . $user->name . '.jpg';
-
         if ($type == CloudOpenApi::UPDATE_STUDENT_PHOTO) { // 更新
             if (!is_file($studentPhotoPath)) {
                 return JsonBuilder::Error('更新 未找到之前的照片');
             } else {
                 // 删除之前的照片
-                Storage::disk('student_photo')->delete($studentPhotoPath);
+                Storage::disk('student_photo')->delete($gradeName . '/' . $user->name . '.jpg');
             }
         }
 
-        $file = $request->file('face_image')->storeAs('student_photo/' . $gradeName, $user->name . '.jpg');
+        $file = $request->file('face_image')->storeAs('public/student_photo/' . $gradeName, $user->name . '.jpg');
+
         if (!$file) {
             return JsonBuilder::Error('上传失败');
         }
