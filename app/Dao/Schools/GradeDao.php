@@ -188,9 +188,10 @@ class GradeDao
      * @param $year
      * @return mixed
      */
-    public function gradeListByYear($schoolId, $year) {
-        $map = ['school_id'=>$schoolId, 'year'=>$year];
-        $field = ['id as grade_id', 'name', 'year'];
+    public function gradeListByYear($schoolId, $year)
+    {
+        $map   = ['school_id' => $schoolId, 'year' => $year];
+        $field = ['id', 'name', 'year'];
         return Grade::where($map)->select($field)->get();
     }
 }
