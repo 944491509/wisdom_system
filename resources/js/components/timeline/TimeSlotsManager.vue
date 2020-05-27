@@ -8,13 +8,18 @@
           <el-timeline-item
             v-for="(activity, index) in grade.time_slot"
             :key="index"
-            type="primary"
+            :type="activity.status == 1 ? 'primary':''"
             :color="activity.color"
             :timestamp="activity.from + '-' + activity.to"
           >
-            <p style="padding: 0;color: #409EFF;" @click="editTimeSlot(grade.year,activity)">
+            <p v-if="activity.status == 1" style="padding: 0;color: #409EFF;" @click="editTimeSlot(grade.year,activity)">
               {{activity.name}}
             </p>
+            <p v-else style="padding: 0;color: rgb(185, 179, 179);" @click="editTimeSlot(grade.year,activity)">
+              {{activity.name}}
+              <span style="float: right;">已关闭</span>
+            </p>
+
           </el-timeline-item>
         </el-timeline>
       </div>
@@ -149,9 +154,13 @@ export default {
   .content{
     margin: 20px;
   }
+  .content:not(:last-child) {
+    border-right: 1px dotted rgba(0, 0, 0, 0.2);
+  }
   .frame-wrap {
     margin-top: 20px;
     margin-left: 5px;
+
   }
 }
 
