@@ -174,7 +174,7 @@ class CloudController extends Controller
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
         $res = Redis::get('course:'.$code);
-        if($res) {
+        if(is_null($res)) {
             $timeSlotDao = new TimeSlotDao;
             /**
              * 公有班牌
