@@ -154,7 +154,7 @@ class CloudController extends Controller
                 'photo' => $photo
             ];
             // 默认 60s
-            Redis::setex('grade:'.$grade->id.':'.$code, 60 * 10, json_encode($data));
+            Redis::setex('grade:'.'code'.$code, 60 * 10, json_encode($data));
         }
         else {
             $data = json_decode($res, true);
