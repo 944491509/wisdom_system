@@ -107,11 +107,7 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
         }, {
           label: '职务',
           detail: '',
-          key: 'monitor'
-        }, {
-          label: '职务',
-          detail: '',
-          key: 'group'
+          key: 'stu_job'
         }, {
           label: '学生照片'
         }],
@@ -178,7 +174,7 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
           } else {
             // 班长/团支书/无
             let type = this.detailForm[item];
-            if (type) {
+            if (type && type !== 'false') {
               // type为'monitor'或'group' 出现哪个把哪个赋值;
               params[type][type + '_id'] = this.detailData.student_id;
               params[type][type + '_name'] = this.detailData.name;
@@ -222,8 +218,22 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
         });
       },
       setStuDetail: function (data) {
-        this.detailDataList.forEach(function (item, index) {
-          item.detail = data[item.key];
+        this.detailData = data
+        this.detailDataList.forEach((item, index) => {
+          if (item.key === 'stu_job') {
+            if (data.group) {
+              item.detail = '团支书'
+              this.detailForm.position = 'group'
+            } else if (data.monitor) {
+              item.detail = '班长'
+              this.detailForm.position = 'monitor'
+            } else {
+              item.detail = '无'
+              this.detailForm.position = 'false'
+            }
+          } else {
+            item.detail = data[item.key];
+          }
         })
         try {
           let src = data.face_image
@@ -293,7 +303,6 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
           student_id: stu.student_id,
           status: stu.face_code_status,
           index,
-
         }
       }
     }

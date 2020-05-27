@@ -193,7 +193,7 @@
                 <el-radio-group v-model="detailForm.position">
                       <el-radio label="monitor">班长</el-radio>
                       <el-radio label="group">团支书</el-radio>
-                      <el-radio label="">无</el-radio>
+                      <el-radio label="false">无</el-radio>
                     </el-radio-group>
             </el-form-item>
         </el-form>
