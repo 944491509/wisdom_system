@@ -24,6 +24,7 @@ use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
 use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class CloudController extends Controller
 {
@@ -36,39 +37,45 @@ class CloudController extends Controller
     public function getSchoolInfo(CloudRequest $request)
     {
         $code = $request->get('code');
-
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        /**
-         * @var Facility $facility
-         */
         $school = $facility->school;
-        $type = '';
-        if (!is_null($school->video)) {
-             $type = substr($school->video,-3);
-        }
-        $data   = [
-            'school' => [
-                'name'  => $school->name,
-                'motto' => $school->motto,
-                'logo'  => [
-                    'path' => $school->logo,
-                    'size' => '',
-                    'type' => ''
-                ],
-                'area'  => [
-                    'video' => $school->video,
-                    'size'  => '',
-                    'type'  => $type,
-                ],
-                'card' => [
-                    'address' => $facility->room->building->name.'-'.$facility->room->name,
+        $res = Redis::get('school:'.$school->id.':'.$code);
+        if(is_null($res)) {
+            /**
+             * @var Facility $facility
+             */
+            $type = '';
+            if (!is_null($school->video)) {
+                $type = substr($school->video,-3);
+            }
+            $data   = [
+                'school' => [
+                    'name'  => $school->name,
+                    'motto' => $school->motto,
+                    'logo'  => [
+                        'path' => $school->logo,
+                        'size' => '',
+                        'type' => ''
+                    ],
+                    'area'  => [
+                        'video' => $school->video,
+                        'size'  => '',
+                        'type'  => $type,
+                    ],
+                    'card' => [
+                        'address' => $facility->room->building->name .'-'.$facility->room->name ,
+                    ]
                 ]
-            ]
-        ];
+            ];
+            // 生存时间 暂时60s
+            Redis::setex('school:'.$school->id.':'.$code, 60 * 10, json_encode($data));
+        } else {
+            $data = json_decode($res, true);
+        }
 
         return JsonBuilder::Success($data);
     }
@@ -87,58 +94,66 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
+        $res = Redis::get('grade:'.'code'.$code);
+        if(is_null($res)) {
+            $room = $facility->room;
+            $timeSlotDao = new TimeSlotDao;
+            /**
+             * 公有班牌
+             */
+            if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+                $item = $timeSlotDao->getItemByRoomForNow($room);
 
-        $room = $facility->room;
-        $timeSlotDao = new TimeSlotDao;
-        /**
-         * 公有班牌
-         */
-        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
-             $item = $timeSlotDao->getItemByRoomForNow($room);
-             if (empty($item)) {
-                return JsonBuilder::Error('暂无课程');
-             } else {
-                 $grade = $item->grade;
-             }
+                if (empty($item)) {
+                    return JsonBuilder::Error('暂无课程');
+                } else {
+                    $grade = $item->grade;
+                }
+            }
+            /**
+             *  私有班牌
+             */
+            elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+                $grade = $facility->grade;
+            }
+
+            $gradeUser = $grade->gradeUser->where('user_type', Role::VERIFIED_USER_STUDENT);
+            $userIds   = $gradeUser->pluck('user_id');
+
+            $studentProfileDao = new  StudentProfileDao;
+            $gradeRes = new GradeResourceDao;
+            $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
+            $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
+            $gradeResource = $gradeRes->getResourceByGradeId($grade->id);
+
+            $photo = [];
+            foreach ($gradeResource as $key => $value) {
+                $photo[$key]['path'] = $value->path;
+                $photo[$key]['name'] = $value->name;
+                $photo[$key]['type'] = $value->type;
+                $photo[$key]['size'] = $value->size;
+            }
+
+
+            $data = [
+                'grade'    => [
+                    'name' => $grade->name,
+                    'teacher' => $grade->gradeManager->adviser_name ?? '未设置班主任',
+                    'monitor' => $grade->gradeManager->monitor_name ?? '未设置班长',
+                ],
+                'number'  => [
+                    'total' => $man + $woman,
+                    'man'   => $man,
+                    'woman' => $woman
+                ],
+                'photo' => $photo
+            ];
+            // 默认 60s
+            Redis::setex('grade:'.$grade->id.':'.$code, 60 * 10, json_encode($data));
         }
-        /**
-         *  私有班牌
-         */
-        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
-            $grade = $facility->grade;
+        else {
+            $data = json_decode($res, true);
         }
-
-        $gradeUser = $grade->gradeUser->where('user_type', Role::VERIFIED_USER_STUDENT);
-        $userIds   = $gradeUser->pluck('user_id');
-
-        $studentProfileDao = new  StudentProfileDao;
-        $gradeRes = new GradeResourceDao;
-        $man   = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_MAN);
-        $woman = $studentProfileDao->getStudentGenderTotalByUserId($userIds, StudentProfile::GENDER_WOMAN);
-        $gradeResource = $gradeRes->getResourceByGradeId($grade->id);
-
-        $photo = [];
-        foreach ($gradeResource as $key => $value) {
-            $photo[$key]['path'] = $value->path;
-            $photo[$key]['name'] = $value->name;
-            $photo[$key]['type'] = $value->type;
-            $photo[$key]['size'] = $value->size;
-        }
-
-
-        $data = [
-            'grade'    => [
-                'name' => $grade->name,
-                'teacher' => $grade->gradeManager->adviser_name ?? '未设置班主任',
-                'monitor' => $grade->gradeManager->monitor_name ?? '未设置班长',
-            ],
-            'number'  => [
-                'total' => $man + $woman,
-                'man'   => $man,
-                'woman' => $woman
-            ],
-            'photo' => $photo
-        ];
 
         return JsonBuilder::Success($data);
     }
@@ -158,39 +173,45 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
+        $res = Redis::get('course:'.$code);
+        if($res) {
+            $timeSlotDao = new TimeSlotDao;
+            /**
+             * 公有班牌
+             */
+            if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
+                $room = $facility->room;
+                $items = $timeSlotDao->getItemByRoomForNow($room, null,1);
+            }
+            /**
+             *  私有班牌
+             */
+            elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
+                $grade = $facility->grade;
+                $items =  $timeSlotDao->getTimeSlotByGrade($grade);
+            }
 
-        $timeSlotDao = new TimeSlotDao;
-        /**
-         * 公有班牌
-         */
-        if ($facility->card_type == Facility::CARD_TYPE_PUBLIC) {
-            $room = $facility->room;
-            $items = $timeSlotDao->getItemByRoomForNow($room, null,1);
-        }
-        /**
-         *  私有班牌
-         */
-        elseif ($facility->card_type == Facility::CARD_TYPE_PRIVATE) {
-            $grade = $facility->grade;
-            $items =  $timeSlotDao->getTimeSlotByGrade($grade);
-        }
+            if (!$items) {
+                 return JsonBuilder::Error('现在是休息时间');
+            }
 
-        if (!$items) {
-             return JsonBuilder::Error('现在是休息时间');
-        }
+            if ($items->isEmpty()) {
+                return JsonBuilder::Error('暂无课程');
+            }
+            $data = [];
+            foreach ($items as $key => $item) {
+                $data[$key]['course_number']   = $item->timeslot->name;
+                $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
+                $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
+                $data[$key]['course_teacher'] = $item->teacher->name;
+                $data[$key]['course_name']   = $item->course->name ?? '';
+            }
 
-        if ($items->isEmpty()) {
-            return JsonBuilder::Error('暂无课程');
+            // 默认 60s
+            Redis::setex('grade:'.$grade->id.':'.$code, 60 * 10, json_encode($data));
+        } else {
+            $data  = json_decode($res, true);
         }
-        $data = [];
-        foreach ($items as $key => $item) {
-            $data[$key]['course_number']   = $item->timeslot->name;
-            $data[$key]['course_time']     = $item->timeslot->from. ' - ' .$item->timeslot->to;
-            $data[$key]['course_room']     = $item->room->building->name.' '.$item->room->name;
-            $data[$key]['course_teacher'] = $item->teacher->name;
-            $data[$key]['course_name']   = $item->course->name ?? '';
-        }
-
         return JsonBuilder::Success($data);
     }
 
