@@ -112,6 +112,8 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
           label: '职务',
           detail: '',
           key: 'group'
+        }, {
+          label: '学生照片'
         }],
         detailForm: {
           contact_number: '',
@@ -223,6 +225,23 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
         this.detailDataList.forEach(function (item, index) {
           item.detail = data[item.key];
         })
+        try {
+          let src = data.img
+          let img = document.getElementById('student-photo-img')
+          if (!img) {
+            let tbodys = this.$refs.stuinfoTable.$el.getElementsByTagName('tbody')
+            const tbody = tbodys[tbodys.length - 1]
+            const tr = document.createElement('tr')
+            tr.setAttribute('class', 'el-table__row')
+            tr.setAttribute('id', 'student-img-box')
+            tr.innerHTML = `<div style="width: 200%;padding: 10px"><img id="student-photo-img" style="max-width: 100%;" src="${src}"/></div>`
+            tbody.appendChild(tr)
+          } else {
+            img.setAttribute('src', src)
+          }
+        } catch (e) {
+          console.error(e)
+        }
       },
       updateStudents: function (params) {
         const url = '/api/Oa/update-student-info';

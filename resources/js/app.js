@@ -59,6 +59,7 @@ Vue.component('material', require('./components/moodle/teacher/Material').defaul
 // 公共组件
 Vue.component('pf-icon', require('./components/common/icon').default);
 
+
 require('./includes/backend/school_calendar_app'); // 后台: 校历的管理
 require('./includes/backend/notice_manager_app'); // 后台: Notice 的管理
 require('./includes/backend/banner_manager_app'); // 后台: Banner 的管理
