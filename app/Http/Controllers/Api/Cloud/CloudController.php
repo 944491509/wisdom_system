@@ -4,13 +4,12 @@
 namespace App\Http\Controllers\Api\Cloud;
 
 use App\User;
+use Exception;
 use Carbon\Carbon;
 use App\Models\School;
 use App\Models\Acl\Role;
 use App\Utils\JsonBuilder;
-use Endroid\QrCode\Exception\InvalidPathException;
 use Endroid\QrCode\QrCode;
-use Exception;
 use Illuminate\Http\Request;
 use App\Models\Schools\Facility;
 use App\ThirdParty\CloudOpenApi;
@@ -26,18 +25,10 @@ use App\Models\Students\StudentProfile;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Cloud\CloudRequest;
 use App\Dao\AttendanceSchedules\AttendancesDao;
+use Endroid\QrCode\Exception\InvalidPathException;
 use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
-use App\Models\School;
-use App\Models\Schools\Facility;
-use App\Models\Students\StudentProfile;
-use App\Models\Users\UserCodeRecord;
-use App\ThirdParty\CloudOpenApi;
-use App\Utils\JsonBuilder;
-use App\Utils\Time\GradeAndYearUtil;
-use Carbon\Carbon;
-use Endroid\QrCode\QrCode;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Redis;
 
 class CloudController extends Controller
