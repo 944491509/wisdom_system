@@ -19,12 +19,16 @@ use App\Models\Schools\Facility;
 use App\Models\Students\StudentProfile;
 use App\Models\Users\UserCodeRecord;
 use App\ThirdParty\CloudOpenApi;
+use App\User;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
+use Endroid\QrCode\Exception\InvalidPathException;
 use Endroid\QrCode\QrCode;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class CloudController extends Controller
 {
@@ -220,7 +224,7 @@ class CloudController extends Controller
      * 生成签到二维码
      * @param CloudRequest $request
      * @return string
-     * @throws \Endroid\QrCode\Exception\InvalidPathException
+     * @throws InvalidPathException
      */
     public function getQrCode(CloudRequest $request)
     {
@@ -275,7 +279,7 @@ class CloudController extends Controller
      * 签到统计
      * @param CloudRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAttendanceStatistic(CloudRequest $request)
     {
@@ -327,7 +331,7 @@ class CloudController extends Controller
      * 接收华三考勤数据
      * @param CloudRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function  distinguish(CloudRequest $request)
     {
@@ -368,7 +372,7 @@ class CloudController extends Controller
      * 手动扫云班牌码签到
      * @param Request $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function manual(Request $request)
     {
