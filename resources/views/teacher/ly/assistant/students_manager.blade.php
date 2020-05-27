@@ -2,13 +2,19 @@
 @section('content')
 <div id="teacher-assistant-students-manager-app">
     <div class="blade_title">学生信息</div>
+    <input type="file"
+        name="file"
+        accept="image/jpeg, image/jpg, image/png"
+        @change="onFileSelected"
+        hidden
+        ref="studentImgUpload" id="student-img-upload"/>
     <el-row :gutter="20">
         <el-col :span="8">
             <div class="grid-content bg-purple-dark"></div>
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        班级列表
+                        <pf-icon iconsrc="classes-list" text="班级列表">
                     </header>
                 </div>
                 <div class="card-body">
@@ -43,7 +49,7 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        学生明细
+                        <pf-icon iconsrc="stu-list" text="学生明细">
                     </header>
                 </div>
                 <div class="card-body">
@@ -60,6 +66,8 @@
                                 label="详情">
                             <template slot-scope="scope">
                                 <span class="showDetail">
+                                    <span class="uploaded-text" v-if="scope.row.face_code_status">已上传</span>
+                                    <label for="student-img-upload" @click="setCurrentStudent(scope.row, scope.$index)"><span class="upload">照片</span></label>
                                      <img @click="showDetail(scope.row)"
                                           src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
                                 </span>
@@ -88,11 +96,12 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            学生信息
+                            <pf-icon iconsrc="stu-info" text="学生信息">
                         </header>
                     </div>
                     <div class="card-body">
                         <el-table
+                                ref="stuinfoTable"
                                 height="580"
                                 :show-header="false"
                                 :data="detailDataList">
@@ -103,6 +112,7 @@
                                     prop="detail">
                             </el-table-column>
                         </el-table>
+                        
                         <div style="text-align: center;padding:10px">
                             <el-button class="stu-edit" @click="dialogVisible = true">编辑</el-button>
                         </div>

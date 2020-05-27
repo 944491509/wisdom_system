@@ -14,6 +14,7 @@ use App\Models\Teachers\Performance\TeacherPerformanceItem;
 use App\Utils\JsonBuilder;
 use App\Utils\ReturnData\IMessageBag;
 use App\Utils\ReturnData\MessageBag;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class TeacherPerformanceDao
@@ -25,15 +26,29 @@ class TeacherPerformanceDao
         $this->schoolId = $schoolId;
     }
 
+
+    /**
+     * 根据用户id, 年 查询
+     * @param $userId
+     * @param $year
+     * @return mixed
+     */
+    public function getPerformanceByUserIdAndYear($userId, $year)
+    {
+        return TeacherPerformance::where(['user_id' => $userId, 'year' => $year])->first();
+    }
+
+
     /**
      * @param $performance
      * @param $items
      * @return IMessageBag
      */
-    public function create($performance, $items, $approvedBy){
+    public function create($performance, $items, $approvedBy)
+    {
         DB::beginTransaction();
         $bag = new MessageBag(JsonBuilder::CODE_ERROR);
-        try{
+        try {
             $performance['school_id'] = $this->schoolId;
             $performance['approved_by'] = $approvedBy->id ?? $approvedBy;
             $p = TeacherPerformance::create($performance);
@@ -46,8 +61,7 @@ class TeacherPerformanceDao
                 $bag->setCode(JsonBuilder::CODE_SUCCESS);
                 $bag->setData($p);
             }
-        }
-        catch (\Exception $exception){
+        } catch (Exception $exception) {
             DB::rollBack();
             $bag->setMessage($exception->getMessage());
         }
