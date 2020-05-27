@@ -99,7 +99,7 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        $res = Redis::get('grade:'.'code'.$code);
+        $res = Redis::get('grade:'.'code:'.$code);
         if(is_null($res)) {
             $room = $facility->room;
             $timeSlotDao = new TimeSlotDao;
@@ -154,7 +154,7 @@ class CloudController extends Controller
                 'photo' => $photo
             ];
             // 默认 60s
-            Redis::setex('grade:'.'code'.$code, 60 * 10, json_encode($data));
+            Redis::setex('grade:'.'code:'.$code, 60 * 10, json_encode($data));
         }
         else {
             $data = json_decode($res, true);
