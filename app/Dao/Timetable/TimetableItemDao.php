@@ -606,7 +606,6 @@ class TimetableItemDao
 
         if($user->isStudent()) {
             $grade = $user->gradeUser->grade;
-
             $currentTimeSlot = GradeAndYearUtil::GetTimeSlot($grade->gradeYear(),$now, $school->id);
             if(is_null( $currentTimeSlot)) {
                 return null;
@@ -619,7 +618,6 @@ class TimetableItemDao
                 ['grade_id','=',$grade->id],
                 ['weekday_index','=',$weekdayIndex],
             ];
-
             return TimetableItem::where($where)->first();
 
         } elseif ($user->isTeacher()) {

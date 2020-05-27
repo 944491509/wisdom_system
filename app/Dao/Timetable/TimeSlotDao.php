@@ -157,11 +157,11 @@ class TimeSlotDao
     /**
      * 根据房间号获取当前正在上课的的 Timetable Item
      * @param Room $room
-     * @param null $date
+     * @param Carbon null $date
      * @param int $type
      * @return TimetableItem|null
      */
-    public function getItemByRoomForNow(Room $room, $date = null, $type = 0 ){
+    public function getItemByRoomForNow(Room $room, Carbon $date = null, $type = 0 ){
         if(!$date){
             $date = Carbon::now();
         }
@@ -183,7 +183,6 @@ class TimeSlotDao
             'term' => $term,
             'weekday_index' => $date->dayOfWeekIso,
         ];
-
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $timeTableItems = TimetableItem::where($map)->leftJoin('time_slots',function ($join) {
                 $join->on('timetable_items.time_slot_id', '=', 'time_slots.id');
