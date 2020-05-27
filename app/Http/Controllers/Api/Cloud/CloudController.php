@@ -231,35 +231,44 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        /**
-         * @var  Facility $facility
-         */
-        $room = $facility->room;
-        $timeSlotDao = new TimeSlotDao;
+        $res = Redis::get('qrcode:'.$code);
+        if(is_null($res)) {
+            /**
+             * @var  Facility $facility
+             */
+            $room = $facility->room;
+            $timeSlotDao = new TimeSlotDao;
 
-        $item = $timeSlotDao->getItemByRoomForNow($room);
-        if (empty($item)) {
-            return JsonBuilder::Error('暂无课程');
+            $item = $timeSlotDao->getItemByRoomForNow($room);
+            if (empty($item)) {
+                return JsonBuilder::Error('暂无课程');
+            }
+
+            // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
+            $codeStr = base64_encode(json_encode([
+                'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
+                'school_id' => $item->school_id,
+                'grade_id' => $item->grade_id,
+                'teacher_id' => $item->teacher_id,
+                'timetable_id' => $item->id,
+                'course_id' => $item->course_id,
+                'term' => $item->term,
+                'time' => time()
+            ]));
+            $qrCode = new QrCode($codeStr);
+            $qrCode->setSize(400);
+            $qrCode->setLogoPath(public_path('assets/img/logo.png'));
+            $qrCode->setLogoSize(60, 60);
+            $str = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
+            $data = ['code' => $str, 'status' => true];
+            // 默认 60s
+            Redis::setex('qrcode:'.$code, 60 * 10, json_encode($data));
+        } else {
+            $data = json_decode($res, true);
         }
 
-        // 二维码生成规则 二维码标识, 学校ID, 班级ID, 教师ID ....
-        $codeStr = base64_encode(json_encode([
-            'app' => UserCodeRecord::IDENTIFICATION_CLOUD,
-            'school_id' => $item->school_id,
-            'grade_id' => $item->grade_id,
-            'teacher_id' => $item->teacher_id,
-            'timetable_id' => $item->id,
-            'course_id' => $item->course_id,
-            'term' => $item->term,
-            'time' => time()
-        ]));
-        $qrCode = new QrCode($codeStr);
-        $qrCode->setSize(400);
-        $qrCode->setLogoPath(public_path('assets/img/logo.png'));
-        $qrCode->setLogoSize(60, 60);
-        $code = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
 
-        return JsonBuilder::Success(['code' => $code, 'status' => true],'签到二维码');
+        return JsonBuilder::Success($data,'签到二维码');
     }
 
     /**
