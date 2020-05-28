@@ -226,7 +226,7 @@ if(document.getElementById('textbook-manager-app')){
             // 保存教材数据
             saveTextbook: function(){
                 axios.post(
-                    '/teacher/textbook/save',
+                    '/api/textbook/save',
                     this.textbookModel
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
