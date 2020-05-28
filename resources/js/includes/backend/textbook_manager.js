@@ -24,6 +24,8 @@ if(document.getElementById('textbook-manager-app')){
                     status:1,
                     medias:[],
                     courses:[],
+                    year:'',
+                    term:''
                 },
                 // 自动补全搜索
                 queryTextbook: '',
@@ -45,13 +47,15 @@ if(document.getElementById('textbook-manager-app')){
                 showExportGradeFlag: false,
                 showExportMajorFlag: false,
                 showExportCampusFlag: false,
+                years:[],
+                types:[]
                 // 导出功能完毕
             };
         },
         created(){
             const dom = document.getElementById('app-init-data-holder');
             this.userUuid = dom.dataset.user;
-            this.schoolId = dom.dataset.school;
+            this.schoolId = Number(dom.dataset.school);
             this.pageSize = parseInt(dom.dataset.size);
             axios.post(
                 '/api/school/load-courses',
@@ -65,7 +69,31 @@ if(document.getElementById('textbook-manager-app')){
             this.loadTextbooks();
             this.resetForm();
         },
+        mounted(){
+          this.getYearList();
+          this.getTypes();
+        },
         methods: {
+            getYearList(){
+              axios.get(
+                `/api/school/load-config-year?school_id=${this.schoolId}`
+              ).then(res=>{
+                  if(Util.isAjaxResOk(res)){
+                    console.log(res)
+                    this.years = res.data.data;
+                  }
+              });
+            },
+            getTypes(){
+              axios.get(
+                '/api/textbook/allType'
+              ).then(res=>{
+                  if(Util.isAjaxResOk(res)){
+                    console.log(res)
+                    this.types = res.data.data;
+                  }
+              });
+            },
             // 在表单输入框不能工作的时候, 强制更新
             updateInput: function(e){
                 this.$forceUpdate()
@@ -199,7 +227,7 @@ if(document.getElementById('textbook-manager-app')){
             saveTextbook: function(){
                 axios.post(
                     '/teacher/textbook/save',
-                    {textbook: this.textbookModel}
+                    this.textbookModel
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
                         if(Util.isEmpty(this.textbookModel.id)){
