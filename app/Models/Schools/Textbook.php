@@ -26,15 +26,8 @@ class Textbook extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'press',
-        'author',
-        'edition',
-        'school_id',
-        'type',
-        'purchase_price',
-        'price',
-        'introduce'
+        'name', 'press', 'author', 'edition', 'school_id', 'type',
+        'purchase_price', 'price', 'introduce', 'year', 'term'
     ];
 
     protected $hidden = ['updated_at', 'deleted_at'];

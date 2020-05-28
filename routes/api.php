@@ -1213,4 +1213,7 @@ Route::prefix('textbook')->middleware('auth:api')->group(function() {
     // 类型
     Route::get('/allType', 'Api\Study\TextbookController@allType')
         ->name('api.textbook.allType');
+    // 编辑
+    Route::post('/save', 'Api\Study\TextbookController@save')
+        ->name('api.textbook.save');
 });

@@ -105,40 +105,39 @@ class TextbookDao
      * @return MessageBag
      */
     public function create($data) {
-//        $info = $this->getTextbookByName($data['name']);
-//        if(!empty($info)) {
-//            return new MessageBag(JsonBuilder::CODE_ERROR,'该教材已添加,请勿重复添加');
-//        }
-        DB::beginTransaction();
-        $book = Textbook::create($data);
-        if($book){
-            try{
-                $medias = $data['medias'];
-                $imgs = [];
-                foreach ($medias as $key => $media) {
-                    $imgs[] = TextbookImage::create(
-                        [
-                            'textbook_id'=>$book->id,
-                            'media_id'=>$media['id'],
-                            'url'=>$media['url'],
-                            'position'=>$key+1
-                        ]
-                    );
-                }
-                $book->medias = $imgs;
-                DB::commit();
-                return new MessageBag(
-                    JsonBuilder::CODE_SUCCESS,
-                    '创建成功',
-                    $book
-                );
-            }catch (\Exception $exception){
-                DB::rollBack();
-                return new MessageBag(JsonBuilder::CODE_ERROR,'创建失败: 无法关联图片');
-            }
-        }else{
-            return new MessageBag(JsonBuilder::CODE_ERROR,'创建失败: 数据库错误');
+        $bag = new MessageBag();
+        $medias = [];
+        if(isset($data['medias'])) {
+            $medias = $data['medias'];
+            unset($data['medias']);
         }
+        try{
+            DB::beginTransaction();
+            $book = Textbook::create($data);
+
+            $imgs = [];
+            foreach ($medias as $key => $media) {
+                $imgs[] = TextbookImage::create(
+                    [
+                        'textbook_id'=>$book->id,
+                        'media_id'=>$media['id'],
+                        'url'=>$media['url'],
+                        'position'=>$key+1
+                    ]
+                );
+            }
+            $book->medias = $imgs;
+            DB::commit();
+            $bag->setMessage('创建成功');
+            $bag->setData($book);
+        }catch (\Exception $e){
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setCode(JsonBuilder::CODE_ERROR);
+            $bag->setMessage($msg);
+        }
+
+        return $bag;
     }
 
     /**
@@ -147,44 +146,40 @@ class TextbookDao
      * @return mixed
      */
     public function editById($data) {
+        $bag = new MessageBag();
         $id = $data['id'];
         unset($data['id']);
 
         $medias = $data['medias'];
         unset($data['medias']);
-        unset($data['courses']);
 
-        DB::beginTransaction();
-        $updated = Textbook::where('id',$id)->update($data);
-        if($updated){
-            try{
-                TextbookImage::where('textbook_id',$id)->delete();
+        try{
+            DB::beginTransaction();
+            Textbook::where('id',$id)->update($data);
+            TextbookImage::where('textbook_id',$id)->delete();
 
-                foreach ($medias as $key => $media) {
-                    TextbookImage::create(
-                        [
-                            'textbook_id'=>$id,
-                            'media_id'=>$media['id'],
-                            'url'=>$media['url'],
-                            'position'=>$key+1
-                        ]
-                    );
-                }
-
-                DB::commit();
-                return new MessageBag(
-                    JsonBuilder::CODE_SUCCESS,
-                    '更新成功',
-                    $this->getTextbookById($id)
+            foreach ($medias as $key => $media) {
+                TextbookImage::create(
+                    [
+                        'textbook_id'=>$id,
+                        'media_id'=>$media['id'],
+                        'url'=>$media['url'],
+                        'position'=>$key+1
+                    ]
                 );
-            }catch (\Exception $exception){
-                DB::rollBack();
-                return new MessageBag(JsonBuilder::CODE_ERROR,'更新失败: 无法关联图片');
             }
-        }else{
-            DB::rollBack();
-            return new MessageBag(JsonBuilder::CODE_ERROR,'更新失败: 无法关联图片');
+
+            DB::commit();
+            $bag->setMessage('更新成功');
         }
+        catch (\Exception $e){
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setCode(JsonBuilder::CODE_ERROR);
+            $bag->setMessage($msg);
+        }
+        return $bag;
+
     }
 
     /**
