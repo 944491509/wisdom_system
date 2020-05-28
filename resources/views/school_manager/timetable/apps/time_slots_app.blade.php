@@ -200,7 +200,6 @@
                             placeholder="开始时间">
                     </el-time-picker>
                     <el-time-picker
-                            arrow-control
                             style="width:49%;"
                             v-model="currentTimeSlot.to"
                             format="HH:mm"
