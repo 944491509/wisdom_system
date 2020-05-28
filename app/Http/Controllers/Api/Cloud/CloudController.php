@@ -14,14 +14,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudRequest;
 use App\Models\Acl\Role;
 use App\Models\AttendanceSchedules\AttendancesDetail;
-use App\Models\School;
 use App\Models\Schools\Facility;
 use App\Models\Students\StudentProfile;
 use App\Models\Users\UserCodeRecord;
 use App\ThirdParty\CloudOpenApi;
 use App\Utils\JsonBuilder;
-use App\Utils\Time\GradeAndYearUtil;
-use Carbon\Carbon;
 use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
@@ -36,10 +33,6 @@ class CloudController extends Controller
      */
     public function getSchoolInfo(CloudRequest $request)
     {
-        $key = 'name';
-        Redis::lrem($key,0,'mawenhao');
-        dd(Redis::LRANGE($key,0,-1));
-
         $code = $request->get('code');
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
@@ -47,7 +40,7 @@ class CloudController extends Controller
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
         $school = $facility->school;
-        $res = Redis::get('school:'.$school->id.':'.$code);
+        $res = Redis::get('school:'.$school->id.':info:'.$code);
         if(is_null($res)) {
             /**
              * @var Facility $facility
@@ -76,7 +69,7 @@ class CloudController extends Controller
                 ]
             ];
             // 生存时间 暂时60s
-            Redis::setex('school:'.$school->id.':'.$code, 60 * 10, json_encode($data));
+            Redis::setex('school:'.$school->id.':info:'.$code, 60 * 10, json_encode($data));
         } else {
             $data = json_decode($res, true);
         }
