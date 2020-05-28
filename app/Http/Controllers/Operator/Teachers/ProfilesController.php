@@ -23,10 +23,14 @@ use App\Models\Teachers\Teacher;
 use App\Models\Teachers\TeacherQualification;
 use App\User;
 use App\Utils\FlashMessageBuilder;
+use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Ramsey\Uuid\Uuid;
 
@@ -58,24 +62,23 @@ class ProfilesController extends Controller
             $firstInstitute = (new InstituteDao())->getInstituteById($instituteId);
 
             $gGao->create([
-                'user_id'=>$user->id,
-                'name'=>$user->name,
-                'user_type'=>Role::TEACHER,
-                'school_id'=>session('school.id'),
-                'campus_id'=>$firstInstitute->campus->id,
-                'institute_id'=>$firstInstitute->id,
-                'department_id'=>0,
-                'grade_id'=>0,
-                'last_updated_by'=>Auth::user()->id,
+                'user_id'         =>$user->id,
+                'name'            =>$user->name,
+                'user_type'       =>Role::TEACHER,
+                'school_id'       =>session('school.id'),
+                'campus_id'       =>$firstInstitute->campus->id,
+                'institute_id'    =>$firstInstitute->id,
+                'department_id'   => 0,
+                'grade_id'        => 0,
+                'last_updated_by' => Auth::user()->id,
             ]);
 
             DB::commit();
             FlashMessageBuilder::Push(
                 $request,
                 'success',
-                '教师档案保存成功, 登陆用户名: '.$user->mobile.', 登陆密码: '.$pwd.'(即身份证的后 6 位)');
-        }
-        catch (\Exception $exception){
+                '教师档案保存成功, 登陆用户名: ' . $user->mobile . ', 登陆密码: ' . $pwd . '(即身份证的后 6 位)');
+        } catch (Exception $exception) {
             DB::rollBack();
             FlashMessageBuilder::Push(
                 $request,
@@ -158,15 +161,15 @@ class ProfilesController extends Controller
     /**
      * 教师年终考评
      * @param MyStandardRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function manage_performance(MyStandardRequest $request){
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById(session('school.id'));
         $this->dataForView['configs'] = $school->teacherPerformanceConfigs;
 
-        $dao = new UserDao();
-        $teacher = $dao->getTeacherByUuid($request->uuid());
+        $dao                          = new UserDao();
+        $teacher                      = $dao->getTeacherByUuid($request->uuid());
         $this->dataForView['teacher'] = $teacher;
 
         return view('teacher.profile.manage_performance', $this->dataForView);
@@ -175,29 +178,39 @@ class ProfilesController extends Controller
     /**
      * 保存
      * @param MyStandardRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function manage_performance_save(MyStandardRequest $request){
-        $data = $request->all();
-        $dao = new TeacherPerformanceDao($request->session()->get('school.id'));
-        $result = $dao->create($data['performance'], $data['items'], $request->user());
+    public function manage_performance_save(MyStandardRequest $request)
+    {
+        $data   = $request->all();
+        $userId = $data['performance']['user_id'];
+        $year   = $data['performance']['year'];
 
-        if($result->isSuccess()){
-            FlashMessageBuilder::Push($request, 'success','年终评估已经保存');
+        $dao         = new TeacherPerformanceDao($request->session()->get('school.id'));
+        $performance = $dao->getPerformanceByUserIdAndYear($userId, $year);
+
+        if ($performance) {
+            FlashMessageBuilder::Push($request, 'error', '当前用户' . $year . '年, 已经考评过了');
+        } else {
+            $result = $dao->create($data['performance'], $data['items'], $request->user());
+            if ($result->isSuccess()) {
+                FlashMessageBuilder::Push($request, 'success', '年终评估已经保存');
+            } else {
+                FlashMessageBuilder::Push($request, 'error', $result->getMessage());
+            }
         }
-        else{
-            FlashMessageBuilder::Push($request, 'error',$result->getMessage());
-        }
-        return redirect()->route('school_manager.teachers.edit-profile',['uuid'=>$data['performance']['user_id']]);
+
+        return redirect()->route('school_manager.teachers.edit-profile', ['uuid' => $data['performance']['user_id']]);
     }
 
     /**
      * 教职工的档案照片管理
      * @param MediaRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
-    public function avatar(MediaRequest $request){
-        if($request->method() === 'GET'){
+    public function avatar(MediaRequest $request)
+    {
+        if ($request->method() === 'GET') {
             $this->dataForView['pageTitle'] = '教职工档案照片';
             $this->dataForView['user'] = (new UserDao())->getTeacherByIdOrUuid($request->uuid());
             return view('teacher.profile.update_avatar', $this->dataForView);
@@ -223,7 +236,7 @@ class ProfilesController extends Controller
     /**
      * 佐证材料列表
      * @param MyStandardRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function listQualification(MyStandardRequest $request)
     {
@@ -242,11 +255,10 @@ class ProfilesController extends Controller
     }
 
 
-
     /**
      * 评聘添加页面
      * @param MyStandardRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      *
      */
     public function addQualification(MyStandardRequest $request)
@@ -258,7 +270,7 @@ class ProfilesController extends Controller
     /**
      * 保存评聘资料
      * @param MyStandardRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function saveQualification(MyStandardRequest $request)
     {
@@ -288,7 +300,7 @@ class ProfilesController extends Controller
     /**
      * 删除评聘
      * @param MyStandardRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function delQualification(MyStandardRequest $request)
     {

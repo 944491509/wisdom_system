@@ -71,23 +71,30 @@ return [
             'visibility' => 'public',
         ],
         //社群的图片存储路径
-        'community' => [
+        'community'     => [
             'driver' => 'local',
             'root' => storage_path('app/community'),
             'url' => env('APP_URL').'/storage/app/community',
             'visibility' => 'public',
         ],
-        'import' => [
-            'driver' => 'local',
-            'root' => storage_path('app/import'),
-            'url' => env('APP_URL').'/storage/app/import',
+        'import'        => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/import'),
+            'url'        => env('APP_URL') . '/storage/app/import',
             'visibility' => 'public',
         ],
-		// 轮播图图片存储路径
-        'banner' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/banner'),
-            'url' => env('APP_URL').'/storage/public/banner',
+        // 轮播图图片存储路径
+        'banner'        => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/banner'),
+            'url'        => env('APP_URL') . '/storage/public/banner',
+            'visibility' => 'public',
+        ],
+        // 学生人脸识别照片
+        'student_photo' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/student_photo'),
+            'url'        => env('APP_URL') . '/storage/public/student_photo',
             'visibility' => 'public',
         ],
     ],

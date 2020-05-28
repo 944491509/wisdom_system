@@ -381,8 +381,19 @@ class SignInGradeController extends Controller
             $result = [];
             foreach ($return as $key => $item) {
                 $result[] = [
-                    'grade_id' => $item->id,
+                    'grade_id'   => $item->id,
                     'grade_name' => $item->name
+                ];
+            }
+        } elseif (!is_null($user->yearManger)) {
+            $yearManger = $user->yearManger;
+            $gradeDao   = new GradeDao;
+            $yearGrades = $gradeDao->gradeListByYear($user->getSchoolId(), $yearManger->year);
+            $result     = [];
+            foreach ($yearGrades as $key => $val) {
+                $result[] = [
+                    'grade_id'   => $val->id,
+                    'grade_name' => $val->name,
                 ];
             }
         } else {
@@ -390,7 +401,7 @@ class SignInGradeController extends Controller
             $result = [];
             foreach ($return as $key => $item) {
                 $result[] = [
-                    'grade_id' => $item->grade_id,
+                    'grade_id'   => $item->grade_id,
                     'grade_name' => $item->grade->name
                 ];
             }

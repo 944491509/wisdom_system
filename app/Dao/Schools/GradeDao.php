@@ -3,6 +3,7 @@ namespace App\Dao\Schools;
 use App\Models\Schools\GradeManager;
 use App\User;
 use App\Models\Schools\Grade;
+use Exception;
 use Illuminate\Support\Collection;
 use App\Utils\ReturnData\MessageBag;
 use App\Utils\JsonBuilder;
@@ -141,8 +142,7 @@ class GradeDao
                 GradeManager::where('id',$data['id'])->update($data);
             }
             $bag->setCode(JsonBuilder::CODE_SUCCESS);
-        }
-        catch (\Exception $exception){
+        } catch (Exception $exception) {
             $bag->setMessage($exception->getMessage());
         }
         return $bag;
@@ -180,7 +180,6 @@ class GradeDao
             . $data->category_code
             . $number;
     }
-
 
     /**
      * 获取年级下的班级
