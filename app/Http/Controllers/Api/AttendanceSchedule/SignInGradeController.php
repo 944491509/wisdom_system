@@ -462,11 +462,7 @@ class SignInGradeController extends Controller
         $week = $weeks->getScheduleWeekIndex();
         // 查询当前时间这个班上的课
         $timeTableItemDao = new TimetableItemDao();
-        if ($user->isTeacher()) {
-            $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDay, $user->id);
-        } else {
-            $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDay);
-        }
+        $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDay);
 
         $weekdayIndex = CalendarDay::GetWeekDayIndex($weekDay);
 
