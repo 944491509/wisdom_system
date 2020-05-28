@@ -8,7 +8,10 @@
 
 namespace App\Dao\Timetable;
 
+use App\Dao\Schools\GradeDao;
 use App\User;
+use App\Utils\JsonBuilder;
+use App\Utils\ReturnData\MessageBag;
 use Carbon\Carbon;
 use App\Dao\Schools\SchoolDao;
 use App\Utils\Time\CalendarWeek;
@@ -16,6 +19,7 @@ use Illuminate\Support\Collection;
 use App\Models\Timetable\TimeSlot;
 use App\Utils\Time\GradeAndYearUtil;
 use App\Models\Timetable\TimetableItem;
+use Illuminate\Support\Facades\DB;
 
 class TimetableItemDao
 {
@@ -167,22 +171,56 @@ class TimetableItemDao
         return $found??false;
     }
 
+
+
     /**
-     * 删除
+     * 删除课程和相关的调课
      * @param $id
-     * @param User|null $doer
-     * @return bool|null
+     * @param User $user
+     * @return MessageBag
      */
-    public function deleteItem($id, $doer = null){
+    public function deleteItem($id, User $user){
+        $bag = new MessageBag();
         $item = $this->getItemById($id);
-        if($item){
-            if($doer){
-                // 记录下是谁删除的
-                $item->last_updated_by = $doer->id;
-                $item->save();
-            }
+        if(is_null($item)) {
+            $bag->setMessage('该课程已删除');
+            return $bag;
         }
-        return TimetableItem::where('id',$id)->delete();
+        try{
+            DB::beginTransaction();
+            // 记录下是谁删除的
+            $item->last_updated_by = $user->id;
+            $item->save();
+            // 判断当前的是课程还是调课
+            if($item->type == 0) {
+                // 删除调课
+                $switchingItems = TimetableItem::where('to_replace', $item->id)->get();
+                foreach ($switchingItems as $key => $val) {
+                    // 判断类型 调课
+                    if($val->type != TimetableItem::TYPE_SUPPLY) {
+                        // 调课与被调课的都要删除
+                        TimetableItem::where('id',$val->substitute_id)->delete();
+                    }
+                    TimetableItem::where('id',$val->id)->delete();
+                }
+                TimetableItem::where('id',$item->id)->delete();
+            } else {
+                // 判断代课还是调课
+                if($item->type != TimetableItem::TYPE_SUPPLY) {
+                    TimetableItem::where('id', $item->substitute_id)->delete();
+                }
+                TimetableItem::where('id', $item->id)->delete();
+            }
+
+            DB::commit();
+            $bag->setMessage('删除成功');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+            $bag->setCode(JsonBuilder::CODE_ERROR);
+        }
+        return $bag;
     }
 
     /**
@@ -244,11 +282,11 @@ class TimetableItemDao
         $result = [];
 
         foreach ($this->timeSlots as $timeSlot) {
-            $result[$timeSlot->id] = '';
+            $result[$timeSlot->id] = [];
         }
 
         foreach ($rows as $row) {
-            // 要判断一下, 是否为调课的记录
+
             if($row->course && $row->teacher){
                 $result[$row->time_slot_id] = [
                     'course' => $row->course->name,
@@ -335,7 +373,6 @@ class TimetableItemDao
          * @var TimetableItem[] $rows
          */
 
-//        $rows = TimetableItem::where($where)->orderBy('time_slot_id','asc')->get();
         $field = ['timetable_items.*', 'time_slots.*', 'timetable_items.id as id' , 'timetable_items.year as year'];
         $rows = TimetableItem::where($where)
             ->leftJoin('time_slots',function ($join) {
@@ -438,6 +475,7 @@ class TimetableItemDao
             ['timetable_items.term','=',$term],
             ['timetable_items.weekday_index','=',$weekDayIndex],
             ['timetable_items.to_replace','=',0], // 不需要调课记录
+            ['time_slots.status', '=', TimeSlot::STATUS_SHOW] // 作息时间的显示
         ];
 
         foreach ($by as $k=>$v) {
@@ -524,7 +562,7 @@ class TimetableItemDao
             ['year','=',$year],
             ['term','=',$term],
             ['to_replace','>',0], // 只加载调课记录
-            ['at_special_datetime','>=',$today->format('Y-m-d').' 00:00:00'], // 今天或者今天以后的
+            ['to_special_datetime','>=',$today->format('Y-m-d').' 00:00:00'], // 今天或者今天以后的
         ];
 
         foreach ($by as $k=>$v) {
@@ -1046,5 +1084,541 @@ class TimetableItemDao
             ->get();
     }
 
+
+    /**
+     * 查询调课
+     * @param $timeTableId
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByToReplace($timeTableId, Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['to_replace', '=', $timeTableId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
+    }
+
+
+    /**
+     * 查询调课
+     * @param $timeSlotId
+     * @param $teacherId
+     * @param $weekIndex
+     * @param Carbon|null $currentTime
+     * @return mixed
+     */
+    public function getTimeTableItemByTimeSlotId($timeSlotId, $teacherId,$weekIndex,Carbon $currentTime = null) {
+        if(is_null($currentTime)) {
+            $currentTime = Carbon::now();
+        }
+        $time = $currentTime->toDateTimeString();
+        $where = [
+            ['time_slot_id', '=', $timeSlotId],
+            ['weekday_index', '=', $weekIndex],
+            ['teacher_id', '=', $teacherId],
+            ['at_special_datetime', '<=', $time],
+            ['to_special_datetime', '>=', $time],
+        ];
+        return TimetableItem::where($where)->first();
+    }
+
+
+    /**
+     * 调课验证
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function switchingCheck($data, $userId) {
+        switch ($data['type']) {
+            case 1 : return $this->_restTeacher($data, $userId);
+            case 2 : return $this->_timeslotChange($data, $userId);
+            case 3 : return $this->_gradeTimeslotChange($data, $userId);
+        }
+    }
+
+
+    /**
+     * 确认调课
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function affirmSave($data, $userId) {
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        $map = [
+            'year' => $timetableItem['year'],
+            'term' => $timetableItem['term'],
+            'weekday_index' => $data['weekday_index'],
+            'time_slot_id' => $data['time_slot_id'],
+        ];
+        switch ($data['type']) {
+            case 1 : return $this->_restTeacherSave($timetableItem,$data, $userId);
+            case 2 :
+                // 查询要调的课
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $timetableItem['grade_id'])->first();
+                return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+            case 3 :
+                // 查询要调的课表
+                $item = TimetableItem::where($map)
+                    ->where('grade_id', $data['grade_id'])->first();
+                return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
+        }
+
+    }
+
+
+    /**
+     * 调课给其他代课老师
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _restTeacher($data, $userId) {
+        // 判断教师
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        if(!isset($data['teacher_id']) || empty($data['teacher_id'])) {
+            $bag->setMessage('teacher_id不能为空');
+            return $bag;
+        }
+        if(!isset($data['building_id']) || empty($data['building_id'])) {
+            $bag->setMessage('building_id不能为空');
+            return $bag;
+        }
+        if(!isset($data['room_id']) || empty($data['room_id'])) {
+            $bag->setMessage('room_id不能为空');
+            return $bag;
+        }
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        if(is_null($timetableItem)) {
+            $bag->setMessage('当前课程不存在');
+            return $bag;
+        }
+
+        if($timetableItem->teacher_id == $data['teacher_id']) {
+            $bag->setMessage('课程表教师与要调课的教师是同一个人');
+            return $bag;
+        }
+
+        $map = [
+            'time_slot_id' =>$timetableItem->time_slot_id,
+            'room_id' => $data['room_id'],
+            'year' => $timetableItem->year,
+            'term' => $timetableItem->term,
+            'weekday_index' => $timetableItem->weekday_index,
+            'published' => true,
+        ];
+        // 判断当前教室是否被占用
+        $room = TimetableItem::where($map)->where('grade_id','<>', $timetableItem->grade_id)
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0) // 没有调课的
+                ->orwhere(function ($que) use ($data) {
+                    $que->where('to_replace', '>', 0)
+                        ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                        ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                });
+            })->first();
+        if(!is_null($room)) {
+            $bag->setMessage('当前教室已被'.$room->grade->name.'占用');
+            $bag->setCode(1001);
+            return $bag;
+        }
+        // 判断该老师当前时间是否有课
+        unset($map['room_id']);
+        $map['teacher_id'] = $data['teacher_id'];
+        $teacher = TimetableItem::where($map)
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0)  // 没有调课的
+                ->orWhere(function ($que) use ($data) {
+                    $que->where('to_replace', '>', 0)
+                        ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                        ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                });
+            })->first();
+        if(!is_null($teacher)) {
+            $bag->setMessage('当前老师在'.$teacher->grade->name.'有课程');
+            $bag->setCode(1001);
+            return $bag;
+        }
+        // 保存
+        return $this->_restTeacherSave($timetableItem, $data, $userId);
+
+    }
+
+
+    /**
+     * 代课保存
+     * @param $timetableItem
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _restTeacherSave(TimetableItem $timetableItem,$data,$userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        $timetableItemId = $timetableItem['id'];
+        unset($timetableItem['id']);
+        $timetableItem->building_id = $data['building_id'] ;
+        $timetableItem['room_id'] = $data['room_id'] ;
+        $timetableItem['teacher_id'] = $data['teacher_id'] ;
+        $timetableItem['to_replace'] = $timetableItemId ;
+        $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+        $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+        $timetableItem['last_updated_by'] = $userId;
+        $timetableItem['type'] = TimetableItem::TYPE_SUPPLY;  // 代课
+        $re = TimetableItem::create($timetableItem->toArray());
+        if($re) {
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+            $bag->setMessage('调课成功');
+        } else {
+            $bag->setMessage('调课失败');
+        }
+        return $bag;
+    }
+
+
+
+    /**
+     * 本班课节互调
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _timeslotChange($data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        if(!isset($data['weekday_index']) || empty($data['weekday_index'])) {
+            $bag->setMessage('星期不能为空');
+            return $bag;
+        }
+        if(!isset($data['time_slot_id']) || empty($data['time_slot_id'])) {
+            $bag->setMessage('课节不能为空');
+            return $bag;
+        }
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        if(is_null($timetableItem)) {
+            $bag->setMessage('当前课程不存在');
+            return $bag;
+        }
+
+        // 查询当前老师在要调的时间是否有课
+        $map = [
+            ['weekday_index', '=', $data['weekday_index']],
+            ['time_slot_id', '=', $data['time_slot_id']],
+            ['year', '=', $timetableItem['year']] ,
+            ['term', '=', $timetableItem['term']],
+        ];
+        $oneself = TimetableItem::where($map)
+            ->where('teacher_id', $timetableItem['teacher_id'])
+            ->where('grade_id', '<>', $timetableItem['grade_id'])
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', '=', 0)
+                    ->orWhere(function ($que) use($data) {
+                        $que->where('to_replace', '>', 0)
+                            ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                            ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                    });
+
+            })
+            ->first();
+        if(!is_null($oneself)) {
+            $bag->setCode(1001);
+            $bag->setMessage('当前时间'.$oneself->teacher->name.'老师在'.$oneself->grade->name.'有课程');
+            return $bag;
+        }
+
+        // 查询要调的课
+        $item = TimetableItem::where($map)->where('grade_id', $timetableItem['grade_id'])->first();
+        // 判断被调老师在其他班有课程
+        $map = [
+            ['weekday_index', '=', $timetableItem['weekday_index']],
+            ['time_slot_id', '=', $timetableItem['time_slot_id']],
+            ['year', '=', $timetableItem['year']] ,
+            ['term', '=', $timetableItem['term']],
+            ['teacher_id', '=', $item['teacher_id']],
+            ['grade_id', '<>', $item['grade_id']],
+        ];
+        if(!is_null($item)) {
+            $other = TimetableItem::where($map)
+                ->where(function ($que) use($data) {
+                    $que->where('to_replace', '=', 0)
+                        ->orWhere(function ($que) use($data) {
+                            $que->where('to_replace', '>', 0)
+                                ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                                ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                        });
+                })->first();
+            if(!is_null($other)) {
+                $bag->setCode(1001);
+                $bag->setMessage('当前时间'.$other->teacher->name.'老师在'.$other->grade->name.'有课程');
+                return $bag;
+            }
+        }
+         //保存
+        return $this->_timeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
+
+
+    /**
+     * 本班课节互换保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _timeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        try{
+            DB::beginTransaction();
+            if(!is_null($item)) {
+                $newItem = $item->toArray();
+                $newItemId = $newItem['id'];
+                unset($newItem['id']);
+                $newItem['to_replace'] = $newItemId;
+            } else {
+                $newItem['year'] = $timetableItem['year'];
+                $newItem['school_id'] = $timetableItem['school_id'];
+                $newItem['term'] = $timetableItem['term'];
+                $newItem['building_id'] = 0;
+                $newItem['room_id'] = 0;
+                $newItem['teacher_id'] = 0;
+                $newItem['grade_id'] = $timetableItem['grade_id'];
+                $newItem['to_replace'] = 0;
+                $newItem['course_id'] = 0;
+                $newItem['repeat_unit'] = 1;
+                $newItem['published'] = 1;
+            }
+            $newItem['time_slot_id'] = $timetableItem['time_slot_id'];
+            $newItem['weekday_index'] = $timetableItem['weekday_index'];
+            $newItem['at_special_datetime'] = $data['at_special_datetime'];
+            $newItem['to_special_datetime'] = $data['to_special_datetime'];
+            $newItem['last_updated_by'] = $userId;
+            $newItem['type'] = TimetableItem::TYPE_SUBSTITUTION; // 调课 本班课节互换
+            $newItem['initiative'] = TimetableItem::INITIATIVE; // 主动
+            $s1 = TimetableItem::create($newItem);
+
+            $timetableItemId = $timetableItem['id'];
+            unset($timetableItem['id']);
+            $timetableItem['time_slot_id'] = $data['time_slot_id'];
+            $timetableItem['weekday_index'] = $data['weekday_index'];
+            $timetableItem['to_replace'] = $timetableItemId;
+            $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+            $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+            $timetableItem['last_updated_by'] = $userId;
+            $timetableItem['type'] = TimetableItem::TYPE_SUBSTITUTION; // 调课 本班课节互换
+            $timetableItem['substitute_id'] = $s1->id;
+            $timetableItem['initiative'] = TimetableItem::PASSIVITY; // 被动
+
+            $s2 = TimetableItem::create($timetableItem->toArray());
+            TimetableItem::where('id',$s1->id)->update(['substitute_id'=>$s2->id]);
+            DB::commit();
+            $bag->setMessage('调课成功');
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+        }
+        return $bag;
+    }
+
+
+    /**
+     * 他班级课节互调
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _gradeTimeslotChange($data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+        if(!isset($data['grade_id']) || empty($data['grade_id'])) {
+            $bag->setMessage('班级不能为空');
+            return $bag;
+        }
+        if(!isset($data['weekday_index']) || empty($data['weekday_index'])) {
+            $bag->setMessage('星期不能为空');
+            return $bag;
+        }
+        if(!isset($data['time_slot_id']) || empty($data['time_slot_id'])) {
+            $bag->setMessage('课节不能为空');
+            return $bag;
+        }
+        // 查询当前课程
+        $timetableItem = $this->getItemById($data['timetable_id']);
+        if(is_null($timetableItem)) {
+            $bag->setMessage('当前课程不存在');
+            return $bag;
+        }
+        // 判断当前课程的老师在调课的时间段是否有课程
+        $map = [
+            ['weekday_index', '=', $data['weekday_index']],
+            ['time_slot_id', '=', $data['time_slot_id']],
+            ['year', '=', $timetableItem['year']] ,
+            ['term', '=', $timetableItem['term']],
+            ['teacher_id', '=', $timetableItem['teacher_id']],
+            ['grade_id', '<>', $data['grade_id']]
+        ];
+        $oneself = TimetableItem::where($map)
+            ->where(function ($que) use ($data) {
+                $que->where('to_replace', 0)
+                    ->orWhere(function ($que) use ($data) {
+                        $que->where('to_replace', '>', 0)
+                            ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                            ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                    });
+            })->first();
+        if(!is_null($oneself)) {
+            $bag->setCode(1001);
+            $bag->setMessage('当前时间'.$oneself->teacher->name.'老师在'.$oneself->grade->name.'有课程');
+            return $bag;
+        }
+
+        // 判断调课的班级是否有这个课
+        $courseId = $timetableItem->course_id;
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($data['grade_id']);
+        $course = $grade->major->courseMajors->where('course_id', $courseId)->first();
+        if(is_null($course)) {
+            $bag->setMessage($grade->name.'所在专业没有'.$timetableItem->course->name);
+            return $bag;
+        }
+
+        // 查询要调的课表
+        $map = [
+            'time_slot_id' => $data['time_slot_id'],
+            'grade_id' => $data['grade_id'],
+            'weekday_index' => $data['weekday_index'],
+            'year' => $timetableItem['year'],
+            'term' => $timetableItem['term'],
+        ];
+
+        $item = TimetableItem::where($map)->first();
+        if(!is_null($item)) {
+            // 查询当前班级是否有被调班级的课程
+            $courseId = $item->course_id;
+            $grade = $timetableItem->grade;
+            $course = $grade->major->courseMajors->where('course_id', $courseId)->first();
+            if(is_null($course)) {
+                $bag->setMessage($grade->name.'所在专业没有'.$item->course->name);
+                return $bag;
+            }
+            // 查询当前课程老师在被调课的时间在别的班级有课程
+            $map = [
+                ['weekday_index', '=', $timetableItem['weekday_index']],
+                ['time_slot_id', '=', $timetableItem['time_slot_id']],
+                ['year', '=', $timetableItem['year']] ,
+                ['term', '=', $timetableItem['term']],
+                ['teacher_id', '=', $item['teacher_id']],
+                ['grade_id', '<>', $timetableItem['grade_id']],
+
+            ];
+            $other = TimetableItem::where($map)
+                ->where(function ($que) use ($data) {
+                    $que->where('to_replace', 0)
+                        ->orWhere(function ($que) use ($data) {
+                            $que->where('to_replace', '>', 0)
+                                ->where('at_special_datetime', '<=', $data['to_special_datetime'])
+                                ->where('to_special_datetime', '>=', $data['at_special_datetime']);
+                        });
+                })->first();
+            if(!is_null($other)) {
+                $bag->setCode(1001);
+                $bag->setMessage('当前时间'.$other->teacher->name.'老师在'.$other->grade->name.'有课程');
+                return $bag;
+            }
+        }
+        // 保存
+        return $this->_gradeTimeslotChangeSave($timetableItem, $item, $data, $userId);
+    }
+
+
+    /**
+     * 其他班级调课保存
+     * @param TimetableItem $timetableItem
+     * @param TimetableItem $item
+     * @param $data
+     * @param $userId
+     * @return MessageBag
+     */
+    public function _gradeTimeslotChangeSave(TimetableItem $timetableItem, TimetableItem $item, $data, $userId) {
+        $bag = new MessageBag(JsonBuilder::CODE_ERROR);
+
+        try{
+            DB::beginTransaction();
+            if(!is_null($item)) {
+                $newItem = $item->toArray();
+                $newItemId = $newItem['id'];
+                unset($newItem['id']);
+                $newItem['to_replace'] = $newItemId;
+            } else {
+                $newItem['year'] = $timetableItem['year'];
+                $newItem['school_id'] = $timetableItem['school_id'];
+                $newItem['term'] = $timetableItem['term'];
+                $newItem['building_id'] = 0;
+                $newItem['room_id'] = 0;
+                $newItem['teacher_id'] = 0;
+                $newItem['to_replace'] = 0;
+                $newItem['course_id'] = 0;
+                $newItem['repeat_unit'] = 1;
+                $newItem['published'] = 1;
+            }
+            $newItem['grade_id'] = $timetableItem['grade_id'];
+            $newItem['time_slot_id'] = $timetableItem['time_slot_id'];
+            $newItem['weekday_index'] = $timetableItem['weekday_index'];
+            $newItem['at_special_datetime'] = $data['at_special_datetime'];
+            $newItem['to_special_datetime'] = $data['to_special_datetime'];
+            $newItem['last_updated_by'] = $userId;
+            $newItem['type'] = TimetableItem::TYPE_SUBSTITUTION_NOTHING;
+            $newItem['initiative'] = TimetableItem::INITIATIVE; // 主动
+            $s1 = TimetableItem::create($newItem);
+
+
+            $timetableItemId = $timetableItem['id'];
+            unset($timetableItem['id']);
+            $timetableItem['grade_id'] = $data['grade_id'];
+            $timetableItem['time_slot_id'] = $data['time_slot_id'];
+            $timetableItem['weekday_index'] = $data['weekday_index'];
+            $timetableItem['to_replace'] = $timetableItemId;
+            $timetableItem['at_special_datetime'] = $data['at_special_datetime'];
+            $timetableItem['to_special_datetime'] = $data['to_special_datetime'];
+            $timetableItem['last_updated_by'] = $userId;
+            $timetableItem['type'] = TimetableItem::TYPE_SUBSTITUTION_NOTHING;
+            $timetableItem['substitute_id'] = $s1->id;
+            $timetableItem['initiative'] = TimetableItem::PASSIVITY;  // 被动
+
+            $s2 = TimetableItem::create($timetableItem->toArray());
+            TimetableItem::where('id',$s1->id)->update(['substitute_id'=>$s2->id]);
+            DB::commit();
+            $bag->setMessage('调课成功');
+            $bag->setCode(JsonBuilder::CODE_SUCCESS);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+        }
+        return $bag;
+    }
+
+
+
+
+
+    /**
+     * 查询调课
+     * @param $map
+     * @return mixed
+     */
+    public function getTimetable($map) {
+        return TimetableItem::where($map)->get();
+    }
 
 }

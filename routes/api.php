@@ -27,8 +27,9 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     Route::any('/load-time-slots','Api\School\TimeSlotsController@load_by_school')
         ->name('api.school.load.time.slots');
 
-    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
-        ->name('api.school.save.time.slot');
+    // 加载学校所有年级的作息时间表
+    Route::get('/getAllTimeSlot','Api\School\TimeSlotsController@getAllTimeSlot')
+        ->name('api.school.getAllTimeSlot');
 
     // 获取指定学校的所有老师的键值对数据
     Route::post('/teachers','Api\School\UsersController@teachers')
@@ -107,6 +108,19 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 搜索班级
     Route::any('/search-grade', 'Operator\GradesController@searchGrade')
         ->name('api.school.search.grade');
+
+    // 加载作息时间的类型
+    Route::get('/getTimeSlotType', 'Api\School\TimeSlotsController@getTimeSlotType')
+        ->name('api.school.getTimeSlotType');
+    // 添加作息时间
+    Route::post('/addTimeSlot', 'Api\School\TimeSlotsController@addTimeSlot')
+        ->name('api.school.addTimeSlot');
+    // 修改作息时间
+    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
+        ->name('api.school.save.time.slot');
+    // 删除作息时间 delTimeslot
+    Route::get('/delTimeslot', 'Api\School\TimeSlotsController@delTimeslot')
+        ->name('api.school.delTimeslot');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
@@ -179,7 +193,7 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
 
     // 创建课程表的调课项
     Route::post('/create-special-case','Api\Timetable\TimetableItemsController@create_special_case')
-        ->name('api.timetable.create.special.case');
+        ->name('api.timetable.create.sload-special-casespecial.case');
 
     // 尝试加载课程表的特定调课项: 查询条件是 ids, 即调课项的 id 集合
     Route::post('/load-special-cases','Api\Timetable\TimetableItemsController@load_special_cases')
@@ -194,6 +208,19 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
     // 1: 根据教师的 api token, 获取今天的课表
     Route::any('/load-by-teacher','Api\Timetable\FrontendController@load_by_teacher')
         ->name('api.timetable.load-by-teacher');
+
+    // 调课验证/通过直接保存
+    Route::post('/switchingCheck','Api\Study\TimetableController@switchingCheck')
+        ->name('api.timetable.switchingCheck');
+    // 根据班级获取课节
+    Route::post('/timeslot','Api\Study\TimetableController@timeslot')
+        ->name('api.timetable.timeslot');
+    // 年级的班级列表
+    Route::post('/gradeList','Api\Study\TimetableController@gradeListByYear')
+        ->name('api.timetable.gradeList');
+    // 判断是否可以调课
+    Route::get('/isSwitching','Api\Study\TimetableController@isSwitching')
+        ->name('api.timetable.isSwitching');
 });
 
 // 招生API

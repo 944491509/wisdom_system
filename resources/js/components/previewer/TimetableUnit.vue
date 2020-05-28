@@ -1,37 +1,43 @@
 <template>
-    <div v-if="isEmpty(unit)" class="timetable-unit-wrap" :class="customCssRule()">
-        <p class="text-center mt-4">
-            <el-button v-if="asManager" round v-on:click="onEmptyUnitClicked">点击添加</el-button>
-        </p>
-    </div>
-    <div v-else class="timetable-unit-wrap" :class="customCssRule()">
-        <el-popover
-                class="unit-content"
-                placement="right"
-                :width="asManager ? 400 : 150"
-                v-model="popupVisible"
-                trigger="click">
-            <p>
-                <el-button icon="el-icon-edit" size="mini" v-if="!unit.published && asManager" v-on:click="editUnit">编辑</el-button>
-                <el-button v-if="asManager" icon="el-icon-document-copy" size="mini" type="success" v-on:click="cloneUnit">克隆</el-button>
-                <el-button icon="el-icon-share" type="primary" size="mini" v-if="unit.published && asManager" v-on:click="createSpecialCase">调课</el-button>
-                <el-button v-if="specialCasesCount > 0" icon="el-icon-info" type="success" size="mini" v-on:click="showSpecials">调课记录</el-button>
-                <el-button v-if="asManager" icon="el-icon-delete" type="danger" size="mini" v-on:click="deleteUnit"></el-button>
-                <el-button v-if="!asManager" icon="el-icon-chat-dot-round" type="primary" size="mini" v-on:click="makeEnquiry">申请表提交</el-button>
+    <div>
+        <div v-if="isEmpty(unit)" class="timetable-unit-wrap" :class="customCssRule()">
+            <p class="text-center mt-4">
+                <el-button v-if="asManager" round v-on:click="onEmptyUnitClicked">点击添加</el-button>
             </p>
-            <div class="unit-content" slot="reference">
-                <p class="text-center no-margin" style="margin-top: -10px;">
-<text-badge :text="optionalText" :color="optionalColor"></text-badge>
-<text-badge :text="repeatUnitText" color="primary"></text-badge>
-<text-badge v-if="specialCasesCount > 0" text="调课" color="info"></text-badge>
+        </div>
+        <div v-else class="timetable-unit-wrap" :class="customCssRule()" @click="popupVisible = !popupVisible">
+
+            <el-popover
+                    class="unit-content"
+                    placement="right"
+                    :width="asManager ? 400 : 150"
+                    v-model="popupVisible"
+                    trigger="manual">
+                <p>
+                    <el-button  icon="el-icon-edit" size="mini" v-if="unit.published === false && asManager " v-on:click="editUnit">编辑</el-button>
+                    <el-button v-if="asManager && !!unit.course_id" icon="el-icon-document-copy" size="mini" type="success" v-on:click="cloneUnit">克隆</el-button>
+                    <el-button icon="el-icon-share" type="primary" size="mini" v-if="unit.published && asManager" v-on:click="createSpecialCase">调课</el-button>
+                    <el-button v-if="specialCasesCount > 0" icon="el-icon-info" type="success" size="mini" v-on:click="showSpecials">调课记录</el-button>
+                    <el-button v-if="asManager" icon="el-icon-delete" type="danger" size="mini" v-on:click="deleteUnit"></el-button>
+                    <el-button v-if="!asManager" icon="el-icon-chat-dot-round" type="primary" size="mini" v-on:click="makeEnquiry">申请表提交</el-button>
                 </p>
-                <p v-if="!isEmpty(unit.course)" class="text-center no-margin">{{ unit.course }}</p>
-                <p v-if="!isEmpty(unit.grade_name)" class="text-center no-margin">班级: {{ unit.grade_name }}</p>
-                <p v-if="!isEmpty(unit.teacher)" class="text-center no-margin">老师: {{ unit.teacher }}</p>
-                <p class="text-center no-margin">地点: {{ unit.building }}</p>
-                <p class="text-center no-margin">{{ unit.room }}</p>
-            </div>
-        </el-popover>
+                <div class="unit-content" slot="reference"  >
+                    <p class="text-center no-margin" style="margin-top: -10px;">
+                        <text-badge v-if="unit.optional" :text="optionalText" :color="optionalColor"></text-badge>
+                        <text-badge v-if="repeatUnitText" :text="repeatUnitText" color="primary"></text-badge>
+                        <text-badge v-if="specialCasesCount > 0" text="调课" color="info"></text-badge>
+                    </p>
+                    <p v-if="!isEmpty(unit.course)" class="text-center no-margin">{{ unit.course }}</p>
+                    <p v-if="!isEmpty(unit.grade_name)" class="text-center no-margin" >班级: {{ unit.grade_name }}</p>
+                    <p v-if="!isEmpty(unit.teacher)" class="text-center no-margin">老师: {{ unit.teacher }}</p>
+                    <p class="text-center no-margin" v-if="unit.building">地点: {{ unit.building }}</p>
+                    <p class="text-center no-margin">{{ unit.room }}</p>
+                    <p class="text-center mt-4" v-if="Object.keys((unit || {})).length == 2 && specialCasesCount > 0">
+                        <el-button v-if="asManager" round v-on:click="onEmptyUnitClicked">点击添加</el-button>
+                    </p>
+                </div>
+            </el-popover>
+        </div>
     </div>
 </template>
 
@@ -63,11 +69,19 @@
             // 周期文字
             'repeatUnitText': function(){
                 return Constants.REPEAT_UNITS[this.unit.repeat_unit-1];
+            },
+            'popupVisible':{
+                get: function() {
+                    return this.unit.popupVisible || false;
+                },
+                set:function(val) {
+                    this.$set(this.unit, 'popupVisible',val)
+                }
             }
         },
         data(){
             return {
-                popupVisible: false
+
             };
         },
         methods: {
@@ -81,7 +95,9 @@
                 else if(this.unit.published){
                     return 'confirmed';
                 }
-                else{
+                else if(Object.keys((this.unit || {})).length == 2 && this.specialCasesCount > 0) {
+                    return '';
+                }else{
                     return 'draft';
                 }
             },
@@ -90,20 +106,43 @@
                 this.$emit('create-new-for-current-unit',{weekday: this.weekday+1, timeSlotId: this.rowIndex});
             },
             editUnit: function(){
-                this.$emit('edit-for-current-unit',{unit: this.unit});
                 this.popupVisible = false;
+                this.$emit('edit-for-current-unit',{unit: this.unit});
                 Util.pageScrollTo(0); // 移动到页面顶部
             },
             // 克隆当前的 unit, 只能改变上课的时间和地点
             cloneUnit: function () {
+                this.popupVisible = false;
                 this.$emit('clone-for-current-unit',{unit: this.unit});
             },
             // 创建调课的事件
             createSpecialCase: function (){
-                this.$emit('create-special-case',{unit: this.unit});
+                this.popupVisible = false;
+               axios.get(
+                    `${Constants.API.TIMETABLE.SWITCH_ITEM}?timetable_id=${this.unit.id}`
+                ).then(res=>{
+                    if(Util.isAjaxResOk(res)){
+                      console.log(res)
+                      if(res.data.code == 1000){
+                        this.$emit('create-special-case',{unit: this.unit});
+                      }else{
+                        this.$confirm(res.data.message, '提示', {
+                            confirmButtonText: '确定',
+                            type: 'warning'
+                        })
+                      }
+                    }else{
+                        // this.$message.error('请重试！');
+                        this.$confirm(res.data.message, '提示', {
+                            confirmButtonText: '确定',
+                            type: 'warning'
+                        })
+                    }
+                });
             },
             // 删除当前项
             deleteUnit: function() {
+                this.popupVisible = false;
                 // 删除课程表项目
                 this.$confirm('此操作将永久删除课程表中该项, 是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -135,10 +174,12 @@
             },
             // 查看调课的记录集合
             showSpecials: function () {
+                this.popupVisible = false;
                 this.$emit('show-specials',this.unit.specials);
             },
             // 请假或其他事宜
             makeEnquiry: function (){
+                this.popupVisible = false;
                 this.$emit('make-enquiry',{
                     data: this.unit,
                     subTitle: '',
