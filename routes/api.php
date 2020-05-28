@@ -27,8 +27,9 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     Route::any('/load-time-slots','Api\School\TimeSlotsController@load_by_school')
         ->name('api.school.load.time.slots');
 
-    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
-        ->name('api.school.save.time.slot');
+    // 加载学校所有年级的作息时间表
+    Route::get('/getAllTimeSlot','Api\School\TimeSlotsController@getAllTimeSlot')
+        ->name('api.school.getAllTimeSlot');
 
     // 获取指定学校的所有老师的键值对数据
     Route::post('/teachers','Api\School\UsersController@teachers')
@@ -107,6 +108,19 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     // 搜索班级
     Route::any('/search-grade', 'Operator\GradesController@searchGrade')
         ->name('api.school.search.grade');
+
+    // 加载作息时间的类型
+    Route::get('/getTimeSlotType', 'Api\School\TimeSlotsController@getTimeSlotType')
+        ->name('api.school.getTimeSlotType');
+    // 添加作息时间
+    Route::post('/addTimeSlot', 'Api\School\TimeSlotsController@addTimeSlot')
+        ->name('api.school.addTimeSlot');
+    // 修改作息时间
+    Route::any('/save-time-slot','Api\School\TimeSlotsController@save_time_slot')
+        ->name('api.school.save.time.slot');
+    // 删除作息时间 delTimeslot
+    Route::get('/delTimeslot', 'Api\School\TimeSlotsController@delTimeslot')
+        ->name('api.school.delTimeslot');
 });
 
 Route::prefix('enquiry')->middleware('auth:api')->group(function () {
