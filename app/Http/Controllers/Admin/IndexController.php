@@ -7,6 +7,8 @@ use App\Http\Requests\MyStandardRequest;
 use App\Utils\JsonBuilder;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\View\View;
 
 class IndexController extends Controller
 {
@@ -62,32 +64,32 @@ class IndexController extends Controller
         $data = [
             ['name' => '教学助手', 'helper_page' =>
                [
-                    [
+                   [
                         'name'=> '课表',
                         'icon' => asset('assets/img/teacher/ass-icon4.png'),
                         'url' => 'course',
                     ],
-                    [
+                   [
                         'name'=> '教学资料',
                         'icon' => asset('assets/img/teacher/ass-icon7.png'),
                         'url' => 'material',
 
                     ],
-                    [
-                        'name'=> '签到',
-                        'icon' => asset('assets/img/teacher/ass-icon9.png'),
-                        'url' => 'check-in',
-                    ],
-                    [
-                        'name'=> '评分',
-                        'icon' => asset('assets/img/teacher/ass-icon8.png'),
-                        'url' => 'evaluation',
-                    ],
-//                    [
-//                        'name'=> '选课',
-//                        'icon' => asset('assets/img/teacher/ass9.png'),
-//                        'url' => 'electives',
-//                    ],
+                   [
+                       'name' => '签到',
+                       'icon' => asset('assets/img/teacher/ass-icon9.png'),
+                       'url'  => 'check-in',
+                   ],
+                   [
+                       'name' => '评分',
+                       'icon' => asset('assets/img/teacher/ass-icon8.png'),
+                       'url'  => 'evaluation',
+                   ],
+                   [
+                       'name' => '选课',
+                       'icon' => asset('assets/img/teacher/ass9.png'),
+                       'url'  => 'electives',
+                   ],
                ]
             ],
             ['name' => '班主任助手', 'helper_page' =>
@@ -122,7 +124,7 @@ class IndexController extends Controller
     /**
      * 意见反馈列表
      * @param MyStandardRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function proposal(MyStandardRequest $request)
     {
@@ -141,7 +143,7 @@ class IndexController extends Controller
     /**
      * 意见反馈详情
      * @param MyStandardRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function proposalInfo(MyStandardRequest $request)
     {
