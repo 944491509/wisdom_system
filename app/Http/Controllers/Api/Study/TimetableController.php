@@ -9,6 +9,8 @@
 namespace App\Http\Controllers\Api\Study;
 
 
+use App\Dao\Schools\GradeDao;
+use App\Models\Timetable\TimetableItem;
 use Carbon\Carbon;
 use App\Utils\JsonBuilder;
 use App\Dao\Schools\SchoolDao;
@@ -257,7 +259,8 @@ class TimetableController extends Controller
             $time = Carbon::parse($start)->addDays($i);
             $weekdayIndex = $time->dayOfWeekIso;  // 周几
             $item = $timetableItemDao->getItemsByWeekDayIndexForTeacherView($weekdayIndex, $year, $term, $oddWeek, $user->id);
-            $course = $this->slotDataProcessing($item, $forStudyingSlots);
+            $course = $this->slotDataProcessing($item, $forStudyingSlots,$user->id,$weekdayIndex, $time);
+//            dump($course);
             $table = [
                 'week_index' => CalendarDay::GetWeekDayIndex($weekdayIndex),
                 'date' => $time->format('m月d日'),
@@ -268,6 +271,7 @@ class TimetableController extends Controller
             ];
 
         }
+//        dd($timetable);
         $weekdayIndex = $date->dayOfWeekIso;  // 周几
         $result = [
             'date' => $date,
@@ -321,54 +325,245 @@ class TimetableController extends Controller
     }
 
 
-
     /**
      * 课节数据处理
      * @param $item
      * @param $forStudyingSlots
+     * @param $teacherId
+     * @param $weekdayIndex
+     * @param Carbon $time
      * @return array
      */
-    public function slotDataProcessing($item, $forStudyingSlots) {
-
+    public function slotDataProcessing($item, $forStudyingSlots, $teacherId, $weekdayIndex, Carbon $time) {
         $dao = new LectureDao();
         $timetable = [];
+        $timetableDao = new TimetableItemDao();
         foreach ($forStudyingSlots as $key => $value) {
             $course = (object)[];
-            foreach ($item as $k => $val) {
-                if($value->id == $val['time_slot_id']) {
+            // 判断当前课节是否在课程里
+            $timeSlotIds = array_column($item,'time_slot_id');
+            if(in_array($value->id, $timeSlotIds)){
+                foreach ($item as $k => $val) {
+                    // 当前时间有课
+                    if($value->id == $val['time_slot_id']) {
+                        // 查询当前老师在该班级上传的资料
+                        $types = $dao->getMaterialTypeByCourseId($val['course_id'],$val['teacher_id'],$val['grade_id']);
+                        $label = [];
+                        foreach ($types as $v) {
+                            $label[] = $v->materialType->name;
+                        }
+                        // 查询当前课是否有调课
+                        $specials = $timetableDao->getTimeTableItemByToReplace($val['id'], $time);
+                        if(is_null($specials)) {
+                            $course = [
+                                'time_table_id' => $val['id'],
+                                'name' => $val['course'],
+                                'room' => $val['building'].$val['room'],
+                                'teacher' => $val['teacher'],
+                                'grade' => [
+                                    [
+                                        'grade_id'=>$val['grade_id'],
+                                        'grade_name'=>$val['grade']
+                                    ],
+                                ],
+                                'label' => $label,
+                                'optional' => $val['optional'],  // true必修课 false选修课
+                                'repeat_unit' => $val['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
+                                'switching'=> false, // 调课 true 是调课 false不是调课
+                                'old_course' => '', // 调课时显示原课程名称
+                            ];
+                        } else {
+                            $date = $time->toDateTimeString();
+
+                            // 当前的调课是同个教师 调课时间段 当前课节  同一天
+                            if($specials->teacher_id == $teacherId  && $specials->at_special_datetime <= $date && $specials->to_special_datetime >= $date && $specials->time_slot_id == $value->id && $specials->weekday_index == $val['weekday_index']) {
+
+                                $course = [
+                                    'time_table_id' => $specials['id'],
+                                    'name' => $specials->course->name,
+                                    'room' => $specials->building->name.$specials->room->name,
+                                    'teacher' => $specials->teacher->name,
+                                    'grade' => [
+                                        [
+                                            'grade_id'=>$specials['grade_id'],
+                                            'grade_name'=>$specials->grade->name
+                                        ],
+
+                                    ],
+                                    'label' => $label,
+                                    'optional' => $specials['optional'],  // true必修课 false选修课
+                                    'repeat_unit' => $specials['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
+                                    'switching' => true,
+                                    'old_course' => $specials->course->name,
+                                ];
+
+                            }
+
+                        }
+                    }
+                }
+            } else {
+                $specials = $timetableDao->getTimeTableItemByTimeSlotId($value->id,$teacherId, $weekdayIndex, $time);
+
+                if(!is_null($specials)) {
+
+                    if($specials['type'] == 0 || $specials['type'] == TimetableItem::TYPE_SUPPLY) {
+
+                        $room = $specials->building->name.$specials->room->name;
+                    } else {
+
+                        $timetableItem = $timetableDao->getItemById($specials->substitute_id);
+
+                        $room = $timetableItem->room_id ? $timetableItem->building->name.$timetableItem->room->name : '-';
+
+                    }
                     // 查询当前老师在该班级上传的资料
-                    $types = $dao->getMaterialTypeByCourseId($val['course_id'],$val['teacher_id'],$val['grade_id']);
+                    $types = $dao->getMaterialTypeByCourseId($specials['course_id'],$specials['teacher_id'],$specials['grade_id']);
+
+
                     $label = [];
                     foreach ($types as $v) {
                         $label[] = $v->materialType->name;
                     }
+
                     $course = [
-                        'time_table_id' => $val['id'],
-                        'name' => $val['course'],
-                        'room' => $val['building'].$val['room'],
-                        'teacher' => $val['teacher'],
+                        'time_table_id' => $specials['id'],
+                        'name' => $specials->course->name,
+                        'room' => $room,
+                        'teacher' => $specials->teacher->name,
                         'grade' => [
                             [
-                                'grade_id'=>$val['grade_id'],
-                                'grade_name'=>$val['grade']
+                                'grade_id'=>$specials['grade_id'],
+                                'grade_name'=>$specials->grade->name
                             ],
 
                         ],
                         'label' => $label,
-                        'optional' => $val['optional'],  // true必修课 false选修课
-                        'repeat_unit' => $val['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
-                        'switching'=> false, // 调课 true 是调课 false不是调课
-                        'old_course' => '', // 调课时显示原课程名称
+                        'optional' => $specials['optional'],  // true必修课 false选修课
+                        'repeat_unit' => $specials['repeat_unit'], // 1每周重复 2每单周重复 3每双周重复
+                        'switching' => true,
+                        'old_course' => $specials->course->name,
                     ];
-                }
 
+                }
             }
 
             $timetable[] = $course;
         }
-
         return $timetable;
     }
 
 
+    /**
+     * 调课
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function switchingCheck(TimetableRequest $request) {
+        $user = $request->user();
+        $rules = [
+            'timetable_id' => 'required|int',
+            'at_special_datetime' => 'required|date|after_or_equal:today',
+            'to_special_datetime' => 'required|date|after_or_equal:at_special_datetime',
+            'type' => 'required|int',
+            'affirm' => 'required|boolean'
+        ];
+
+        $this->validate($request,$rules);
+
+        $all = $request->all();
+
+        $dao = new TimetableItemDao();
+        // 为验证
+        if($all['affirm'] == false) {
+            $result = $dao->switchingCheck($all, $user->id);
+        } else {
+            // 保存
+            $result = $dao->affirmSave($all, $user->id);
+        }
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
+        } else {
+            $code = $result->getCode();
+            return JsonBuilder::Error($msg, $code);
+        }
+    }
+
+
+    /**
+     * 获取当前班级上级的时间段
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function timeslot(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $timeSlotDao = new TimeSlotDao();
+        $timeSlot = $timeSlotDao->getAllStudyTimeSlots($grade->school_id, $grade->gradeYear(), false);
+        return JsonBuilder::Success($timeSlot);
+    }
+
+    /**
+     * 获取年级下的班级
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function gradeListByYear(TimetableRequest $request) {
+        $rules = [
+            'grade_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $gradeId = $request->getGradeId();
+        $gradeDao = new GradeDao();
+        $grade = $gradeDao->getGradeById($gradeId);
+        $gradeList = $gradeDao->gradeListByYear($grade->school_id, $grade->year);
+        $result = [];
+        foreach ($gradeList as $key => $value) {
+            if($value->id != $gradeId) {
+                $result[] = [
+                    'grade_id' => $value->id,
+                    'name' => $value->name,
+                    'year' => $value->year
+                ];
+            }
+        }
+        return JsonBuilder::Success($result);
+    }
+
+
+    /**
+     * 判断是否可以调课
+     * @param TimetableRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function isSwitching(TimetableRequest $request) {
+        $rules = [
+            'timetable_id' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $timetableId = $request->get('timetable_id');
+        $dao = new TimetableItemDao();
+        $today = Carbon::today()->toDateTimeString();
+
+        $map = [
+            ['to_replace','=', $timetableId],
+            ['to_special_datetime', '>=', $today],
+        ];
+        $result = $dao->getTimetable($map);
+        if(count($result) == 0) {
+            return JsonBuilder::Success('可以调课');
+        } else {
+            return JsonBuilder::Error('不可以调课');
+        }
+    }
 }

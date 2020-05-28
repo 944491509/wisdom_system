@@ -9,12 +9,13 @@ Vue.component("WeekNext", {
   methods: {
     _next() {
       const currentDate = moment(this.data.date).add('days',7).format("YYYY-MM-DD");
-      this._initData(currentDate);
+      this._initData(currentDate,this.grade.year);
     }
   },
   data() {
     return {
-     
+
     };
-  }
+  },
+  props:['grade']
 });

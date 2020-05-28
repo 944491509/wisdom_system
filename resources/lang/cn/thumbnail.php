@@ -176,7 +176,7 @@ return [
     'material' =>'教学资料',
     'assistant'=>'助手',
     'check-in'=>'签到',
-
+    'simpleacl' => '权限列表',
     'notices-center'=> '通知/公告/检查',
     'internal-messages' => '内部信',
     'tasks' => '任务',

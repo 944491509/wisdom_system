@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Utils\JsonBuilder;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -51,6 +52,21 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
             return redirect()->route('login');
+        }
+        if($request->is('api/*')) {
+            $res = [];
+            if ($exception instanceof ValidationException) {
+                foreach ($exception->errors() as $key => $value) {
+                    foreach ($value as $k => $error) {
+                        $res = [
+                            'code' => JsonBuilder::CODE_ERROR,
+                            'message' => $error,
+                            'data' => []
+                        ];
+                    }
+                }
+                return  response()->json($res);
+            }
         }
         return parent::render($request, $exception);
     }

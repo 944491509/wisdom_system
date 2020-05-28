@@ -179,7 +179,7 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
 
     // 创建课程表的调课项
     Route::post('/create-special-case','Api\Timetable\TimetableItemsController@create_special_case')
-        ->name('api.timetable.create.special.case');
+        ->name('api.timetable.create.sload-special-casespecial.case');
 
     // 尝试加载课程表的特定调课项: 查询条件是 ids, 即调课项的 id 集合
     Route::post('/load-special-cases','Api\Timetable\TimetableItemsController@load_special_cases')
@@ -194,6 +194,19 @@ Route::prefix('timetable')->middleware('auth:api')->group(function () {
     // 1: 根据教师的 api token, 获取今天的课表
     Route::any('/load-by-teacher','Api\Timetable\FrontendController@load_by_teacher')
         ->name('api.timetable.load-by-teacher');
+
+    // 调课验证/通过直接保存
+    Route::post('/switchingCheck','Api\Study\TimetableController@switchingCheck')
+        ->name('api.timetable.switchingCheck');
+    // 根据班级获取课节
+    Route::post('/timeslot','Api\Study\TimetableController@timeslot')
+        ->name('api.timetable.timeslot');
+    // 年级的班级列表
+    Route::post('/gradeList','Api\Study\TimetableController@gradeListByYear')
+        ->name('api.timetable.gradeList');
+    // 判断是否可以调课
+    Route::get('/isSwitching','Api\Study\TimetableController@isSwitching')
+        ->name('api.timetable.isSwitching');
 });
 
 // 招生API

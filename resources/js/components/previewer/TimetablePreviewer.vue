@@ -18,6 +18,7 @@
                         v-on:create-special-case-column="createSpecialCaseColumnHandler"
                         v-on:show-special-cases-column="showSpecialCasesColumnHandler"
                         v-on:make-enquiry-column="makeEnquiryColumnHandler"
+                        v-on:refresh="refresh"
                 ></timetable-column>
             </div>
         </div>
@@ -49,12 +50,14 @@
                 <el-button type="primary" @click="confirmCloneAction">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="调课表单" :visible.sync="specialCaseFormVisible">
+        <el-dialog :title="'调课表单-'+subTitle" :visible.sync="specialCaseFormVisible" :close-on-click-modal="false">
             <timetable-item-special-form
+                v-if="specialCaseFormVisible"
                 :user-uuid="userUuid"
                 :school-id="schoolId"
                 :courses="coursesForSpecial"
                 :specialTimeTableItem="specialCase"
+                :timeTableItem = "timeTableItem"
                 :to-be-replaced-item="toBeReplacedItem"
                 :subtitle="subTitle"
                 :special-case-cancelled="cancelSpecialCaseHandler"
@@ -65,39 +68,65 @@
                 <el-button type="primary" @click="confirmSpecialCaseHandler">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="调课记录表" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
-            <el-table :data="specials">
-                <el-table-column label="日期" width="150">
-                    <template slot-scope="scope">
-                        <i v-if="scope.row.published" class="el-icon-check"></i>
-                        <i v-else class="el-icon-video-pause"></i>
-                        <i class="el-icon-time"></i>
-                        <span>{{ scope.row.date }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column property="course" label="课程" width="120"></el-table-column>
-                <el-table-column property="location" label="上课地点" width="120"></el-table-column>
-                <el-table-column property="teacher" label="授课教师"></el-table-column>
-                <el-table-column property="updated_by" label="操作人"></el-table-column>
-                <el-table-column label="操作" width="150">
-                    <template slot-scope="scope">
-                        <el-button
-                                v-if="asManager"
-                                size="mini"
-                                type="danger"
-                                @click="handleSpecialCaseDelete(scope.$index, scope.row)">
-                            删除
-                        </el-button>
-                        <el-button
-                                v-if="!scope.row.published && asManager"
-                                size="mini"
-                                type="primary"
-                                @click="handleSpecialCasePublish(scope.$index, scope.row)">
-                            发布
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+        <el-dialog class="specialsListDialog" :visible.sync="specialsListVisible" :before-close="beforeSpecialListClose">
+          <div slot="title"><i class="fa fa-exchange title-icon"></i> 调课记录表</div>
+          <div class="tpItems" v-for="(special,index) in specials" :key="special.timetable_id">
+            <div class="tpLeft">
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/type.svg" />
+                <span class="itemLeft first">调课类型:</span>
+                <span class="temRight first">{{special.type}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">开始时间:</span>
+                <span class="temRight">{{special.start_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">结束时间:</span>
+                <span class="temRight">{{special.end_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-clock-o icon"></i>
+                <span class="itemLeft">实际开始时间:</span>
+                <span class="temRight">{{special.practical_start_time}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-user-circle-o icon"></i>
+                <span class="itemLeft">操作人:</span>
+                <span class="temRight">{{special.updated_by}}</span>
+              </div>
+            </div>
+            <div class="tpRight">
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/method.svg" />
+                <span class="itemLeft first" >调课方式:</span>
+                <span class="temRight first">{{special.initiative}}</span>
+              </div>
+              <div class="tpItem">
+                <i class="fa fa-file-text-o icon"></i>
+                <span class="itemLeft">课程名称:</span>
+                <span class="temRight">{{special.course}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/room.svg" />
+                <span class="itemLeft">上课地点:</span>
+                <span class="temRight">{{special.room}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/teacher.svg" />
+                <span class="itemLeft">授课老师:</span>
+                <span class="temRight">{{special.teacher}}</span>
+              </div>
+              <div class="tpItem">
+                <img class="icon-image" src="/assets/img/previewer/resource.svg" />
+                <span class="itemLeft">课程来源:</span>
+                <span class="temRight">{{special.course_source}}</span>
+              </div>
+            </div>
+            <label class="delete-label"><i class="delete-icon fa fa-trash" @click="deleteSpecial(index,special)"></i></label>
+          </div>
         </el-dialog>
 
         <el-dialog title="请求事宜表单" :visible.sync="makeEnquiryFormVisible">
@@ -131,6 +160,11 @@
             }
         },
         props: {
+            // 传递来的表单数据
+            timeTableItem: {
+                type: Object,
+                required: true,
+            },
             timetable: {
                 type: Array,
                 required: true
@@ -186,6 +220,9 @@
                     room_id: '',
                     published: false,
                     to_replace: 0,
+                    type: 0,
+                    class_id: '',
+                    week_id: '',
                 },
                 toBeReplacedItem: {},
                 coursesForSpecial:[],
@@ -243,15 +280,18 @@
                     }
                 });
             },
+            refresh(){
+                this.$emit('timetable-refresh',{});
+            },
             showSpecialCasesColumnHandler: function(payload){
                 axios.post(
                     Constants.API.TIMETABLE.LOAD_SPECIAL_CASES,
-                    {ids: payload}
+                    {timetable_ids: payload}
                 ).then(res => {
                     if (Util.isAjaxResOk(res)){
                         this.specialsListVisible = true;
                         this.anySpecialItemRemoved = false;
-                        this.specials = res.data.data.specials;
+                        this.specials = res.data.data;
                     }
                 });
             },
@@ -287,29 +327,104 @@
                 this._resetSpecialForm(null); // 重置调课表单数据
                 this.toBeReplacedItem = {}; // 获取到被调课的项
             },
-            confirmSpecialCaseHandler: function(){
-                axios.post(
-                    Constants.API.TIMETABLE.CREATE_SPECIAL_CASE,
-                    {specialCase: this.specialCase, user: this.userUuid}
-                ).then(res=>{
+            confirmSpecialCaseHandler: function(e, affirm = 0){
+              // console.log('AA',this.specialCase)
+              // console.log('AA',this.userUuid)
+              let params = {
+                timetable_id: this.specialCase.to_replace,
+                at_special_datetime: this.specialCase.at_special_datetime,
+                to_special_datetime: this.specialCase.to_special_datetime,
+                type: Number(this.specialCase.type || 0) + 1,
+                affirm: affirm || 0,
+                teacher_id:this.specialCase.teacher_id || '',
+                building_id:this.specialCase.building_id || '',
+                room_id:this.specialCase.room_id || '',
+                weekday_index:this.specialCase.week_id || '',
+                time_slot_id:this.specialCase.course_id || '',
+                grade_id:this.specialCase.class_id || '',
+              }
+               axios.post( `/api/timetable/switchingCheck`, params).then(res=>{
                     if(Util.isAjaxResOk(res)){
-                        // 创建成功, 去刷新课程表的表单
-                        this.$emit('timetable-refresh',{});
-                        this.$notify({
-                            title: '成功',
-                            message: '调课操作成功, 正为您刷新课程表 ...',
-                            type: 'success',
-                            position: 'bottom-right'
-                        });
-                        this.specialCaseFormVisible = false;
+                        if(res.data.code == 1000){
+                            // 创建成功, 去刷新课程表的表单
+                            this.$emit('timetable-refresh',{});
+                            this.$notify({
+                                title: '成功',
+                                message: '调课操作成功, 正为您刷新课程表 ...',
+                                type: 'success',
+                                position: 'bottom-right'
+                            });
+                            this.specialCaseFormVisible = false;
+                        }else{
+                            if(res.data.code == 1001){
+                                this.$confirm(res.data.message, '提示', {
+                                    confirmButtonText: '继续保存',
+                                    cancelButtonText: '取消',
+                                    type: 'warning'
+                                }).then(() => {
+                                    this.confirmSpecialCaseHandler(e,1)
+                                }).catch(()=>{
+                                    this.$notify.error({
+                                        title: '提示',
+                                        message: '已取消保存',
+                                        position: 'bottom-right'
+                                    });
+                                })
+                            }else{
+                                this.$notify.error({
+                                    title: '提示',
+                                    message: res.data.message,
+                                    position: 'bottom-right'
+                                });
+                            }
+
+                        }
                     }else{
-                        this.$notify.error({
-                            title: '系统错误',
-                            message: '调课操作失败, 请稍候再试 ...',
-                            position: 'bottom-right'
-                        });
+                         if(res.data.code == 1001){
+                          this.$confirm(res.data.message, '提示', {
+                              confirmButtonText: '继续保存',
+                              cancelButtonText: '取消',
+                              type: 'warning'
+                          }).then(() => {
+                              this.confirmSpecialCaseHandler(e,1)
+                          }).catch(()=>{
+                              this.$notify.error({
+                                  title: '提示',
+                                  message: '已取消保存',
+                                  position: 'bottom-right'
+                              });
+                          })
+                      }else{
+                          this.$notify.error({
+                              title: '提示',
+                              message: res.data.message,
+                              position: 'bottom-right'
+                          });
+                      }
                     }
                 })
+                // axios.post(
+                //     Constants.API.TIMETABLE.CREATE_SPECIAL_CASE,
+                //     {specialCase: this.specialCase, user: this.userUuid}
+                // ).then(res=>{
+                //     if(Util.isAjaxResOk(res)){
+                //         // 创建成功, 去刷新课程表的表单
+                //         this.$emit('timetable-refresh',{});
+                //         this.$notify({
+                //             title: '成功',
+                //             message: '调课操作成功, 正为您刷新课程表 ...',
+                //             type: 'success',
+                //             position: 'bottom-right'
+                //         });
+                //         this.specialCaseFormVisible = false;
+                //     }else{
+                //         this.$notify.error({
+                //             title: '系统错误',
+                //             message: '调课操作失败, 请稍候再试 ...',
+                //             position: 'bottom-right'
+                //         });
+                //     }
+                // })
             },
             // 发布调课信息
             handleSpecialCasePublish: function(idx, row){
@@ -340,14 +455,14 @@
                 });
             },
             // 删除调课项
-            handleSpecialCaseDelete: function(idx, row){
+            deleteSpecial: function(idx, row){
                 this.$confirm('此操作将永久删除该调课记录, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     axios.post(
-                        Constants.API.TIMETABLE.DELETE_ITEM,{id: row.id, user: this.userUuid}
+                        Constants.API.TIMETABLE.DELETE_ITEM,{id: row.timetable_id, user: this.userUuid}
                     ).then(res=>{
                         if(Util.isAjaxResOk(res)){
                             this.$notify({
@@ -358,6 +473,14 @@
                             });
                             this.specials.splice(idx, 1);
                             this.anySpecialItemRemoved = true;
+                            this.$emit('timetable-refresh',{});
+                        }else{
+                          this.$notify({
+                              title: '失败',
+                              message: '删除失败',
+                              type: 'error',
+                              position: 'bottom-right'
+                          });
                         }
                     });
                 }).catch(() => {
@@ -431,5 +554,84 @@
         width: 12.5%;
         float: left;
     }
+}
+
+
+.specialsListDialog{
+  .title-icon{
+    border-radius: 50%;
+    color: #fff;
+    background-color: #80dd57;
+    padding: 8px;
+  }
+  .tpItems{
+    display: flex;
+    padding: 0 15px;
+    &:not(:last-child){
+      border-bottom: 1px solid #ddd;
+    }
+    .tpLeft, .tpRight{
+      width: 50%;
+    }
+    label.delete-label {
+      opacity: 0;
+      background-color: #FA3D3D;
+      align-self: self-start;
+      padding: 2px 13px;
+      color: #fff;
+      font-size: 15px;
+      border-radius: 11%;
+    }
+    &:hover{
+      label.delete-label{
+          opacity: 1;
+      }
+    }
+    .tpItem{
+      width: 100%;
+      margin-bottom: 10px;
+
+      .icon{
+        font-size: 17px;
+        color: #4EA5FE;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      img.icon-image {
+        margin-right: 6px;
+        width: 15px;
+      }
+      .itemLeft {
+        width: 120px;
+        display: inline-block;
+        font-size:14px;
+        font-weight:400;
+        color:rgba(138,147,161,1);
+        line-height:20px;
+        vertical-align: bottom;
+      }
+      .itemRight{
+        font-size:14px;
+        font-weight:400;
+        color:rgba(65,74,90,1);
+        line-height:20px;
+      }
+      .first{
+        font-size:16px;
+        font-weight:500;
+        color:rgba(65,74,90,1);
+        line-height:22px;
+      }
+    }
+  }
+}
+</style>
+<style>
+.specialsListDialog  .el-dialog__header{
+  border-bottom: 1px solid #ddd;
+}
+.specialsListDialog .el-dialog__body{
+  height: 57vh;
+  overflow-y: auto;
 }
 </style>

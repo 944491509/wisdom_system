@@ -43,7 +43,10 @@ class UsersController extends Controller
      */
     public function load_course_teachers(Request $request){
         $dao = new CourseTeacherDao();
-        return JsonBuilder::Success(['teachers'=>$dao->getTeachersByCourse($request->get('course'))]);
+        $courseId = $request->get('course');
+        $teachers = $dao->getTeachersByCourse($courseId);
+        $data = ['teachers'=>$teachers];
+        return JsonBuilder::Success($data);
     }
 
     /**
