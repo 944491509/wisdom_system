@@ -12,6 +12,7 @@ namespace App\BusinessLogic\Attendances;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use App\Dao\Students\StudentLeaveDao;
+use Illuminate\Support\Facades\Redis;
 use App\Models\Timetable\TimetableItem;
 use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Models\AttendanceSchedules\AttendancesDetail;
@@ -88,6 +89,16 @@ class Attendances
                     'weekday_index'=>$attendance->timeTable->weekday_index,
                     'grade_id' => $attendance->grade_id,
                 ];
+                $key = 'school:'.$attendance->school_id.':time_slot:'.$attendance->time_slot_id.':grade:'.$attendance->grade_id;
+                // 请假
+                if($mold == AttendancesDetail::MOLD_LEAVE) {
+                    $key = $key.':leave:';
+                } else {  // 旷课
+                    $key = $key.':truant:';
+                }
+
+                Redis::lpush($key,$val->user_id);
+                Redis::expire($key, 60 * 60); // 过期时间1个小时
                 // 添加签到默认初始数据
                 AttendancesDetail::create($details);
             } else {

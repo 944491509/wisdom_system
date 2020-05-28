@@ -40,6 +40,10 @@ class CloudController extends Controller
      */
     public function getSchoolInfo(CloudRequest $request)
     {
+        $key = 'name';
+        Redis::lrem($key,0,'mawenhao');
+        dd(Redis::LRANGE($key,0,-1));
+
         $code = $request->get('code');
         $dao      = new FacilityDao;
         $facility = $dao->getFacilityByNumber($code);
@@ -177,8 +181,8 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
-        $res = Redis::get('course:'.$code);
-        if($res) {
+        $res = Redis::get('course:code_'.$code);
+        if(is_null($res)) {
             $timeSlotDao = new TimeSlotDao;
             /**
              * 公有班牌
@@ -212,7 +216,7 @@ class CloudController extends Controller
             }
 
             // 默认 60s
-            Redis::setex('grade:'.$grade->id.':'.$code, 60 * 10, json_encode($data));
+            Redis::setex('course:code_'.$code, 60 * 10, json_encode($data));
         } else {
             $data  = json_decode($res, true);
         }
@@ -293,7 +297,6 @@ class CloudController extends Controller
          * @var  Facility $facility
          */
         $room = $facility->room;
-
         $timeSlotDao = new TimeSlotDao;
 
         $item = $timeSlotDao->getItemByRoomForNow($room);
@@ -301,27 +304,33 @@ class CloudController extends Controller
             return JsonBuilder::Error('暂无课程');
         }
 
-        /**
-         * @var School $school
-         */
-        $configuration = $item->school->configuration;
-        $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
-        $month = Carbon::parse($now)->month;
-        $term = $configuration->guessTerm($month);
-        $weeks = $configuration->getScheduleWeek($now, null, $term);
-        if (is_null($weeks)) {
-              return JsonBuilder::Error('暂无课程');
-        }
+        $key = 'school:'.$item->school_id.':time_slot:'.$item->time_slot_id.':grade:'.$item->grade_id;
+        $sign = Redis::lrange($key.':sign:', 0, -1);
 
-        $week = $weeks->getScheduleWeekIndex();
+        $no_sign = Redis::lrange($key.':truant:', 0, -1);
+        $leave = Redis::lrange($key.':leave:', 0, -1);
 
-        $dao = new AttendancesDao;
-        $attendanceInfo = $dao->isAttendanceByTimetableAndWeek($item, $week);
+//        /**
+//         * @var School $school
+//         */
+//        $configuration = $item->school->configuration;
+//        $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
+//        $month = Carbon::parse($now)->month;
+//        $term = $configuration->guessTerm($month);
+//        $weeks = $configuration->getScheduleWeek($now, null, $term);
+//        if (is_null($weeks)) {
+//              return JsonBuilder::Error('暂无课程');
+//        }
+//
+//        $week = $weeks->getScheduleWeekIndex();
+//
+//        $dao = new AttendancesDao;
+//        $attendanceInfo = $dao->isAttendanceByTimetableAndWeek($item, $week);
 
         $data = [
-            'sign'    => $attendanceInfo->actual_number,
-            'no_sign' => $attendanceInfo->missing_number,
-            'leave'   => $attendanceInfo->leave_number
+            'sign'    => count($sign),
+            'no_sign' => count($no_sign),
+            'leave'   => count($leave)
         ];
 
         return JsonBuilder::Success($data);
