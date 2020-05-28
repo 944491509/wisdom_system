@@ -63,7 +63,6 @@ class TimeSlot extends Model
     const STATUS_HIDE = 0; // 隐藏
     const STATUS_SHOW = 1; // 显示
 
-
     public static function AllTypes(){
         return [
             self::TYPE_STUDYING => self::TYPE_STUDYING_TXT,
