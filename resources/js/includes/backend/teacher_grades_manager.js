@@ -58,21 +58,27 @@ if (document.getElementById('teacher-assistant-grades-manager-app')) {
         return false
       },
       remove (id) {
-        const url = '/api/Oa/del-grade-resources'
-        let params = {image_id: id};
-        axios.post(url, params).then((res) => {
-          if (Util.isAjaxResOk(res)) {
-            this.getGradeList()
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-          }
-        }).catch((err) => {
+        this.$confirm("是否确认删除?", "", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          const url = '/api/Oa/del-grade-resources'
+          let params = {image_id: id};
+          axios.post(url, params).then((res) => {
+            if (Util.isAjaxResOk(res)) {
+              this.getGradeList()
               this.$message({
-                message: '删除失败',
-                type: 'warning'
+                message: '删除成功',
+                type: 'success'
               });
+            }
+          }).catch((err) => {
+                this.$message({
+                  message: '删除失败',
+                  type: 'warning'
+                });
+          });
         });
       }
     }

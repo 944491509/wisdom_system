@@ -231,6 +231,12 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
               item.detail = '无'
               this.detailForm.position = 'false'
             }
+          } else if (item.key === 'gender') {
+            if (data.gender === 1) {
+              item.detail = '男'
+            } else {
+              item.detail = '女'
+            }
           } else {
             item.detail = data[item.key];
           }

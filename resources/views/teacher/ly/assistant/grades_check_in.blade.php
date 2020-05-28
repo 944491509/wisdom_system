@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        班级签到
+                        <pf-icon iconsrc="grade-sign" text="班级签到">
                         <div class="search_filter">
                             <el-date-picker
                               v-model="date"
@@ -82,7 +82,7 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            签到信息
+                            <pf-icon iconsrc="grade-sign-info" text="签到信息">
                         </header>
                     </div>
                     <div class="card-body">
