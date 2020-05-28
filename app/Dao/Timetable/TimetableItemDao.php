@@ -1463,7 +1463,8 @@ class TimetableItemDao
             ['year', '=', $timetableItem['year']] ,
             ['term', '=', $timetableItem['term']],
             ['teacher_id', '=', $timetableItem['teacher_id']],
-            ['grade_id', '<>', $data['grade_id']]
+            ['grade_id', '<>', $data['grade_id']],
+            ['id', '<>', $timetableItem['id']],
         ];
         $oneself = TimetableItem::where($map)
             ->where(function ($que) use ($data) {
@@ -1517,7 +1518,7 @@ class TimetableItemDao
                 ['term', '=', $timetableItem['term']],
                 ['teacher_id', '=', $item['teacher_id']],
                 ['grade_id', '<>', $timetableItem['grade_id']],
-
+                ['id', '<>', $item['id']],
             ];
             $other = TimetableItem::where($map)
                 ->where(function ($que) use ($data) {
