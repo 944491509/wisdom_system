@@ -2,13 +2,14 @@
 @section('content')
 <div id="teacher-assistant-grades-evaluations-app">
     <div class="blade_title">班级评分</div>
+
     <el-row :gutter="20">
         <el-col :span="12">
             <div class="grid-content bg-purple-dark"></div>
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        <pf-icon iconsrc="grade-score" text="班级评分">
+                        <pf-icon iconsrc="grade-score" text="班级评分"></pf-icon>
                         <div class="search_filter">
                             <el-date-picker
                               v-model="date"
@@ -25,6 +26,7 @@
                             </el-select>
                             <el-button type="primary" size="small" @click="searchList">查询</el-button>
                         </div>
+
                     </header>
                 </div>
                 <div class="card-body">
