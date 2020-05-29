@@ -543,8 +543,11 @@ class CourseDao
 
         $return = Course::where($map)
             ->with('majors')->whereHas('majors', function ($que) use ($data){
-                $que->where('major_id', $data['major_id'])
-                    ->groupBy('course_id');})
+                $que->when(!empty($data['major_id']) ,function ($que)  use($data){
+                    return $que->where('major_id', $data['major_id'])
+                        ->groupBy('course_id');});
+                })
+
 //            ->with('teachers')->whereHas('teachers', function ($que) use ($data) {
 //                $que->where('teacher_id', $data['teacher_id'])
 //                    ->groupBy('course_id');})
