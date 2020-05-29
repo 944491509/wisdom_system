@@ -15,7 +15,7 @@
                             </el-form-item>
                             <el-form-item label="学期">
                                 <el-select v-model="timeTableItem.term" style="width: 100%;">
-                                    <el-option v-if="idx>0" :label="theTerm" :value="idx" :key="theTerm" v-for="(theTerm, idx) in terms"></el-option>
+                                    <el-option v-if="idx > 0" :label="theTerm" :value="idx" :key="theTerm" v-for="(theTerm, idx) in terms"></el-option>
                                 </el-select>
                                 <span class="help-text">请在这里输入课程表是对应哪个学期的</span>
                             </el-form-item>

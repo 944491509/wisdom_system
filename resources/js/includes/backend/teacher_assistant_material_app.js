@@ -71,8 +71,8 @@ $(document).ready(function(){
         this.teacher = JSON.parse(dom.dataset.teacher); // 老师信息
         this.courseMaterialModel.teacher_id = this.teacher.id; // 老师id
         this.changeMeans(1); // 默认选中我的课程
-        this.getMyCourseListInfo(); // 我的课程数据
-        this.getMyMaterialsListInfo(); // 教学资料数据
+        // this.getMyCourseListInfo(); // 我的课程数据
+        // this.getMyMaterialsListInfo(); // 教学资料数据
         // this.myMaterialsListDataInfo(0); // 教学资料默认展示数据
 
       },
@@ -104,11 +104,13 @@ $(document).ready(function(){
           */
           if (val == 1) {
             // this.activeNames = [0]
-            // this.myMaterialsListDataInfo(tab);
+            this.getMyMaterialsListInfo();
+            this.getMyCourseListInfo(); // 我的课程数据
           }
           if (val == 2) {
             this.activeNames = [0]
-          //   this.activeTable(1)
+            //   this.activeTable(1)
+            this.getMyMaterialsListInfo(); // 教学资料数据
           }
           // 显示教学计划和教学日志数据页
           if (val == 3) {

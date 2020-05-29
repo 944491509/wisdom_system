@@ -11,10 +11,28 @@ export function getTimeSlots(schoolId, noTime, grade_id, year) {
     );
 }
 
-export function saveTimeSlot(schoolUuid, timeSlot) {
+export function saveTimeSlot( timeSlot) {
     return axios.post(
-        Constants.API.SAVE_TIME_SLOT,{school: schoolUuid, timeSlot: timeSlot}
+        Constants.API.SAVE_TIME_SLOT, timeSlot
     );
+}
+
+export function addTimeSlot(timeSlot) {
+  return axios.post(
+      '/api/school/addTimeSlot',timeSlot
+  );
+}
+
+export function deleteTimeSlot(time_slot_id) {
+  return axios.get(
+      `/api/school/delTimeslot?time_slot_id=${time_slot_id}`,
+  );
+}
+
+export function editTimeSlot(schoolUuid, timeSlot) {
+  return axios.post(
+      Constants.API.SAVE_TIME_SLOT,{school: schoolUuid, timeSlot: timeSlot}
+  );
 }
 
 export function getCourses(schoolId, page) {

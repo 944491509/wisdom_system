@@ -97,7 +97,10 @@ class OaElectiveCourseController extends Controller
         $type = $request->getInputType();
         $dao = new TeacherApplyElectiveCourseDao();
         $result = $dao->getApplicationsByTeacher($user->id, $schoolId, $type, $request->getInputPage());
-        return JsonBuilder::Success($result);
+        $retJson = JsonBuilder::Success($result['list']);
+        $retDecode = json_decode($retJson, true);
+        $retDecode['total'] = $result['total'];
+        return json_encode($retDecode);
     }
 
     public function applylists(OaElectiveCourseRequest $request)
@@ -106,7 +109,10 @@ class OaElectiveCourseController extends Controller
         $schoolId = $user->getSchoolId();
         $dao = new TeacherApplyElectiveCourseDao();
         $result = $dao->getApplications2ByTeacher($user->id, $schoolId);
-        return JsonBuilder::Success($result);
+        $retJson = JsonBuilder::Success($result['list']);
+        $retDecode = json_decode($retJson, true);
+        $retDecode['total'] = $result['total'];
+        return json_encode($retDecode);
     }
 
     public function info(OaElectiveCourseRequest $request)

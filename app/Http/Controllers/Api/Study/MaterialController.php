@@ -208,6 +208,7 @@ class MaterialController extends Controller
     public function addMaterial(MaterialRequest $request) {
         $user = $request->user();
         $all = $request->all();
+        $all['school_id'] = $user->getSchoolId();
         $all['user_id'] = $user->id;
         $dao = new LectureDao();
         if(!empty($all['lecture_id'])) {

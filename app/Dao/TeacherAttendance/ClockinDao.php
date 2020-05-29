@@ -475,7 +475,7 @@ class ClockinDao
                 }elseif ($dateTime < $morningLateTime) {
                     $return['status'] = Clockin::STATUS_LATE;
                 }elseif ($dateTime < $afternoonStartTime) {
-                    $return['status'] - Clockin::STATUS_LATER;
+                    $return['status'] = Clockin::STATUS_LATER;
                 }elseif ($dateTime < $afternoonTime) {
                     //上午已经缺卡
                     $return['type'] = 'afternoon';

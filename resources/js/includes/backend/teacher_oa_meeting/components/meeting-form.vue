@@ -67,7 +67,7 @@
           <date-time-range v-model="form.signoutRange" />
         </el-form-item>
         <el-form-item class="is-required" label="会议说明">
-          <el-input type="textarea" :rows="5" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
+          <el-input type="textarea" :maxlength="500" :rows="5" v-model="form.meet_content" placeholder="请输入会议内容"></el-input>
         </el-form-item>
         <el-form-item label>
           <div class="file-box" v-for="(file, index) in filelist" :key="index">
@@ -117,6 +117,14 @@ export default {
     MemberSelect,
     DateTimeRange
   },
+  computed: {
+    signoutMin() {
+      if (!this.form.timeRange || !this.form.timeRange[1]) {
+        return null;
+      }
+      return this.form.timeRange[1].split(" ")[1];
+    }
+  },
   methods: {
     onSubmit() {
       if (!this.form.meet_title) {
@@ -127,7 +135,11 @@ export default {
         this.$message.error("请选择会议时间");
         return;
       }
-      if (null == this.form.room || undefined == this.form.room || '' == this.form.room) {
+      if (
+        null == this.form.room ||
+        undefined == this.form.room ||
+        "" == this.form.room
+      ) {
         this.$message.error("请选择会议地点");
         return;
       }
@@ -152,10 +164,33 @@ export default {
       if (this.form.signin_status) {
         formdata.signin_start = this.form.signinRange[0];
         formdata.signin_end = this.form.signinRange[1];
+        if (
+          new Date(formdata.signin_end).getTime() >
+          new Date(formdata.meet_end).getTime()
+        ) {
+          this.$message.error("签到结束时间必须早于会议结束时间");
+          return;
+        }
       }
       if (this.form.signout_status) {
         formdata.signout_start = this.form.signoutRange[0];
         formdata.signout_end = this.form.signoutRange[1];
+        if (
+          new Date(formdata.signout_end).getTime() <
+          new Date(formdata.meet_end).getTime()
+        ) {
+          this.$message.error("签退结束时间必须大于会议结束时间");
+          return;
+        }
+      }
+      if (this.form.signin_status && this.form.signout_status) {
+        if (
+          new Date(formdata.signin_end).getTime() >
+          new Date(formdata.signout_start).getTime()
+        ) {
+          this.$message.error("签到的结束时间应早于签退的开始时间");
+          return;
+        }
       }
       delete formdata.signoutRange;
       delete formdata.signinRange;
@@ -238,8 +273,8 @@ export default {
     MeetingApi.excute("getMeetRoomList", {}, { methods: "get" }).then(res => {
       this.addressOptions = res.data.data.map(room => {
         return {
-          label: room.name,
-          value: room.building_id
+          label: room.building.name + " " + room.description,
+          value: room.room_id
         };
       });
     });

@@ -121,7 +121,7 @@ class PagesController extends Controller
 
         $this->dataForView['news'] = $news;
         $this->dataForView['api_token'] = null;
-
+        $this->dataForView['pageTitle'] = '详情';
         return view('h5_apps.teacher.view_news', $this->dataForView);
     }
 

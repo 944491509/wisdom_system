@@ -143,6 +143,8 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
         ->name('teacher.elective-course.create');
     Route::get('elective-course/edit', 'ElectiveCoursesController@edit')
         ->name('teacher.elective-course.edit');
+    Route::get('elective-course/manager', 'ElectiveCoursesController@manager')
+        ->name('teacher.elective-course.manager');
 
     // 社区管理
     // 动态列表

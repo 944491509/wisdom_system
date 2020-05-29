@@ -25,6 +25,7 @@
         <div class="col-12">
             <div class="card">
                 <timetable-previewer
+                    :time-table-item="timeTableItem"
                     school-id="{{ $school->id }}"
                     user-uuid="{{ Auth::user()->uuid }}"
                     :timetable="timetable"

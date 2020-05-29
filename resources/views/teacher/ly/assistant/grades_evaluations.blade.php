@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        评分记录
+                        <pf-icon iconsrc="grade-score" text="班级评分">
                         <div class="search_filter">
                             <el-date-picker
                               v-model="date"
@@ -65,7 +65,7 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            记录详情
+                            <pf-icon iconsrc="grade-score-info" text="评分信息">
                             <span style="float: right" v-text="teacherName"></span>
                         </header>
                     </div>

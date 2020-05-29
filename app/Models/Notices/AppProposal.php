@@ -4,6 +4,7 @@ namespace App\Models\Notices;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class AppProposal extends Model
 {
@@ -45,8 +46,6 @@ class AppProposal extends Model
         return self::allType()[$this->type];
     }
 
-
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -57,5 +56,9 @@ class AppProposal extends Model
         return $this->hasMany(AppProposalImage::class);
     }
 
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('Y-m-d H:i');
+    }
 
 }

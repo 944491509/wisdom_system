@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\OA;
 
+use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\GradeManagerDao;
 use App\Dao\Schools\GradeResourceDao;
 use App\Dao\Students\StudentProfileDao;
@@ -13,6 +14,7 @@ use App\Models\Acl\Role;
 use App\Models\Schools\GradeManager;
 use App\Models\Schools\GradeResource;
 use App\Utils\JsonBuilder;
+use Exception;
 
 class GradeManageController extends Controller
 {
@@ -24,21 +26,65 @@ class GradeManageController extends Controller
      */
     public function index(MyStandardRequest $request)
     {
+
         $teacher = $request->user();
 
-        $dao = new GradeManagerDao;
-        $grades = $dao->getAllGradesByAdviserId($teacher->id);
-        $data = [];
-        foreach ($grades as $key => $val) {
-             $data[$key]['grade_id'] = $val->grade->id;
-             $data[$key]['name'] = $val->grade->name;
+        $yearManger = $teacher->yearManger;
 
-             $data[$key]['image'] = [];
-             foreach ($val->grade->gradeResource as $k => $v) {
-                $data[$key]['image'][$k]['image_id'] = $v->id;
-                $data[$key]['image'][$k]['path'] = $v->path;
-             }
+
+        $data = [];
+        if ($yearManger) {
+
+            // 年级主任
+            $gradeDao = new GradeDao;
+
+            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
+
+            foreach ($yearGrades as $key => $value) {
+
+                $data[$key]['grade_id'] = $value->id ?? '';
+
+                $data[$key]['name'] = $value->name ?? '';
+
+                $data[$key]['image'] = [];
+
+                foreach ($value->gradeResource as $k => $v) {
+
+                    $data[$key]['image'][$k]['image_id'] = $v->id;
+
+                    $data[$key]['image'][$k]['path'] = $v->path;
+
+                }
+
+            }
+
+        } else {
+
+            // 班主任
+
+            $dao = new GradeManagerDao;
+
+            $grades = $dao->getAllGradesByAdviserId($teacher->id);
+
+            foreach ($grades as $key => $val) {
+
+                $data[$key]['grade_id'] = $val->grade->id ?? '';
+
+                $data[$key]['name'] = $val->grade->name ?? '';
+
+                $data[$key]['image'] = [];
+
+                foreach ($val->grade->gradeResource as $k => $v) {
+
+                    $data[$key]['image'][$k]['image_id'] = $v->id;
+
+                    $data[$key]['image'][$k]['path'] = $v->path;
+
+                }
+
+            }
         }
+
 
         return JsonBuilder::Success($data);
     }
@@ -50,21 +96,21 @@ class GradeManageController extends Controller
      */
     public function uploadGradeResource(MyStandardRequest $request)
     {
-         $gradeId = $request->get('grade_id');
-         $file = $request->file('file');
-         $data['grade_id'] = $gradeId;
-         $data['name'] = $file->getClientOriginalName();
-         $data['type'] = $file->extension();
-         $data['size'] = getFileSize($file->getSize());
-         $data['path'] = GradeResource::gradeResourceUploadPathToUrl($file->store(GradeResource::DEFAULT_UPLOAD_PATH_PREFIX));
+        $gradeId          = $request->get('grade_id');
+        $file             = $request->file('file');
+        $data['grade_id'] = $gradeId;
+        $data['name']     = $file->getClientOriginalName();
+        $data['type']     = $file->extension();
+        $data['size']     = getFileSize($file->getSize());
+        $data['path']     = GradeResource::gradeResourceUploadPathToUrl($file->store(GradeResource::DEFAULT_UPLOAD_PATH_PREFIX));
 
-         $dao = new GradeResourceDao;
-         $result = $dao->create($data);
-         if($result) {
-             return JsonBuilder::Success('上传成功');
-         } else {
-             return JsonBuilder::Error('上传失败');
-         }
+        $dao    = new GradeResourceDao;
+        $result = $dao->create($data);
+        if($result) {
+            return JsonBuilder::Success('上传成功');
+        } else {
+            return JsonBuilder::Error('上传失败');
+        }
     }
 
     /**
@@ -74,8 +120,8 @@ class GradeManageController extends Controller
      */
     public function delGradeResource(MyStandardRequest $request)
     {
-        $id = $request->get('image_id');
-        $dao  = new GradeResourceDao;
+        $id     = $request->get('image_id');
+        $dao    = new GradeResourceDao;
         $result = $dao->delete($id);
         if ($result) {
             return JsonBuilder::Success('删除成功');
@@ -91,14 +137,25 @@ class GradeManageController extends Controller
      */
     public function gradesList(MyStandardRequest $request)
     {
-        $teacher = $request->user();
-
-        $dao = new GradeManagerDao;
-        $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        $teacher    = $request->user();
+        $yearManger = $teacher->yearManger;
+        if ($yearManger) {
+            // 年级主任
+            $gradeDao   = new GradeDao;
+            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
+            $grades     = [];
+            foreach ($yearGrades as $key => $value) {
+                $grades[] = $value->GradeManager;
+            }
+        } else {
+            // 班主任
+            $dao    = new GradeManagerDao;
+            $grades = $dao->getAllGradesByAdviserId($teacher->id);
+        }
         $data = [];
         foreach ($grades as $key => $val) {
-            $data[$key]['grade_id'] = $val->grade->id;
-            $data[$key]['name'] = $val->grade->name;
+            $data[$key]['grade_id'] = $val->grade->id ?? '';
+            $data[$key]['name']     = $val->grade->name ?? '';
         }
 
         return JsonBuilder::Success($data);
@@ -113,17 +170,18 @@ class GradeManageController extends Controller
     {
 
         $gradeId = $request->get('grade_id');
-        $dao = new GradeUserDao;
-        $data = $dao->paginateUserByGrade($gradeId, Role::VERIFIED_USER_STUDENT);
-        $output = [];
+        $dao     = new GradeUserDao;
+        $data    = $dao->paginateUserByGrade($gradeId, Role::VERIFIED_USER_STUDENT);
+        $output  = [];
         foreach ($data as $key => $val) {
-            $output[$key]['student_id'] = $val->user_id;
-            $output[$key]['name'] = $val->name;
+            $output[$key]['student_id']       = $val->user_id;
+            $output[$key]['name']             = $val->name;
+            $output[$key]['face_code_status'] = $val->studentProfile->face_code ? 1 : 0;
         }
         return [
-            'code' => JsonBuilder::CODE_SUCCESS,
-            'message' => "ok",
-            'data' => $output,
+            'code'        => JsonBuilder::CODE_SUCCESS,
+            'message'     => "ok",
+            'data'        => $output,
             'currentPage' => $data->currentPage(),
             'lastPage'    => $data->lastPage(),
             'total'       => $data->total(),
@@ -139,14 +197,16 @@ class GradeManageController extends Controller
     {
         $studentId = $request->get('student_id');
 
-        $dao = new  UserDao;
-        $user = $dao->getUserById($studentId);
-        $profile = $user->profile;
-        $gradeUser = $user->gradeUser;
-        $grade     = $user->gradeUser->grade;
-        $monitor   = $user->monitor;
-        $group     = $user->group;
-        $data = [
+        $dao              = new  UserDao;
+        $user             = $dao->getUserById($studentId);
+        $profile          = $user->profile;
+        $gradeUser        = $user->gradeUser;
+        $grade            = $user->gradeUser->grade;
+        $monitor          = $user->monitor;
+        $group            = $user->group;
+        $gradeName        = $grade->name;
+        $studentPhotoPath = asset('storage/student_photo/' . $gradeName . '/' . $user->getName() . '.jpg');
+        $data             = [
             'grade_id'       => $grade->id,
             'student_id'     => $user->id,
             'name'           => $user->name,  // 姓名
@@ -174,6 +234,7 @@ class GradeManageController extends Controller
             'year'           => $grade->year.'级',
             'monitor'        => $monitor == null ? false : true, // 班长
             'group'          => $group == null ? false : true,  // 团支书
+            'face_image'     => asset(empty($profile->face_code) ? '' : $studentPhotoPath)
         ];
 
         return JsonBuilder::Success($data);
@@ -183,40 +244,29 @@ class GradeManageController extends Controller
      * 教师修改学生信息
      * @param MyStandardRequest $request
      * @return string
+     * @throws Exception
      */
     public function updateStudentInfo(MyStandardRequest $request)
     {
         $studentId = $request->get('student_id');
-        $data = $request->get('data');
-        $monitor = $request->get('monitor');
-        $group = $request->get('group');
+        $data      = $request->get('data');
+        $monitor   = $request->get('monitor');
+        $group     = $request->get('group');
 
-        $dao = new StudentProfileDao;
-        $gradeManagerDao = new GradeManagerDao;
+        $dao     = new StudentProfileDao;
         $userDao = new UserDao;
-        if (isset($data['email'])) {
+        if (isset($data['email']) && !empty($data['email']) && !is_null($data['email'])) {
             $result = $userDao->getUserByEmail($data['email']);
             if ($result  && $result['id'] != $studentId) {
                 return  JsonBuilder::Error('邮箱已经有人用了');
             }
-            $userResult = $userDao->updateEmail($studentId, $data['email']);
         }
-        if (isset($data['email'])) {
-            unset($data['email']);
-        }
-        $studentResult =  $dao->updateStudentProfile($studentId, $data);
-        if ($monitor['monitor_id'] != 0) {
-            $gradeResult = $gradeManagerDao->updateGradeManger($monitor['grade_id'], $monitor);
-        } else {
-            $gradeResult = true;
-        }
-        if ($group['group_id'] != 0) {
-           $groupResult = $gradeManagerDao->updateGradeManger($group['grade_id'], $group);
-        } else {
-            $gradeResult = true;
-        }
-
-        if ($gradeResult !==false || $studentResult !==false || $groupResult !==false || $userResult !==false ) {
+        $manger = [
+            'monitor' => $monitor,
+            'group'   => $group
+        ];
+        $result = $dao->updateStudentInfoAndClassPositionByUserId($studentId, $data, $manger);
+        if ($result->isSuccess()) {
             return JsonBuilder::Success('修改成功');
         } else {
             return JsonBuilder::Error('修改失败');
@@ -224,32 +274,32 @@ class GradeManageController extends Controller
     }
 
 
-  /**
-   * 是否为班主任
-   * @param MyStandardRequest $request
-   * @return string
-   */
+    /**
+     * 是否为班主任
+     * @param MyStandardRequest $request
+     * @return string
+     */
     public function isAdviser(MyStandardRequest $request)
     {
         $teacher = $request->user();
         if (is_null($teacher->isAdviser)) {
-           $data = ['is_adviser' => GradeManager::ADVISER_0];
+            $data = ['is_adviser' => GradeManager::ADVISER_0];
         } else {
-           $data = ['is_adviser' => GradeManager::ADVISER_1];
+            $data = ['is_adviser' => GradeManager::ADVISER_1];
         }
 
         return  JsonBuilder::Success($data);
     }
 
-  /**
-   * 是否为学校管理员
-   * @param MyStandardRequest $request
-   * @return string
-   */
+    /**
+     * 是否为学校管理员
+     * @param MyStandardRequest $request
+     * @return string
+     */
     public function isSchoolManager(MyStandardRequest $request)
     {
         $teacher = $request->user();
-        $data = ['is_school_manger' => $teacher->isSchoolManager()];
+        $data    = ['is_school_manger' => $teacher->isSchoolManager()];
         return  JsonBuilder::Success($data);
     }
 }

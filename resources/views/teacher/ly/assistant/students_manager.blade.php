@@ -2,23 +2,29 @@
 @section('content')
 <div id="teacher-assistant-students-manager-app">
     <div class="blade_title">学生信息</div>
+    <input type="file"
+           name="file"
+           accept="image/jpeg, image/jpg, image/png"
+           @change="onFileSelected"
+           hidden
+           ref="studentImgUpload" id="student-img-upload"/>
     <el-row :gutter="20">
         <el-col :span="8">
             <div class="grid-content bg-purple-dark"></div>
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        班级列表
+                        <pf-icon iconsrc="classes-list" text="班级列表">
                     </header>
                 </div>
                 <div class="card-body">
                     <el-table
-                            height="600"
-                            v-show="classData.length > 0"
-                            :show-header="false"
-                            :data="classData">
+                        height="600"
+                        v-show="classData.length > 0"
+                        :show-header="false"
+                        :data="classData">
                         <el-table-column
-                                prop="name"
+                            prop="name"
                                 label="班级">
                         </el-table-column>
                         <el-table-column
@@ -43,23 +49,26 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        学生明细
+                        <pf-icon iconsrc="stu-list" text="学生明细">
                     </header>
                 </div>
                 <div class="card-body">
                     <el-table
-                            height="600"
-                            v-show="stuData.length > 0"
-                            :show-header="false"
-                            :data="stuData">
+                        height="600"
+                        v-show="stuData.length > 0"
+                        :show-header="false"
+                        :data="stuData">
                         <el-table-column
-                                prop="name"
-                                label="姓名">
+                            prop="name"
+                            label="姓名">
                         </el-table-column>
                         <el-table-column
-                                label="详情">
+                            label="详情">
                             <template slot-scope="scope">
                                 <span class="showDetail">
+                                    <span class="uploaded-text" v-if="scope.row.face_code_status">已上传</span>
+                                    <label for="student-img-upload" @click="setCurrentStudent(scope.row, scope.$index)"><span
+                                            class="upload">照片</span></label>
                                      <img @click="showDetail(scope.row)"
                                           src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
                                 </span>
@@ -88,21 +97,23 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            学生信息
+                            <pf-icon iconsrc="stu-info" text="学生信息">
                         </header>
                     </div>
                     <div class="card-body">
                         <el-table
-                                height="580"
-                                :show-header="false"
-                                :data="detailDataList">
+                            ref="stuinfoTable"
+                            height="580"
+                            :show-header="false"
+                            :data="detailDataList">
                             <el-table-column
-                                    prop="label">
+                                prop="label">
                             </el-table-column>
                             <el-table-column
-                                    prop="detail">
+                                prop="detail">
                             </el-table-column>
                         </el-table>
+
                         <div style="text-align: center;padding:10px">
                             <el-button class="stu-edit" @click="dialogVisible = true">编辑</el-button>
                         </div>
@@ -174,17 +185,17 @@
                  @{{detailData.institute}}
             </el-form-item>
             <el-form-item label="年级">
-                 @{{detailData.year}}
+                @{{detailData.year}}
             </el-form-item>
             <el-form-item label="专业">
-                 @{{detailData.major}}
+                @{{detailData.major}}
             </el-form-item>
             <el-form-item label="职务">
                 <el-radio-group v-model="detailForm.position">
-                      <el-radio label="monitor">班长</el-radio>
-                      <el-radio label="group">团支书</el-radio>
-                      <el-radio label="">无</el-radio>
-                    </el-radio-group>
+                    <el-radio label="monitor">班长</el-radio>
+                    <el-radio label="group">团支书</el-radio>
+                    <el-radio label="false">无</el-radio>
+                </el-radio-group>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">

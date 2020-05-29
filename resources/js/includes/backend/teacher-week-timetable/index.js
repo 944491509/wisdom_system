@@ -22,7 +22,7 @@ if (teacherWeekTimetable) {
     el: "#teacherWeekTimetable",
     template: `
         <div class="teacher-week-content">
-        <WeekPrev />
+        <WeekPrev :grade="selectedGrade"/>
         <div class="teacher-week-timetable-container">
             <div class="week-main-title">
                 我的课表
@@ -46,7 +46,7 @@ if (teacherWeekTimetable) {
             </div>
             </div>
         </div>
-         <WeekNext />
+         <WeekNext :grade="selectedGrade" />
         </div>
         `,
     created() {

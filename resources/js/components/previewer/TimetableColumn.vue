@@ -47,6 +47,7 @@
                 console.log(this.rows);
                 const idx = Util.GetItemIndexById(payload.id, this.rows);
                 this.rows[idx] = '';
+                this.$emit('refresh')
             },
             unitCloneHandler: function (payload) {
                 this.$emit('clone-for-current-unit-column',payload);

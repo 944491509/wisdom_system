@@ -38,6 +38,10 @@
     color: #4ea5fe !important;
 }
 
+.status_yellow {
+    color: #FE8732;
+}
+
 // 无数据占位符
 .no-data-img {
     width: 100%;
@@ -47,6 +51,8 @@
         width: 160px;
         display: block;
         margin: 30% auto 0 auto;
+        position: relative;
+        left: 16px;
     }
 
     p {
@@ -223,6 +229,20 @@
     .showDetail {
         float: right;
         margin-right: 20px;
+
+        .upload {
+            background-color: #66D9FF;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .uploaded-text {
+            color: #8A93A1;
+            font-size: 12px;
+        }
     }
 
     .showDetail img {

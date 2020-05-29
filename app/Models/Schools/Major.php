@@ -2,12 +2,11 @@
 
 namespace App\Models\Schools;
 
-use App\Models\Acl\Role;
 use App\Models\School;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Acl\Role;
 use App\Models\Users\GradeUser;
-use App\User;
 use App\Models\Courses\CourseMajor;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Major extends Model

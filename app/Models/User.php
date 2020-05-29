@@ -28,13 +28,18 @@ use App\Utils\Pipeline\IFlow;
 use App\Utils\Pipeline\IUser;
 use App\Utils\Time\GradeAndYearUtil;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
+
 //use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Cache;
 use Kodeine\Acl\Traits\HasRole;
 use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\NetworkDisk\Media;
+use App\Models\Schools\YearManager;
+
 use function foo\func;
 
 class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
@@ -245,7 +250,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     /**
      * 学生提交的所有的报名表
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function registrationForm(){
         return $this->hasMany(RegistrationInformatics::class);
@@ -253,7 +258,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     /**
      * 学生提交的所有请求
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function enquiries(){
         return $this->hasMany(Enquiry::class);
@@ -494,7 +499,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     /**
      * 组织架构的部门
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function organizations()
     {
@@ -503,7 +508,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     /**
      * 班长
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function monitor()
     {
@@ -512,7 +517,7 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 
     /**
      * 团支书
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function group()
     {
@@ -523,7 +528,17 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
      * 获取用户学校校区信息
      * @return mixed
      */
-    public function gradeUserOneInfo(){
+    public function gradeUserOneInfo()
+    {
         return $this->hasOne(GradeUser::class);
+    }
+
+    /**
+     * 年级主任
+     * @return void
+     */
+    public function yearManger()
+    {
+        return $this->hasOne(YearManager::class);
     }
 }

@@ -14,7 +14,7 @@
                             <el-input v-model="log.title" placeholder="请输入标题" autocomplete="off" :disabled="isDisabled"></el-input>
                         </el-form-item>
                         <el-form-item label="内容">
-                            <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" placeholder="请输入日志内容..." v-model="log.content" :disabled="isDisabled"></el-input>
+                            <el-input type="textarea" :autosize="{ minRows: 12 }" placeholder="请输入日志内容..." v-model="log.content" :disabled="isDisabled"></el-input>
                         </el-form-item>
                         <div v-if="show === 2 && isFromEdit!='add'">
                             <el-form-item label="保存时间">

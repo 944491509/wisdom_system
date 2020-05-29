@@ -78,6 +78,11 @@
                                 <i class="icon-user"></i> 我的个人资料 </a>
                         </li>
                         @endif
+                            <li>
+                                <a href="/assets/manual/system.pdf" target ="_blank">
+                                    <i class="icon-directions"></i> 系统通用要求
+                                </a>
+                            </li>
                         <li>
                             <a href="{{ route('teacher.manual.list',['teacher'=>\Illuminate\Support\Facades\Auth::user()->id]) }}">
                                 <i class="icon-directions"></i> 用户使用手册

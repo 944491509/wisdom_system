@@ -315,8 +315,8 @@ class NewMeetingDao
                 $messageBag->setMessage('已签到');
                 return $messageBag;
             }
-            // 签到时间大于会议开始时间
-            if($now > $meet->meet_start) {
+            // 签到时间大于签到结束时间
+            if($now > $meet->signin_end) {
                 $status = 2; // 迟到
             } else {
                 $status = 1; // 正常

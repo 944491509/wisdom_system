@@ -201,7 +201,7 @@ export default {
           align-items: center;
 
           .download {
-            background-image: url("../assets/download.png");
+            background-image: url("/assets/img/teacher/download.png");
             background-size: contain;
             background-repeat: no-repeat;
             display: inline-block;

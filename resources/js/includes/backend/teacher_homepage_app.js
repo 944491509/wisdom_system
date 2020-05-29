@@ -137,7 +137,12 @@ if (document.getElementById('teacher-homepage-app')) {
                     '/api/school/all-events'
                 ).then(res => {
                     if (Util.isAjaxResOk(res)) {
-                        this.schooleventsList = res.data.data.events.reverse().slice(0, 6)
+                        let now = new Date()
+                        let eventsInCurrentMonth = res.data.data.events.filter(item=>{
+                            let date = new Date(item.event_time)
+                            return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()
+                        })
+                        this.schooleventsList = eventsInCurrentMonth.slice(0, 6)
                         this.schoolalleventsList = res.data.data.events
                     }
                 })

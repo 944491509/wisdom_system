@@ -138,4 +138,40 @@ class CalendarDay implements Arrayable
         ];
         return $data[$day]??'';
     }
+
+    /**
+     * 返回给定时间段的所有天
+     * @param Carbon $start_date
+     * @param Carbon $end_date
+     * @return array
+     */
+    private static function generateDateRange(Carbon $start_date, Carbon $end_date)
+    {
+        $dates = [];
+        for ($date = $start_date; $date->lte($end_date); $date->addDay()) {
+            $dates[] = $date->format('Y-m-d');
+        }
+        return $dates;
+    }
+
+
+    /**
+     * 返回指定时间内的指定星期的天
+     * @param $start_date
+     * @param $end_date
+     * @param $weekDay
+     * @return array
+     */
+    public static function getDays($start_date, $end_date, $weekDay) {
+        $start_date = Carbon::parse($start_date);
+        $end_date = Carbon::parse($end_date);
+        $data = self::generateDateRange($start_date, $end_date);
+        $result = [];
+        foreach ($data as $key => $val) {
+            if(Carbon::parse($val)->dayOfWeekIso == $weekDay) {
+                $result[] = $val;
+            }
+        }
+        return $result;
+    }
 }

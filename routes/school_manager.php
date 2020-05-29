@@ -630,5 +630,13 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
             ->name('school_manager.meeting.list');
     });
 
+
+    // 教学管理
+    Route::prefix('teaching')->group(function (){
+        // 资料列表
+        Route::get('material','Teaching\LectureController@index')
+            ->name('school_manager.teaching.material');
+    });
+
 });
 

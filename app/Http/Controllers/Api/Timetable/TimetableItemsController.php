@@ -71,9 +71,15 @@ class TimetableItemsController extends Controller
      */
     public function delete(Request $request){
         $dao = new TimetableItemDao();
-        $user = $this->userDao->getUserByUuid($request->get('user'));
-        $result = $dao->deleteItem($request->get('id'), $user);
-        return $result ? JsonBuilder::Success() : JsonBuilder::Error();
+        $timeTableId = $request->get('id');
+        $user = $request->user();
+        $result = $dao->deleteItem($timeTableId, $user);
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            return JsonBuilder::Success($msg);
+        } else {
+            return JsonBuilder::Error($msg);
+        }
     }
 
     /**
@@ -105,7 +111,12 @@ class TimetableItemsController extends Controller
      */
     public function load(Request $request){
         $logic = Factory::GetInstance($request);
-        return JsonBuilder::Success(['timetable'=>$logic->build()]);
+        $timetable = $logic->build();
+        $data = [];
+        foreach ($timetable as $key => $value) {
+            $data[] = array_merge($value);
+        }
+        return JsonBuilder::Success(['timetable'=>$data]);
     }
 
     /**
@@ -141,10 +152,10 @@ class TimetableItemsController extends Controller
     }
 
     public function load_special_cases(Request $request){
-        $ids = $request->get('ids');
+        $ids = $request->get('timetable_ids');
 
         $logic = new SpecialItemsLoadLogic($ids);
 
-        return JsonBuilder::Success(['specials'=>$logic->build()]);
+        return JsonBuilder::Success($logic->build());
     }
 }

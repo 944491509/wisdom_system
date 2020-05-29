@@ -27,6 +27,7 @@ use App\Dao\AttendanceSchedules\AttendancesDao;
 use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
 use App\Http\Requests\AttendanceSchedule\AttendanceRequest;
+use Illuminate\Support\Facades\Log;
 
 class SignInGradeController extends Controller
 {
@@ -369,23 +370,45 @@ class SignInGradeController extends Controller
      * @param AttendanceRequest $request
      * @return string
      */
-    public function gradeList(AttendanceRequest $request) {
-        $userId = $request->user()->id;
-        $dao = new GradeManagerDao();
-        $return = $dao->getGradeManagerByAdviserId($userId);
-        if(empty($return)) {
-            return JsonBuilder::Error('您不是班主任');
+    public function gradeList(AttendanceRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $user = $request->user();
+        $gradeManagerDao = new GradeManagerDao;
+        $dao = new GradeDao;
+        if ($user->isSuperAdmin() || $user->isOperatorOrAbove() || $user->isSchoolAdminOrAbove()) {
+            $return = $dao->getAllBySchool($schoolId);
+            $result = [];
+            foreach ($return as $key => $item) {
+                $result[] = [
+                    'grade_id'   => $item->id,
+                    'grade_name' => $item->name
+                ];
+            }
+        } elseif (!is_null($user->yearManger)) {
+            $yearManger = $user->yearManger;
+            $gradeDao   = new GradeDao;
+            $yearGrades = $gradeDao->gradeListByYear($user->getSchoolId(), $yearManger->year);
+            $result     = [];
+            foreach ($yearGrades as $key => $val) {
+                $result[] = [
+                    'grade_id'   => $val->id,
+                    'grade_name' => $val->name,
+                ];
+            }
+        } else {
+            $return = $gradeManagerDao->getGradeManagerByAdviserId($user->id);
+            $result = [];
+            foreach ($return as $key => $item) {
+                $result[] = [
+                    'grade_id'   => $item->grade_id,
+                    'grade_name' => $item->grade->name
+                ];
+            }
         }
-        $result = [];
-        foreach ($return as $key => $item) {
-            $result[] = [
-                'grade_id' => $item->grade_id,
-                'grade_name' => $item->grade->name
-            ];
-        }
+
 
         return JsonBuilder::Success($result);
-
     }
 
 
@@ -400,12 +423,15 @@ class SignInGradeController extends Controller
         $user = $request->user();
         $gradeManagerDao = new GradeManagerDao();
         $grades = $gradeManagerDao->getGradeManagerByAdviserId($user->id);
-
-        if(count($grades) == 0) {
-            return JsonBuilder::Error('您不是班主任');
+        if ($user->isTeacher()) {
+            if(count($grades) == 0) {
+                return JsonBuilder::Error('您不是班主任');
+            }
         }
 
+
         $gradeId = $request->getGradeId();
+
         if(empty($gradeId)) {
             $gradeId = $grades[0]->grade_id;
         }
@@ -416,6 +442,11 @@ class SignInGradeController extends Controller
         $date = $now->toDateString();  // 统一时间格式
         $month = $now->month;
         $schoolId = $user->getSchoolId();
+        // 为了兼容PC这样写
+        if (empty($schoolId)) {
+            $gradeDao = new  GradeDao;
+            $schoolId = $gradeDao->getGradeById($gradeId)->school_id;
+        }
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById($schoolId);
         $configuration = $school->configuration;
@@ -429,11 +460,9 @@ class SignInGradeController extends Controller
         }
 
         $week = $weeks->getScheduleWeekIndex();
-
-
         // 查询当前时间这个班上的课
         $timeTableItemDao = new TimetableItemDao();
-        $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $user->id, $gradeId, $weekDay);
+        $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDay);
 
         $weekdayIndex = CalendarDay::GetWeekDayIndex($weekDay);
 
@@ -535,8 +564,15 @@ class SignInGradeController extends Controller
         $date = $now->toDateString();
         $month = $now->month;
         $schoolId = $user->getSchoolId();
+         // 为了兼容PC这样写
+        if (empty($schoolId)) {
+            $gradeDao = new  GradeDao;
+            $schoolId = $gradeDao->getGradeById($gradeId)->school_id;
+        }
+
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById($schoolId);
+
         $configuration = $school->configuration;
         $year = $configuration->getSchoolYear($date);
         $term = $configuration->guessTerm($month);
@@ -551,7 +587,7 @@ class SignInGradeController extends Controller
 
         // 查询当前时间这个班上的课
         $timeTableItemDao = new TimetableItemDao();
-        $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $user->id, $gradeId, $weekDay);
+        $return = $timeTableItemDao->getTimetableItemByTime($schoolId, $year, $term, $gradeId, $weekDay);
 
         $attendancesDao = new AttendancesDao();
         $list = [];

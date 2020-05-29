@@ -44,7 +44,9 @@ export const Constants = {
             VIEW_TIMETABLE_FOR_COURSE: '/school_manager/timetable/manager/view-course-timetable', // 从课程的角度加载课程表
             VIEW_TIMETABLE_FOR_TEACHER: '/school_manager/timetable/manager/view-teacher-timetable', // 从课程的授课老师角度加载课程表
             VIEW_TIMETABLE_FOR_ROOM: '/school_manager/timetable/manager/view-room-timetable', // 从课程的授课老师角度加载课程表
-        },
+            SWITCH_ITEM: '/api/timetable/isSwitching',
+            GRADELIST: '/api/timetable/gradeList'
+          },
         // 申请
         ENQUIRY_SUBMIT: '/api/enquiry/save',
         // 静态页面: 学生报名

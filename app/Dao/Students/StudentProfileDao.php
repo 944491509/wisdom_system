@@ -2,6 +2,7 @@
 
 namespace App\Dao\Students;
 
+use App\Dao\Schools\GradeManagerDao;
 use App\Dao\Schools\MajorDao;
 use App\Models\Students\StudentAdditionInformation;
 use App\Models\Users\GradeUser;
@@ -192,5 +193,40 @@ class StudentProfileDao
     public function getStudentInfoByUserFaceCode($faceCode)
     {
         return StudentProfile::where('face_code', $faceCode)->first();
+    }
+
+
+    /**
+     * 修改学生信息 | 班级职位
+     * @param $userId
+     * @param $profile
+     * @param $gradeManager
+     * @return void
+     * @throws \Exception
+     */
+    public function updateStudentInfoAndClassPositionByUserId($userId, $profile, $gradeManager)
+    {
+        try{
+            $userDao = new UserDao;
+            $gradeManagerDao = new GradeManagerDao;
+            if (isset($profile['email']) && !empty($profile['email']) && !is_null($profile['email'])) {
+                $userDao->updateEmail($userId, $profile['email']);
+            }
+            unset($profile['email']);
+            DB::beginTransaction();
+            $this->updateStudentProfile($userId, $profile);
+
+            if ($gradeManager['monitor']['monitor_id'] !=0) {
+                $gradeManagerDao->updateGradeManger($gradeManager['monitor']['grade_id'], $gradeManager['monitor']);
+            }
+            if ($gradeManager['group']['group_id'] !=0) {
+                $gradeManagerDao->updateGradeManger($gradeManager['group']['grade_id'], $gradeManager['group']);
+            }
+            DB::commit();
+            return new MessageBag(JsonBuilder::CODE_SUCCESS,'修改成功');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return new MessageBag(JsonBuilder::CODE_ERROR,'修改失败');
+        }
     }
 }
