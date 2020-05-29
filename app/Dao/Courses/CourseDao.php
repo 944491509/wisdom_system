@@ -530,15 +530,15 @@ class CourseDao
      * @return mixed
      */
     public function getCoursePageBySchoolId($data) {
-        $map = ['courses.school_id'=>$data['school']];
+        $map = [['courses.school_id', '=', $data['school']]];
         if(!empty($data['year'])) {
-            $map['year'] = $data['year'];
+            $map[] = ['year', '=', $data['year']];
         }
         if(!empty($data['term'])) {
-            $map['term'] = $data['term'];
+            $map[] = ['term', '=', $data['term']];
         }
         if(!empty($data['keyword'])) {
-            $map['name'] = $data['keyword'];
+            $map[] = ['name', 'like', $data['keyword'].'%'];
         }
 
         $return = Course::where($map)
