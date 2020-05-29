@@ -62,7 +62,7 @@ if(document.getElementById('textbook-manager-app')){
                 {school: this.schoolId}
             ).then(res=>{
                 if(Util.isAjaxResOk(res)){
-                    this.courses = res.data.data.courses;
+                    this.courses = res.data.data.courses || [];
                 }
             });
 
@@ -109,6 +109,8 @@ if(document.getElementById('textbook-manager-app')){
                 this.textbookModel.introduce = '';
                 this.textbookModel.school_id = this.schoolId;
                 this.textbookModel.type = 1;
+                this.textbookModel.year = '';
+                this.textbookModel.term = '';
                 this.textbookModel.status = 1;
                 this.textbookModel.medias = [];// 教材关联的图片
                 this.textbookModel.courses = [];// 教材关联的课程
@@ -220,6 +222,8 @@ if(document.getElementById('textbook-manager-app')){
             },
             // 编辑课本
             editBookAction: function(payload){
+
+                console.log()
                 this.textbookModel = payload.book;
                 this.showTextbookFormFlag = true;
             },
@@ -230,23 +234,24 @@ if(document.getElementById('textbook-manager-app')){
                     this.textbookModel
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
-                        if(Util.isEmpty(this.textbookModel.id)){
-                            // 新增教材的操作
-                            this.books.unshift(res.data.data.textbook);
-                        }
-                        else{
-                            // 更新操作
-                            const idx = Util.GetItemIndexById(res.data.data.textbook.id, this.books);
-                            if(idx > -1){
-                                this.books[idx] = res.data.data.textbook;
-                            }
-                        }
-                        this.resetForm();
+                        // if(Util.isEmpty(this.textbookModel.id)){
+                        //     // 新增教材的操作
+                        //     this.books.unshift(res.data.data.textbook);
+                        // }
+                        // else{
+                        //     // 更新操作
+                        //     const idx = Util.GetItemIndexById(res.data.data.textbook.id, this.books);
+                        //     if(idx > -1){
+                        //         this.books[idx] = res.data.data.textbook;
+                        //     }
+                        // }
+                        // this.resetForm();
                         this.$message({
-                            message: '教材数据保存成功: ' + res.data.data.textbook.name,
+                            message: '教材数据保存成功! ' ,
                             type: 'success'
                         });
                         this.showTextbookFormFlag = false;
+                        window.location.reload();
                     }else{
                         this.$notify.error({
                             title: '错误',

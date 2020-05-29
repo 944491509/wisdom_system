@@ -53,7 +53,10 @@
                 type: Boolean, required: true
             },
             courses: {
-                type: Array, required: true
+                type: Array, required: true,
+                default:function(){
+                  return []
+                }
             }
         },
         data(){
@@ -89,7 +92,7 @@
                 this.$emit('connect-courses', {book: book});
             },
             avatarUrl: function(book){
-                if(book.medias.length === 0){
+                if(!book || !book.medias || book.medias.length === 0){
                     return '/assets/img/mega-img1.jpg';
                 }else{
                     return book.medias[0].url;
