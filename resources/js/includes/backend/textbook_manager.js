@@ -225,10 +225,18 @@ if(document.getElementById('textbook-manager-app')){
 
                 console.log()
                 this.textbookModel = payload.book;
+                delete this.textbookModel.courses
                 this.showTextbookFormFlag = true;
             },
             // 保存教材数据
             saveTextbook: function(){
+              if (!this.textbookModel.name || !this.textbookModel.edition ||  !this.textbookModel.author || !this.textbookModel.press || !this.textbookModel.type || !this.textbookModel.price || !this.textbookModel.year || !this.textbookModel.term) {
+                this.$message({
+                  message: '请输入必填信息! ' ,
+                  type: 'warning'
+                });
+                return
+              }
                 axios.post(
                     '/api/textbook/save',
                     this.textbookModel
