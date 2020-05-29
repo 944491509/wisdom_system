@@ -193,4 +193,5 @@ class GradeDao
         $field = ['id', 'name', 'year'];
         return Grade::where($map)->select($field)->get();
     }
+
 }

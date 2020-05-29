@@ -2,7 +2,9 @@
   <div class="task-detail-container">
     <div class="detail detail-panel">
       <div class="title">
-        <span>{{statusText}}</span>
+        <span class="title">
+          <pf-icon :iconsrc="`teacher/task-${statusIcon}`" :text="statusText" />
+        </span>
       </div>
       <div class="detail-item">
         <span class="title">任务名称</span>
@@ -71,7 +73,7 @@
     </div>
     <div class="operate detail-panel">
       <div class="title">
-        <span>操作日志</span>
+        <pf-icon :iconsrc="`teacher/task-logs`" text="操作日志" />
       </div>
       <div class="detail-item" v-for="(log, index) in task.log_list" :key="index">
         <UserLink :name="log.username" />
@@ -81,7 +83,7 @@
     </div>
     <div class="discuss detail-panel">
       <div class="title">
-        <span>讨论信息</span>
+        <pf-icon :iconsrc="`teacher/task-message`" text="讨论信息" />
         <el-button
           class="discuss"
           type="primary"
@@ -128,30 +130,36 @@
       </div>
     </div>
     <el-drawer
-      title="编辑讨论的内容"
       ref="discussDrawer"
       :destroy-on-close="true"
       :visible.sync="discussModal"
       direction="rtl"
     >
+      <template slot="title">
+        <pf-icon :iconsrc="`teacher/task-message-edit`" text="编辑讨论的内容" />
+      </template>
       <comment :taskid="taskid" :userid="chatUserId" @reply="onReply" />
     </el-drawer>
     <el-drawer
-      title="确认完成"
       ref="finishModal"
       :destroy-on-close="true"
       :visible.sync="finishModal"
       direction="rtl"
     >
+      <template slot="title">
+        <pf-icon :iconsrc="`teacher/task-finished`" text="确认完成" />
+      </template>
       <FinishForm @submit="onFinish" :taskid="taskid" />
     </el-drawer>
     <el-drawer
-      title="指派他人"
       ref="dispathModal"
       :destroy-on-close="true"
       :visible.sync="dispathModal"
       direction="rtl"
     >
+      <template slot="title">
+        <pf-icon :iconsrc="`teacher/task-asign`" text="指派他人" />
+      </template>
       <DispatchForm
         @submit="onFinish('dispatch')"
         :taskid="taskid"
@@ -159,12 +167,14 @@
       />
     </el-drawer>
     <el-drawer
-      title="完成结果"
       ref="dispathModal"
       :destroy-on-close="true"
       :visible.sync="finishInfoModal"
       direction="rtl"
     >
+      <template slot="title">
+        <pf-icon :iconsrc="`teacher/task-finish-result`" text="完成结果" />
+      </template>
       <FinishInfo @submit="onFinish('info')" :taskid="taskid" />
     </el-drawer>
   </div>
@@ -217,6 +227,12 @@ export default {
         return "我发起的";
       }
       return (TaskFinishStatus[this.task.status] || {}).text;
+    },
+    statusIcon() {
+      if (this.isMyTask) {
+        return "mystart";
+      }
+      return (TaskFinishStatus[this.task.status] || {}).classes;
     },
     isMyTask() {
       return this.task.login_userid === this.task.create_userid;
