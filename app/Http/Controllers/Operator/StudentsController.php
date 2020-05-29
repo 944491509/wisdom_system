@@ -106,12 +106,12 @@ class StudentsController extends Controller
      */
     public function school_users(StudentRequest $request)
     {
-        $dao = new GradeUserDao;
-        $data = $dao->getBySchool(session('school.id'), [Role::REGISTERED_USER]);
-        foreach ($data as $key => $val) {
-            $val->user;
-        }
-        $this->dataForView['students'] = $data;
+//        $dao = new GradeUserDao;
+//        $data = $dao->getBySchool(session('school.id'), [Role::REGISTERED_USER]);
+//        foreach ($data as $key => $val) {
+//            $val->user;
+//        }
+//        $this->dataForView['students'] = $data;
         $this->dataForView['pageTitle'] = '已注册用户管理';
         return view('teacher.users.users', $this->dataForView);
 

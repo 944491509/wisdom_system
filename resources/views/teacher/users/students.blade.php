@@ -10,7 +10,7 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        {{ $parent->name??session('school.name') }}(学生总数: {{ $students->total() }})
+                        {{ $parent->name??session('school.name') }}(学生总数: )
                         @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
                             @if($parent->gradeManager)
                                 <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$parent->id]) }}">
@@ -58,33 +58,20 @@ use App\User;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($students as $index=>$gradeUser)
-                                    @php
-                                        /** @var \App\Models\Users\GradeUser $gradeUser */
-                                    @endphp
                                     <tr>
-                                        <td>{{ $gradeUser->studentProfile->student_number??'-' }}</td>
+                                        <td></td>
                                         <td>
-                                            <img src="{{ $gradeUser->studentProfile->avatar??null }}" style="width: 60px;border-radius: 50%;">
+                                            <img src="{" style="width: 60px;border-radius: 50%;">
                                         </td>
                                         <td>
-                                            {{ $gradeUser->user->name ?? 'n.a' }}
-                                            @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
-                                                @if(isset($parent->gradeManager->monitor_id))
-                                                    @if($parent->gradeManager->monitor_id === $gradeUser->user_id)
-                                                        <span class="text-primary">(班长)</span>
-                                                    @endif
-                                                @endif
-                                            @endif
+
                                         </td>
                                         <td>
-                                            {{ $gradeUser->user->mobile }}
-                                            {{ $gradeUser->user->getStatusText() }}
                                         </td>
-                                        <td>{{ $gradeUser->studyAt() }}</td>
-                                        <td>{{ count($gradeUser->enquiries) }}</td>
+                                        <td></td>
+                                        <td></td>
                                         <td class="text-center">
-                                            <a target="_blank" href="{{ route('school_manager.grade.view.timetable',['uuid'=>$gradeUser->grade_id]) }}" class="btn btn-round btn-primary btn-view-timetable">
+                                            <a target="_blank" href="{{ route('school_manager.grade.view.timetable',['uuid'=>'grade_id']) }}" class="btn btn-round btn-primary btn-view-timetable">
                                                 <i class="fa fa-calendar"></i>查看课表
                                             </a>
                                             @php
@@ -92,8 +79,8 @@ use App\User;
                                                 [
                                                     'text'=>'可执行操作',
                                                     'subs'=>[
-                                                        ['url'=>route('verified_student.profile.edit',['uuid'=>$gradeUser->user->uuid]),'text'=>'编辑'],
-                                                        ['url'=>route('teacher.student.edit-avatar',['uuid'=>$gradeUser->user->uuid]),'text'=>'照片'],
+                                                        ['url'=>route('verified_student.profile.edit',['uuid'=>'uuid']),'text'=>'编辑'],
+                                                        ['url'=>route('teacher.student.edit-avatar',['uuid'=>'uuid']),'text'=>'照片'],
                                                     ]
                                                 ],
                                                 Button::TYPE_PRIMARY
@@ -101,13 +88,11 @@ use App\User;
                                             @endphp
                                         </td>
                                     </tr>
-                                @endforeach
                                 </tbody>
                             </table>
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                {{ isset($appendedParams) ? $students->appends($appendedParams)->links() : $students->links() }}
                             </div>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        {{ $parent->name??session('school.name') }}(未认证用户总数: {{ $students->total() }})
+                        {{ $parent->name??session('school.name') }}(未认证用户总数: )
                     </header>
                 </div>
                 <div class="card-body">
@@ -29,37 +29,13 @@ use App\User;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($students as $index=> $gradeUser)
-                                    @php
-                                        /** @var \App\Models\Users\GradeUser $gradeUser */
-                                    @endphp
-                                    <tr>
-                                        <td>{{$index+1}}</td>
-                                        <td>
-                                            <img src="{{ $gradeUser->studentProfile->avatar??null }}" style="width: 60px;border-radius: 50%;">
-                                        </td>
-                                        <td>
-                                            {{ $gradeUser->user->name ?? 'n.a' }}
-                                            @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
-                                                @if(isset($parent->gradeManager->monitor_id))
-                                                    @if($parent->gradeManager->monitor_id === $gradeUser->user_id)
-                                                        <span class="text-primary">(班长)</span>
-                                                    @endif
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ $gradeUser->user->mobile }}
-                                            {{ $gradeUser->user->getStatusText() }}
-                                        </td>
-                                    </tr>
-                                @endforeach
+
                                 </tbody>
                             </table>
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                {{ isset($appendedParams) ? $students->appends($appendedParams)->links() : $students->links() }}
+
                             </div>
                         </div>
                     </div>
