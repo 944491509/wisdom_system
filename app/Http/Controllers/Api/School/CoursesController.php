@@ -49,6 +49,9 @@ class CoursesController extends Controller
      */
     public function load_courses(Request $request){
         $data = $request->all();
+        if(!isset($data['download'])) {
+            $data['download'] = 0;
+        }
         $dao = new CourseDao();
         $courses = $dao->getCoursePageBySchoolId($data);
         return JsonBuilder::Success($courses);

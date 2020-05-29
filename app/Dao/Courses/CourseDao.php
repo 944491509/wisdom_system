@@ -546,16 +546,18 @@ class CourseDao
                 $que->when(!empty($data['major_id']) ,function ($que)  use($data){
                     return $que->where('major_id', $data['major_id'])
                         ->groupBy('course_id');});
-                })
+                });
 
 //            ->with('teachers')->whereHas('teachers', function ($que) use ($data) {
 //                $que->where('teacher_id', $data['teacher_id'])
 //                    ->groupBy('course_id');})
-            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
-
-
-        $result = pageReturn($return);
-        $courses = $result['list'];
+        if($data['download']) {
+            $courses = $return->get();
+        } else {
+            $return = $return->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+            $result = pageReturn($return);
+            $courses = $result['list'];
+        }
 
         $list = [];
         foreach ($courses as $key => $course) {
