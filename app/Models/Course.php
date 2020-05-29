@@ -40,7 +40,7 @@ class Course extends Model
         'desc','school_id','duration'
     ];
 
-    public $hidden = ['deleted_at'];
+    public $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     public $casts = [
         'optional' => 'boolean', // 是否选修课
