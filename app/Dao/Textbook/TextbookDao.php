@@ -152,10 +152,11 @@ class TextbookDao
 
         $medias = $data['medias'];
         unset($data['medias']);
+        unset($data['courses']);
 
         try{
             DB::beginTransaction();
-            Textbook::where('id',$id)->update($data);
+            $re = Textbook::where('id',$id)->update($data);
             TextbookImage::where('textbook_id',$id)->delete();
 
             foreach ($medias as $key => $media) {
