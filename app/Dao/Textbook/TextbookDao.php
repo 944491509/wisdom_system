@@ -332,6 +332,13 @@ class TextbookDao
             ->take($pageSize)
             ->get();
 
+        foreach ($books as $key => $val) {
+            foreach ($val->medias as $k => $item) {
+                $item->type = $item->media->type ?? '';
+                unset($item->media);
+            }
+        }
+
         $total = Textbook::where('school_id',$schoolId)->count();
         return [
             'books'=>$books,
