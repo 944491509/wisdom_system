@@ -37,6 +37,7 @@
                             :data="data">
                         <el-table-column
                                 prop="slot_name"
+                                width="120"
                                 label="课时">
                         </el-table-column>
                         <el-table-column
@@ -44,10 +45,11 @@
                                 label="科目">
                         </el-table-column>
                         <el-table-column
+                                width="150"
                                 label="是否评分">
                             <template slot-scope="scope">
                                 <span :class="{
-                                       'status_blue': scope.row.status == 1}" v-html="scope.row.status == 1?'已评分':'未评分'"></span>
+                                       'status_blue': scope.row.status != 1}" v-html="scope.row.status == 1?'已评分':'未评分'"></span>
                                 <span v-if="scope.row.status" class="showDetail">
                                      <img @click="showDetail(scope.row)"
                                           src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
@@ -57,7 +59,7 @@
                     </el-table>
                     <div v-show="data.length == 0" class="no-data-img">
                         <img src="{{ asset('assets/img/teacher_blade/no-data.png') }}" alt="">
-                        <p>当前列表暂时没有数据哦~</p>
+                        <p>当前列表暂时没有数据哦x~</p>
                     </div>
                 </div>
             </div>
@@ -67,8 +69,8 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            <pf-icon iconsrc="grade-score-info" text="评分信息">
-                            <span style="float: right" v-text="teacherName"></span>
+                            <pf-icon iconsrc="grade-score-info" text="评分信息"/></pf-icon>
+                            <span style="float: right">@{{teacherName}}</span>
                         </header>
                     </div>
                     <div class="card-body">
