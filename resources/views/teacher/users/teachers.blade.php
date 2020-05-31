@@ -20,13 +20,14 @@ use App\User;
                     </header>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body" id="verify-list">
                     <div class="row">
                         <div class="table-padding col-12">
-                            @include('school_manager.school.reusable.nav',['highlight'=>'teacher'])
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'teacher'])
                         </div>
+                        <search-bar-new></search-bar-new>
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
+                            <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
                                     <th>是否聘用</th>
@@ -79,8 +80,8 @@ use App\User;
                                     </tr>
                                 @endforeach
                                 </tbody>
-                            </table>
-                            {{ $employees->links() }}
+                            </table> -->
+                            <!-- {{ $employees->links() }} -->
                         </div>
                     </div>
                 </div>

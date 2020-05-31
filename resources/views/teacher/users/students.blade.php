@@ -39,13 +39,48 @@ use App\User;
                     </header>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body" id="verify-list" name="students">
                     <div class="row">
                         <div class="table-padding col-12 pt-0">
-                            @include('school_manager.school.reusable.nav',['highlight'=>'student'])
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
                         </div>
+                        <search-bar-new></search-bar-new>
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
+                        <el-table
+                            :data="tableData"
+                            style="width: 100%">
+                            <el-table-column
+                                prop="date"
+                                label="学号"
+                                width="180">
+                            </el-table-column>
+                            <el-table-column
+                                prop="name"
+                                label="头像"
+                                width="180">
+                            </el-table-column>
+                            <el-table-column
+                                prop="address"
+                                label="姓名">
+                            </el-table-column>
+                            <el-table-column
+                                prop="address"
+                                label="联系电话">
+                            </el-table-column>
+                            <el-table-column
+                                prop="address"
+                                label="所在班级">
+                            </el-table-column>
+                            <el-table-column
+                                prop="address"
+                                label="待办的申请">
+                            </el-table-column>
+                            <el-table-column
+                                prop="address"
+                                label="操作">
+                            </el-table-column>
+                            </el-table>
+                            <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
                                     <th>学号</th>
@@ -103,7 +138,7 @@ use App\User;
                                     </tr>
                                 @endforeach
                                 </tbody>
-                            </table>
+                            </table> -->
                         </div>
                         <div class="row">
                             <div class="col-12">

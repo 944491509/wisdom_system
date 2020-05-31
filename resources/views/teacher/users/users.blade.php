@@ -16,7 +16,7 @@ use App\User;
                 <div class="card-body">
                     <div class="row">
                         <div class="table-padding col-12 pt-0">
-                            @include('school_manager.school.reusable.nav',['highlight'=>'users'])
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'users'])
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
