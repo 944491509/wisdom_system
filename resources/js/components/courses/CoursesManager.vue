@@ -2,7 +2,8 @@
   <div class="courses-manager-wrap">
     <div class="courses-list-col">
       <p class="courses-list-title">
-        课程列表 &nbsp;
+        <filters-from  :majors="majors" :years="grades" @searchSubmit="searchSubmit"/>
+        <el-button icon="el-icon-circle-plus" type="primary" @click="download">下载</el-button>
         <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
         <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
       </p>
@@ -206,11 +207,13 @@ import { getEmptyElectiveCourseApplication } from "../../common/elective_course"
 import { loadTextbooks, attachTextbooksToCourse } from "../../common/textbook";
 import CoursesList from "./CoursesList.vue";
 import ElectiveCourseForm from "./ElectiveCourseForm.vue";
+import FiltersFrom from "./FiltersFrom.vue";
 export default {
   name: "CoursesManager",
   components: {
     CoursesList,
-    ElectiveCourseForm
+    ElectiveCourseForm,
+    FiltersFrom
   },
   props: {
     schoolId: {
@@ -321,8 +324,12 @@ export default {
       this.showElectiveCourseFormFlag = false;
       window.location.reload();
     },
-    _getAllCourses: function() {
-      getCourses(this.schoolId, this.pagination.page).then(res => {
+    _getAllCourses: function(search) {
+      let params = {school:this.schoolId, page:this.pagination.page}
+      if(search){
+        params = Object.assign({},params,search)
+      }
+      getCourses(params).then(res => {
         if (res.data.code === Constants.AJAX_SUCCESS) {
           this.courses = res.data.data.list;
           this.pagination.pageCount = res.data.data.lastPage;
@@ -556,6 +563,13 @@ export default {
             this.grades = res.data.data;
           }
         });
+    },
+    searchSubmit(searchParams){
+      console.log(searchParams)
+      this._getAllCourses(searchParams)
+    },
+    download(){
+      Console.log('下载')
     }
   }
 };

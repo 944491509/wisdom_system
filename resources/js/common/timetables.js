@@ -37,7 +37,7 @@ export function editTimeSlot(schoolUuid, timeSlot) {
 
 export function getCourses(schoolId, page) {
     return axios.post(
-        Constants.API.LOAD_COURSES_BY_SCHOOL,{school: schoolId, page: page}
+        Constants.API.LOAD_COURSES_BY_SCHOOL,params
     );
 }
 
