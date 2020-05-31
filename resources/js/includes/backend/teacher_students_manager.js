@@ -219,6 +219,7 @@ if (document.getElementById('teacher-assistant-students-manager-app')) {
       },
       setStuDetail: function (data) {
         this.detailData = data
+        this.detailData.genderText = this.detailData.gender === 1 ? '男' : '女'
         this.detailDataList.forEach((item, index) => {
           if (item.key === 'stu_job') {
             if (data.group) {
