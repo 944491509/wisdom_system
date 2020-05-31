@@ -10,7 +10,7 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        <span class="pull-left pt-2">{{ $parent->name??session('school.name') }} 教职工列表: (总数: {{ $employees->total() }})</span>
+                        <span class="pull-left pt-2">{{ $parent->name??session('school.name') }} 教职工列表: (总数: )</span>
                         <a href="{{ route('school_manager.teachers.add-new') }}" class="btn btn-primary pull-right">
                             添加新教职工 <i class="fa fa-plus"></i>
                         </a>
@@ -39,46 +39,25 @@ use App\User;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($employees as $index=>$gradeUser)
-                                    @php
-                                    $duties = \App\Models\Teachers\Teacher::getTeacherAllDuties($gradeUser->user_id);
-                                    @endphp
+
                                     <tr>
-                                        <td>{{ $gradeUser->teacherProfile->hired ? '聘用' : '解聘' }}</td>
+                                        <td></td>
+                                        <td></td>
                                         <td>
-                                            {{ $gradeUser->name }}
+                                            <img style="width: 60px;border-radius: 50%;" src="" alt="">
                                         </td>
                                         <td>
-                                            <img style="width: 60px;border-radius: 50%;" src="{{ $gradeUser->teacherProfile->avatar }}" alt="">
+
                                         </td>
                                         <td>
-                                            @if(count($duties['organization']) >
-0 )
-                                                @foreach($duties['organization'] as $key => $item)
-                                            <span class="text-primary">{{ $item->title }}</span>
-                                                @endforeach
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($duties['myYearManger'])
-                                                <span class="text-primary">{{ $duties['myYearManger']->year }}届年级组长</span>
-                                            @endif
-                                            @if($duties['gradeManger'])
-                                                &nbsp;<span class="text-primary">{{ $duties['gradeManger']->grade->name }}班主任</span>
-                                            @endif
-                                            @if($duties['myTeachingAndResearchGroup'])
-                                                @foreach($duties['myTeachingAndResearchGroup'] as $group)
-                                                &nbsp;<span class="text-primary">{{ $group->type }}-{{$group->name}}{{ $group->isLeader?'组长':null }}</span>
-                                                @endforeach
-                                            @endif
+
                                         </td>
                                         <td class="text-center">
-                                            {{ Anchor::Print(['text'=>'照片','href'=>route('school_manager.teachers.edit-avatar',['uuid'=>$gradeUser->user_id])], Button::TYPE_DEFAULT,'picture-o') }}
-                                            {{ Anchor::Print(['text'=>'档案管理','href'=>route('school_manager.teachers.edit-profile',['uuid'=>$gradeUser->user_id])], Button::TYPE_DEFAULT,'edit') }}
-                                            {{ Anchor::Print(['text'=>'修改密码','href'=>route('teacher.profile.update-password',['uuid'=>$gradeUser->user_id])], Button::TYPE_DEFAULT,'key') }}
+                                            {{ Anchor::Print(['text'=>'照片','href'=>route('school_manager.teachers.edit-avatar',['uuid'=>'user_id'])], Button::TYPE_DEFAULT,'picture-o') }}
+                                            {{ Anchor::Print(['text'=>'档案管理','href'=>route('school_manager.teachers.edit-profile',['uuid'=>'user_id'])], Button::TYPE_DEFAULT,'edit') }}
+                                            {{ Anchor::Print(['text'=>'修改密码','href'=>route('teacher.profile.update-password',['uuid'=>'user_id'])], Button::TYPE_DEFAULT,'key') }}
                                         </td>
                                     </tr>
-                                @endforeach
                                 </tbody>
                             </table> -->
                             <!-- {{ $employees->links() }} -->

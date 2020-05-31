@@ -1207,3 +1207,11 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
     Route::get('/assess', 'Api\OA\WorkController@assess')
         ->name('api.work.assess');
 });
+
+// PC端接口
+Route::prefix('pc')->middleware('auth:api')->group(function(){
+    // 统一认证 - 显示学校的所有老师接口
+    Route::post('get-teachers', 'Operator\SchoolsController@getTeachers')->name('api.school.get-teachers');
+    // 统一认证 - 显示学校的所有学生接口
+    Route::post('get-students', 'Operator\SchoolsController@getStudents')->name('api.school.get-students');
+});

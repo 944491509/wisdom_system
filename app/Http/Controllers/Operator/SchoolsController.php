@@ -20,6 +20,7 @@ use App\Models\Banner\Banner;
 use App\Models\School;
 use App\Models\Pipeline\Flow\Handler;
 use App\Models\Schools\TeachingAndResearchGroup;
+use App\Models\Teachers\Teacher;
 use App\Utils\FlashMessageBuilder;
 use App\Dao\Schools\InstituteDao;
 use App\Utils\JsonBuilder;
@@ -193,18 +194,105 @@ class SchoolsController extends Controller
         }
     }
 
-    public function teachers(SchoolRequest $request){
-        $dao = new GradeUserDao($request->user());
-        $this->dataForView['employees'] = $dao->getBySchool(session('school.id'), Role::GetTeacherUserTypes());
+    /**
+     * 教师/教工页面
+     * @param SchoolRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function teachers(SchoolRequest $request)
+    {
         $this->dataForView['pageTitle'] = '教职工管理';
         return view('teacher.users.teachers', $this->dataForView);
     }
 
-    public function students(SchoolRequest $request){
+    /**
+     * 获取 教师/教工
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function getTeachers(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where = $request->get('where');
+
         $dao = new GradeUserDao($request->user());
-        $this->dataForView['students'] = $dao->getBySchool(session('school.id'),Role::GetStudentUserTypes());
+        $employees = $dao->getGradeTeacherBySchool($schoolId, $where);
+        $result = pageReturn($employees);
+        $list = [];
+
+        foreach ($result['list'] as $key => $val) {
+            $list[] = [
+                'hired' =>  $val->teacherProfile->hired ? '聘用' : '解聘',
+                'name' => $val->name,
+                'avatar' => $val->teacherProfile->avatar,
+                'organization' => '',
+                'year_manger' => '',
+            ];
+
+            $duties = Teacher::getTeacherAllDuties($val->user_id);
+
+            if ($duties['gradeManger']) {
+               $list[$key]['year_manger'] .= $duties['gradeManger']->grade->name.'班主任 ';
+            }
+
+            if ($duties['myTeachingAndResearchGroup']) {
+                foreach ($duties['myTeachingAndResearchGroup'] as $k => $v) {
+                    $list[$key]['year_manger'] .= $v->type.'-'.$v->name;
+                }
+            }
+
+            if ($duties['myYearManger']) {
+                $list[$key]['year_manger'] = $duties['myYearManger']->year.'年级主任';
+            }
+
+            foreach ($val->user->organizations as $k => $v) {
+                // 行政职务
+                $list[$key]['organization'] = $v->title. ' '. $list[$key]['organization'];
+            }
+        }
+
+        $result['list'] = $list;
+        return JsonBuilder::Success($result);
+    }
+
+
+    /**
+     * 已认证学生页面
+     * @param SchoolRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function students(SchoolRequest $request)
+    {
         $this->dataForView['pageTitle'] = '学生管理';
         return view('teacher.users.students', $this->dataForView);
+    }
+
+    /**
+     * 获取学生
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function getStudents(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where = $request->get('where');
+
+        $dao = new GradeUserDao($request->user());
+        $students = $dao->getByStudentsBySchool($schoolId, $where);
+        $result = pageReturn($students);
+        $data = [];
+        foreach ($result['list'] as $student) {
+            $data[] = [
+                'student_number' => $student->studentProfile->student_number ?? '-',
+                'name' => $student->name,
+                'mobile' => $student->mobile,
+                'grade' => $student->studyAt(),
+                'enquiries' => count($student->enquiries),
+                'status' => ''
+            ];
+        }
+        $result['list'] = $data;
+        return JsonBuilder::Success($result);
     }
 
     public function rooms(SchoolRequest $request){
