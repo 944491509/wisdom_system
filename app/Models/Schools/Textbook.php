@@ -41,7 +41,7 @@ class Textbook extends Model
     const TYPE_MAJOR_TEXT  = '专业教材';
     const TYPE_COMMON_TEXT = '普通教材';
     const TYPE_SELECT_TEXT = '选读教材';
-    const TYPE_MISC_TEXT   = '辅助材料';
+    const TYPE_MISC_TEXT   = '辅助教材';
     const TYPE_SCHOOL_BOOK_TEXT   = '校本教材';
 
 
