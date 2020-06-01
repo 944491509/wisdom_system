@@ -1,6 +1,6 @@
 import {Constants} from "./constants";
 
-export function getTimeSlots(schoolId, noTime, grade_id, year) {
+export function getTimeSlots(schoolId, noTime, grade_id, year = -1) {
     if(noTime){
         noTime = true;
     }else{
