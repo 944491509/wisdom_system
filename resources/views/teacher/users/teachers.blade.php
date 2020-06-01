@@ -10,7 +10,7 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        <span class="pull-left pt-2">{{ $parent->name??session('school.name') }} 教职工列表: (总数: )</span>
+                        <span class="pull-left pt-2">{{ $parent->name??session('school.name') }} 教职工列表: (总数: <span id="veri-list-total">0</span>)</span>
                         <a href="{{ route('school_manager.teachers.add-new') }}" class="btn btn-primary pull-right">
                             添加新教职工 <i class="fa fa-plus"></i>
                         </a>
@@ -25,8 +25,63 @@ use App\User;
                         <div class="table-padding col-12">
                             @include('school_manager.school.reusable.nav_new',['highlight'=>'teacher'])
                         </div>
-                        <search-bar-new></search-bar-new>
+                        <search-bar-new mode="teachers" :schoolid="school_id" v-model="where"></search-bar-new>
+                        <el-button type="primary" style="margin: 12px;" @click="search">
+                            查询
+                        </el-button>
                         <div class="table-responsive">
+                            <el-table
+                                :data="list"
+                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                style="width: 100%">
+                                <el-table-column
+                                    prop="hired"
+                                    label="是否聘用"
+                                    width="120">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="name"
+                                    label="姓名">
+                                </el-table-column>
+                                <el-table-column
+                                    label="头像"
+                                    width="180">
+                                    <template slot-scope="scope">
+                                        <img :src="scope.row.avatar || '/assets/img/dp.jpg'" style="width: 60px;border-radius: 50%;" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="organization"
+                                    label="行政职务">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="year_manger"
+                                    label="教学职务">
+                                </el-table-column>
+                                <el-table-column
+                                width="328"
+                                    label="操作">
+                                    <template slot-scope="scope">
+                                        <div style="line-height: 46px;">
+                                            <a href="https://admin.dev.pftytx.com/school_manager/teachers/edit-avatar?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-picture-o"></i>照片</a>
+                                            <a href="https://admin.dev.pftytx.com/school_manager/teachers/edit-profile?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-edit"></i>档案管理</a>
+                                            <a href="https://admin.dev.pftytx.com/teacher/profile/update-password?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-key"></i>修改密码</a>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="table-footer">
+                                <el-pagination
+                                    background
+                                    style="float: right"
+                                    layout="prev, pager, next"
+                                    :page-count="pagination.pageCount"
+                                    :current-page="pagination.page"
+                                    @current-change="onPageChange"
+                                    ></el-pagination>
+                            </div>
+                        </div>
+                        <!-- <div class="table-responsive"> -->
                             <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
@@ -60,7 +115,7 @@ use App\User;
                                     </tr>
                                 </tbody>
                             </table> -->
-                        </div>
+                        <!-- </div> -->
                     </div>
                 </div>
             </div>

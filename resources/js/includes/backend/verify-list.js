@@ -25,42 +25,81 @@ if (appdom && schooldom) {
           page: 1,
           pageCount: 0
         },
-        list: []
+        where: {
+
+        },
+        list: [],
+        allchecked: false,
+        total: null
       }
     },
     watch: {
       "pagination.page": function () {
         this.getList();
+      },
+      allchecked: function (value) {
+        if (value) {
+          this.list.forEach(item => {
+            item.checked = true
+          })
+        } else {
+          this.list.forEach(item => {
+            item.checked = false
+          })
+        }
       }
     },
     methods: {
       getList(params = {}) {
         axios.post(
-          '/api/pc/get-students', {
+          mode === 'students' ? '/api/pc/get-students' : '/api/pc/get-teachers', {
             page: this.pagination.page,
             school_id: this.school_id,
             where: {
-              ...params
+              ...this.where,
             }
           }
         ).then(res => {
           if (Util.isAjaxResOk(res)) {
-            this.list = res.data.data.list
+            let list = res.data.data.list
+            if (this.total === null) {
+              this.total = res.data.data.total
+              try {
+                document.getElementById('veri-list-total').innerText = this.total
+              } catch (e) {}
+            }
+            if (this.allchecked) {
+              list.forEach(item => {
+                item.checked = true
+              })
+            } else {
+              list.forEach(item => {
+                item.checked = false
+              })
+            }
+            this.list = list
             this.pagination.pageCount = res.data.data.lastPage
           }
         })
       },
-      optCommand(command) {
+      search() {
+        this.pagination.page = 1
+        this.getList()
+      },
+      optCommand(command, data) {
         switch (command) {
           case 'edit':
-            window.open('/verified_student/profile/edit?uuid=a1ff6422-b69e-4e2a-b0bc-0dd6da5fb2b2')
+            window.open('/verified_student/profile/edit?uuid=' + data.uuid)
             break
           case 'photo':
-            window.open('/teacher/student/edit-avatar?uuid=a1ff6422-b69e-4e2a-b0bc-0dd6da5fb2b2')
+            window.open('/teacher/student/edit-avatar?uuid=' + data.uuid)
             break
           default:
             break
         }
+      },
+      gokebiao(data) {
+        window.open('/school_manager/timetable/manager/view-grade-timetable?uuid=' + data.grade_id)
       },
       onPageChange(page) {
         this.pagination.page = page;

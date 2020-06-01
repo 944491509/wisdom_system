@@ -10,7 +10,8 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        {{ $parent->name??session('school.name') }}(学生总数: )
+                        {{ $parent->name??session('school.name') }}
+                        (学生总数: <span id="veri-list-total">0</span>)
                         @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
                             @if($parent->gradeManager)
                                 <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$parent->id]) }}">
@@ -44,8 +45,8 @@ use App\User;
                         <div class="table-padding col-12 pt-0">
                             @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
                         </div>
-                        <search-bar-new mode="students" :schoolid="school_id"></search-bar-new>
-                        <el-button type="primary" style="margin: 12px;">
+                        <search-bar-new mode="students" :schoolid="school_id" v-model="where"></search-bar-new>
+                        <el-button type="primary" style="margin: 12px;" @click="search">
                             查询
                         </el-button>
                         <div class="table-responsive">
@@ -53,6 +54,12 @@ use App\User;
                                 :data="list"
                                 class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
                                 style="width: 100%">
+                                <el-table-column
+                                width="55">
+                                    <template slot-scope="scope">
+                                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                                    </template>
+                                </el-table-column>
                                 <el-table-column
                                     prop="student_number"
                                     label="学号"
@@ -85,10 +92,10 @@ use App\User;
                                 width="280"
                                     label="操作">
                                     <template slot-scope="scope">
-                                        <el-button type="primary">
-                                            <i class="fa fa-calendar"></i>查看课表
+                                        <el-button type="primary" @click="gokebiao(scope.row)">
+                                            <i class="fa fa-calendar"></i> 查看课表
                                         </el-button>
-                                        <el-dropdown @command="optCommand">
+                                        <el-dropdown @command="(e)=>{optCommand(e,scope.row)}">
                                             <el-button type="primary">
                                                 可执行操作
                                             </el-button>
@@ -100,13 +107,24 @@ use App\User;
                                     </template>
                                 </el-table-column>
                             </el-table>
-                            <el-pagination
-                                background
-                                layout="prev, pager, next"
-                                :page-count="pagination.pageCount"
-                                :current-page="pagination.page"
-                                @current-change="onPageChange"
-                                ></el-pagination>
+                            <div class="table-footer">
+                                <div style="display: inline-flex;">
+                                    <el-checkbox style="margin-bottom: 0;margin-right: 12px" o v-model="allchecked">全选</el-checkbox>
+                                    <pf-icon title="在校" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zaixiao" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="休学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-xiuxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="退学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-tuixue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="转学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zhuanxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="毕业" style="margin-right: 12px; cursor: pointer" iconsrc="stu-biye" width="22px" height="22px"></pf-icon>
+                                </div>
+                                <el-pagination
+                                    background
+                                    style="float: right"
+                                    layout="prev, pager, next"
+                                    :page-count="pagination.pageCount"
+                                    :current-page="pagination.page"
+                                    @current-change="onPageChange"
+                                    ></el-pagination>
+                            </div>
                             <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
