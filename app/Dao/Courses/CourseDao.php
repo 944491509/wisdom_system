@@ -578,6 +578,9 @@ class CourseDao
             foreach ($course->courseTextbooks as $ct){
                 $i['id'] = $ct->textbook->id;
                 $i['name'] = $ct->textbook->name . '('.$ct->textbook->edition.')';
+                $i['press'] = $ct->textbook->press;
+                $i['author'] = $ct->textbook->author;
+                $i['type'] = $ct->textbook->typeText;
                 $item['books'][] = $i;
             }
 
