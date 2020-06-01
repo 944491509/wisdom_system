@@ -14,21 +14,30 @@ if (appdom && schooldom) {
   new Vue({
     el: '#verify-list',
     components: {
-      SearchBarNew
+      SearchBarNew,
     },
     data() {
       return {
         mode,
         school_id: schooldom.getAttribute('data-school'),
         page: 1,
+        pagination: {
+          page: 1,
+          pageCount: 0
+        },
         list: []
+      }
+    },
+    watch: {
+      "pagination.page": function () {
+        this.getList();
       }
     },
     methods: {
       getList(params = {}) {
         axios.post(
           '/api/pc/get-students', {
-            page: this.page,
+            page: this.pagination.page,
             school_id: this.school_id,
             where: {
               ...params
@@ -36,10 +45,26 @@ if (appdom && schooldom) {
           }
         ).then(res => {
           if (Util.isAjaxResOk(res)) {
-            // this.oneList = res.data.data.list
+            this.list = res.data.data.list
+            this.pagination.pageCount = res.data.data.lastPage
           }
         })
-      }
+      },
+      optCommand(command) {
+        switch (command) {
+          case 'edit':
+            window.open('/verified_student/profile/edit?uuid=a1ff6422-b69e-4e2a-b0bc-0dd6da5fb2b2')
+            break
+          case 'photo':
+            window.open('/teacher/student/edit-avatar?uuid=a1ff6422-b69e-4e2a-b0bc-0dd6da5fb2b2')
+            break
+          default:
+            break
+        }
+      },
+      onPageChange(page) {
+        this.pagination.page = page;
+      },
     },
     created() {
       this.getList()

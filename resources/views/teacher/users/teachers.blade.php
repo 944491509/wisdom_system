@@ -20,7 +20,7 @@ use App\User;
                     </header>
                 </div>
 
-                <div class="card-body" id="verify-list">
+                <div class="card-body" id="verify-list" name="teachers">
                     <div class="row">
                         <div class="table-padding col-12">
                             @include('school_manager.school.reusable.nav_new',['highlight'=>'teacher'])
@@ -60,7 +60,6 @@ use App\User;
                                     </tr>
                                 </tbody>
                             </table> -->
-                            <!-- {{ $employees->links() }} -->
                         </div>
                     </div>
                 </div>

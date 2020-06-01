@@ -44,42 +44,69 @@ use App\User;
                         <div class="table-padding col-12 pt-0">
                             @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
                         </div>
-                        <search-bar-new></search-bar-new>
+                        <search-bar-new mode="students" :schoolid="school_id"></search-bar-new>
+                        <el-button type="primary" style="margin: 12px;">
+                            查询
+                        </el-button>
                         <div class="table-responsive">
-                        <el-table
-                            :data="tableData"
-                            style="width: 100%">
-                            <el-table-column
-                                prop="date"
-                                label="学号"
-                                width="180">
-                            </el-table-column>
-                            <el-table-column
-                                prop="name"
-                                label="头像"
-                                width="180">
-                            </el-table-column>
-                            <el-table-column
-                                prop="address"
-                                label="姓名">
-                            </el-table-column>
-                            <el-table-column
-                                prop="address"
-                                label="联系电话">
-                            </el-table-column>
-                            <el-table-column
-                                prop="address"
-                                label="所在班级">
-                            </el-table-column>
-                            <el-table-column
-                                prop="address"
-                                label="待办的申请">
-                            </el-table-column>
-                            <el-table-column
-                                prop="address"
-                                label="操作">
-                            </el-table-column>
+                            <el-table
+                                :data="list"
+                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                style="width: 100%">
+                                <el-table-column
+                                    prop="student_number"
+                                    label="学号"
+                                    width="180">
+                                </el-table-column>
+                                <el-table-column
+                                    label="头像"
+                                    width="180">
+                                    <template slot-scope="scope">
+                                        <img :src="scope.row.avatar || '/assets/img/dp.jpg'" style="width: 60px;border-radius: 50%;" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="name"
+                                    label="姓名">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="mobile"
+                                    label="联系电话">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="grade"
+                                    label="所在班级">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="enquiries"
+                                    label="待办的申请">
+                                </el-table-column>
+                                <el-table-column
+                                width="280"
+                                    label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary">
+                                            <i class="fa fa-calendar"></i>查看课表
+                                        </el-button>
+                                        <el-dropdown @command="optCommand">
+                                            <el-button type="primary">
+                                                可执行操作
+                                            </el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                                                <el-dropdown-item command="photo">照片</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                    </template>
+                                </el-table-column>
                             </el-table>
+                            <el-pagination
+                                background
+                                layout="prev, pager, next"
+                                :page-count="pagination.pageCount"
+                                :current-page="pagination.page"
+                                @current-change="onPageChange"
+                                ></el-pagination>
                             <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
