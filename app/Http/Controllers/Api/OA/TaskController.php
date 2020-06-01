@@ -34,6 +34,10 @@ class TaskController extends Controller
         $task_content = strip_tags($request->get('task_content'));
         $leader_userid = strip_tags($request->get('leader_userid'));
         $memberUserIds = $request->get('member_userids');
+        $file = $request->getFile();
+        if(count($file) > 9) {
+            return JsonBuilder::Error('最多上传9张图片');
+        }
         if(empty($memberUserIds)) {
             return JsonBuilder::Error('成员不能为空');
         }
@@ -52,7 +56,7 @@ class TaskController extends Controller
             'create_user'=>$user->id,
             'school_id' => $schoolId,
         ];
-        $result = $dao->createTask($data, $memberUserIds);
+        $result = $dao->createTask($data, $memberUserIds, $file);
         if($result->isSuccess()) {
             $taskId = $result->getData()['id'];
             //通知负责人
