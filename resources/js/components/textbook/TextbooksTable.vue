@@ -20,17 +20,17 @@
                                 <span class="internal" v-if="asAdmin">(进价: ¥{{ book.purchase_price }})</span>
                             </p>
                             <p class="press">
-                                课程: &nbsp;
+                                <!-- 课程: &nbsp;
                                 <el-tag size="mini" v-for="(c, idx) in book.courses" :key="idx" style="margin-right: 3px;">
                                     {{ getCourseNameText(c.course_id) }}
                                 </el-tag>
-                                <el-tag size="mini" v-if="!book.courses || book.courses.length === 0" type="info">未关联任何课程</el-tag>
+                                <el-tag size="mini" v-if="!book.courses || book.courses.length === 0" type="info">未关联任何课程</el-tag> -->
                             </p>
                         </div>
                     </div>
                     <el-divider style="margin: 0;"></el-divider>
                     <div>
-                        <el-button type="text" class="button" v-on:click="connectCoursesHandler(book)">关联/管理课程</el-button>
+                        <!-- <el-button type="text" class="button" v-on:click="connectCoursesHandler(book)">关联/管理课程</el-button> -->
                         <el-button type="text" class="button" v-on:click="editBookHandler(book)">编辑教材</el-button>
                         <el-button style="float: right;color: red;" icon="el-icon-delete" type="text" class="button" v-on:click="deleteHandler(book)">删除</el-button>
                     </div>
