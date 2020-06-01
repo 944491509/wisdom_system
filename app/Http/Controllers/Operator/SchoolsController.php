@@ -21,6 +21,7 @@ use App\Models\School;
 use App\Models\Pipeline\Flow\Handler;
 use App\Models\Schools\TeachingAndResearchGroup;
 use App\Models\Teachers\Teacher;
+use App\Models\Users\UserSearchConfig;
 use App\Utils\FlashMessageBuilder;
 use App\Dao\Schools\InstituteDao;
 use App\Utils\JsonBuilder;
@@ -294,6 +295,20 @@ class SchoolsController extends Controller
         $result['list'] = $data;
         return JsonBuilder::Success($result);
     }
+
+
+    /**
+     * 搜索条件
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function searchConfig(SchoolRequest $request)
+    {
+        $type = $request->get('type');
+        $data = UserSearchConfig::where('type', $type)->get();
+        return JsonBuilder::Success($data);
+    }
+
 
     public function rooms(SchoolRequest $request){
         $dao = new RoomDao($request->user());
