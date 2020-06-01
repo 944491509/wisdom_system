@@ -1168,7 +1168,6 @@ Route::prefix('office')->middleware('auth:api')->group(function(){
 });
 
 // 服务协议及隐私政策
-
 Route::any('app/agreement', 'Api\Home\IndexController@agreement')
 ->name('api.office.office-page');
 
@@ -1206,4 +1205,15 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
     // 考核接口
     Route::get('/assess', 'Api\OA\WorkController@assess')
         ->name('api.work.assess');
+});
+
+
+// 教材
+Route::prefix('textbook')->middleware('auth:api')->group(function() {
+    // 类型
+    Route::get('/allType', 'Api\Study\TextbookController@allType')
+        ->name('api.textbook.allType');
+    // 编辑
+    Route::post('/save', 'Api\Study\TextbookController@save')
+        ->name('api.textbook.save');
 });

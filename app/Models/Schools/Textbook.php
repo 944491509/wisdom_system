@@ -26,15 +26,8 @@ class Textbook extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'press',
-        'author',
-        'edition',
-        'school_id',
-        'type',
-        'purchase_price',
-        'price',
-        'introduce'
+        'name', 'press', 'author', 'edition', 'school_id', 'type',
+        'purchase_price', 'price', 'introduce', 'year', 'term'
     ];
 
     protected $hidden = ['updated_at', 'deleted_at'];
@@ -43,28 +36,37 @@ class Textbook extends Model
     const TYPE_COMMON = 2;
     const TYPE_SELECT = 3;
     const TYPE_MISC   = 4;
+    const TYPE_SCHOOL_BOOK   = 5;
 
     const TYPE_MAJOR_TEXT  = '专业教材';
     const TYPE_COMMON_TEXT = '普通教材';
     const TYPE_SELECT_TEXT = '选读教材';
     const TYPE_MISC_TEXT   = '辅助材料';
+    const TYPE_SCHOOL_BOOK_TEXT   = '校本教材';
+
+
+    /**
+     * 教材类型
+     * @return string[]
+     */
+    public function getAllType() {
+        return [
+            self::TYPE_MAJOR => self::TYPE_MAJOR_TEXT,
+            self::TYPE_COMMON => self::TYPE_COMMON_TEXT,
+            self::TYPE_SELECT => self::TYPE_SELECT_TEXT,
+            self::TYPE_MISC => self::TYPE_MISC_TEXT,
+            self::TYPE_SCHOOL_BOOK => self::TYPE_SCHOOL_BOOK_TEXT,
+        ];
+    }
+
 
     /**
      * 获取type属性
      * @return string
      */
     public function getTypeTextAttribute() {
-        switch ($this->type) {
-            case self::TYPE_MAJOR :
-                return self::TYPE_MAJOR_TEXT;break;
-            case self::TYPE_COMMON :
-                return self::TYPE_COMMON_TEXT;break;
-            case self::TYPE_SELECT :
-                return self::TYPE_SELECT_TEXT;break;
-            case self::TYPE_MISC :
-                return self::TYPE_MISC_TEXT;break;
-            default :return '';
-        }
+        $all = $this->getAllType();
+        return $all[$this->type] ?? '';
     }
 
     /**
