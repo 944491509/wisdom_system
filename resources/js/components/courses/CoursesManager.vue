@@ -3,7 +3,7 @@
     <div class="courses-list-col">
       <p class="courses-list-title">
         <filters-from :majors="majors" :years="grades" @searchSubmit="searchSubmit" />
-        <el-button type="primary" @click="downloadTable">下载</el-button>
+        <el-button type="primary" @click="downloadTable">导出</el-button>
         <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
         <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
       </p>
@@ -632,7 +632,7 @@ export default {
               formatter:(item) =>{
                 if(item.arrangements && item.arrangements.length > 0){
                    return item.arrangements.map((m,idx) => {
-                     return `${idx+1}: 第${ m.week }周的星期${ m.day_index }的${ describeTimeSlot(m.time_slot_id) }`
+                     return `${idx+1}: 第${ m.week }周的星期${ m.day_index }的${ this.describeTimeSlot(m.time_slot_id) }`
                    }).join(', ')
                 }
                 if(!item.arrangements || item.arrangements.length === 0){
@@ -646,7 +646,7 @@ export default {
                 return (item.books || []).map(e => e.name||'').join(',')
               }
             }
-            
+
           ],res.data.data.list,'课程管理');
         }
       });
