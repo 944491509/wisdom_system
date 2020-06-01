@@ -256,6 +256,7 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
             // 班级签到
             Route::get('grades-check-in','LY\AssistantController@grades_check_in')
                 ->name('teacher.ly.assistant.grades-check-in');
+
             // 班级评分
             Route::get('grades-evaluations','LY\AssistantController@grades_evaluations')
                 ->name('teacher.ly.assistant.grades-evaluations');
