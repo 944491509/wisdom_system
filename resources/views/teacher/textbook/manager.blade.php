@@ -26,10 +26,12 @@
                     >
                         <el-select v-model="queryType" slot="prepend" placeholder="请选择" style="width: 120px;">
                             <el-option label="全部" value="0"></el-option>
+                            <el-option v-for="item in types" :key="item.id" :label="item.type" :value="item.id"></el-option>
+<!--
                             <el-option label="{{ Textbook::TYPE_MAJOR_TEXT }}" value="{{ Textbook::TYPE_MAJOR }}"></el-option>
                             <el-option label="{{ Textbook::TYPE_COMMON_TEXT }}" value="{{ Textbook::TYPE_COMMON }}"></el-option>
                             <el-option label="{{ Textbook::TYPE_SELECT_TEXT }}" value="{{ Textbook::TYPE_SELECT }}"></el-option>
-                            <el-option label="{{ Textbook::TYPE_MISC_TEXT }}" value="{{ Textbook::TYPE_MISC }}"></el-option>
+                            <el-option label="{{ Textbook::TYPE_MISC_TEXT }}" value="{{ Textbook::TYPE_MISC }}"></el-option> -->
                         </el-select>
                     </el-autocomplete>
                     <span class="text-info" v-show="isLoading">
@@ -39,9 +41,9 @@
                 <div class="col-6">
                     <el-button-group class="pull-right">
                         <el-button type="primary" icon="el-icon-plus" v-on:click="addNewTextbook">添加新教材</el-button>
-                        <el-button icon="el-icon-files" v-on:click="exportByGrade" disabled>按班级导出</el-button>
+                        <!-- <el-button icon="el-icon-files" v-on:click="exportByGrade" disabled>按班级导出</el-button>
                         <el-button icon="el-icon-notebook-1" v-on:click="exportByMajor">按专业导出</el-button>
-                        <el-button icon="el-icon-notebook-2" v-on:click="exportByCampus">按校区导出</el-button>
+                        <el-button icon="el-icon-notebook-2" v-on:click="exportByCampus">按校区导出</el-button> -->
                     </el-button-group>
                 </div>
             </div>

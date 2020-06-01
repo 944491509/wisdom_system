@@ -645,6 +645,24 @@ export default {
               formatter:(item) =>{
                 return (item.books || []).map(e => e.name||'').join(',')
               }
+            },
+            {
+              name: '作者',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.author||'').join(',')
+              }
+            },
+            {
+              name: '出版社',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.press||'').join(',')
+              }
+            },
+            {
+              name: '教材类型',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.type||'').join(',')
+              }
             }
 
           ],res.data.data.list,'课程管理');

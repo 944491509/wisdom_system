@@ -81,12 +81,13 @@
             <el-table-column
                     label="教材">
                 <template slot-scope="scope">
-                    <p v-if="!scope.row.books || scope.row.books.length === 0">
-                        <el-button type="text" v-on:click="attachTextbook(scope.row)">添加教材</el-button>
-                    </p>
                     <el-tag size="medium" type="info" effect="plain" :key="idx" v-for="(book,idx) in scope.row.books" style="margin:2px;">
                         {{ book.name }}
                     </el-tag>
+                    <!-- v-if="!scope.row.books || scope.row.books.length === 0" -->
+                    <p >
+                        <el-button type="text" v-on:click="attachTextbook(scope.row)">添加教材</el-button>
+                    </p>
                 </template>
             </el-table-column>
             <el-table-column label="操作">
