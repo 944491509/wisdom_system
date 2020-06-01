@@ -1214,6 +1214,6 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     Route::post('get-teachers', 'Operator\SchoolsController@getTeachers')->name('api.school.get-teachers');
     // 统一认证 - 显示学校的所有学生接口
     Route::post('get-students', 'Operator\SchoolsController@getStudents')->name('api.school.get-students');
-    // 搜索条件
+    // 统一认证 - 搜索条件
     Route::post('get-search-config', 'Operator\SchoolsController@searchConfig')->name('api.school.get-search-config');
 });

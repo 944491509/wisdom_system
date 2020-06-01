@@ -25,7 +25,12 @@ use App\Models\Users\UserSearchConfig;
 use App\Utils\FlashMessageBuilder;
 use App\Dao\Schools\InstituteDao;
 use App\Utils\JsonBuilder;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Psy\Util\Json;
 
 class SchoolsController extends Controller
@@ -96,7 +101,7 @@ class SchoolsController extends Controller
     /**
      * 管理员选择某个学校作为操作对象
      * @param SchoolRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function enter(SchoolRequest $request){
         $dao = new SchoolDao($request->user());
@@ -109,7 +114,7 @@ class SchoolsController extends Controller
     /**
      * 更新学校的配置信息
      * @param SchoolRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function config_update(SchoolRequest $request){
         $dao = new SchoolDao($request->user());
@@ -168,7 +173,7 @@ class SchoolsController extends Controller
     /**
      * 按年级显示
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function years(SchoolRequest $request){
         $dao = new GradeDao($request->user());
@@ -198,7 +203,7 @@ class SchoolsController extends Controller
     /**
      * 教师/教工页面
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Application|Factory|View
      */
     public function teachers(SchoolRequest $request)
     {
@@ -260,7 +265,7 @@ class SchoolsController extends Controller
     /**
      * 已认证学生页面
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Application|Factory|View
      */
     public function students(SchoolRequest $request)
     {
@@ -285,11 +290,13 @@ class SchoolsController extends Controller
         foreach ($result['list'] as $student) {
             $data[] = [
                 'student_number' => $student->studentProfile->student_number ?? '-',
-                'name' => $student->name,
-                'mobile' => $student->mobile,
-                'grade' => $student->studyAt(),
-                'enquiries' => count($student->enquiries),
-                'status' => ''
+                'name'           => $student->name,
+                'mobile'         => $student->mobile,
+                'grade'          => $student->studyAt(),
+                'enquiries'      => count($student->enquiries),
+                'grade_id'       => $student->grade_id,
+                'uuid'           => $student->user->uuid,
+                'status'         => ''
             ];
         }
         $result['list'] = $data;
@@ -320,7 +327,7 @@ class SchoolsController extends Controller
     /**
      * 加载学校的组织机构
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function organization(SchoolRequest $request){
         $this->dataForView['pageTitle'] = '组织架构';
@@ -444,7 +451,7 @@ class SchoolsController extends Controller
      * 删除组织结构及人员
      * @param SchoolRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function delete_organization(SchoolRequest $request){
         $id = $request->get('organization_id');
@@ -455,7 +462,7 @@ class SchoolsController extends Controller
             $dao->deleteOrganization($id);
             DB::commit();
             return JsonBuilder::Success();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             $msg = $e->getMessage();
             return JsonBuilder::Error($msg);
