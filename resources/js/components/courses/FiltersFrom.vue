@@ -20,7 +20,7 @@
         </el-select>
     </el-form-item>
     <el-form-item label="">
-    <el-input v-model="formInline.keyword" placeholder="请输入课程名称/授课教师姓名"></el-input>
+    <el-input v-model="formInline.keyword" placeholder="请输入课程名称"></el-input>
   </el-form-item>
     <el-form-item>
         <el-button type="primary" @click="onSubmit">查询</el-button>
