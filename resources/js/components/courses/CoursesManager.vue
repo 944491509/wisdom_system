@@ -355,8 +355,10 @@ export default {
           this.textbooks = res.data.data.textbooks;
         });
       }
-      this.attachForm.attachedTextbooks = [];
+      let checkedBookIds = (payload.course.books || []).map( e => e.id)
+      this.attachForm.attachedTextbooks = checkedBookIds || [];
       this.attachForm.courseId = payload.course.id;
+
       this.showChooseTextbookFormFlag = true;
     },
     attachTextbookConfirmed: function() {

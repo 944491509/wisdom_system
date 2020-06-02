@@ -5,7 +5,6 @@ namespace App\Models\Courses;
 use App\Models\Course;
 use App\Models\Schools\Textbook;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property integer $id
@@ -15,17 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class CourseTextbook extends Model
 {
-    use SoftDeletes;
 
     /**
      * @var array
      */
     protected $fillable = ['course_id', 'school_id', 'textbook_id'];
 
-    /**
-     * @var array
-     */
-    protected $hidden = ['updated_at', 'deleted_at'];
+    protected $updated_at = false;
 
 
     /**

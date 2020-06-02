@@ -142,6 +142,7 @@ class TextbookController extends Controller
         $courseId = $request->getCourseId();
         $schoolId = $request->getSchoolId();
         $textbookIdArr = $request->getTextbookIdArr();
+
         $courseTextbookDao = new CourseTextbookDao();
         $result = $courseTextbookDao->createCourseTextbook($courseId, $schoolId, $textbookIdArr);
 
