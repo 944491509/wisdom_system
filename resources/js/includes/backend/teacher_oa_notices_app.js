@@ -24,7 +24,20 @@ if (document.getElementById('teacher-oa-notices-app')) {
                 detail: {},
                 drawer: false, // 通知侧边栏
                 titleName: "",
-                attachments: [] // 附件
+                attachments: [], // 附件
+                releaseDrawer: false, // 发布通知drawer
+                form: {
+                  title: '',
+                  textarea: ''
+                },
+                innerDrawer: false,
+                selecttags: [
+                  { name: '标签一', type: '' },
+                  { name: '标签二', type: 'success' },
+                  { name: '标签三', type: 'info' },
+                  { name: '标签四', type: 'warning' },
+                  { name: '标签五', type: 'danger' }
+                ]
             }
         },
         created() {
@@ -37,6 +50,21 @@ if (document.getElementById('teacher-oa-notices-app')) {
             this.getnoticeList3();
         },
         methods: {
+          handleClose1() {
+            this.releaseDrawer = false
+          },
+          handleClose2() {
+            this.innerDrawer = false
+          },
+          deleteTag(tag) {
+            this.selecttags.splice(this.selecttags.indexOf(tag), 1);
+          },
+          reload() {
+
+          },
+          release() {
+
+          },
             // 获取本页列表
             getnoticeList1() {
                 axios.post(
