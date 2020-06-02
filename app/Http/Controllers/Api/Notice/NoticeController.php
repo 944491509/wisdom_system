@@ -80,13 +80,15 @@ class NoticeController extends Controller
         $data['school_id'] = $user->getSchoolId();
         $data['user_id'] = $user->id;
         $data['type'] = Notice::TYPE_NOTIFY;
-        $organizationIds = $data['organization_id'];
+        $organizationIds = $data['organization_id'] ?? [];
+        $gradeIds = $data['grade_id'] ?? [];
 
         unset($data['attachments']);
         unset($data['organization_id']);
+        unset($data['grade_id']);
         $file = $request->file('attachments');
         $dao = new NoticeDao();
-        $result = $dao->issueNotice($data, $organizationIds, $file, $user);
+        $result = $dao->issueNotice($data, $organizationIds,$gradeIds, $file, $user);
 
         $msg = $result->getMessage();
         if($result->isSuccess()) {

@@ -26,6 +26,11 @@ class Notice extends Model
     const STATUS_UNPUBLISHED_TEXT = '未发布';
     const STATUS_PUBLISH_TEXT     = '已发布';
 
+    // 范围
+    const RANGE_ALL = 0;  // 教师和学生都可看
+    const RANGE_TEACHER = 1; // 教师可看
+    const RANGE_STUDENT = 2; // 学生可看
+
 
     // 阅读状态
     const UNREAD = 0;
@@ -43,9 +48,9 @@ class Notice extends Model
     }
 
     protected $fillable = [
-        'school_id', 'title', 'content',
-        'image', 'release_time', 'note', 'inspect_id', 'type', 'user_id',
-        'status'];
+        'school_id', 'title', 'content', 'image', 'release_time', 'note',
+        'inspect_id', 'type', 'user_id', 'status', 'range',
+    ];
 
     public $casts = [
         'release_time'=>'datetime'
