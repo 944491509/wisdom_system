@@ -85,6 +85,7 @@ require('./includes/backend/recruitment_enrol_manager'); // 招生录取
 require('./includes/backend/file_manager_app'); // 云盘管理
 require('./includes/backend/teacher_apply_new_course'); // 云盘管理
 require('./includes/backend/user_finder_app'); // 快速定位用户
+require('./includes/backend/verify-list'); // 快速定位用户
 require('./includes/backend/application_type_app'); // 申请类型管理
 require('./includes/backend/welcome_students'); // 申请类型管理
 require('./includes/backend/adviser_editor_app'); // 系主任, 班主任, 教研组长, 班长等管理程序

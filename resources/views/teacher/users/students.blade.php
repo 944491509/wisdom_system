@@ -10,7 +10,8 @@ use App\User;
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        {{ $parent->name??session('school.name') }}(学生总数: {{ $students->total() }})
+                        {{ $parent->name??session('school.name') }}
+                        (学生总数: <span id="veri-list-total">0</span>)
                         @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
                             @if($parent->gradeManager)
                                 <a href="{{ route('school_manager.grade.set-adviser',['grade'=>$parent->id]) }}">
@@ -39,13 +40,92 @@ use App\User;
                     </header>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body" id="verify-list" name="students">
                     <div class="row">
                         <div class="table-padding col-12 pt-0">
-                            @include('school_manager.school.reusable.nav',['highlight'=>'student'])
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
                         </div>
+                        <search-bar-new mode="students" :schoolid="school_id" v-model="where"></search-bar-new>
+                        <el-button type="primary" style="margin: 12px;" @click="search">
+                            查询
+                        </el-button>
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
+                            <el-table
+                                :data="list"
+                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                style="width: 100%">
+                                <el-table-column
+                                width="55">
+                                    <template slot-scope="scope">
+                                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="student_number"
+                                    label="学号"
+                                    width="180">
+                                </el-table-column>
+                                <el-table-column
+                                    label="头像"
+                                    width="180">
+                                    <template slot-scope="scope">
+                                        <img :src="scope.row.avatar || '/assets/img/dp.jpg'" style="width: 60px;border-radius: 50%;" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="name"
+                                    label="姓名">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="mobile"
+                                    label="联系电话">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="grade"
+                                    label="所在班级">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="enquiries"
+                                    label="待办的申请">
+                                </el-table-column>
+                                <el-table-column
+                                width="280"
+                                    label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" @click="gokebiao(scope.row)">
+                                            <i class="fa fa-calendar"></i> 查看课表
+                                        </el-button>
+                                        <el-dropdown @command="(e)=>{optCommand(e,scope.row)}">
+                                            <el-button type="primary">
+                                                可执行操作
+                                            </el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                                                <el-dropdown-item command="photo">照片</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="table-footer">
+                                <div style="display: inline-flex;">
+                                    <el-checkbox style="margin-bottom: 0;margin-right: 12px" o v-model="allchecked">全选</el-checkbox>
+                                    <pf-icon title="在校" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zaixiao" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="休学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-xiuxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="退学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-tuixue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="转学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zhuanxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon title="毕业" style="margin-right: 12px; cursor: pointer" iconsrc="stu-biye" width="22px" height="22px"></pf-icon>
+                                </div>
+                                <el-pagination
+                                    background
+                                    style="float: right"
+                                    layout="prev, pager, next"
+                                    :page-count="pagination.pageCount"
+                                    :current-page="pagination.page"
+                                    @current-change="onPageChange"
+                                    ></el-pagination>
+                            </div>
+                            <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
                                 <tr>
                                     <th>学号</th>
@@ -58,33 +138,20 @@ use App\User;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($students as $index=>$gradeUser)
-                                    @php
-                                        /** @var \App\Models\Users\GradeUser $gradeUser */
-                                    @endphp
                                     <tr>
-                                        <td>{{ $gradeUser->studentProfile->student_number??'-' }}</td>
+                                        <td></td>
                                         <td>
-                                            <img src="{{ $gradeUser->studentProfile->avatar??null }}" style="width: 60px;border-radius: 50%;">
+                                            <img src="{" style="width: 60px;border-radius: 50%;">
                                         </td>
                                         <td>
-                                            {{ $gradeUser->user->name ?? 'n.a' }}
-                                            @if(isset($parent) && get_class($parent) === 'App\Models\Schools\Grade')
-                                                @if(isset($parent->gradeManager->monitor_id))
-                                                    @if($parent->gradeManager->monitor_id === $gradeUser->user_id)
-                                                        <span class="text-primary">(班长)</span>
-                                                    @endif
-                                                @endif
-                                            @endif
+
                                         </td>
                                         <td>
-                                            {{ $gradeUser->user->mobile }}
-                                            {{ $gradeUser->user->getStatusText() }}
                                         </td>
-                                        <td>{{ $gradeUser->studyAt() }}</td>
-                                        <td>{{ count($gradeUser->enquiries) }}</td>
+                                        <td></td>
+                                        <td></td>
                                         <td class="text-center">
-                                            <a target="_blank" href="{{ route('school_manager.grade.view.timetable',['uuid'=>$gradeUser->grade_id]) }}" class="btn btn-round btn-primary btn-view-timetable">
+                                            <a target="_blank" href="{{ route('school_manager.grade.view.timetable',['uuid'=>'grade_id']) }}" class="btn btn-round btn-primary btn-view-timetable">
                                                 <i class="fa fa-calendar"></i>查看课表
                                             </a>
                                             @php
@@ -92,8 +159,8 @@ use App\User;
                                                 [
                                                     'text'=>'可执行操作',
                                                     'subs'=>[
-                                                        ['url'=>route('verified_student.profile.edit',['uuid'=>$gradeUser->user->uuid]),'text'=>'编辑'],
-                                                        ['url'=>route('teacher.student.edit-avatar',['uuid'=>$gradeUser->user->uuid]),'text'=>'照片'],
+                                                        ['url'=>route('verified_student.profile.edit',['uuid'=>'uuid']),'text'=>'编辑'],
+                                                        ['url'=>route('teacher.student.edit-avatar',['uuid'=>'uuid']),'text'=>'照片'],
                                                     ]
                                                 ],
                                                 Button::TYPE_PRIMARY
@@ -101,13 +168,11 @@ use App\User;
                                             @endphp
                                         </td>
                                     </tr>
-                                @endforeach
                                 </tbody>
-                            </table>
+                            </table> -->
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                {{ isset($appendedParams) ? $students->appends($appendedParams)->links() : $students->links() }}
                             </div>
                         </div>
                     </div>
