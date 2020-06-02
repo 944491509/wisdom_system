@@ -346,7 +346,7 @@ export default {
     // 课程要关联教科书
     onCourseAttacheTextbook: function(payload) {
       if (this.textbooks.length === 0) {
-        loadTextbooks(this.schoolId).then(res => {
+        loadTextbooks(this.schoolId,'',payload.course.year,payload.course.term).then(res => {
           this.textbooks = res.data.data.textbooks;
         });
       }

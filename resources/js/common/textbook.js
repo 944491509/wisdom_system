@@ -7,8 +7,9 @@ import {Util} from "./utils";
  * @param affix
  * @returns Promise
  */
-export function loadTextbooks(schoolId, affix) {
-    const url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS);
+export function loadTextbooks(schoolId, affix, year,term) {
+    let url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS);
+    url = `${url}?year=${year}&term=${term}`
     if(Util.isDevEnv()){
         return axios.get(url, affix);
     }
