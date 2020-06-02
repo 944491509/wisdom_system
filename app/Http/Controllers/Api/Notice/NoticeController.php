@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\Notice;
 
 
+use App\Dao\Schools\SchoolDao;
 use App\Events\SystemNotification\NoticeSendEvent;
 use App\Utils\JsonBuilder;
 use App\Dao\Notice\NoticeDao;
@@ -95,6 +96,31 @@ class NoticeController extends Controller
             return JsonBuilder::Error($msg);
         }
 
+    }
+
+
+    /**
+     * 返回在校的年级
+     * @param NoticeRequest $request
+     * @return string
+     */
+    public function schoolYear(NoticeRequest $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $schoolDao = new SchoolDao();
+        $school = $schoolDao->getSchoolById($schoolId);
+        $configuration = $school->configuration;
+        $schoolYear = $configuration->getSchoolYear();
+        $year = $configuration->year;
+
+        $data = [];
+        for($i=0; $i < $year; $i++ ) {
+            $data[] = [
+                'year' => $schoolYear - $i,
+                'name' => $schoolYear - $i .'级',
+            ];
+        }
+        return JsonBuilder::Success($data);
     }
 
 }
