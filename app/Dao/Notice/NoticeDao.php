@@ -2,6 +2,7 @@
 
 namespace App\Dao\Notice;
 
+use App\Models\Notices\NoticeGrade;
 use App\Utils\JsonBuilder;
 use App\Models\Notices\Notice;
 use App\Dao\NetworkDisk\MediaDao;
@@ -204,20 +205,38 @@ class NoticeDao
      * 发布通知
      * @param $data
      * @param $organizationIds
+     * @param $gradeIds
      * @param $file
      * @param $user
      * @return MessageBag
      */
-    public function issueNotice($data, $organizationIds, $file, $user) {
+    public function issueNotice($data, $organizationIds, $gradeIds, $file, $user) {
 
         $messageBag = new MessageBag();
+        // 查询该公告标题是否已存在
+        $map = ['school_id'=>$data['school_id'], 'title'=>$data['title']];
+        $notice = Notice::where($map)->first();
+        if(!is_null($notice)) {
+            $messageBag->setCode(JsonBuilder::CODE_ERROR);
+            $messageBag->setMessage('该标题已存在，请更换');
+            return $messageBag;
+        }
         $mediaDao = new MediaDao();
         // todo 需要增加后台审核功能
         $data['status'] = Notice::STATUS_PUBLISH;  // 设置为发布
+        if(!empty($organizationIds) && empty($gradeIds)) {
+            $data['range'] = Notice::RANGE_TEACHER;
+        } elseif(empty($organizationIds) && !empty($gradeIds)) {
+            $data['range'] = Notice::RANGE_STUDENT;
+        } else {
+            $data['range'] = Notice::RANGE_ALL;
+        }
+
         try{
             DB::beginTransaction();
             $notice = Notice::create($data);
 
+            // 教师查看通知范围
             foreach ($organizationIds as $key => $item) {
                 $organization = [
                     'school_id' => $data['school_id'],
@@ -225,6 +244,29 @@ class NoticeDao
                     'organization_id' => $item
                 ];
                 NoticeOrganization::create($organization);
+            }
+
+            // 学生查看通知范围
+            foreach ($gradeIds as $key => $item) {
+                $grade = [
+                    'notice_id' => $notice->id,
+                    'grade_id' => $item,
+                ];
+                NoticeGrade::create($grade);
+            }
+
+            if($data['range'] == Notice::RANGE_ALL && empty($organizationIds) && empty($gradeIds)) {
+                $organization = [
+                    'school_id' => $data['school_id'],
+                    'notice_id' => $notice->id,
+                    'organization_id' => 0, // 所有部门都能看
+                ];
+                NoticeOrganization::create($organization);
+                $grade = [
+                    'notice_id' => $notice->id,
+                    'grade_id' => 0, // 所有班级都能看
+                ];
+                NoticeGrade::create($grade);
             }
 
             if(!is_null($file)) {
