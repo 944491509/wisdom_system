@@ -8,11 +8,16 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        <pf-icon iconsrc="grade-sign" text="班级签到">
+                        <pf-icon iconsrc="grade-sign" text="班级签到"></pf-icon>
                         <div class="search_filter">
                             <el-date-picker
                               v-model="date"
                               type="date"
+                              :picker-options="{
+                                disabledDate(time) {
+                                    return time.getTime() > Date.now();
+                                }
+                              }"
                               placeholder="选择日期">
                             </el-date-picker>
                             <el-select size="small" v-model="gradeValue" placeholder="请选择班级">

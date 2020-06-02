@@ -2,17 +2,23 @@
 @section('content')
 <div id="teacher-assistant-grades-evaluations-app">
     <div class="blade_title">班级评分</div>
+
     <el-row :gutter="20">
         <el-col :span="12">
             <div class="grid-content bg-purple-dark"></div>
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        <pf-icon iconsrc="grade-score" text="班级评分">
+                        <pf-icon iconsrc="grade-score" text="班级评分"></pf-icon>
                         <div class="search_filter">
                             <el-date-picker
                               v-model="date"
                               type="date"
+                              :picker-options="{
+                                disabledDate(time) {
+                                    return time.getTime() > Date.now();
+                                }
+                              }"
                               placeholder="选择日期">
                             </el-date-picker>
                             <el-select size="small" v-model="filterValue" placeholder="请选择">
@@ -25,6 +31,7 @@
                             </el-select>
                             <el-button type="primary" size="small" @click="searchList">查询</el-button>
                         </div>
+
                     </header>
                 </div>
                 <div class="card-body">
@@ -35,6 +42,7 @@
                             :data="data">
                         <el-table-column
                                 prop="slot_name"
+                                width="120"
                                 label="课时">
                         </el-table-column>
                         <el-table-column
@@ -42,10 +50,11 @@
                                 label="科目">
                         </el-table-column>
                         <el-table-column
+                                width="150"
                                 label="是否评分">
                             <template slot-scope="scope">
                                 <span :class="{
-                                       'status_blue': scope.row.status == 1}" v-html="scope.row.status == 1?'已评分':'未评分'"></span>
+                                       'status_blue': scope.row.status != 1}" v-html="scope.row.status == 1?'已评分':'未评分'"></span>
                                 <span v-if="scope.row.status" class="showDetail">
                                      <img @click="showDetail(scope.row)"
                                           src="{{ asset('assets/img/teacher_blade/eye.png') }}" class="icon-image">
@@ -65,8 +74,8 @@
                 <div class="card">
                     <div class="card-head">
                         <header class="full-width">
-                            <pf-icon iconsrc="grade-score-info" text="评分信息">
-                            <span style="float: right" v-text="teacherName"></span>
+                            <pf-icon iconsrc="grade-score-info" text="评分信息"/></pf-icon>
+                            <span style="float: right">@{{teacherName}}</span>
                         </header>
                     </div>
                     <div class="card-body">

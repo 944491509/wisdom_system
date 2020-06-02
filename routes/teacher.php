@@ -102,7 +102,7 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
     Route::get('textbook/add', 'TextbookController@add')->name('teacher.textbook.add');     // 添加教程
     Route::get('textbook/edit', 'TextbookController@edit')->name('teacher.textbook.edit');  // 编辑教程
     Route::post('textbook/delete', 'TextbookController@delete')->name('teacher.textbook.delete'); // 删除教程
-    Route::post('textbook/save', 'TextbookController@save')->name('teacher.textbook.save'); // 保存教程
+//    Route::post('textbook/save', 'TextbookController@save')->name('teacher.textbook.save'); // 保存教程
     Route::post('textbook/search', 'TextbookController@search')->name('teacher.textbook.search'); // 保存教程
     Route::get('textbook/list', 'TextbookController@list')->name('teacher.textbook.list');  // 教程列表
 
@@ -256,6 +256,7 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
             // 班级签到
             Route::get('grades-check-in','LY\AssistantController@grades_check_in')
                 ->name('teacher.ly.assistant.grades-check-in');
+
             // 班级评分
             Route::get('grades-evaluations','LY\AssistantController@grades_evaluations')
                 ->name('teacher.ly.assistant.grades-evaluations');

@@ -26,10 +26,12 @@
                     >
                         <el-select v-model="queryType" slot="prepend" placeholder="请选择" style="width: 120px;">
                             <el-option label="全部" value="0"></el-option>
+                            <el-option v-for="item in types" :key="item.id" :label="item.type" :value="item.id"></el-option>
+<!--
                             <el-option label="{{ Textbook::TYPE_MAJOR_TEXT }}" value="{{ Textbook::TYPE_MAJOR }}"></el-option>
                             <el-option label="{{ Textbook::TYPE_COMMON_TEXT }}" value="{{ Textbook::TYPE_COMMON }}"></el-option>
                             <el-option label="{{ Textbook::TYPE_SELECT_TEXT }}" value="{{ Textbook::TYPE_SELECT }}"></el-option>
-                            <el-option label="{{ Textbook::TYPE_MISC_TEXT }}" value="{{ Textbook::TYPE_MISC }}"></el-option>
+                            <el-option label="{{ Textbook::TYPE_MISC_TEXT }}" value="{{ Textbook::TYPE_MISC }}"></el-option> -->
                         </el-select>
                     </el-autocomplete>
                     <span class="text-info" v-show="isLoading">
@@ -39,9 +41,9 @@
                 <div class="col-6">
                     <el-button-group class="pull-right">
                         <el-button type="primary" icon="el-icon-plus" v-on:click="addNewTextbook">添加新教材</el-button>
-                        <el-button icon="el-icon-files" v-on:click="exportByGrade" disabled>按班级导出</el-button>
+                        <!-- <el-button icon="el-icon-files" v-on:click="exportByGrade" disabled>按班级导出</el-button>
                         <el-button icon="el-icon-notebook-1" v-on:click="exportByMajor">按专业导出</el-button>
-                        <el-button icon="el-icon-notebook-2" v-on:click="exportByCampus">按校区导出</el-button>
+                        <el-button icon="el-icon-notebook-2" v-on:click="exportByCampus">按校区导出</el-button> -->
                     </el-button-group>
                 </div>
             </div>
@@ -106,10 +108,7 @@
                         <el-col :span="8">
                             <el-form-item label="教材类型">
                                 <el-select v-model="textbookModel.type" placeholder="必填: 教材类型">
-                                    <el-option label="专业教材" :value="1"></el-option>
-                                    <el-option label="通用教材" :value="2"></el-option>
-                                    <el-option label="选读教材" :value="3"></el-option>
-                                    <el-option label="课外读物" :value="4"></el-option>
+                                    <el-option v-for="item in types" :key="item.id" :label="item.type" :value="item.id"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -123,6 +122,25 @@
                                 <el-input @input="updateInput" v-model="textbookModel.price" placeholder="必填: 课本零售价"></el-input>
                             </el-form-item>
                         </el-col>
+
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="年级">
+                                <el-select v-model="textbookModel.year" placeholder="请选择年级">
+                                    <el-option v-for="item in years" :key="item.year" :label="item.text" :value="item.year"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="学期">
+                                <el-select v-model="textbookModel.term" placeholder="请选择学期">
+                                    <el-option label="第一学期" :value="1"></el-option>
+                                    <el-option label="第二学期" :value="2"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+
                     </el-row>
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-picture" v-on:click="showFileManagerFlag=true">选择图书封面图片</el-button>

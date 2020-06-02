@@ -16,6 +16,7 @@ use App\Models\Courses\CourseMaterial;
 use App\Models\Courses\CourseTeacher;
 use App\Models\Courses\TeachingLog;
 use App\Models\ElectiveCourses\CourseElective;
+use App\Models\Schools\Major;
 use App\Utils\JsonBuilder;
 use App\Utils\Misc\ConfigurationTool;
 use App\Utils\ReturnData\IMessageBag;
@@ -30,13 +31,8 @@ class CourseDao
 {
     use BuildFillableData;
     protected $fields = [
-        'code','name','uuid','id',
-        'scores',
-        'optional',
-        'year',
-        'term',
-        'desc',
-        'duration',
+        'code','name','uuid','courses.id', 'scores', 'optional', 'year', 'term',
+        'desc', 'duration',
     ];
     public function __construct()
     {
@@ -522,31 +518,61 @@ class CourseDao
 
     /**
      * 课程分页
-     * @param $schoolId
+     * @param $data
      * @return mixed
      */
-    public function getCoursePageBySchoolId($schoolId) {
-        $return = Course::where('school_id',$schoolId)
-            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
-        $result = pageReturn($return);
+    public function getCoursePageBySchoolId($data) {
+        $map = [['courses.school_id', '=', $data['school']]];
+        if(!empty($data['year'])) {
+            $map[] = ['year', '=', $data['year']];
+        }
+        if(!empty($data['term'])) {
+            $map[] = ['term', '=', $data['term']];
+        }
+        if(!empty($data['keyword'])) {
+            $map[] = ['name', 'like', $data['keyword'].'%'];
+        }
 
-        $courses = $result['list'];
+        $return = Course::where($map)
+            ->with('majors')->whereHas('majors', function ($que) use ($data){
+                $que->when(!empty($data['major_id']) ,function ($que)  use($data){
+                    return $que->where('major_id', $data['major_id'])
+                        ->groupBy('course_id');});
+                });
+
+//            ->with('teachers')->whereHas('teachers', function ($que) use ($data) {
+//                $que->where('teacher_id', $data['teacher_id'])
+//                    ->groupBy('course_id');})
+        if($data['download']) {
+            $courses = $return->get();
+        } else {
+            $return = $return->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+            $result = pageReturn($return);
+            $courses = $result['list'];
+        }
+
         $list = [];
-        foreach ($courses as $course) {
+        foreach ($courses as $key => $course) {
+            unset($course->majors);
             /**
              * @var Course $course
              */
-            $item = [];
-            foreach ($this->fields as $field) {
-                $item[$field] = $course->$field;
-            }
+            $item = $course->toArray();
+
             $item['teachers'] = $course->teachers;
-            $item['majors'] = $course->majors;
+            $majors = $course->majors;
+            if(!empty($data['major_id'])) {
+                $majors = $course->majors->where('id', $data['major_id']);
+            }
+            $item['majors'] = $majors;
             // 课程的教材
             $item['books'] = [];
             foreach ($course->courseTextbooks as $ct){
                 $i['id'] = $ct->textbook->id;
                 $i['name'] = $ct->textbook->name . '('.$ct->textbook->edition.')';
+                $i['press'] = $ct->textbook->press;
+                $i['author'] = $ct->textbook->author;
+                $i['type'] = $ct->textbook->typeText;
                 $item['books'][] = $i;
             }
 

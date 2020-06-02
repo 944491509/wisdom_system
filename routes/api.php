@@ -1168,7 +1168,6 @@ Route::prefix('office')->middleware('auth:api')->group(function(){
 });
 
 // 服务协议及隐私政策
-
 Route::any('app/agreement', 'Api\Home\IndexController@agreement')
 ->name('api.office.office-page');
 
@@ -1216,4 +1215,15 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     Route::post('get-students', 'Operator\SchoolsController@getStudents')->name('api.school.get-students');
     // 统一认证 - 搜索条件
     Route::post('get-search-config', 'Operator\SchoolsController@searchConfig')->name('api.school.get-search-config');
+});
+
+
+// 教材
+Route::prefix('textbook')->middleware('auth:api')->group(function() {
+    // 类型
+    Route::get('/allType', 'Api\Study\TextbookController@allType')
+        ->name('api.textbook.allType');
+    // 编辑
+    Route::post('/save', 'Api\Study\TextbookController@save')
+        ->name('api.textbook.save');
 });
