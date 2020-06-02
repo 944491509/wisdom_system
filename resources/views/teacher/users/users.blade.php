@@ -22,7 +22,7 @@ use App\User;
                     <div class="row">
                         <div style="width: 100%;">
                             <search-bar-new mode="students" :schoolid="school_id" v-model="where">
-                                <div slot="opt" style="margin: 12px;">
+                                <div slot="opt" style="margin: 12px;display: inline-block;">
                                     <el-button type="primary" style="margin: 12px;" @click="search">
                                         查询
                                     </el-button>
@@ -35,15 +35,9 @@ use App\User;
                                 class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
                                 style="width: 100%">
                                 <el-table-column
-                                width="55">
-                                    <template slot-scope="scope">
-                                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
                                     prop="student_number"
-                                    label=""
-                                    width="180">
+                                    label="#"
+                                    width="60">
                                     <template slot-scope="scope">
                                         @{{(scope.$index + 1)+ (pagination.page - 1) * 20}}
                                     </template>
