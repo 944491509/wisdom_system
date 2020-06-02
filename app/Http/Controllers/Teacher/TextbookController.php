@@ -142,6 +142,9 @@ class TextbookController extends Controller
         $courseId = $request->getCourseId();
         $schoolId = $request->getSchoolId();
         $textbookIdArr = $request->getTextbookIdArr();
+        if(empty($textbookIdArr)) {
+            return JsonBuilder::Error('教材不能为空');
+        }
         $courseTextbookDao = new CourseTextbookDao();
         $result = $courseTextbookDao->createCourseTextbook($courseId, $schoolId, $textbookIdArr);
 

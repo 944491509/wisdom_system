@@ -34,20 +34,15 @@ class TextbookDao
         DB::beginTransaction();
         try{
             // 删除自己
-            $deleted = Textbook::where('id',$id)->where('school_id',$schoolId)->delete();
-            if($deleted){
-                // 删除关联的课程
-                $dao = new CourseTextbookDao();
-                $dao->deleteByTextbook($id);
-                // 删除关联的图片
-                TextbookImage::where('textbook_id',$id)->delete();
-                DB::commit();
-                return true;
-            }
-            else{
-                DB::rollBack();
-                return false;
-            }
+            Textbook::where('id',$id)->where('school_id',$schoolId)->delete();
+            // 删除关联的课程
+            $dao = new CourseTextbookDao();
+            $dao->deleteByTextbook($id);
+            // 删除关联的图片
+            TextbookImage::where('textbook_id',$id)->delete();
+            DB::commit();
+            return true;
+
         }catch (\Exception $exception){
             DB::rollBack();
             return false;
