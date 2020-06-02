@@ -247,6 +247,9 @@ class TaskController extends Controller
             ];
         }
         $output['forum_list'] = $forum;
+
+        $output['task_files'] = $task->taskFiles;
+
         return JsonBuilder::Success($output);
 
     }

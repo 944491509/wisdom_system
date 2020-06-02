@@ -99,4 +99,13 @@ class ProjectTask extends Model
     {
         return Carbon::parse($value)->format('Y-m-d H:i');
     }
+
+
+    /**
+     * 任务图片
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function taskFiles() {
+        return $this->hasMany(ProjectTaskFiles::class, 'task_id');
+    }
 }
