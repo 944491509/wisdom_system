@@ -11,7 +11,6 @@ use App\Models\Forum\Community;
 use App\Models\Misc\Enquiry;
 use App\Models\NetworkDisk\Category;
 use App\Models\Schools\GradeManager;
-use App\Models\Schools\Organization;
 use App\Models\Schools\RecruitmentPlan;
 use App\Models\Simpleacl\SimpleaclMenu;
 use App\Models\Simpleacl\SimpleaclPermission;
@@ -31,8 +30,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
-
-//use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Cache;
 use Kodeine\Acl\Traits\HasRole;
@@ -40,7 +37,6 @@ use App\Models\RecruitStudent\RegistrationInformatics;
 use App\Models\NetworkDisk\Media;
 use App\Models\Schools\YearManager;
 
-use function foo\func;
 
 class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
 {
@@ -52,15 +48,20 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED = 2;
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT = '认证中';
     const STATUS_VERIFIED = 3;
-    const STATUS_VERIFIED_TEXT = '已认证';
-    const STATUS_SUSPENSION = 4 ;
-    const STATUS_SUSPENSION_TEXT = '休学' ;
+    const STATUS_VERIFIED_TEXT = '在校';
+    const STATUS_SUSPENSION = 4;
+    const STATUS_SUSPENSION_TEXT = '休学';
     const STATUS_DROP_OUT = 5;
     const STATUS_DROP_OUT_TEXT = '退学';
+    const STATUS_TRANSFER = 6;
+    const STATUS_TRANSFER_TEXT = '转学';
+    const STATUS_FINISH = 7;
+    const STATUS_FINISH_TEXT = '毕业';
 
-    const TYPE_STUDENT  = 1;
+    const TYPE_STUDENT = 1;
     const TYPE_EMPLOYEE = 2;
 
+    // 性别
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
 
@@ -345,11 +346,13 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     public function getStatusText()
     {
         $arr = [
-            self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED=>self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT,
-            self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED=>self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT,
-            self::STATUS_VERIFIED=>self::STATUS_VERIFIED_TEXT,
-            self::STATUS_SUSPENSION=>self::STATUS_SUSPENSION_TEXT,
-            self::STATUS_DROP_OUT=>self::STATUS_DROP_OUT_TEXT,
+            self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED   => self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT,
+            self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED => self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT,
+            self::STATUS_VERIFIED                            => self::STATUS_VERIFIED_TEXT,
+            self::STATUS_SUSPENSION                          => self::STATUS_SUSPENSION_TEXT,
+            self::STATUS_DROP_OUT                            => self::STATUS_DROP_OUT_TEXT,
+            self::STATUS_TRANSFER                            => self::STATUS_TRANSFER_TEXT,
+            self::STATUS_FINISH                              => self::STATUS_FINISH_TEXT,
         ];
         return $arr[$this->status];
     }

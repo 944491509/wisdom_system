@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\DB;
 
 class GradeUserDao
 {
+    const TYPE_SELECT = 1;
+    const TYPE_UPDATE = 2;
+
     private $currentUser;
 
     public function __construct($user = null)
@@ -125,11 +128,11 @@ class GradeUserDao
         }
         // 聘任方式
         if (isset($where['mode'])) {
-            $map['users.status'] = $where['status'];
+            $map['teacher_profiles.mode'] = $where['mode'];
         }
         // 职称
         if (isset($where['title'])) {
-            $map['users.title'] = $where['title'];
+            $map['teacher_profiles.title'] = $where['title'];
         }
         // 学历
         if (isset($where['education'])) {
@@ -157,9 +160,11 @@ class GradeUserDao
     /**
      * @param $schoolId
      * @param $where
+     * @param int $type 1 查询 2 修稿
+     * @param null $updateStatus
      * @return mixed
      */
-    public function getByStudentsBySchool($schoolId, $where)
+    public function getByStudentsBySchool($schoolId, $where, $type = self::TYPE_SELECT, $updateStatus = null)
     {
         $map = ['grade_users.school_id' => $schoolId];
         // 年级
@@ -183,7 +188,7 @@ class GradeUserDao
             ->select('users.status', 'users.name', 'user_type', 'grade_users.*', 'mobile')
             ->join('users', 'users.id', '=', 'grade_users.user_id')
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
-            ->whereIn('user_type', Role::GetStudentUserTypes());
+            ->whereIn('user_type', array_merge(Role::GetStudentUserTypes(), [Role::REGISTERED_USER]));
 
         // 学生姓名, 手机号, 身份证号
         if (isset($where['keyword'])) {
@@ -195,8 +200,13 @@ class GradeUserDao
             });
         }
 
-        return $query->paginate();
+        if ($type == self::TYPE_SELECT) {
+            return $query->paginate();
+        } else {
+            return $query->update(['users.status' => $updateStatus]);
+        }
     }
+
 
     /**
      * 根据学校获取 id
