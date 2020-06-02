@@ -11,24 +11,28 @@ use App\User;
                 <div class="card-head">
                     <header class="full-width">
                         <span class="pull-left pt-2">{{ $parent->name??session('school.name') }} 教职工列表: (总数: <span id="veri-list-total">0</span>)</span>
-                        <a href="{{ route('school_manager.teachers.add-new') }}" class="btn btn-primary pull-right">
-                            添加新教职工 <i class="fa fa-plus"></i>
-                        </a>
-                        <a href="{{ route('school_manager.teachers.export') }}" class="btn btn-primary pull-right">
-                            导出教职工 <i class="fa fa-plus"></i>
-                        </a>
+                        <div class="table-padding col-12">
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'teacher'])
+                        </div>
                     </header>
                 </div>
 
                 <div class="card-body" id="verify-list" name="teachers">
                     <div class="row">
-                        <div class="table-padding col-12">
-                            @include('school_manager.school.reusable.nav_new',['highlight'=>'teacher'])
-                        </div>
-                        <search-bar-new mode="teachers" :schoolid="school_id" v-model="where"></search-bar-new>
-                        <el-button type="primary" style="margin: 12px;" @click="search">
-                            查询
-                        </el-button>
+                        <search-bar-new mode="teachers" :schoolid="school_id" v-model="where">
+                            <el-button type="primary" style="margin: 12px;" @click="search">
+                                查询
+                            </el-button>
+                            <div slot="opt" style="float: right;margin: 12px 0;">
+                                <a href="{{ route('school_manager.teachers.add-new') }}" class="btn btn-primary pull-right">
+                                    添加新教职工 <i class="fa fa-plus"></i>
+                                </a>
+                                <a href="{{ route('school_manager.teachers.export') }}" class="btn btn-primary pull-right">
+                                    导出教职工 <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                        </search-bar-new>
+                        
                         <div class="table-responsive">
                             <el-table
                                 :data="list"
@@ -63,9 +67,9 @@ use App\User;
                                     label="操作">
                                     <template slot-scope="scope">
                                         <div style="line-height: 46px;">
-                                            <a href="https://admin.dev.pftytx.com/school_manager/teachers/edit-avatar?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-picture-o"></i>照片</a>
-                                            <a href="https://admin.dev.pftytx.com/school_manager/teachers/edit-profile?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-edit"></i>档案管理</a>
-                                            <a href="https://admin.dev.pftytx.com/teacher/profile/update-password?uuid=171787" id="" class="btn btn-round btn-default "><i class="fa fa-key"></i>修改密码</a>
+                                            <a :href="`/school_manager/teachers/edit-avatar?uuid=${scope.row.user_id}`" id="" class="btn btn-round btn-default "><i class="fa fa-picture-o"></i>照片</a>
+                                            <a :href="`/school_manager/teachers/edit-profile?uuid=${scope.row.user_id}`" id="" class="btn btn-round btn-default "><i class="fa fa-edit"></i>档案管理</a>
+                                            <a :href="`/teacher/profile/update-password?uuid=${scope.row.user_id}`" id="" class="btn btn-round btn-default "><i class="fa fa-key"></i>修改密码</a>
                                         </div>
                                     </template>
                                 </el-table-column>

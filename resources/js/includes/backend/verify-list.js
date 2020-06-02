@@ -52,11 +52,14 @@ if (appdom && schooldom) {
     methods: {
       getList(params = {}) {
         axios.post(
-          mode === 'students' ? '/api/pc/get-students' : '/api/pc/get-teachers', {
+          (mode === 'students' || mode === 'users') ? '/api/pc/get-students' : '/api/pc/get-teachers', {
             page: this.pagination.page,
             school_id: this.school_id,
             where: {
               ...this.where,
+              ...(mode === 'users' ? {
+                status: 5
+              } : {})
             }
           }
         ).then(res => {
@@ -104,6 +107,32 @@ if (appdom && schooldom) {
       onPageChange(page) {
         this.pagination.page = page;
       },
+      updateStu(update_status, text) {
+        if (this.allchecked) {
+          this.$confirm(`确认将全部学生修改为"${text}"?`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            axios.post('/api/pc/update-student-status', {
+              update_status,
+              school_id: this.school_id,
+              where: {
+                ...this.where,
+              }
+            }).then(res => {
+              if (Util.isAjaxResOk(res)) {
+                this.allchecked = false
+                this.search()
+              } else {
+                this.$message.error(res.data.message);
+              }
+            })
+          })
+        } else {
+
+        }
+      }
     },
     created() {
       this.getList()
