@@ -15,13 +15,10 @@ use App\Dao\Users\UserOrganizationDao;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Controllers\Controller;
 use App\Dao\Schools\SchoolDao;
-use App\Models\Acl\Role;
-use App\Models\Banner\Banner;
-use App\Models\School;
 use App\Models\Pipeline\Flow\Handler;
-use App\Models\Schools\TeachingAndResearchGroup;
 use App\Models\Teachers\Teacher;
 use App\Models\Users\UserSearchConfig;
+use App\User;
 use App\Utils\FlashMessageBuilder;
 use App\Dao\Schools\InstituteDao;
 use App\Utils\JsonBuilder;
@@ -31,7 +28,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Psy\Util\Json;
 
 class SchoolsController extends Controller
 {
@@ -281,12 +277,12 @@ class SchoolsController extends Controller
     public function getStudents(SchoolRequest $request)
     {
         $schoolId = $request->get('school_id');
-        $where = $request->get('where');
+        $where    = $request->get('where');
 
-        $dao = new GradeUserDao($request->user());
-        $students = $dao->getByStudentsBySchool($schoolId, $where);
-        $result = pageReturn($students);
-        $data = [];
+        $dao      = new GradeUserDao($request->user());
+        $students = $dao->getByStudentsBySchool($schoolId, $where, GradeUserDao::TYPE_SELECT);
+        $result   = pageReturn($students);
+        $data     = [];
         foreach ($result['list'] as $student) {
             $data[] = [
                 'student_number' => $student->studentProfile->student_number ?? '-',
@@ -296,11 +292,30 @@ class SchoolsController extends Controller
                 'enquiries'      => count($student->enquiries),
                 'grade_id'       => $student->grade_id,
                 'uuid'           => $student->user->uuid,
-                'status'         => ''
+                'status'         => $student->user->getStatusText()
             ];
         }
         $result['list'] = $data;
         return JsonBuilder::Success($result);
+    }
+
+    /**
+     * 修改学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function updateStudentStatus(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where    = $request->get('where');
+        $status   = $request->get('update_status');
+        $dao      = new GradeUserDao($request->user());
+        $result   = $dao->getByStudentsBySchool($schoolId, $where, GradeUserDao::TYPE_UPDATE, $status);
+        if ($result) {
+            return JsonBuilder::Success('修改成功');
+        } else {
+            return JsonBuilder::Error('修改失败');
+        }
     }
 
 
@@ -316,10 +331,28 @@ class SchoolsController extends Controller
         return JsonBuilder::Success($data);
     }
 
+    /**
+     * 搜索条件 学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function studentStatus(SchoolRequest $request)
+    {
+        $data = [
+            User::STATUS_VERIFIED   => User::STATUS_VERIFIED_TEXT,
+            User::STATUS_SUSPENSION => User::STATUS_SUSPENSION_TEXT,
+            User::STATUS_DROP_OUT   => User::STATUS_DROP_OUT_TEXT,
+            User::STATUS_TRANSFER   => User::STATUS_TRANSFER_TEXT,
+            User::STATUS_FINISH     => User::STATUS_FINISH_TEXT,
+        ];
+        return JsonBuilder::Success($data);
+    }
 
-    public function rooms(SchoolRequest $request){
-        $dao = new RoomDao($request->user());
-        $this->dataForView['rooms'] = $dao->getRoomsPaginate([['school_id','=',session('school.id')]]);
+
+    public function rooms(SchoolRequest $request)
+    {
+        $dao                            = new RoomDao($request->user());
+        $this->dataForView['rooms']     = $dao->getRoomsPaginate([['school_id', '=', session('school.id')]]);
         $this->dataForView['pageTitle'] = '物业管理';
         return view('school_manager.school.rooms', $this->dataForView);
     }
@@ -329,11 +362,12 @@ class SchoolsController extends Controller
      * @param SchoolRequest $request
      * @return Factory|View
      */
-    public function organization(SchoolRequest $request){
+    public function organization(SchoolRequest $request)
+    {
         $this->dataForView['pageTitle'] = '组织架构';
-        $dao = new OrganizationDao();
-        $this->dataForView['root'] = $dao->getRoot($request->getSchoolId());
-        $this->dataForView['level'] = $dao->getTotalLevel($request->getSchoolId());
+        $dao                            = new OrganizationDao();
+        $this->dataForView['root']      = $dao->getRoot($request->getSchoolId());
+        $this->dataForView['level']     = $dao->getTotalLevel($request->getSchoolId());
         return view('school_manager.school.organization', $this->dataForView);
     }
 

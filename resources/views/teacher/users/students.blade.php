@@ -34,21 +34,27 @@ use App\User;
                             @endif
                         @endif
 
-                        <a href="{{ route('school_manager.student.add') }}" class="btn btn-primary pull-right">
-                            添加新学生 <i class="fa fa-plus"></i>
-                        </a>
+                        <div class="table-padding col-12 pt-0">
+                            @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
+                        </div>
                     </header>
                 </div>
 
                 <div class="card-body" id="verify-list" name="students">
                     <div class="row">
-                        <div class="table-padding col-12 pt-0">
-                            @include('school_manager.school.reusable.nav_new',['highlight'=>'student'])
+                        <div style="width: 100%;">
+                            <search-bar-new mode="students" :schoolid="school_id" v-model="where">
+                                <el-button type="primary" style="margin: 12px;" @click="search">
+                                    查询
+                                </el-button>
+                                <div slot="opt" style="float: right;margin: 12px 0;">
+                                    <a href="{{ route('school_manager.student.add') }}" class="btn btn-primary pull-right">
+                                        添加新学生 <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
+                            </search-bar-new>
+                            
                         </div>
-                        <search-bar-new mode="students" :schoolid="school_id" v-model="where"></search-bar-new>
-                        <el-button type="primary" style="margin: 12px;" @click="search">
-                            查询
-                        </el-button>
                         <div class="table-responsive">
                             <el-table
                                 :data="list"
@@ -85,8 +91,8 @@ use App\User;
                                     label="所在班级">
                                 </el-table-column>
                                 <el-table-column
-                                    prop="enquiries"
-                                    label="待办的申请">
+                                    prop="status"
+                                    label="学生状态">
                                 </el-table-column>
                                 <el-table-column
                                 width="280"
@@ -110,11 +116,11 @@ use App\User;
                             <div class="table-footer">
                                 <div style="display: inline-flex;">
                                     <el-checkbox style="margin-bottom: 0;margin-right: 12px" o v-model="allchecked">全选</el-checkbox>
-                                    <pf-icon title="在校" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zaixiao" width="22px" height="22px"></pf-icon>
-                                    <pf-icon title="休学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-xiuxue" width="22px" height="22px"></pf-icon>
-                                    <pf-icon title="退学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-tuixue" width="22px" height="22px"></pf-icon>
-                                    <pf-icon title="转学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zhuanxue" width="22px" height="22px"></pf-icon>
-                                    <pf-icon title="毕业" style="margin-right: 12px; cursor: pointer" iconsrc="stu-biye" width="22px" height="22px"></pf-icon>
+                                    <pf-icon @click="updateStu(3, '在校')" title="在校" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zaixiao" width="22px" height="22px"></pf-icon>
+                                    <pf-icon @click="updateStu(4, '休学')" title="休学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-xiuxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon @click="updateStu(5, '退学')" title="退学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-tuixue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon @click="updateStu(6, '转学')" title="转学" style="margin-right: 12px; cursor: pointer" iconsrc="stu-zhuanxue" width="22px" height="22px"></pf-icon>
+                                    <pf-icon @click="updateStu(7, '毕业')" title="毕业" style="margin-right: 12px; cursor: pointer" iconsrc="stu-biye" width="22px" height="22px"></pf-icon>
                                 </div>
                                 <el-pagination
                                     background

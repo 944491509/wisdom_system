@@ -1,5 +1,5 @@
 <template>
-  <div class="search-bar">
+  <div class="search-bar" style="width: 100%;">
     <div v-if="mode === 'students'">
       <el-select v-model="values.year" clearable placeholder="请选择入学年级">
         <el-option
@@ -33,10 +33,12 @@
           :value="item.value"
         ></el-option>
       </el-select>
+      <slot></slot>
       <el-input style="width: initial" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <slot name="opt"></slot>
     </div>
-    <div v-else>
-      <el-select v-model="values.status" clearable placeholder="聘任状态">
+    <div v-if="mode === 'student'">
+      <el-select v-model="values.status" clearable placeholder="请选择聘任状态">
         <el-option
           v-for="item in options.status"
           :key="item.value"
@@ -44,7 +46,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-select v-model="values.mode" clearable placeholder="聘任方式">
+      <el-select v-model="values.mode" clearable placeholder="请选择聘任方式">
         <el-option
           v-for="item in options.mode"
           :key="item.value"
@@ -52,7 +54,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-select v-model="values.education" clearable placeholder="选择学历">
+      <el-select v-model="values.education" clearable placeholder="请选择学历">
         <el-option
           v-for="item in options.education"
           :key="item.value"
@@ -60,7 +62,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-select v-model="values.title" clearable placeholder="选择职称">
+      <el-select v-model="values.title" clearable placeholder="请选择职称">
         <el-option
           v-for="item in options.title"
           :key="item.value"
@@ -68,7 +70,13 @@
           :value="item.value"
         ></el-option>
       </el-select>
+      <slot></slot>
       <el-input style="width: initial" placeholder="教职工姓名、手机号" v-model="values.keyword"></el-input>
+      <slot name="opt"></slot>
+    </div>
+    <div v-if="mode === 'users'">
+      <el-input style="width: initial" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <slot name="opt"></slot>
     </div>
   </div>
 </template>
@@ -154,13 +162,11 @@ export default {
     },
     initStudentOptions() {
       // api/school/load-config-year
-      axios
-        .get("/api/school/load-config-year?school_id=" + this.schoolid)
-        .then(res => {
-          if (Util.isAjaxResOk(res)) {
-            this.options.year = this.toOptions(res.data.data, "text", "year");
-          }
-        });
+      axios.get("/api/notice/school-year").then(res => {
+        if (Util.isAjaxResOk(res)) {
+          this.options.year = this.toOptions(res.data.data, "text", "year");
+        }
+      });
       axios
         .post(Constants.API.LOAD_MAJORS_BY_SCHOOL, {
           id: this.schoolid,
@@ -175,6 +181,20 @@ export default {
             );
           }
         });
+      axios.post("/api/pc/get-search-student-status").then(res => {
+        if (Util.isAjaxResOk(res)) {
+          this.options.status = this.toOptions(
+            Object.keys(res.data.data).map(k => {
+              return {
+                name: res.data.data[k],
+                id: k
+              };
+            }),
+            "name",
+            "id"
+          );
+        }
+      });
     },
     initTeacherOptions() {
       [

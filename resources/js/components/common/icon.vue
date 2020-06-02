@@ -1,5 +1,5 @@
 <template>
-  <span class="common-icon-box">
+  <span class="common-icon-box" @click="click">
     <span class="icon" :style="{'background-image': `url(/assets/img/${iconsrc}.${type})`, width,height}"></span>
     <span class="text" v-if="text">{{text}}</span>
   </span>
@@ -27,6 +27,11 @@
       width: {
         type: String,
         default: '34px'
+      }
+    },
+    methods: {
+      click(){
+        this.$emit('click')
       }
     }
   };
