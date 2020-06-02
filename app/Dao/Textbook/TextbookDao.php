@@ -297,14 +297,20 @@ class TextbookDao
             ];
     }
 
-
     /**
      * 获取课程列表
      * @param $schoolId
+     * @param $year
+     * @param $term
      * @return mixed
      */
-    public function getTextbookListBySchoolId($schoolId) {
-        return Textbook::where('school_id',$schoolId)->get();
+    public function getTextbookListBySchoolId($schoolId, $year, $term) {
+        $map = [
+            'school_id' => $schoolId,
+            'year' => $year,
+            'term' => $term,
+        ];
+        return Textbook::where($map)->get();
     }
 
     /**
