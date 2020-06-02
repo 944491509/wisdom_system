@@ -35,26 +35,27 @@ class CourseTextbookDao
      * @return MessageBag
      */
     public function createCourseTextbook($courseId, $schoolId, $textbookIdArr) {
-        $data = [];
-        $dateTime = Carbon::now()->toDateTimeString();
-
-        foreach ($textbookIdArr as $key => $value) {
-            $data[] = [
-                'course_id' => $courseId,
-                'school_id' => $schoolId,
-                'textbook_id' => $value,
-                'created_at' => $dateTime,
-                'updated_at' => $dateTime,
-            ];
+        $bag = new MessageBag();
+        try{
+            DB::beginTransaction();
+            CourseTextbook::where('course_id',$courseId)->delete();
+            foreach ($textbookIdArr as $key => $value) {
+                $data = [
+                    'course_id' => $courseId,
+                    'school_id' => $schoolId,
+                    'textbook_id' => $value,
+                ];
+                CourseTextbook::create($data);
+            }
+            DB::commit();
+            $bag->setMessage('保存成功');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            $bag->setMessage($msg);
+            $bag->setCode(JsonBuilder::CODE_ERROR);
         }
-
-        $re = DB::table('course_textbooks')->insert($data);
-
-        if($re){
-            return new MessageBag(JsonBuilder::CODE_SUCCESS,'添加成功');
-        } else {
-            return new MessageBag(JsonBuilder::CODE_ERROR,'添加失败');
-        }
+        return $bag;
     }
 
 }

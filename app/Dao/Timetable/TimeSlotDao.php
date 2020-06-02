@@ -70,10 +70,16 @@ class TimeSlotDao
 
         // 现在只使用一套作息时间 夏季作息时间
         $seasonType = TimeSlot::SEASONS_SUMMER_AND_AUTUMN;
+        $map = [
+            'season' => $seasonType,
+            'year' => $gradeYear,
+            'status' => TimeSlot::STATUS_SHOW
+        ];
+        if($gradeYear == -1) {  // -1的话展示全部年级的作息时间
+            unset($map['year']);
+        }
         $slots = TimeSlot::where('school_id',$schoolId)
-            ->where('season',$seasonType)
-            ->where('year',$gradeYear)
-            ->where('status', TimeSlot::STATUS_SHOW)  // 显示
+            ->where($map)
             ->whereIn('type',[TimeSlot::TYPE_STUDYING, TimeSlot::TYPE_PRACTICE, TimeSlot::TYPE_FREE_TIME])
             ->orderBy('from','asc')
             ->get();
