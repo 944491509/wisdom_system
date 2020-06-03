@@ -5,7 +5,7 @@
     <div class="notices-card teacher-oa-notices-app-one">
         <div class="notices-card-header">
             <p>通知公告</p>
-            <p class="release">发布</p>
+            <p class="release" @click="releaseDrawer = true">发布</p>
         </div>
         <div class="teacher-oa-notices-app-one-body" v-for="item in oneList" :key="item.id" @click="oneDetail(item.id)" v-cloak>
             <div class="teacher-oa-notices-app-one-body-title">
@@ -61,6 +61,79 @@
         </div>
     </el-drawer>
     <!-- </div> -->
+
+    <el-drawer
+      title="发布通知"
+      :before-close="handleClose1"
+      :visible.sync="releaseDrawer"
+      custom-class="demo-drawer"
+      size="40%"
+      >
+      <div class="drawer_content">
+        <el-form :model="form" label-width="80px">
+          <el-form-item label="标题" label-width="50px">
+            <el-input v-model="form.title" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="内容" label-width="50px">
+            <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea"></el-input>
+          </el-form-item>
+          <el-form-item label="选择教师可见范围" label-width="130px">
+            <div class="dayu" @click="innerDrawer = true">></div>
+          </el-form-item>
+          <el-form-item label="选择学生可见范围" label-width="130px">
+            <div class="dayu" @click="innerDrawer = true">></div>
+          </el-form-item>
+          <el-form-item label="附件" label-width="50px" style="font-size: 16px; color: #000;">
+            <div class="">(图片格式)</div>
+          </el-form-item>
+          <div></div>
+          <el-button type="primary" size="small" @click="reload">上传附件</el-button>
+        </el-form>
+        <div class="drawer_footer">
+          <el-button type="primary" @click="release" style="padding: 12px 40px;"> 发布 </el-button>
+        </div>
+
+        <el-drawer
+          title="可见范围"
+          :append-to-body="true"
+          :before-close="handleClose2"
+          :visible.sync="innerDrawer"
+          custom-class="inner-teacher-drawer"
+          size="40%"
+        >
+          <el-form :model="form">
+            <el-form-item label="搜索" label-width="50px">
+              <el-input v-model="form.title" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="部门" label-width="50px">
+              <el-select v-model="form.region" placeholder="请选择">
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="便捷操作" label-width="80px" style="margin-top: 50px;">
+              <el-button type="primary">所有部门</el-button>
+            </el-form-item>
+            <div style="padding-left: 20px">
+              <p>已选部门</p>
+              <div style="display: flex; flex-wrap: wrap;">
+                <el-tag
+                  v-for="(item, index) in selecttags"
+                  :key="index"
+                  closable
+                  :type="item.type"
+                  @close="deleteTag(item)"
+                  style="margin-right: 10px;color: #fff;background-color: #409EFF;"
+                >
+                  @{{item.name}}
+                </el-tag>
+              </div>
+            </div>
+          </el-form>
+        </el-drawer>
+      </div>
+    </el-drawer>
+
 </div>
 
 <div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
