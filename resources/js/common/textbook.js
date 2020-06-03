@@ -1,5 +1,5 @@
-import {Constants} from "./constants";
-import {Util} from "./utils";
+import { Constants } from "./constants";
+import { Util } from "./utils";
 
 /**
  * 加载教材
@@ -7,16 +7,13 @@ import {Util} from "./utils";
  * @param affix
  * @returns Promise
  */
-export function loadTextbooks(schoolId, affix, year,term) {
-    let url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS);
-    url = `${url}?year=${year}&term=${term}`
-    if(Util.isDevEnv()){
-        return axios.get(url, affix);
-    }
-    return axios.get(
-        url,
-        {school: schoolId, version:Constants.VERSION}
-    );
+export function loadTextbooks(schoolId, affix, year, term) {
+  let url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS);
+  url = `${url}?year=${year}&term=${term}`;
+  if (Util.isDevEnv()) {
+    return axios.get(url, affix);
+  }
+  return axios.get(url, { school: schoolId, version: Constants.VERSION });
 }
 
 /**
@@ -27,15 +24,29 @@ export function loadTextbooks(schoolId, affix, year,term) {
  * @param affix
  * @returns Promise
  */
-export function loadTextbooksPaginate(schoolId, userUuid, pageNumber, pageSize, affix) {
-    const url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS_PAGINATE);
-    if(Util.isDevEnv()){
-        return axios.get(url, affix);
-    }
-    return axios.post(
-        Constants.API.TEXTBOOK.LOAD_TEXTBOOKS_PAGINATE,
-        {school: schoolId, user_uuid: userUuid, pageNumber: pageNumber, pageSize: pageSize}
-    )
+export function loadTextbooksPaginate(
+  schoolId,
+  userUuid,
+  pageNumber,
+  pageSize,
+  search = {},
+  download = 0,
+  affix
+) {
+  const url = Util.buildUrl(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS_PAGINATE);
+  if (Util.isDevEnv()) {
+    return axios.get(url, affix);
+  }
+  return axios.post(Constants.API.TEXTBOOK.LOAD_TEXTBOOKS_PAGINATE, {
+    school: schoolId,
+    user_uuid: userUuid,
+    pageNumber: pageNumber,
+    pageSize: pageSize,
+    download,
+    year: search.year,
+    type: search.type_id,
+    term: search.term
+  });
 }
 
 /**
@@ -47,14 +58,16 @@ export function loadTextbooksPaginate(schoolId, userUuid, pageNumber, pageSize, 
  * @returns Promise
  */
 export function attachTextbooksToCourse(schoolId, courseId, booksId, affix) {
-    const url = Util.buildUrl(Constants.API.TEXTBOOK.ATTACH_TEXTBOOKS);
-    if(Util.isDevEnv()){
-        return axios.get(url, affix);
-    }
-    return axios.post(
-        url,
-        {school: schoolId, course_id: courseId, textbook_ids: booksId, version:Constants.VERSION}
-    );
+  const url = Util.buildUrl(Constants.API.TEXTBOOK.ATTACH_TEXTBOOKS);
+  if (Util.isDevEnv()) {
+    return axios.get(url, affix);
+  }
+  return axios.post(url, {
+    school: schoolId,
+    course_id: courseId,
+    textbook_ids: booksId,
+    version: Constants.VERSION
+  });
 }
 
 /**
@@ -64,12 +77,9 @@ export function attachTextbooksToCourse(schoolId, courseId, booksId, affix) {
  * @returns Promise
  */
 export function deleteTextbook(bookId, affix) {
-    const url = Util.buildUrl(Constants.API.TEXTBOOK.DELETE_TEXTBOOK);
-    if(Util.isDevEnv()){
-        return axios.get(url, affix);
-    }
-    return axios.post(
-        url,
-        {textbook_id: bookId, version:Constants.VERSION}
-    );
+  const url = Util.buildUrl(Constants.API.TEXTBOOK.DELETE_TEXTBOOK);
+  if (Util.isDevEnv()) {
+    return axios.get(url, affix);
+  }
+  return axios.post(url, { textbook_id: bookId, version: Constants.VERSION });
 }

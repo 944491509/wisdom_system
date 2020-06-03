@@ -147,52 +147,40 @@ export default {
 			this.search = e;
 			this.$emit("query-text-books", e);
 		},
-		download() {
-			let search = this.search;
-			axios
-				.post(Constants.API.TEXTBOOK.SEARCH_TEXTBOOKS, {
-					query: search.keyword,
-					school: this.schoolId,
-					type: search.type_id,
-					year: search.year,
-          term: search.term,
-          download: 1
-				})
-				.then(res => {
-					if (Util.isAjaxResOk(res)) {
-            let courses = res.data.data.books || [];
-            console.log("开始下载")
-            if(!courses.length){
-                this.$message({
-                  message: '下载失败！无数据可下载',
-                  type: 'warning'
-                });
-                return;
-            }
-						tableToExcel(
-							[
-								{
-									name: "教材名",
-									formatter: item => `${item.name }（${item.edition}）`
-								},
-								{
-									name: "作者",
-									formatter: item => item.author
-								},
-								{
-									name: "出版",
-									formatter: item => item.press
-								},
-								{
-									name: "价格",
-									formatter: item => `¥ ${item.price} （进价：¥ ${item.purchase_price}）`
-								}
-							],
-							courses,
-							"教材管理"
-						);
-					}
-				});
+		async download() {
+      let search = this.search;
+      console.log("开始下载")
+			let res = await this.$parent.loadTextbooks(1)
+      let courses = res || [];
+      if(!courses.length){
+          this.$message({
+            message: '下载失败！无数据可下载',
+            type: 'warning'
+          });
+          return;
+      }
+      tableToExcel(
+        [
+          {
+            name: "教材名",
+            formatter: item => `${item.name }（${item.edition}）`
+          },
+          {
+            name: "作者",
+            formatter: item => item.author
+          },
+          {
+            name: "出版",
+            formatter: item => item.press
+          },
+          {
+            name: "价格",
+            formatter: item => `¥ ${item.price} （进价：¥ ${item.purchase_price}）`
+          }
+        ],
+        courses,
+        "教材管理"
+      );
 		}
 	}
 };

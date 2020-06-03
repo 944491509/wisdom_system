@@ -20,9 +20,9 @@
           <el-option label="第二学期" value="2"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label>
+      <!-- <el-form-item label>
         <el-input v-model="formInline.keyword" placeholder="请输入教材名称"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>

@@ -119,20 +119,8 @@ if (document.getElementById("textbook-manager-app")) {
       },
       queryTextBooksAction: function(search) {
         console.log(search);
-        axios
-          .post(Constants.API.TEXTBOOK.SEARCH_TEXTBOOKS, {
-            query: search.keyword,
-            school: this.schoolId,
-            type: search.type_id,
-            year: search.year,
-            term: search.term,
-            download: 0
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.books = res.data.data.books;
-            }
-          });
+        this.search = search;
+        this.loadTextbooks();
       },
       handleReturnedTextbookSelect: function(item) {
         this.textbookModel = item;
@@ -316,22 +304,29 @@ if (document.getElementById("textbook-manager-app")) {
           type: "success"
         });
       },
-      loadTextbooks: function() {
+      loadTextbooks:async function(download) {
+        console.log('loadTextbooks')
         this.isLoading = true;
-        loadTextbooksPaginate(
+        let res = await loadTextbooksPaginate(
           this.schoolId,
           this.userUuid,
           this.pageNumber,
-          this.pageSize
-        ).then(res => {
-          if (Util.isAjaxResOk(res)) {
+          this.pageSize,
+          this.search,
+          download
+        )
+        if (Util.isAjaxResOk(res)) {
+          if(!download){
             this.books = res.data.data.books;
             this.total = res.data.data.total;
             this.pageNumber = res.data.data.p;
             this.pageSize = res.data.data.s;
+          }else{
+            return res.data.data.books
           }
-          this.isLoading = false;
-        });
+        }
+        this.isLoading = false;
+
       },
       // Pagination 的页码点击响应事件
       goToPage: function(val) {
