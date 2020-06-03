@@ -78,7 +78,7 @@
             <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea"></el-input>
           </el-form-item>
           <el-form-item label="选择教师可见范围" label-width="130px">
-            <div class="dayu" @click="innerDrawer = true">></div>
+            <div class="dayu" @click="showOrganizationsSelectorFlag=true">></div>
           </el-form-item>
           <el-form-item label="选择学生可见范围" label-width="130px">
             <div class="dayu" @click="innerDrawer = true">></div>
@@ -87,11 +87,24 @@
             <div class="">(图片格式)</div>
           </el-form-item>
           <div></div>
-          <el-button type="primary" size="small" @click="reload">上传附件</el-button>
+          <el-button type="primary" size="small" @click="showAttachmentManagerFlag=true">上传附件</el-button>
         </el-form>
         <div class="drawer_footer">
           <el-button type="primary" @click="release" style="padding: 12px 40px;"> 发布 </el-button>
         </div>
+
+        <!-- @include(
+            'reusable_elements.section.file_manager_component',
+            ['pickFileHandler'=>'pickFileHandler']
+        )
+        @include(
+            'reusable_elements.section.file_manager_component',
+            ['pickFileHandler'=>'pickAttachmentHandler','syncFlag'=>'showAttachmentManagerFlag']
+        )
+        @include(
+            'reusable_elements.section.organizations_selector',
+            ['organizationsSelectedHandler'=>'onOrganizationsSelectedHandler','schoolId'=>$schoolId, 'userRoles'=>$userRoles]
+        ) -->
 
         <el-drawer
           title="可见范围"

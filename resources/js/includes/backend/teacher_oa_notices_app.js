@@ -102,7 +102,20 @@ if (document.getElementById('teacher-oa-notices-app')) {
           },
           // 最后发布接口
           release() {
-
+            if (!this.form.title) {
+              this.$message({
+                message: '请输入标题！',
+                type: 'warning'
+              });
+              return
+            }
+            if (!this.form.textarea) {
+              this.$message({
+                message: '请输入内容',
+                type: 'warning'
+              });
+              return
+            }
           },
             // 获取本页列表
             getnoticeList1() {
