@@ -315,32 +315,34 @@ class TextbookDao
 
     /**
      * 以分页的方式获取课程列表
-     * @param $schoolId
+     * @param $map
      * @param $pageNumber
      * @param $pageSize
+     * @param $download
      * @return array
      */
-    public function getTextbookListPaginateBySchoolId(
-        $schoolId,
-        $pageNumber = 0,
-        $pageSize = ConfigurationTool::DEFAULT_PAGE_SIZE
-    ) {
-        $books =  Textbook::where('school_id',$schoolId)
+    public function getTextbookListPaginateByMap($map, $download, $pageNumber = 0, $pageSize = ConfigurationTool::DEFAULT_PAGE_SIZE)
+    {
+
+        $books =  Textbook::where($map)
             ->with('medias')
             ->with('courses')
-            ->orderBy('updated_at','desc')
-            ->skip($pageSize * $pageNumber)
-            ->take($pageSize)
-            ->get();
+            ->orderBy('updated_at','desc');
+        if(!$download) {
+            $books = $books->skip($pageSize * $pageNumber)->take($pageSize);
+        }
 
+        $books = $books->get();
         foreach ($books as $key => $val) {
+            $books[$key]['type_text'] = $val->type_text;
+            $books[$key]['term_text'] = $val->term_text;
             foreach ($val->medias as $k => $item) {
                 $item->type = $item->media->type ?? '';
                 unset($item->media);
             }
         }
 
-        $total = Textbook::where('school_id',$schoolId)->count();
+        $total = Textbook::where($map)->count();
         return [
             'books'=>$books,
             'total'=>$total,
