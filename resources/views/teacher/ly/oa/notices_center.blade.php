@@ -99,17 +99,31 @@
           :before-close="handleClose2"
           :visible.sync="innerDrawer"
           custom-class="inner-teacher-drawer"
-          size="40%"
+          size="60%"
         >
           <el-form :model="form">
-            <el-form-item label="搜索" label-width="50px">
+            <!-- <el-form-item label="搜索" label-width="50px">
               <el-input v-model="form.title" autocomplete="off" style="width: 90%;"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="部门" label-width="50px">
-              <el-cascader popper-class="pip_flow_mamager_cascader" style="width: 90%;" :props="props" :options="organizansList"  v-model="form.organizations"></el-cascader>
+                <el-tree
+                    ref="tree"
+                    :props="props"
+                    node-key="id"
+                    :load="loadNode"
+                    :check-on-click-node="true"
+                    :check-strictly="true"
+                    @check-change="checkChange"
+                    lazy
+                    show-checkbox>
+                </el-tree>
             </el-form-item>
             <el-form-item label="便捷操作" label-width="80px" style="margin-top: 50px;">
-              <el-button type="primary">所有部门</el-button>
+              <el-switch
+                v-model="allOran"
+                active-text="所有部门"
+                inactive-text="">
+                </el-switch>
             </el-form-item>
             <div style="padding-left: 20px">
               <p>已选部门</p>
@@ -118,13 +132,10 @@
                   v-for="(item, index) in selecttags"
                   :key="index"
                   closable
-                  :type="item.type"
                   @close="deleteTag(item)"
                   style="margin-right: 10px;color: #fff;background-color: #409EFF;position: relative;"
                 >
-                  @{{item.name}}
-                  <svg t="1591152186700" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3250" width="20" height="20"><path d="M544 64C279.04 64 64 279.04 64 544S279.04 1024 544 1024 1024 808.96 1024 544 808.96 64 544 64zM544 960C314.24 960 128 773.76 128 544S314.24 128 544 128C773.76 128 960 314.24 960 544S773.76 960 544 960zM588.16 540.8l168.32-166.4c12.8-12.8 12.8-33.28 0-45.44-12.8-12.8-33.28-12.8-46.08 0L542.08 494.08 376.96 328.32c-12.8-12.8-33.28-12.8-45.44 0-12.8 12.8-12.8 33.28 0 45.44l164.48 165.76-174.72 172.8c-12.8 12.8-12.8 33.28 0 45.44 12.8 12.8 33.28 12.8 46.08 0l174.08-172.16 171.52 172.16c12.8 12.8 33.28 12.8 45.44 0 12.8-12.8 12.8-33.28 0-45.44L588.16 540.8z" p-id="3251" fill="#cdcdcd"></path></svg>
-                </el-tag>
+                  @{{item.name}}</el-tag>
               </div>
             </div>
           </el-form>
