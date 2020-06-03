@@ -2,6 +2,7 @@
  * 教师办公 app
  */
 import { Util } from "../../common/utils";
+import { Constants } from "../../common/constants";
 import { startedByMe, waitingForMe } from "../../common/flow";
 import Axios from "axios";
 
@@ -28,7 +29,8 @@ if (document.getElementById('teacher-oa-notices-app')) {
                 releaseDrawer: false, // 发布通知drawer
                 form: {
                   title: '',
-                  textarea: ''
+                  textarea: '',
+                  organizations: []
                 },
                 innerDrawer: false,
                 selecttags: [
@@ -37,7 +39,29 @@ if (document.getElementById('teacher-oa-notices-app')) {
                   { name: '标签三', type: 'info' },
                   { name: '标签四', type: 'warning' },
                   { name: '标签五', type: 'danger' }
-                ]
+                ],
+                props: {
+                  lazy: true,
+                  value: 'id',
+                  checkStrictly: true,
+                  label: 'name',
+                  expandTrigger:'hover',
+                  lazyLoad(node, resolve) {
+                      let parentId = null;
+                      if (!Util.isEmpty(node.data)) {
+                          parentId = node.data.id;
+                      }
+                      axios.post(
+                          Constants.API.ORGANIZATION.LOAD_CHILDREN,
+                          { level: node.level + 1, parent_id: parentId }
+                      ).then(res => {
+                          if (Util.isAjaxResOk(res)) {
+                              resolve(res.data.data.orgs);
+                          }
+                      });
+                  }
+                },
+                organizansList: ''
             }
         },
         created() {
@@ -48,6 +72,7 @@ if (document.getElementById('teacher-oa-notices-app')) {
             this.getnoticeList1();
             this.getnoticeList2();
             this.getnoticeList3();
+            this.getOrganizansList()
         },
         methods: {
           handleClose1() {
@@ -62,6 +87,20 @@ if (document.getElementById('teacher-oa-notices-app')) {
           reload() {
 
           },
+          getOrganizansList(){
+            console.log('接口',Constants.API.ORGANIZATION.LOAD_ALL)
+            axios.post(
+                Constants.API.ORGANIZATION.LOAD_ALL,
+                { school_id: this.schoolId }
+            ).then(res => {
+              console.log('返回')
+                if (Util.isAjaxResOk(res)) {
+                  console.log('结果', res)
+                    this.organizansList = res.data.data;
+                }
+            });
+          },
+          // 最后发布接口
           release() {
 
           },

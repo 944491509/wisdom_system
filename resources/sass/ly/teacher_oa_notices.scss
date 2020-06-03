@@ -261,8 +261,19 @@
   .el-tag {
     color: #fff;
     background-color: #409EFF;
+    .el-tag__close {
+      color: #fff;
+    }
   }
   .el-tag .el-tag__close {
     color: #fff;
+  }
+  .icon {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    right: -7px;
+    top: -9px;
+    cursor: pointer;
   }
 }
