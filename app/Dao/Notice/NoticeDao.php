@@ -152,22 +152,49 @@ class NoticeDao
 
 
     /**
-     * 通知公告列表
+     * 教师通知公告列表
      * @param $type
      * @param $schoolId
      * @param $organizationId
      * @return mixed
      */
-    public function getNotice($type, $schoolId, $organizationId) {
+    public function teacherGetNotice($type, $schoolId, $organizationId) {
         $field = ['notices.id', 'title', 'content', 'type', 'created_at',
             'inspect_id', 'image','status','notice_organizations.notice_id'];
 
         array_push($organizationId, 0);
-        $map = ['notice_organizations.school_id'=>$schoolId, 'type'=>$type,
-            'status'=>Notice::STATUS_PUBLISH];
+        $map = [
+            'notice_organizations.school_id'=>$schoolId,
+            'type'=>$type,
+            'status'=>Notice::STATUS_PUBLISH
+        ];
         return NoticeOrganization::join('notices', function ($join) use ($map, $organizationId) {
             $join->on('notice_organizations.notice_id', '=', 'notices.id')
                 ->where($map)->WhereIn('notice_organizations.organization_id', $organizationId);
+        })->select($field)
+            ->orderBy('created_at', 'desc')
+            ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+
+    }
+
+
+    /**
+     * 学生查看通知列表
+     * @param $type
+     * @param $gradeId
+     * @return mixed
+     */
+    public function studentGetNotice($type, $gradeId) {
+        $field = ['notices.id', 'title', 'content', 'type', 'created_at',
+            'inspect_id', 'image','status', 'notice_grades.notice_id'];
+        $map = [
+            'status' => Notice::STATUS_PUBLISH,
+            'type' => $type,
+        ];
+
+        return NoticeGrade::join('notices',function ($join) use($map, $gradeId) {
+            $join->on('notice_grades.notice_id', '=', 'notices.id')
+                ->where($map)->whereIn('notice_grades.grade_id', [$gradeId,0]);
         })->select($field)
             ->orderBy('created_at', 'desc')
             ->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);

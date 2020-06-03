@@ -23,12 +23,19 @@ class NoticeController extends Controller
      */
     public function getNotice(NoticeRequest $request) {
         $user = $request->user();
-        $organizations = $user->organizations;
-        $organizationId = $organizations->pluck('organization_id')->toArray();
         $type = $request->getType();
         $dao = new NoticeDao();
-        $schoolId = $user->getSchoolId();
-        $result = $dao->getNotice($type, $schoolId, $organizationId);
+        // 教师
+        $result = [];
+        if($user->isTeacher()) {
+            $organizations = $user->organizations;
+            $organizationId = $organizations->pluck('organization_id')->toArray();
+            $schoolId = $user->getSchoolId();
+            $result = $dao->teacherGetNotice($type, $schoolId, $organizationId);
+        }elseif($user->isStudent()) {
+            $gradeId = $user->gradeUser->grade_id;
+            $result = $dao->studentGetNotice($type, $gradeId);
+        }
         foreach ($result as $key => $item) {
             $item->notice->attachment_field = 'url';
             $item->attachments = $item->notice->attachments;
