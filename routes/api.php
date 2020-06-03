@@ -1217,8 +1217,10 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     Route::post('get-search-config', 'Operator\SchoolsController@searchConfig')->name('api.school.get-search-config');
     // 统一认证 - 学生状态
     Route::post('get-search-student-status', 'Operator\SchoolsController@studentStatus')->name('api.school.get-student-status');
-    // 统一认证 - 修改学生状态
+    // 统一认证 - 全选修改学生状态
     Route::post('update-student-status', 'Operator\SchoolsController@updateStudentStatus')->name('api.school.update-student-status');
+    // 统一认证 - 批量修改学生状态
+    Route::post('update-status', 'Operator\SchoolsController@updateStatus')->name('api.school.update-status');
 });
 
 

@@ -130,7 +130,31 @@ if (appdom && schooldom) {
             })
           })
         } else {
-
+          let ids = this.list.filter(stu => {
+            return stu.checked
+          }).map(stu => {
+            return stu.user_id
+          }).toString()
+          if (!ids) {
+            return
+          }
+          this.$confirm(`确认将所选学生修改为"${text}"?`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            axios.post('/api/pc/update-status', {
+              status: update_status,
+              user_id: ids
+            }).then(res => {
+              if (Util.isAjaxResOk(res)) {
+                this.allchecked = false
+                this.search()
+              } else {
+                this.$message.error(res.data.message);
+              }
+            })
+          })
         }
       }
     },

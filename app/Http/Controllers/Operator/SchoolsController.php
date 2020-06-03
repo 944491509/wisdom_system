@@ -224,6 +224,7 @@ class SchoolsController extends Controller
 
         foreach ($result['list'] as $key => $val) {
             $list[] = [
+                'user_id' => $val->user_id,
                 'hired' =>  $val->teacherProfile->hired ? '聘用' : '解聘',
                 'name' => $val->name,
                 'avatar' => $val->teacherProfile->avatar,
@@ -285,6 +286,7 @@ class SchoolsController extends Controller
         $data     = [];
         foreach ($result['list'] as $student) {
             $data[] = [
+                'user_id'        => $student->user_id,
                 'student_number' => $student->studentProfile->student_number ?? '-',
                 'name'           => $student->name,
                 'mobile'         => $student->mobile,
@@ -300,7 +302,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * 修改学生状态
+     * 全选修改学生状态
      * @param SchoolRequest $request
      * @return string
      */
@@ -317,6 +319,27 @@ class SchoolsController extends Controller
             return JsonBuilder::Error('修改失败');
         }
     }
+
+    /**
+     * 批量修改学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function updateStatus(SchoolRequest $request)
+    {
+        $userIds = $request->get('user_id');
+        $status = $request->get('status');
+
+        $dao = new UserDao;
+        $result = $dao->updateStudentStatusByIds(explode(',', $userIds), $status);
+        if ($result) {
+            return JsonBuilder::Success('修改成功');
+        } else {
+            return JsonBuilder::Error('修改失败');
+        }
+    }
+
+
 
 
     /**
