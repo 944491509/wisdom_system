@@ -162,7 +162,7 @@ export default {
     },
     initStudentOptions() {
       // api/school/load-config-year
-      axios.get("/api/notice/school-year").then(res => {
+      axios.get("/api/notice/school-year?school_id=" + this.schoolid).then(res => {
         if (Util.isAjaxResOk(res)) {
           this.options.year = this.toOptions(res.data.data, "text", "year");
         }
