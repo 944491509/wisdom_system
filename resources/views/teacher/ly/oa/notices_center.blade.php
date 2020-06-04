@@ -92,20 +92,6 @@
         <div class="drawer_footer">
           <el-button type="primary" @click="release" style="padding: 12px 40px;"> 发布 </el-button>
         </div>
-
-        <!-- @include(
-            'reusable_elements.section.file_manager_component',
-            ['pickFileHandler'=>'pickFileHandler']
-        )
-        @include(
-            'reusable_elements.section.file_manager_component',
-            ['pickFileHandler'=>'pickAttachmentHandler','syncFlag'=>'showAttachmentManagerFlag']
-        )
-        @include(
-            'reusable_elements.section.organizations_selector',
-            ['organizationsSelectedHandler'=>'onOrganizationsSelectedHandler','schoolId'=>$schoolId, 'userRoles'=>$userRoles]
-        ) -->
-
         <el-drawer
           title="可见范围"
           :append-to-body="true"
