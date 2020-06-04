@@ -96,15 +96,8 @@ class IndexController extends Controller
         $school = (new SchoolDao())->getSchoolById($request->getSchoolId());
 
         $data = $dao->getCalendarEvent($schoolId);
-
-        $tags = [];
-        foreach ($data as $datum) {
-            if($datum->tag){
-                foreach ($datum->tag as $item) {
-                    $tags[] = $item;
-                }
-            }
-        }
+        $calendar = new SchoolCalendar();
+        $tags = $calendar->getAllType();
 
         $this->dataForView['events'] = $data;
         $this->dataForView['tags'] = $tags;
@@ -113,7 +106,7 @@ class IndexController extends Controller
         $this->dataForView['school'] = $school;
         $this->dataForView['config'] = $school->configuration;
         $this->dataForView['weeks'] = $school->configuration->getAllWeeksOfTerm();
-
+//        dd($this->dataForView);
         return view('school_manager.calendar.index', $this->dataForView);
     }
 

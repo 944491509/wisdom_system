@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class SchoolCalendar extends Model
 {
-    protected $fillable = ['school_id', 'type', 'content', 'event_time', 'week_idx', 'term', 'year'];
+    protected $fillable = ['school_id', 'tag', 'content', 'event_time', 'week_idx', 'term', 'year'];
 
     protected $casts = [
-        'type' => 'array',
+        'tag' => 'array',
         'event_time' => 'datetime:Y-m-d',
     ];
 
@@ -42,21 +42,6 @@ class SchoolCalendar extends Model
             self::TERM_BEGINS => self::TERM_BEGINS_TEXT,
             self::EXAMINATION => self::EXAMINATION_TEXT,
         ];
-    }
-
-
-    /**
-     * 获取校历标签
-     * @return array
-     */
-    public function getTypeText() {
-        $allType = $this->getAllType();
-        $typeIds = json_decode($this->type);
-        $types = [];
-        foreach ($typeIds as $key => $item) {
-            $types[] = $allType[$item] ?? '';
-        }
-        return $types;
     }
 
 }

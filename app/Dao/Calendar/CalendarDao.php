@@ -80,7 +80,7 @@ class CalendarDao
             $now = Carbon::now()->toDateTimeString();
             $where[] = ['event_time','<',$now];
         }
-        $field = ['id' ,'tag', 'content', 'event_time', 'week_idx'];
+        $field = ['id' , 'content', 'event_time', 'week_idx'];
         return SchoolCalendar::where($where)
             ->select($field)->orderBy('event_time', $sort)->get();
     }
