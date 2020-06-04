@@ -12,6 +12,7 @@ use App\Dao\Notice\NoticeDao;
 use App\Models\Notices\Notice;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Notice\NoticeRequest;
+use Illuminate\Validation\ValidationException;
 
 class NoticeController extends Controller
 {
@@ -114,17 +115,21 @@ class NoticeController extends Controller
      * @param NoticeRequest $request
      * @return string
      */
-    public function schoolYear(NoticeRequest $request) {
-        $user = $request->user();
+    public function schoolYear(NoticeRequest $request)
+    {
+        $user     = $request->user();
         $schoolId = $user->getSchoolId();
-        $schoolDao = new SchoolDao();
-        $school = $schoolDao->getSchoolById($schoolId);
+        if (!$schoolId) {
+            $schoolId = $request->get('school_id');
+        }
+        $schoolDao     = new SchoolDao();
+        $school        = $schoolDao->getSchoolById($schoolId);
         $configuration = $school->configuration;
-        $schoolYear = $configuration->getSchoolYear();
-        $year = $configuration->year;
+        $schoolYear    = $configuration->getSchoolYear();
+        $year          = $configuration->year;
 
         $data = [];
-        for($i=0; $i < $year; $i++ ) {
+        for ($i = 0; $i < $year; $i++) {
             $data[] = [
                 'year' => $schoolYear - $i,
                 'name' => $schoolYear - $i .'级',
@@ -138,7 +143,7 @@ class NoticeController extends Controller
      * 年级下的班级列表
      * @param NoticeRequest $request
      * @return string
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function gradeList(NoticeRequest $request) {
         $rules = [
