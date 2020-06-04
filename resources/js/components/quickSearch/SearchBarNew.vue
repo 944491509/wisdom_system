@@ -33,11 +33,11 @@
           :value="item.value"
         ></el-option>
       </el-select>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
       <slot></slot>
-      <el-input style="width: initial" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
       <slot name="opt"></slot>
     </div>
-    <div v-if="mode === 'student'">
+    <div v-else-if="mode === 'teachers'">
       <el-select v-model="values.status" clearable placeholder="请选择聘任状态">
         <el-option
           v-for="item in options.status"
@@ -70,12 +70,12 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <slot></slot>
       <el-input style="width: initial" placeholder="教职工姓名、手机号" v-model="values.keyword"></el-input>
+      <slot></slot>
       <slot name="opt"></slot>
     </div>
-    <div v-if="mode === 'users'">
-      <el-input style="width: initial" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+    <div v-else>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
       <slot name="opt"></slot>
     </div>
   </div>
