@@ -68,11 +68,13 @@ class TaskDao
                 'user_id'=>$task['create_user'], 'desc'=>'创建任务'];
             ProjectTaskLog::create($log);
             // 上传任务图片
-            foreach ($file as $key => $item) {
-                // 判断是否有任务图片
-                $re = $this->upload($item,$task['create_user']);
-                $re['task_id'] = $result->id;
-                $s1 = ProjectTaskFiles::create($re);
+            if(!empty($file)) {
+                foreach ($file as $key => $item) {
+                    // 判断是否有任务图片
+                    $re = $this->upload($item,$task['create_user']);
+                    $re['task_id'] = $result->id;
+                    $s1 = ProjectTaskFiles::create($re);
+                }
             }
 
             DB::commit();

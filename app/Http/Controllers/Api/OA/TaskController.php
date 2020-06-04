@@ -28,14 +28,22 @@ class TaskController extends Controller
      */
     public function createTask(ProjectRequest $request) {
         $user = $request->user();
-        $schoolId = $user->getSchoolId();
+        if($user->isSchoolAdminOrAbove()) {
+            $schoolId = $request->get('school_id');
+            if(is_null($schoolId)) {
+                return JsonBuilder::Error('school_id不能为空');
+            }
+        } else {
+            $schoolId = $user->getSchoolId();
+        }
+
         $dao = new TaskDao();
         $task_title = strip_tags($request->get('task_title'));
         $task_content = strip_tags($request->get('task_content'));
         $leader_userid = strip_tags($request->get('leader_userid'));
         $memberUserIds = $request->get('member_userids');
         $file = $request->getFile();
-        if(count($file) > 9) {
+        if(!empty($file) && count($file) > 9) {
             return JsonBuilder::Error('最多上传9张图片');
         }
         if(empty($memberUserIds)) {
@@ -62,9 +70,9 @@ class TaskController extends Controller
             //通知负责人
             //event(new OaTaskEvent($leader_userid, $taskId)); --成员已经包含了负责人
             //通知成员
-            foreach ($memberUserIds as $userid) {
-                event(new OaTaskEvent($userid, $taskId));
-            }
+//            foreach ($memberUserIds as $userid) {
+//                event(new OaTaskEvent($userid, $taskId));
+//            }
             return JsonBuilder::Success($result->getData());
         } else {
             return JsonBuilder::Error($result->getMessage());
