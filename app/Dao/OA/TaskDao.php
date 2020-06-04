@@ -13,6 +13,7 @@ use App\Console\Commands\importer;
 use App\Dao\Users\UserDao;
 use App\Models\OA\Project;
 use App\Models\OA\ProjectTaskDiscussion;
+use App\Models\OA\ProjectTaskFiles;
 use App\Models\OA\ProjectTaskPic;
 use App\User;
 use App\Utils\JsonBuilder;
@@ -31,9 +32,10 @@ class TaskDao
      * 添加任务
      * @param array $task
      * @param array $memberUserIds
+     * @param array $file
      * @return MessageBag
      */
-    public function createTask($task, $memberUserIds) {
+    public function createTask($task, $memberUserIds, $file) {
         $messageBag = new MessageBag(JsonBuilder::CODE_ERROR);
 
         $re = $this->getTaskByTitleAndProjectId($task['title'], $task['project_id']);
@@ -65,6 +67,15 @@ class TaskDao
             $log = ['task_id'=>$result->id, 'school_id'=>$task['school_id'],
                 'user_id'=>$task['create_user'], 'desc'=>'创建任务'];
             ProjectTaskLog::create($log);
+            // 上传任务图片
+            if(!empty($file)) {
+                foreach ($file as $key => $item) {
+                    // 判断是否有任务图片
+                    $re = $this->upload($item,$task['create_user']);
+                    $re['task_id'] = $result->id;
+                    $s1 = ProjectTaskFiles::create($re);
+                }
+            }
 
             DB::commit();
             $messageBag->setCode(JsonBuilder::CODE_SUCCESS);
@@ -75,6 +86,26 @@ class TaskDao
             $messageBag->setMessage($msg);
         }
         return $messageBag;
+    }
+
+
+    /**
+     * 上传文件
+     * @param $file
+     * @param $user
+     * @return array|null
+     * @throws \Exception
+     */
+    public function upload($file, $user) {
+        if(!is_null($file)) {
+            $path = ProjectTaskFiles::DEFAULT_UPLOAD_PATH_PREFIX.$user; // 上传路径
+            $uuid = Uuid::uuid4()->toString();
+            $url = $file->storeAs($path, $uuid.'.'.$file->getClientOriginalExtension()); // 上传并返回路径
+            $url = ProjectTaskFiles::ConvertUploadPathToUrl($url);
+            $fileName = $file->getClientOriginalName();
+            return ['url'=>$url,'file_name'=>$fileName];
+        }
+        return null;
     }
 
 
