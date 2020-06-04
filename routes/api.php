@@ -481,6 +481,12 @@ Route::prefix('notice')->middleware('auth:api')->group(function () {
     // 发布通知
     Route::post('/issue-notice', 'Api\Notice\NoticeController@issueNotice')
         ->name('api.notice.issue-notice');
+    // 学校年级
+    Route::get('/school-year', 'Api\Notice\NoticeController@schoolYear')
+        ->name('api.notice.schoolYear');
+    // 获取年级下的班级
+    Route::get('/grade-list', 'Api\Notice\NoticeController@gradeList')
+        ->name('api.notice.grade-list');
 });
 
 // APP banner 接口

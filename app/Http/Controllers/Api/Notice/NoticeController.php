@@ -4,6 +4,8 @@
 namespace App\Http\Controllers\Api\Notice;
 
 
+use App\Dao\Schools\GradeDao;
+use App\Dao\Schools\SchoolDao;
 use App\Events\SystemNotification\NoticeSendEvent;
 use App\Utils\JsonBuilder;
 use App\Dao\Notice\NoticeDao;
@@ -21,12 +23,19 @@ class NoticeController extends Controller
      */
     public function getNotice(NoticeRequest $request) {
         $user = $request->user();
-        $organizations = $user->organizations;
-        $organizationId = $organizations->pluck('organization_id')->toArray();
         $type = $request->getType();
         $dao = new NoticeDao();
-        $schoolId = $user->getSchoolId();
-        $result = $dao->getNotice($type, $schoolId, $organizationId);
+        // 教师
+        $result = [];
+        if($user->isTeacher()) {
+            $organizations = $user->organizations;
+            $organizationId = $organizations->pluck('organization_id')->toArray();
+            $schoolId = $user->getSchoolId();
+            $result = $dao->teacherGetNotice($type, $schoolId, $organizationId);
+        }elseif($user->isStudent()) {
+            $gradeId = $user->gradeUser->grade_id;
+            $result = $dao->studentGetNotice($type, $gradeId);
+        }
         foreach ($result as $key => $item) {
             $item->notice->attachment_field = 'url';
             $item->attachments = $item->notice->attachments;
@@ -78,13 +87,15 @@ class NoticeController extends Controller
         $data['school_id'] = $user->getSchoolId();
         $data['user_id'] = $user->id;
         $data['type'] = Notice::TYPE_NOTIFY;
-        $organizationIds = $data['organization_id'];
+        $organizationIds = $data['organization_id'] ?? [];
+        $gradeIds = $data['grade_id'] ?? [];
 
         unset($data['attachments']);
         unset($data['organization_id']);
+        unset($data['grade_id']);
         $file = $request->file('attachments');
         $dao = new NoticeDao();
-        $result = $dao->issueNotice($data, $organizationIds, $file, $user);
+        $result = $dao->issueNotice($data, $organizationIds,$gradeIds, $file, $user);
 
         $msg = $result->getMessage();
         if($result->isSuccess()) {
@@ -95,6 +106,50 @@ class NoticeController extends Controller
             return JsonBuilder::Error($msg);
         }
 
+    }
+
+
+    /**
+     * 返回在校的年级
+     * @param NoticeRequest $request
+     * @return string
+     */
+    public function schoolYear(NoticeRequest $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $schoolDao = new SchoolDao();
+        $school = $schoolDao->getSchoolById($schoolId);
+        $configuration = $school->configuration;
+        $schoolYear = $configuration->getSchoolYear();
+        $year = $configuration->year;
+
+        $data = [];
+        for($i=0; $i < $year; $i++ ) {
+            $data[] = [
+                'year' => $schoolYear - $i,
+                'name' => $schoolYear - $i .'级',
+            ];
+        }
+        return JsonBuilder::Success($data);
+    }
+
+
+    /**
+     * 年级下的班级列表
+     * @param NoticeRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function gradeList(NoticeRequest $request) {
+        $rules = [
+            'year' => 'required|int',
+        ];
+        $this->validate($request,$rules);
+        $year = $request->get('year');
+        $gradeDao = new GradeDao();
+        $schoolId = $request->user()->getSchoolId();
+        $gradeList = $gradeDao->gradeListByYear($schoolId, $year);
+        return JsonBuilder::Success($gradeList);
     }
 
 }
