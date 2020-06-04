@@ -42,6 +42,12 @@
         <span class="title">关联项目</span>
         <span class="content">{{task.project_title}}</span>
       </div>
+      <div class="detail-item file">
+          <p class="title-file">附件资料</p>
+          <div class="imgs">
+            <img v-for="(img, index) in task.task_files" :src="img.url" alt="" :key="index" />
+          </div>
+      </div>
       <div class="btn-box">
         <el-button
           v-if="dispatchShow"
@@ -345,6 +351,9 @@ export default {
         float: right;
       }
     }
+    .detail-item.file{
+      display: block;
+    }
     .detail-item {
       display: flex;
       border-top: 1px solid #eaedf2;
@@ -355,6 +364,16 @@ export default {
         display: inline-block;
         width: 72px;
         color: #8a93a1;
+      }
+      .title-file{
+        color: #8A93A1;
+      }
+      .imgs{
+        img{
+          max-width: 110px;
+          max-height: 110px;
+          padding: 5px;
+        }
       }
       .content {
         flex: 1;
