@@ -25,6 +25,7 @@ use App\Models\Forum\Forum;
 use App\Models\Misc\SystemNotification;
 use App\Models\Notices\AppProposal;
 use App\Models\Notices\AppProposalImage;
+use App\Models\Schools\SchoolCalendar;
 use App\Models\Students\StudentProfile;
 use App\Models\Teachers\Teacher;
 use App\Models\Users\UserVerification;
@@ -534,5 +535,16 @@ class IndexController extends Controller
         $news = (new NewsDao())->getById($request->get('id'));
 
         return JsonBuilder::Success($news);
+    }
+
+
+    /**
+     * 事件标签列表
+     * @return string
+     */
+    public function tagList() {
+        $calendar = new SchoolCalendar();
+        $list = $calendar->getAllType();
+        return JsonBuilder::Success($list);
     }
 }
