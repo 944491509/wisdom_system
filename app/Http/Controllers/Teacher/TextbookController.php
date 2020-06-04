@@ -102,9 +102,23 @@ class TextbookController extends Controller
         $schoolId = $request->getSchoolId();
         $pageNumber = $request->getPageNumber();
         $pageSize = $request->getPageSize();
+        $type = $request->get('type');
+        $year = $request->get('year');
+        $term = $request->get('term');
+        $download = $request->get('download', 0);
+        $map = ['school_id' => $schoolId];
+        if(!is_null($type)) {
+            $map['type'] = $type;
+        }
+        if(!is_null($year)) {
+            $map['year'] = $year;
+        }
+        if(!is_null($term)) {
+            $map['term'] = $term;
+        }
 
         $textbookDao = new TextbookDao();
-        $list = $textbookDao->getTextbookListPaginateBySchoolId($schoolId, $pageNumber, $pageSize);
+        $list = $textbookDao->getTextbookListPaginateByMap($map, $download, $pageNumber, $pageSize);
         return JsonBuilder::Success($list);
     }
 

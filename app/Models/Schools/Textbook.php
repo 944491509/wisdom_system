@@ -45,6 +45,10 @@ class Textbook extends Model
     const TYPE_SCHOOL_BOOK_TEXT   = '校本教材';
 
 
+    const TERM_1 = '第一学期';
+    const TERM_2 = '第二学期';
+
+
     /**
      * 教材类型
      * @return string[]
@@ -68,6 +72,16 @@ class Textbook extends Model
         $all = $this->getAllType();
         return $all[$this->type] ?? '';
     }
+
+
+    public function getTermTextAttribute() {
+        $term  = [
+            1=>self::TERM_1,
+            2=>self::TERM_2,
+        ];
+        return $term[$this->term] ?? '';
+    }
+
 
     /**
      * 图书关联的图片
