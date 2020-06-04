@@ -5,6 +5,23 @@ use App\User;
 ?>
 @extends('layouts.app')
 @section('content')
+    <style>
+        .cell .休学{
+            color: #FE7B1C;
+        }
+        .cell .在校{
+            color: #D4D7DE;
+        }
+        .cell .毕业{
+            color: #6DCC58;
+        }
+        .cell .退学{
+            color: #FA3D3D;
+        }
+        .cell .转学{
+            color: #66D9FF;
+        }
+    </style>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-xl-12">
             <div class="card">
@@ -91,8 +108,10 @@ use App\User;
                                     label="所在班级">
                                 </el-table-column>
                                 <el-table-column
-                                    prop="status"
                                     label="学生状态">
+                                    <template slot-scope="scope">
+                                        <span :class="scope.row.status">@{{scope.row.status}}</span>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column
                                 width="280"
