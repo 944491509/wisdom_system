@@ -5,7 +5,7 @@
     <div class="notices-card teacher-oa-notices-app-one">
         <div class="notices-card-header">
             <p>通知公告</p>
-            <p class="release" @click="releaseDrawer = true">发布</p>
+            <p class="release" @click="releaseDrawer = true;getOrganizansList()">发布</p>
         </div>
         <div class="teacher-oa-notices-app-one-body" v-for="item in oneList" :key="item.id" @click="oneDetail(item.id)" v-cloak>
             <div class="teacher-oa-notices-app-one-body-title">
@@ -78,16 +78,16 @@
             <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea"></el-input>
           </el-form-item>
           <el-form-item label="选择教师可见范围" label-width="130px">
-            <div class="dayu" @click="showOrganizationsSelectorFlag=true">></div>
+            <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;"> > </div>
           </el-form-item>
           <el-form-item label="选择学生可见范围" label-width="130px">
-            <div class="dayu" @click="innerDrawer = true">></div>
+            <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;"> > </div>
           </el-form-item>
           <el-form-item label="附件" label-width="50px" style="font-size: 16px; color: #000;">
             <div class="">(图片格式)</div>
           </el-form-item>
           <div></div>
-          <el-button type="primary" size="small" @click="showAttachmentManagerFlag=true">上传附件</el-button>
+          <el-button type="primary" size="small" @click="showFileManager">上传附件</el-button>
         </el-form>
         <div class="drawer_footer">
           <el-button type="primary" @click="release" style="padding: 12px 40px;"> 发布 </el-button>
@@ -100,47 +100,70 @@
           custom-class="inner-teacher-drawer"
           size="60%"
         >
-          <el-form :model="form">
-            <!-- <el-form-item label="搜索" label-width="50px">
-              <el-input v-model="form.title" autocomplete="off" style="width: 90%;"></el-input>
-            </el-form-item> -->
-            <el-form-item label="部门" label-width="50px">
-                <el-tree
-                    ref="tree"
-                    :props="props"
-                    node-key="id"
-                    :load="loadNode"
-                    :check-on-click-node="true"
-                    :check-strictly="true"
-                    @check-change="checkChange"
-                    lazy
-                    show-checkbox>
-                </el-tree>
-            </el-form-item>
-            <el-form-item label="便捷操作" label-width="80px" style="margin-top: 50px;">
-              <el-switch
-                v-model="allOran"
-                active-text="所有部门"
-                inactive-text="">
-                </el-switch>
-            </el-form-item>
-            <div style="padding-left: 20px">
-              <p>已选部门</p>
-              <div style="display: flex; flex-wrap: wrap;">
-                <el-tag
-                  v-for="(item, index) in selecttags"
-                  :key="index"
-                  closable
-                  @close="deleteTag(item)"
-                  style="margin-right: 10px;color: #fff;background-color: #409EFF;position: relative;"
-                >
-                  @{{item.name}}</el-tag>
-              </div>
+            <div>
+                <el-form v-if="showOrganizationsSelectorFlag" :model="form" style="padding:0 20px;">
+                    <!-- <el-form-item label="搜索" label-width="50px">
+                    <el-input v-model="form.title" autocomplete="off" style="width: 90%;"></el-input>
+                    </el-form-item> -->
+                    <el-form-item label="部门" label-width="50px">
+                            <el-row  class="organ-row" v-for="(organ,index) in organizansList" :key="index">
+                                <template v-for="item in organ">
+                                    <el-tag
+                                        class="organ-item"
+                                        :key="item.id"
+                                        @click="chooseOrgan((index + 1) ,item)"
+                                        effect="plain"
+                                        >
+                                        @{{ item.name }} @{{ item.status ? '...': ''}}
+                                    </el-tag>
+                                </template>
+                            </el-row>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="便捷操作" label-width="80px" style="margin-top: 50px;">
+                        <el-switch
+                        v-model="allOran"
+                        active-text="所有部门"
+                        inactive-text="">
+                        </el-switch>
+                    </el-form-item>
+                    <div style="padding-left: 20px" v-if="!allOran">
+                    <p>已选部门</p>
+                    <div style="display: flex; flex-wrap: wrap;">
+                        <el-tag
+                        v-for="(item, index) in selecttags"
+                        :key="index"
+                        closable
+                        @close="deleteTag(item)"
+                        style="margin-right: 10px;color: #fff;background-color: #409EFF;position: relative;"
+                        >
+                        @{{item.name}}</el-tag>
+                    </div>
+                </el-form>
+                <div v-if="!showOrganizationsSelectorFlag" style="padding:0 20px;">
+                    学生可见范围
+                </div>
             </div>
-          </el-form>
+        </el-drawer>
+
+        <el-drawer
+            title="我的易云盘"
+            :visible.sync="showFileManagerFlag"
+            direction="rtl"
+            size="100%"
+            :append-to-body="true"
+            custom-class="e-yun-pan internal-message"
+            >
+            <file-manager
+                :user-uuid="userUuid"
+                :allowed-file-types="[]"
+                :pick-file="true"
+                v-on:pick-this-file="pickFileHandler"
+            ></file-manager>
         </el-drawer>
       </div>
     </el-drawer>
+
 
 </div>
 

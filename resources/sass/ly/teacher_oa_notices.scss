@@ -2,6 +2,18 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  .organ-row {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 9px;
+    padding-bottom: 10px;
+    .organ-item{
+        margin-right: 30px;
+        cursor: pointer;
+        &:hover{
+            background-color: #b3d8ff;
+        }
+    }
+  }
   .notices-card {
     flex: 1;
     height: 100%;
@@ -276,4 +288,6 @@
     top: -9px;
     cursor: pointer;
   }
+
+
 }

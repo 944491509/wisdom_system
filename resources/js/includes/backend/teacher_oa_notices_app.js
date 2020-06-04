@@ -32,19 +32,12 @@ if (document.getElementById("teacher-oa-notices-app")) {
           organizations: []
         },
         innerDrawer: false,
-        selecttags: [ ],
-        props: {
-          isLeaf: "status",
-          label: "name",
-          disabled:function(data,node){
-            if(data.status){
-              return false
-            }
-            return true
-          }
-        },
+        selecttags: [],
         organizansList: [],
-        allOran:false
+        allOran: false,
+        showFileManagerFlag: false,
+        showOrganizationsSelectorFlag: false,
+        checkboxGroup: []
       };
     },
     created() {
@@ -55,21 +48,13 @@ if (document.getElementById("teacher-oa-notices-app")) {
       this.getnoticeList1();
       this.getnoticeList2();
       this.getnoticeList3();
-      // this.getOrganizansList()
     },
     methods: {
-      checkChange(){
+      checkChange() {
         console.log(this.$refs.tree.getCheckedNodes());
-        this.selecttags = this.$refs.tree.getCheckedNodes() || []
+        this.selecttags = this.$refs.tree.getCheckedNodes() || [];
       },
-      async loadNode(node, resolve) {
-        if (node.level === 0) {
-          await this.getOrganizansList();
-          return resolve(this.organizansList);
-        }
-        await this.getOrganizansList(node.data.id);
-        resolve(this.organizansList);
-      },
+
       handleClose1() {
         this.releaseDrawer = false;
       },
@@ -78,10 +63,10 @@ if (document.getElementById("teacher-oa-notices-app")) {
       },
       deleteTag(tag) {
         this.selecttags.splice(this.selecttags.indexOf(tag), 1);
-        this.$refs.tree.setCheckedNodes(this.selecttags)
+        this.$refs.tree.setCheckedNodes(this.selecttags);
       },
-      reload() {},
-      async getOrganizansList(parent_id) {
+      async getOrganizansList(floor = 0, parent_id) {
+        console.log("getOrganizansList");
         await axios
           .post("/Oa/tissue/getOrganization", {
             school_id: this.schoolId,
@@ -89,10 +74,27 @@ if (document.getElementById("teacher-oa-notices-app")) {
           })
           .then(res => {
             if (Util.isAjaxResOk(res)) {
-              this.organizansList = res.data.data.organ || [];
-              this.organizansList.forEach(e => (e.status = !e.status));
+              if (!this.organizansList[floor]) {
+                this.organizansList.push(res.data.data.organ || []);
+              } else {
+                this.organizansList.splice(floor, 1, res.data.data.organ || []);
+              }
             }
           });
+      },
+      chooseOrgan(floor,item){
+        if(item.status){
+          this.getOrganizansList(floor,item.id);
+        }else{
+          let sign = this.selecttags.findIndex(e => e.id == item.id);
+          console.log(sign)
+          if(sign != -1){
+            this.selecttags.splice(sign, 1)
+          }else{
+            this.selecttags.push(item)
+          }
+        }
+
       },
       // 最后发布接口
       release() {},
@@ -169,6 +171,14 @@ if (document.getElementById("teacher-oa-notices-app")) {
       },
       reloadThisPage: function() {
         Util.reloadCurrentPage(this);
+      },
+      pickFileHandler: function(payload) {
+        console.log("pickFileHandler", payload);
+        this.showFileManagerFlag = false;
+      },
+      showFileManager() {
+        console.log("123");
+        this.showFileManagerFlag = true;
       }
     }
   });
