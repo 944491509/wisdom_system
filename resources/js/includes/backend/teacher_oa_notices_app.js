@@ -4,10 +4,15 @@
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
 import { startedByMe, waitingForMe } from "../../common/flow";
+import AddNotice from '../../components/teacherNotices/AddNotice';
 
 if (document.getElementById("teacher-oa-notices-app")) {
   new Vue({
+
     el: "#teacher-oa-notices-app",
+    components:{
+      AddNotice
+    },
     data() {
       return {
         schoolId: null,
@@ -61,43 +66,7 @@ if (document.getElementById("teacher-oa-notices-app")) {
       handleClose2() {
         this.innerDrawer = false;
       },
-      deleteTag(tag) {
-        this.selecttags.splice(this.selecttags.indexOf(tag), 1);
-        this.$refs.tree.setCheckedNodes(this.selecttags);
-      },
-      async getOrganizansList(floor = 0, parent_id) {
-        console.log("getOrganizansList");
-        await axios
-          .post("/Oa/tissue/getOrganization", {
-            school_id: this.schoolId,
-            parent_id
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              if (!this.organizansList[floor]) {
-                this.organizansList.push(res.data.data.organ || []);
-              } else {
-                this.organizansList.splice(floor, 1, res.data.data.organ || []);
-              }
-            }
-          });
-      },
-      chooseOrgan(floor,item){
-        if(item.status){
-          this.getOrganizansList(floor,item.id);
-        }else{
-          let sign = this.selecttags.findIndex(e => e.id == item.id);
-          console.log(sign)
-          if(sign != -1){
-            this.selecttags.splice(sign, 1)
-          }else{
-            this.selecttags.push(item)
-          }
-        }
 
-      },
-      // 最后发布接口
-      release() {},
       // 获取本页列表
       getnoticeList1() {
         axios.post("/api/notice/notice-list", { type: 1 }).then(res => {
