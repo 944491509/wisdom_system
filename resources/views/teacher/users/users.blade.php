@@ -21,7 +21,7 @@ use App\User;
                 <div class="card-body" id="verify-list" name="users">
                     <div class="row">
                         <div style="width: 100%;">
-                            <search-bar-new mode="students" :schoolid="school_id" v-model="where">
+                            <search-bar-new mode="users" :schoolid="school_id" v-model="where">
                                 <div slot="opt" style="margin: 12px;display: inline-block;">
                                     <el-button type="primary" style="margin: 12px;" @click="search">
                                         查询

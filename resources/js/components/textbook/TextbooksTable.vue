@@ -170,12 +170,28 @@ export default {
             formatter: item => item.author
           },
           {
-            name: "出版",
+            name: "出版社",
             formatter: item => item.press
           },
           {
-            name: "价格",
-            formatter: item => `¥ ${item.price} （进价：¥ ${item.purchase_price}）`
+            name: "进价",
+            formatter: item => `¥ ${item.purchase_price}`
+          },
+          {
+            name: "售价",
+            formatter: item => `¥ ${item.price}`
+          },
+          {
+            name: "年级",
+            formatter: item => `${item.year_text }`
+          },
+          {
+            name: "学期",
+            formatter: item => `${item.term_text }`
+          },
+          {
+            name: "类型",
+            formatter: item => `${item.type_text }`
           }
         ],
         courses,
@@ -197,6 +213,7 @@ $colorGrey: #c9cacc;
 			.book-image {
 				.image {
 					.book-image {
+            display: inline-block;
 						margin: 0 auto;
 						max-width: 190px;
 						padding-right: 10px;
