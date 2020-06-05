@@ -336,6 +336,7 @@ class TextbookDao
         foreach ($books as $key => $val) {
             $books[$key]['type_text'] = $val->type_text;
             $books[$key]['term_text'] = $val->term_text;
+            $books[$key]['year_text'] = $val->year_text;
             foreach ($val->medias as $k => $item) {
                 $item->type = $item->media->type ?? '';
                 unset($item->media);
