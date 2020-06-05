@@ -234,10 +234,9 @@ class NoticeDao
      * @param $organizationIds
      * @param $gradeIds
      * @param $file
-     * @param $user
      * @return MessageBag
      */
-    public function issueNotice($data, $organizationIds, $gradeIds, $file, $user) {
+    public function issueNotice($data, $organizationIds, $gradeIds, $file) {
 
         $messageBag = new MessageBag();
         // 查询该公告标题是否已存在
@@ -248,8 +247,6 @@ class NoticeDao
             $messageBag->setMessage('该标题已存在，请更换');
             return $messageBag;
         }
-        $mediaDao = new MediaDao();
-        // todo 需要增加后台审核功能
         $data['status'] = Notice::STATUS_PUBLISH;  // 设置为发布
         if(!empty($organizationIds) && empty($gradeIds)) {
             $data['range'] = Notice::RANGE_TEACHER;
@@ -298,12 +295,11 @@ class NoticeDao
 
             if(!is_null($file)) {
                 foreach ($file as $key => $value) {
-                    $media = $mediaDao->upload($user,$value);
                     $attachments = [
                         'notice_id' => $notice->id,
-                        'media_id' => $media->id,
-                        'file_name' => $media->file_name,
-                        'url' => $media->url,
+                        'media_id' => $value['media_id'],
+                        'file_name' => $value['file_name'],
+                        'url' => $value['url'],
                     ];
                     NoticeMedia::create($attachments);
                 }
