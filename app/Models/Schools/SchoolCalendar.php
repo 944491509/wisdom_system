@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SchoolCalendar extends Model
 {
-    protected $fillable = ['school_id', 'tag', 'content', 'event_time', 'week_idx', 'term', 'year'];
+    protected $fillable = [
+        'school_id', 'tag', 'content', 'event_time', 'week_idx', 'term', 'year', 'type',
+    ];
 
     protected $casts = [
         'tag' => 'array',
