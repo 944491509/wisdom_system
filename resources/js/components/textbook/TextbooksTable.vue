@@ -162,11 +162,11 @@ export default {
       tableToExcel(
         [
           {
-            name: "教材名",
-            formatter: item => `${item.name }（${item.edition}）`
+            name: "教材名称",
+            formatter: item => `${item.name }`
           },
           {
-            name: "作者",
+            name: "教材作者",
             formatter: item => item.author
           },
           {
@@ -174,11 +174,11 @@ export default {
             formatter: item => item.press
           },
           {
-            name: "进价",
+            name: "课本进价",
             formatter: item => `¥ ${item.purchase_price}`
           },
           {
-            name: "售价",
+            name: "课本零售价",
             formatter: item => `¥ ${item.price}`
           },
           {
@@ -188,6 +188,10 @@ export default {
           {
             name: "学期",
             formatter: item => `${item.term_text }`
+          },
+          {
+            name: "版本",
+            formatter: item => `${item.edition }`
           },
           {
             name: "类型",

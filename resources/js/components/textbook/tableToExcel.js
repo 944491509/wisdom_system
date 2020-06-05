@@ -25,8 +25,9 @@ export default function tableToExcel(headers,jsonData,fileName){
       </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
       </head><body><table>${str}</table></body></html>`;
     var link = document.createElement("a");
+    var date = new Date().getFullYear() + '-' + (new Date().getMonth() + 1).toString().padStart(2, '0') + '-' + new Date().getDate().toString().padStart(2, '0')
     link.href = uri + base64(template)
-    link.download = fileName +new Date().getTime()+ ".xls";
+    link.download = fileName +date+ ".xls";
     link.style = "visibility:hidden";
     document.body.appendChild(link);
     link.click();
