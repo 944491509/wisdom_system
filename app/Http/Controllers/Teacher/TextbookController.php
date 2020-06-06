@@ -81,8 +81,10 @@ class TextbookController extends Controller
      */
     public function list(TextbookRequest $request) {
         $schoolId = $request->getSchoolId();
+        $year = $request->get('year');
+        $term = $request->get('term');
         $textbookDao = new TextbookDao();
-        $list = $textbookDao->getTextbookListBySchoolId($schoolId);
+        $list = $textbookDao->getTextbookListBySchoolId($schoolId, $year, $term);
         foreach ($list as $key => $val) {
             $list[$key]['type'] = $val['type_text'];
         }
@@ -142,6 +144,7 @@ class TextbookController extends Controller
         $courseId = $request->getCourseId();
         $schoolId = $request->getSchoolId();
         $textbookIdArr = $request->getTextbookIdArr();
+
         $courseTextbookDao = new CourseTextbookDao();
         $result = $courseTextbookDao->createCourseTextbook($courseId, $schoolId, $textbookIdArr);
 

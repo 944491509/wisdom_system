@@ -134,7 +134,7 @@
                 @{{detailData.id_number}}
             </el-form-item>
             <el-form-item label="性别">
-                @{{detailData.gender}}
+                @{{detailData.genderText}}
             </el-form-item>
             <el-form-item label="出生日期">
                 @{{detailData.birthday}}
