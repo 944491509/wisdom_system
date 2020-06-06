@@ -11,7 +11,7 @@ use App\User;
                 <div class="card-head">
                     <header class="full-width">
                         {{ $parent->name??session('school.name') }}
-                        (学生总数: <span id="veri-list-total">0</span>)
+                        (未认证用户总数: <span id="veri-list-total">0</span>)
                         <div class="table-padding col-12 pt-0">
                             @include('school_manager.school.reusable.nav_new',['highlight'=>'users'])
                         </div>

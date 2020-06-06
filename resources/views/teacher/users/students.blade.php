@@ -10,7 +10,7 @@ use App\User;
             color: #FE7B1C;
         }
         .cell .在校{
-            color: #D4D7DE;
+            color: #313B4C;
         }
         .cell .毕业{
             color: #6DCC58;

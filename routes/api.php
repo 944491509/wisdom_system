@@ -1231,7 +1231,6 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
 //            ->name('api.teachers.save-profile');
 });
 
-
 // 教材
 Route::prefix('textbook')->middleware('auth:api')->group(function() {
     // 类型

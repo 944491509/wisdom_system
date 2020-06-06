@@ -62,7 +62,7 @@
           ></el-cascader>-->
         </el-form-item>
         <el-form-item label="任务描述">
-          <el-input type="textarea" v-model="form.task_content" placeholder="请输入"></el-input>
+          <el-input type="textarea" maxlength="1000" v-model="form.task_content" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="关联项目">
           <el-select v-model="form.projectid" placeholder="请输入（选填）">
