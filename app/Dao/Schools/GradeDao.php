@@ -184,16 +184,18 @@ class GradeDao
     /**
      * 获取年级下的班级
      * @param $schoolId
-     * @param $year
+     * @param null $year
      * @param null $keyword
      * @return mixed
      */
-    public function gradeListByYear($schoolId, $year, $keyword = null)
+    public function gradeListByYear($schoolId, $year = null, $keyword = null)
     {
         $map   = [
             ['school_id', '=', $schoolId],
-            ['year', '=',  $year],
         ];
+        if(!is_null($year)) {
+            $map[] = ['year', '=',  $year];
+        }
         if(!is_null($keyword)) {
             $map[] = ['name', 'like', $keyword.'%'];
         }
