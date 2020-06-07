@@ -136,13 +136,16 @@ export default {
 
 </style>
 <style>
-#teacher-oa-notices-app .tags_cascader /deep/ .el-checkbox{
+ .tags_cascader  .el-checkbox{
 	position: absolute;
 	left: 19px;
 	right: 30px;
 }
-#teacher-oa-notices-app .tags_cascader /deep/ .el-cascader-node__label{
+.tags_cascader  .el-cascader-node__label{
 	padding-left: 24px;
+}
+.el-tag .el-icon-close {
+	    background-color: #000;
 }
 </style>
 

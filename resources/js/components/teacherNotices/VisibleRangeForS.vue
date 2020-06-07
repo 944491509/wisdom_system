@@ -15,10 +15,10 @@
 		</el-form-item>
 		<el-form-item label="班级" label-width="60px">
       <el-checkbox-group v-model="selectTags">
-        <el-cascader style="width:100%;" popper-class="tags_cascader" ref="tags" :props="props" :show-all-levels="false" v-model="form.tags">
+        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :props="props" :show-all-levels="false" v-model="form.tags">
           <template slot-scope="{ node, data }">
-            <span v-if="node.level == 1">{{ data.text }}</span>
-            <el-checkbox v-else :label="data.name" :value="data.grade_id"></el-checkbox>
+            <span v-if="node.level == 1">{{ data.name }}</span>
+            <el-checkbox v-else :label="data" :value="data">{{data.name}}</el-checkbox>
           </template>
         </el-cascader>
       </el-checkbox-group>
@@ -70,8 +70,13 @@ export default {
             resolve(this.years)
             return;
           }
-          await this.getGrade(node.data)
-					resolve(this.grades)
+          if(node.level == 1){
+            await this.getGrade(node.data)
+            resolve(this.grades)
+          }
+          resolve()
+          
+         
 				}
 			}
 		};
@@ -98,7 +103,7 @@ export default {
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
     },
     async getYears(){
-       await axios.get(`/api/school/load-config-year?school_id=${this.schoolId}`).then(res => {
+       await axios.get(`/api/notice/school-year?school_id=${this.schoolId}`).then(res => {
 					if (Util.isAjaxResOk(res)) {
             console.log(res)
             this.years = res.data.data;
@@ -106,7 +111,7 @@ export default {
 				});
     },
     async getGrade(item,keyword){
-        await axios.get(`/api/notice/grade-list?year=${item.year || 0}&keyword=${keyword}`).then(res => {
+        await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}`).then(res => {
 					if (Util.isAjaxResOk(res)) {
             console.log(res)
             this.grades = res.data.data;
@@ -131,6 +136,10 @@ export default {
 			this.form.tags = this.form.tags.filter(arr => !arr.includes(tag.id))
     },
     async querySearchAsync(queryString, cb){
+      if(!queryString) {
+        cb();
+        return;
+      } ;
 			let items = await  this.getGrade({},queryString)
 			cb(items || [])
 		},
@@ -154,5 +163,10 @@ export default {
 .btn-tools{
   text-align: center;
 }
-</style>
 
+</style>
+<style>
+.tags_stu_cascader  .el-icon-check{
+  display: none;
+}
+</style>
