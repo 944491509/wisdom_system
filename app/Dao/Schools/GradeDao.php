@@ -185,11 +185,18 @@ class GradeDao
      * 获取年级下的班级
      * @param $schoolId
      * @param $year
+     * @param null $keyword
      * @return mixed
      */
-    public function gradeListByYear($schoolId, $year)
+    public function gradeListByYear($schoolId, $year, $keyword = null)
     {
-        $map   = ['school_id' => $schoolId, 'year' => $year];
+        $map   = [
+            ['school_id', '=', $schoolId],
+            ['year', '=',  $year],
+        ];
+        if(!is_null($keyword)) {
+            $map[] = ['name', 'like', $keyword.'%'];
+        }
         $field = ['id', 'name', 'year'];
         return Grade::where($map)->select($field)->get();
     }
