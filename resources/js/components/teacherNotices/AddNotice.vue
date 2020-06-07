@@ -135,7 +135,7 @@ export default {
           let params = {
             title: this.form.title,
             content: this.form.textarea,
-            attachments: this.form.files.map(e => {
+            attachments: (this.form.files||[]).map(e => {
               return {
                 media_id: e.id,
                 file_name: e.file_name,
@@ -153,7 +153,7 @@ export default {
             params.grade_id =
               this.form.studentTags == 0
                 ? 0
-                : this.form.studentTags.map(e => e.grade_id);
+                : this.form.studentTags.map(e => e.id);
           }
 
           axios.post("/api/notice/issue-notice", params).then(res => {

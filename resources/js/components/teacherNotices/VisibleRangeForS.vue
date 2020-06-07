@@ -110,7 +110,7 @@ export default {
 					}
 				});
     },
-    async getGrade(item,keyword){
+    async getGrade(item,keyword =''){
         await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}`).then(res => {
 					if (Util.isAjaxResOk(res)) {
             console.log(res)
