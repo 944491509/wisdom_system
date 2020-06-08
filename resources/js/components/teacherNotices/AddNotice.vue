@@ -13,7 +13,7 @@
       <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
         <template v-if="form.teacherTags == '0'">
           <!-- <el-tag class="Oran-Tag" style>所有部门</el-tag> -->
-          <span>所有班级</span>
+          <span>所有部门</span>
         </template>
         <template v-else-if="form.teacherTags.length">
           <!-- <el-tag class="Oran-Tag">已选择</el-tag> -->
@@ -148,13 +148,13 @@ export default {
           if (this.form.teacherTags == "0" || this.form.teacherTags.length) {
             params.organization_id =
               this.form.teacherTags == 0
-                ? 0
+                ? [0]
                 : this.form.teacherTags.map(e => e.id);
           }
           if (this.form.studentTags == "0" || this.form.studentTags.length) {
             params.grade_id =
               this.form.studentTags == 0
-                ? 0
+                ? [0]
                 : this.form.studentTags.map(e => e.id);
           }
           if (!(params.organization_id === 0 || params.organization_id)) {
