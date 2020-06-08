@@ -4,7 +4,7 @@
 			<el-autocomplete
 				v-model="visibleform.title"
 				:fetch-suggestions="querySearchAsync"
-				placeholder="请输入内容"
+				placeholder="请输入部门名称"
 				style="width:100%;"
 				@select="handleSelect"
 				>
@@ -136,6 +136,10 @@ export default {
 
 </style>
 <style>
+.Oran-Tag {
+  background-color: rgba(232, 244, 255, 1) !important;
+  color: rgba(78, 165, 254, 1) !important;
+}
  .tags_cascader  .el-checkbox{
 	position: absolute;
 	left: 19px;
@@ -144,8 +148,8 @@ export default {
 .tags_cascader  .el-cascader-node__label{
 	padding-left: 24px;
 }
-.el-tag .el-icon-close {
-	    background-color: #000;
-}
+/* .el-tag .el-icon-close {
+	    background-color:#fff;
+} */
 </style>
 

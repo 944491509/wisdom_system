@@ -2,20 +2,22 @@
   <div class="drawer_content">
     <el-form :model="form" label-width="55px" :rules="rules" ref="ruleForm">
       <el-form-item label="标题" prop="title">
-        <el-input v-model="form.title" autocomplete="off"></el-input>
+        <el-input v-model="form.title" autocomplete="off" maxlength="30" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="内容" prop="textarea">
-        <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea"></el-input>
+        <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea" maxlength="500" show-word-limit></el-input>
       </el-form-item>
     </el-form>
     <div class="selectBlock" style="border-top: 1px solid #EAEDF2">
       <div>选择教师可见范围</div>
       <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
         <template v-if="form.teacherTags == '0'">
-          <el-tag class="Oran-Tag" style>所有部门</el-tag>
+          <!-- <el-tag class="Oran-Tag" style>所有部门</el-tag> -->
+          <span>所有班级</span>
         </template>
         <template v-else-if="form.teacherTags.length">
-          <el-tag class="Oran-Tag">已选择</el-tag>
+          <!-- <el-tag class="Oran-Tag">已选择</el-tag> -->
+          <span>已选择</span>
         </template>
         <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
       </div>
@@ -24,10 +26,10 @@
       <div>选择学生可见范围</div>
       <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
         <template v-if="form.studentTags == '0'">
-          <el-tag class="Oran-Tag">所有班级</el-tag>
+          <span>所有班级</span>
         </template>
         <template v-else-if="form.studentTags.length">
-          <el-tag class="Oran-Tag">已选择</el-tag>
+          <span>已选择</span>
         </template>
         <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
       </div>
@@ -155,7 +157,20 @@ export default {
                 ? 0
                 : this.form.studentTags.map(e => e.id);
           }
-
+          if (!(params.organization_id === 0 || params.organization_id)) {
+            this.$message({
+              message: '请选择教师可见范围',
+              type: "warning"
+            });
+            return
+          }
+          if (!(params.grade_id === 0 || params.grade_id)) {
+            this.$message({
+              message: '请选择学生可见范围',
+              type: "warning"
+            });
+            return
+          }
           axios.post("/api/notice/issue-notice", params).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
