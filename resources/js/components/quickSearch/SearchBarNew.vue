@@ -37,7 +37,7 @@
       <slot></slot>
       <slot name="opt"></slot>
     </div>
-    <div v-else-if="mode === 'teachers'">
+    <div v-if="mode === 'teachers'">
       <el-select v-model="values.status" clearable placeholder="请选择聘任状态">
         <el-option
           v-for="item in options.status"
@@ -74,7 +74,7 @@
       <slot></slot>
       <slot name="opt"></slot>
     </div>
-    <div v-else>
+    <div v-if="mode === 'users'">
       <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
       <slot name="opt"></slot>
     </div>
@@ -164,7 +164,7 @@ export default {
       // api/school/load-config-year
       axios.get("/api/notice/school-year?school_id=" + this.schoolid).then(res => {
         if (Util.isAjaxResOk(res)) {
-          this.options.year = this.toOptions(res.data.data, "text", "year");
+          this.options.year = this.toOptions(res.data.data, "name", "year");
         }
       });
       axios

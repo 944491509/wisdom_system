@@ -2,7 +2,8 @@
   <div class="courses-manager-wrap">
     <div class="courses-list-col">
       <p class="courses-list-title">
-        课程列表 &nbsp;
+        <filters-from :majors="majors" :years="grades" @searchSubmit="searchSubmit" />
+        <el-button type="primary" @click="downloadTable">导出</el-button>
         <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
         <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
       </p>
@@ -206,11 +207,14 @@ import { getEmptyElectiveCourseApplication } from "../../common/elective_course"
 import { loadTextbooks, attachTextbooksToCourse } from "../../common/textbook";
 import CoursesList from "./CoursesList.vue";
 import ElectiveCourseForm from "./ElectiveCourseForm.vue";
+import FiltersFrom from "./FiltersFrom.vue";
+import tableToExcel from "./tableToExcel";
 export default {
   name: "CoursesManager",
   components: {
     CoursesList,
-    ElectiveCourseForm
+    ElectiveCourseForm,
+    FiltersFrom
   },
   props: {
     schoolId: {
@@ -284,9 +288,11 @@ export default {
         page: 1,
         pageCount: 0
       },
+      download: 0,
       // 选修课程相关
       showElectiveCourseFormFlag: false,
-      currentElectiveCourse: {}
+      currentElectiveCourse: {},
+      searchParams: ""
     };
   },
   watch: {
@@ -321,8 +327,16 @@ export default {
       this.showElectiveCourseFormFlag = false;
       window.location.reload();
     },
-    _getAllCourses: function() {
-      getCourses(this.schoolId, this.pagination.page).then(res => {
+    _getAllCourses: function(search) {
+      let params = {
+        school: this.schoolId,
+        page: this.pagination.page,
+        download: this.download
+      };
+      if (search) {
+        params = Object.assign({}, params, search);
+      }
+      getCourses(params).then(res => {
         if (res.data.code === Constants.AJAX_SUCCESS) {
           this.courses = res.data.data.list;
           this.pagination.pageCount = res.data.data.lastPage;
@@ -332,12 +346,14 @@ export default {
     // 课程要关联教科书
     onCourseAttacheTextbook: function(payload) {
       if (this.textbooks.length === 0) {
-        loadTextbooks(this.schoolId).then(res => {
+        loadTextbooks(this.schoolId,'',payload.course.year,payload.course.term).then(res => {
           this.textbooks = res.data.data.textbooks;
         });
       }
-      this.attachForm.attachedTextbooks = [];
+      let checkedBookIds = (payload.course.books || []).map( e => e.id)
+      this.attachForm.attachedTextbooks = checkedBookIds || [];
       this.attachForm.courseId = payload.course.id;
+
       this.showChooseTextbookFormFlag = true;
     },
     attachTextbookConfirmed: function() {
@@ -556,6 +572,104 @@ export default {
             this.grades = res.data.data;
           }
         });
+    },
+    searchSubmit(searchParams) {
+      this.searchParams = searchParams;
+      this._getAllCourses(searchParams);
+    },
+    describeTimeSlot: function(id){
+      const slot = Util.GetItemById(id, this.timeSlots);
+      if(Util.isEmpty(slot)){
+          return 'N.A';
+      }
+      else{
+          return slot.name;
+      }
+    },
+    downloadTable() {
+      console.log("下载");
+      let params = {
+        school: this.schoolId,
+        page: this.pagination.page,
+        download: 1
+      };
+      if (this.searchParams) {
+        params = Object.assign({}, params, this.searchParams);
+      }
+      getCourses(params).then(res => {
+        if (res.data.code === Constants.AJAX_SUCCESS) {
+          let yearsName = {1:'一年级',2:'二年级' ,3:'三年级' };
+          let termName = {1:'第一学期',2:'第二学期'  }
+          tableToExcel([
+            {
+              name: '课程名称/编码',
+              formatter:(item) =>`${item.optional ? '选修':'必修'}:${item.name}  编号：${item.code}`
+            },
+            {
+              name: '使用年级',
+              formatter:(item) =>`${yearsName[item.year]}   ${termName[item.term]}  `
+            },
+            {
+              name: '学分/课时数',
+              formatter:(item) =>` ${ item.scores }\/${ item.duration === 0 ? '未设置' : item.duration }`
+            },
+            {
+              name: '授课教师',
+              formatter:(item) =>{
+                return (item.teachers || []).map(e => e.name||'').join(',')
+              }
+            },
+            {
+              name: '关联专业',
+              formatter:(item) =>{
+                if(item.majors.length){
+                  return (item.majors || []).map(e => e.name||'').join(',')
+                }else{
+                  return '对所有专业都开放'
+                }
+              }
+            },
+           {
+              name: '时间安排',
+              formatter:(item) =>{
+                if(item.arrangements && item.arrangements.length > 0){
+                   return item.arrangements.map((m,idx) => {
+                     return `${idx+1}: 第${ m.week }周的星期${ m.day_index }的${ this.describeTimeSlot(m.time_slot_id) }`
+                   }).join(', ')
+                }
+                if(!item.arrangements || item.arrangements.length === 0){
+                  return '整个学期';
+                }
+              }
+            },
+            {
+              name: '教材',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.name||'').join(',')
+              }
+            },
+            {
+              name: '作者',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.author||'').join(',')
+              }
+            },
+            {
+              name: '出版社',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.press||'').join(',')
+              }
+            },
+            {
+              name: '教材类型',
+              formatter:(item) =>{
+                return (item.books || []).map(e => e.type||'').join(',')
+              }
+            }
+
+          ],res.data.data.list,'课程管理');
+        }
+      });
     }
   }
 };

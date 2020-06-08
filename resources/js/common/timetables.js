@@ -1,6 +1,6 @@
 import {Constants} from "./constants";
 
-export function getTimeSlots(schoolId, noTime, grade_id, year) {
+export function getTimeSlots(schoolId, noTime, grade_id, year = -1) {
     if(noTime){
         noTime = true;
     }else{
@@ -35,9 +35,9 @@ export function editTimeSlot(schoolUuid, timeSlot) {
   );
 }
 
-export function getCourses(schoolId, page) {
+export function getCourses(params) {
     return axios.post(
-        Constants.API.LOAD_COURSES_BY_SCHOOL,{school: schoolId, page: page}
+        Constants.API.LOAD_COURSES_BY_SCHOOL,params
     );
 }
 

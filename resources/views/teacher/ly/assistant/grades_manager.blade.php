@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-head">
                 <header class="full-width">
-                    班级风采
+                    <pf-icon text="班级风采" iconsrc="grade-thumb"></pf-icon>
                 </header>
             </div>
             <div class="card-body">

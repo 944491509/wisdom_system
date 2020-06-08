@@ -24,6 +24,8 @@ if(document.getElementById('textbook-manager-app')){
                     status:1,
                     medias:[],
                     courses:[],
+                    year:'',
+                    term:''
                 },
                 // 自动补全搜索
                 queryTextbook: '',
@@ -45,27 +47,53 @@ if(document.getElementById('textbook-manager-app')){
                 showExportGradeFlag: false,
                 showExportMajorFlag: false,
                 showExportCampusFlag: false,
+                years:[],
+                types:[]
                 // 导出功能完毕
             };
         },
         created(){
             const dom = document.getElementById('app-init-data-holder');
             this.userUuid = dom.dataset.user;
-            this.schoolId = dom.dataset.school;
+            this.schoolId = Number(dom.dataset.school);
             this.pageSize = parseInt(dom.dataset.size);
             axios.post(
                 '/api/school/load-courses',
                 {school: this.schoolId}
             ).then(res=>{
                 if(Util.isAjaxResOk(res)){
-                    this.courses = res.data.data.courses;
+                    this.courses = res.data.data.courses || [];
                 }
             });
 
             this.loadTextbooks();
             this.resetForm();
         },
+        mounted(){
+          this.getYearList();
+          this.getTypes();
+        },
         methods: {
+            getYearList(){
+              axios.get(
+                `/api/school/load-config-year?school_id=${this.schoolId}`
+              ).then(res=>{
+                  if(Util.isAjaxResOk(res)){
+                    console.log(res)
+                    this.years = res.data.data;
+                  }
+              });
+            },
+            getTypes(){
+              axios.get(
+                '/api/textbook/allType'
+              ).then(res=>{
+                  if(Util.isAjaxResOk(res)){
+                    console.log(res)
+                    this.types = res.data.data;
+                  }
+              });
+            },
             // 在表单输入框不能工作的时候, 强制更新
             updateInput: function(e){
                 this.$forceUpdate()
@@ -81,6 +109,8 @@ if(document.getElementById('textbook-manager-app')){
                 this.textbookModel.introduce = '';
                 this.textbookModel.school_id = this.schoolId;
                 this.textbookModel.type = 1;
+                this.textbookModel.year = '';
+                this.textbookModel.term = '';
                 this.textbookModel.status = 1;
                 this.textbookModel.medias = [];// 教材关联的图片
                 this.textbookModel.courses = [];// 教材关联的课程
@@ -192,33 +222,44 @@ if(document.getElementById('textbook-manager-app')){
             },
             // 编辑课本
             editBookAction: function(payload){
+
+                console.log()
                 this.textbookModel = payload.book;
+                delete this.textbookModel.courses
                 this.showTextbookFormFlag = true;
             },
             // 保存教材数据
             saveTextbook: function(){
+              if (!this.textbookModel.name || !this.textbookModel.edition ||  !this.textbookModel.author || !this.textbookModel.press || !this.textbookModel.type || !this.textbookModel.price || !this.textbookModel.year || !this.textbookModel.term) {
+                this.$message({
+                  message: '请输入必填信息! ' ,
+                  type: 'warning'
+                });
+                return
+              }
                 axios.post(
-                    '/teacher/textbook/save',
-                    {textbook: this.textbookModel}
+                    '/api/textbook/save',
+                    this.textbookModel
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
-                        if(Util.isEmpty(this.textbookModel.id)){
-                            // 新增教材的操作
-                            this.books.unshift(res.data.data.textbook);
-                        }
-                        else{
-                            // 更新操作
-                            const idx = Util.GetItemIndexById(res.data.data.textbook.id, this.books);
-                            if(idx > -1){
-                                this.books[idx] = res.data.data.textbook;
-                            }
-                        }
-                        this.resetForm();
+                        // if(Util.isEmpty(this.textbookModel.id)){
+                        //     // 新增教材的操作
+                        //     this.books.unshift(res.data.data.textbook);
+                        // }
+                        // else{
+                        //     // 更新操作
+                        //     const idx = Util.GetItemIndexById(res.data.data.textbook.id, this.books);
+                        //     if(idx > -1){
+                        //         this.books[idx] = res.data.data.textbook;
+                        //     }
+                        // }
+                        // this.resetForm();
                         this.$message({
-                            message: '教材数据保存成功: ' + res.data.data.textbook.name,
+                            message: '教材数据保存成功! ' ,
                             type: 'success'
                         });
                         this.showTextbookFormFlag = false;
+                        window.location.reload();
                     }else{
                         this.$notify.error({
                             title: '错误',
