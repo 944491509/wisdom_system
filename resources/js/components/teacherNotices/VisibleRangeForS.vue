@@ -4,7 +4,7 @@
 			<el-autocomplete
 				v-model="form.title"
 				:fetch-suggestions="querySearchAsync"
-				placeholder="请输入内容"
+				placeholder="请输入部门名称"
 				style="width:100%;"
 				@select="handleSelect"
 				>
