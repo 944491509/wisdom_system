@@ -112,11 +112,11 @@ export default {
       rules: {
         title: [
           { required: true, message: "请输入标题", trigger: "blur" },
-          { min: 1, max: 50, message: "请输入标题", trigger: "blur" }
+          { min: 1, max: 30, message: "最多输入20字！", trigger: "blur" }
         ],
         textarea: [
           { required: true, message: "请输入内容", trigger: "blur" },
-          { min: 2, message: "请输入内容", trigger: "blur" }
+          { min: 1, max: 500,  message: "最多输入500字！", trigger: "blur" }
         ],
         files: [{ required: true, message: "请选择附件" }]
       }
