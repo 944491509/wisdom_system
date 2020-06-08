@@ -96,6 +96,11 @@ class NoticeController extends Controller
         $data              = $request->get('notice');
         $data['school_id'] = $schoolId;
         $data['user_id']   = $request->user()->id;
+        $selectedOrganizations = $data['selectedOrganizations'] ?? [];
+        $gradeIds = $data['grade_id'] ?? [];
+        unset($data['selectedOrganizations']);
+        unset($data['grade_id']);
+
 
         if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
             return JsonBuilder::Error('封面图不能为空');
@@ -105,12 +110,11 @@ class NoticeController extends Controller
             return JsonBuilder::Error('检查类型不能为空');
         }
 
-
         $dao = new  NoticeDao;
         if (isset($data['id'])) {
-            $result = $dao->update($data);
+            $result = $dao->update($data, $selectedOrganizations, $gradeIds);
         } else {
-            $result = $dao->add($data);
+            $result = $dao->add($data, $selectedOrganizations, $gradeIds);
         }
         if ($result->isSuccess() && $result->getData()->status) {
             event(new NoticeSendEvent($result->getData()));
