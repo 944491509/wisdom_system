@@ -1222,6 +1222,6 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     Route::post('update-student-status', 'Operator\SchoolsController@updateStudentStatus')->name('api.school.update-student-status');
     // 统一认证 - 批量修改学生状态
     Route::post('update-status', 'Operator\SchoolsController@updateStatus')->name('api.school.update-status');
-//    Route::post('save-profile','Operator\Teachers\ProfilesController@save')
-//            ->name('api.teachers.save-profile');
+
+//    Route::post('student/update', 'Operator\StudentsController@update')->name('school_manager.student.update');
 });

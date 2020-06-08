@@ -106,9 +106,6 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     // 学生管理: 只有 学校管理员以上级别的角色才可以添加,编辑,学生school_manager.scenery.edit
     Route::get('student/add', 'StudentsController@add')->name('school_manager.student.add');                // 添加学生
     Route::get('student/edit', 'StudentsController@edit')->name('school_manager.student.edit');             // 编辑学生
-    Route::get('student/suspend', 'StudentsController@suspend')->name('school_manager.student.suspend');    // 休学
-    Route::get('student/stop', 'StudentsController@stop')->name('school_manager.student.stop');             // 停课
-    Route::get('student/reject', 'StudentsController@reject')->name('school_manager.student.reject');       // 退学
     Route::post('student/update', 'StudentsController@update')->name('school_manager.student.update');      // 保存学生
     Route::get('school/users', 'StudentsController@school_users')->name('school_manager.school.users');      // 已注册用户
 
@@ -495,23 +492,29 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
 
     // 教师档案管理
     Route::prefix('teachers')->group(function(){
-        Route::get('add-new','Teachers\ProfilesController@add_new')
+        Route::get('add-new', 'Teachers\ProfilesController@add_new')
             ->name('school_manager.teachers.add-new');
-        Route::any('edit-profile','Teachers\ProfilesController@edit')
+        Route::any('edit-profile', 'Teachers\ProfilesController@edit')
             ->name('school_manager.teachers.edit-profile');
-        Route::any('edit-avatar','Teachers\ProfilesController@avatar')
+        Route::any('edit-avatar', 'Teachers\ProfilesController@avatar')
             ->name('school_manager.teachers.edit-avatar');
-        Route::post('save-profile','Teachers\ProfilesController@save')
+        Route::post('save-profile', 'Teachers\ProfilesController@save')
             ->name('school_manager.teachers.save-profile');
-        Route::get('manage-performance','Teachers\ProfilesController@manage_performance')
+
+        Route::post('get-teacher-profile', 'Operator\Teachers\ProfilesController@teacherProfileInfo')
+            ->name('api.teachers.get-teacher-profile');
+        Route::post('update-teacher-profile', 'Operator\Teachers\ProfilesController@editTeacherInfo')
+            ->name('api.teachers.get-teacher-profile');
+
+        Route::get('manage-performance', 'Teachers\ProfilesController@manage_performance')
             ->name('school_manager.teachers.manage-performance');
-        Route::post('manage-performance-save','Teachers\ProfilesController@manage_performance_save')
+        Route::post('manage-performance-save', 'Teachers\ProfilesController@manage_performance_save')
             ->name('school_manager.teachers.manage-performance-save');
-        Route::any('export','Teachers\ProfilesController@export')
+        Route::any('export', 'Teachers\ProfilesController@export')
             ->name('school_manager.teachers.export');
 
         // 评聘列表
-        Route::any('list-qualification','Teachers\ProfilesController@listQualification')
+        Route::any('list-qualification', 'Teachers\ProfilesController@listQualification')
             ->name('school_manager.teachers.list.qualification');
         // 评聘添加页面
         Route::any('add-qualification','Teachers\ProfilesController@addQualification')
