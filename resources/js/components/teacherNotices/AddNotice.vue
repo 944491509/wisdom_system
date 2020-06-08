@@ -157,20 +157,27 @@ export default {
                 ? [0]
                 : this.form.studentTags.map(e => e.id);
           }
-          if (!(params.organization_id === 0 || params.organization_id)) {
+          if (!(params.organization_id) && !(params.grade_id)) {
             this.$message({
-              message: '请选择教师可见范围',
+              message: '请选择可见范围',
               type: "warning"
             });
             return
           }
-          if (!(params.grade_id === 0 || params.grade_id)) {
-            this.$message({
-              message: '请选择学生可见范围',
-              type: "warning"
-            });
-            return
-          }
+          // if (!(params.organization_id === 0 || params.organization_id)) {
+          //   this.$message({
+          //     message: '请选择教师可见范围',
+          //     type: "warning"
+          //   });
+          //   return
+          // }
+          // if (!(params.grade_id === 0 || params.grade_id)) {
+          //   this.$message({
+          //     message: '请选择学生可见范围',
+          //     type: "warning"
+          //   });
+          //   return
+          // }
           axios.post("/api/notice/issue-notice", params).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
