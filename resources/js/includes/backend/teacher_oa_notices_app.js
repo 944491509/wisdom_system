@@ -4,10 +4,15 @@
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
 import { startedByMe, waitingForMe } from "../../common/flow";
+import AddNotice from '../../components/teacherNotices/AddNotice';
 
 if (document.getElementById("teacher-oa-notices-app")) {
   new Vue({
+
     el: "#teacher-oa-notices-app",
+    components:{
+      AddNotice
+    },
     data() {
       return {
         schoolId: null,
@@ -32,19 +37,12 @@ if (document.getElementById("teacher-oa-notices-app")) {
           organizations: []
         },
         innerDrawer: false,
-        selecttags: [ ],
-        props: {
-          isLeaf: "status",
-          label: "name",
-          disabled:function(data,node){
-            if(data.status){
-              return false
-            }
-            return true
-          }
-        },
+        selecttags: [],
         organizansList: [],
-        allOran:false
+        allOran: false,
+        showFileManagerFlag: false,
+        showOrganizationsSelectorFlag: false,
+        checkboxGroup: []
       };
     },
     created() {
@@ -55,47 +53,20 @@ if (document.getElementById("teacher-oa-notices-app")) {
       this.getnoticeList1();
       this.getnoticeList2();
       this.getnoticeList3();
-      // this.getOrganizansList()
     },
     methods: {
-      checkChange(){
+      checkChange() {
         console.log(this.$refs.tree.getCheckedNodes());
-        this.selecttags = this.$refs.tree.getCheckedNodes() || []
+        this.selecttags = this.$refs.tree.getCheckedNodes() || [];
       },
-      async loadNode(node, resolve) {
-        if (node.level === 0) {
-          await this.getOrganizansList();
-          return resolve(this.organizansList);
-        }
-        await this.getOrganizansList(node.data.id);
-        resolve(this.organizansList);
-      },
+
       handleClose1() {
         this.releaseDrawer = false;
       },
       handleClose2() {
         this.innerDrawer = false;
       },
-      deleteTag(tag) {
-        this.selecttags.splice(this.selecttags.indexOf(tag), 1);
-        this.$refs.tree.setCheckedNodes(this.selecttags)
-      },
-      reload() {},
-      async getOrganizansList(parent_id) {
-        await axios
-          .post("/Oa/tissue/getOrganization", {
-            school_id: this.schoolId,
-            parent_id
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.organizansList = res.data.data.organ || [];
-              this.organizansList.forEach(e => (e.status = !e.status));
-            }
-          });
-      },
-      // 最后发布接口
-      release() {},
+
       // 获取本页列表
       getnoticeList1() {
         axios.post("/api/notice/notice-list", { type: 1 }).then(res => {
@@ -169,6 +140,14 @@ if (document.getElementById("teacher-oa-notices-app")) {
       },
       reloadThisPage: function() {
         Util.reloadCurrentPage(this);
+      },
+      pickFileHandler: function(payload) {
+        console.log("pickFileHandler", payload);
+        this.showFileManagerFlag = false;
+      },
+      showFileManager() {
+        console.log("123");
+        this.showFileManagerFlag = true;
       }
     }
   });

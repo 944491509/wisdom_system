@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+
   .notices-card {
     flex: 1;
     height: 100%;
@@ -244,17 +245,13 @@
   }
   .el-drawer__body {
     padding: 20px;
-    .dayu {
-      text-align: right;
-      color: #ccc;
-      font-size: 32px;
-      border-bottom: 1px solid #ccc;
-      cursor: pointer;
+    overflow: auto;
+    .Oran-Tag .el-tag .el-tag__close{
+        color:#fff;
     }
   }
   .inner-teacher-drawer {
     .el-drawer__body {
-
       padding: 20px;
     }
   }
@@ -276,4 +273,6 @@
     top: -9px;
     cursor: pointer;
   }
+
+
 }
