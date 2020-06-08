@@ -147,8 +147,7 @@ use App\Utils\UI\Button;
                             @foreach($data as $val)
                                 <tr>
                                     <td>
-                                        @foreach($val->selectedOrganizations as $so)
-{{ $so->organization->name??'全部' }}
+                                        @foreach($val->selectedOrganizations as $so){{ $so->organization->name??'全部' }}
                                         @endforeach
                                         @if($val->selectedOrganizations->count()===0)
                                             全部
@@ -171,7 +170,8 @@ use App\Utils\UI\Button;
                                         @endif
                                     </td>
                                      <td class="text-center">
-                                         <el-button size="mini" icon="el-icon-edit" @click="loadNotice({{ $val->id }})"></el-button>
+                                         <!-- <el-button size="mini" icon="el-icon-edit" @click="loadNotice({{ $val->id }})"></el-button> -->
+                                         <el-button size="mini" icon="el-icon-edit" @click="edit({{ $val }})"></el-button>
                                          <el-button type="danger" size="mini" icon="el-icon-delete" @click="deleteNotice({{ $val->id }})"></el-button>
                                      </td>
                                 </tr>
@@ -184,6 +184,18 @@ use App\Utils\UI\Button;
             </div>
         </div>
     </div>
+    <!-- @open="handleOpen({{ $val }})" -->
+    <el-drawer
+      title="添加"
+      :before-close="handleClose"
+      
+      :visible.sync="releaseDrawer"
+      custom-class="demo-drawer"
+      size="50%"
+      style="overflow: auto;"
+      >
+        <add-notice :user-uuid="userUuid" :school-id="notice.schoolId" ref="childDrawer" />
+    </el-drawer>
 </div>
 <div id="app-init-data-holder"
      data-school="{{ session('school.id') }}"
