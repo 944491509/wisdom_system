@@ -223,11 +223,10 @@ export default {
     };
   },
   created(){
+    console.log("AAA")
       const dom = document.getElementById('app-init-data-holder');
       this.notice.schoolId = dom.dataset.school;
-      // this.userUuid = dom.dataset.useruuid;
       this.types = JSON.parse(dom.dataset.types);
-      // this.inspectTypes = JSON.parse(dom.dataset.inspecttypes);
   },
   methods: {
     addhandleOpen(val) {
@@ -248,7 +247,8 @@ export default {
     },
     handleOpen(val) {
       console.log('CCC',val)
-      this.notice = val
+      this.notice = val;
+      this.notice.type = val.type + '';
     },
     handleClose(done) {
       this.releaseDrawer = true

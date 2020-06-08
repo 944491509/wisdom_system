@@ -188,7 +188,6 @@ use App\Utils\UI\Button;
     <el-drawer
       title="添加"
       :before-close="handleClose"
-      
       :visible.sync="releaseDrawer"
       custom-class="demo-drawer"
       size="50%"
@@ -197,6 +196,11 @@ use App\Utils\UI\Button;
         <add-notice :user-uuid="userUuid" :school-id="notice.schoolId" ref="childDrawer" />
     </el-drawer>
 </div>
+<style>
+    #notice-manager-app .el-drawer__body{
+        overflow-y:auto;
+    }
+</style>
 <div id="app-init-data-holder"
      data-school="{{ session('school.id') }}"
      data-types="{{ json_encode(\App\Models\Notices\Notice::allType()) }}"
