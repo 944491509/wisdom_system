@@ -12,10 +12,12 @@
       <div>选择教师可见范围</div>
       <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
         <template v-if="form.teacherTags == '0'">
-          <el-tag class="Oran-Tag" style>所有部门</el-tag>
+          <!-- <el-tag class="Oran-Tag" style>所有部门</el-tag> -->
+          <span>所有班级</span>
         </template>
         <template v-else-if="form.teacherTags.length">
-          <el-tag class="Oran-Tag">已选择</el-tag>
+          <!-- <el-tag class="Oran-Tag">已选择</el-tag> -->
+          <span>已选择</span>
         </template>
         <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
       </div>
@@ -24,10 +26,10 @@
       <div>选择学生可见范围</div>
       <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
         <template v-if="form.studentTags == '0'">
-          <el-tag class="Oran-Tag">所有班级</el-tag>
+          <span>所有班级</span>
         </template>
         <template v-else-if="form.studentTags.length">
-          <el-tag class="Oran-Tag">已选择</el-tag>
+          <span>已选择</span>
         </template>
         <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
       </div>

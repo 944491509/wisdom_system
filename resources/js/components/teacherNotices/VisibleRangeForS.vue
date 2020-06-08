@@ -166,6 +166,10 @@ export default {
 
 </style>
 <style>
+.Oran-Tag {
+  background-color: rgba(232, 244, 255, 1) !important;
+  color: rgba(78, 165, 254, 1) !important;
+}
 .tags_stu_cascader  .el-icon-check{
   display: none;
 }
