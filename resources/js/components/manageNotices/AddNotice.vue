@@ -271,9 +271,9 @@ export default {
       this.studentTags = 2
     },
     handleOpen(val) {
-      console.log('CCC',val)
       this.notice = val;
       this.notice.type = val.type + '';
+      this.notice.status = this.notice.status === 1 ? true : false
       delete this.notice.selectedOrganizations
       delete this.notice.selected_organizations
       delete this.notice.school_id
@@ -318,9 +318,7 @@ export default {
     confrimT(value) {
       // console.log('confrimT')
       this.form.teacherTags = value;
-      console.log('EEE',value)
       if (this.form.teacherTags === '0') {
-        console.log('1111')
         this.teacherTags = 0
         this.notice.organization = [{name: "",organization_id: 0}]
       } else if (this.form.teacherTags.length > 0) {
@@ -333,7 +331,6 @@ export default {
       this.innerDrawer = false;
     },
     confrimS(value) {
-      console.log('RRR',value)
       this.form.studentTags = value;
       if (this.form.studentTags === '0') {
         this.studentTags = 0
