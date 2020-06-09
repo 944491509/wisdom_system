@@ -25,9 +25,7 @@ class NoticeOrganization extends Model
     }
 
     public function organization(){
-        if($this->organization_id !=0 ){
-            return $this->belongsTo(Organization::class);
-        }
+        return $this->belongsTo(Organization::class);
     }
 
     public function getImageAttribute($value){

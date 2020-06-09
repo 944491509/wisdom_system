@@ -19,9 +19,7 @@ class NoticeGrade extends Model
 
 
     public function grade() {
-        if($this->grade_id != 0) {
-            return $this->belongsTo(Grade::class);
-        }
+        return $this->belongsTo(Grade::class);
     }
 
 }
