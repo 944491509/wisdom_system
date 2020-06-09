@@ -69,11 +69,11 @@ class NoticeDao
             }
 
             // 教师的部门
-            foreach ($selectedOrganizations as $selectedOrganization) {
+            foreach ($selectedOrganizations as $item) {
                 $insert = [
                     'school_id'=>$data['school_id'],
                     'notice_id'=>$result->id,
-                    'organization_id'=>$selectedOrganization['id']
+                    'organization_id'=>$item
                 ];
                 NoticeOrganization::create($insert);
             }
@@ -137,11 +137,11 @@ class NoticeDao
             NoticeOrganization::where('notice_id',$data['id'])->delete();
 
             // 部分人员可见
-            foreach ($selectedOrganizations as $selectedOrganization) {
+            foreach ($selectedOrganizations as $item) {
                 $insert = [
                     'school_id'=>$data['school_id'],
                     'notice_id'=>$data['id'],
-                    'organization_id'=>$selectedOrganization['id']
+                    'organization_id'=>$item
                 ];
                 NoticeOrganization::create($insert);
             }
