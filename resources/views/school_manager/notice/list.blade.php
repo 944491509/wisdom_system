@@ -6,7 +6,7 @@ use App\Utils\UI\Button;
 @extends('layouts.app')
 @section('content')
 <div class="row" id="notice-manager-app">
-    <div class="col-sm-12 col-md-4 col-xl-4">
+    <!-- <div class="col-sm-12 col-md-4 col-xl-4">
         <div class="card">
             <div class="card-head">
                 <h4 class="text-center">通知申请表 <i class="el-icon-loading" v-if="isLoading"></i></h4>
@@ -117,8 +117,8 @@ use App\Utils\UI\Button;
             'reusable_elements.section.organizations_selector',
             ['organizationsSelectedHandler'=>'onOrganizationsSelectedHandler','schoolId'=>$schoolId, 'userRoles'=>$userRoles]
         )
-    </div>
-    <div class="col-sm-12 col-md-8 col-xl-8">
+    </div> -->
+    <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
             <div class="card-head">
                 <header class="full-width">

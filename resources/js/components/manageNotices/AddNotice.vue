@@ -22,26 +22,26 @@
           </div> -->
           <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;">
             <div class="selectBlock">
-              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization_id)">选择教师可见范围</el-button>
+              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization)">选择教师可见范围</el-button>
               <!-- <div>选择教师可见范围</div> -->
               <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
-                <template v-if="form.teacherTags == '0'">
+                <template v-if="teacherTags == 0">
                   <span>所有部门</span>
                 </template>
-                <template v-else-if="form.teacherTags.length">
+                <template v-else-if="teacherTags == 1">
                   <span>已选择</span>
                 </template>
                 <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
               </div>
             </div>
             <div class="selectBlock">
-              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="sDrawerOpen(notice.grade_id)">选择学生可见范围</el-button>
+              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="sDrawerOpen(notice.grade)">选择学生可见范围</el-button>
               <!-- <div>选择学生可见范围</div> -->
               <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
-                <template v-if="form.studentTags == '0'">
+                <template v-if="studentTags == 0">
                   <span>所有班级</span>
                 </template>
-                <template v-else-if="form.studentTags.length">
+                <template v-else-if="studentTags == 1">
                   <span>已选择</span>
                 </template>
                 <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
@@ -127,7 +127,7 @@
       :before-close="handleClose"
       :visible.sync="innerDrawer"
       custom-class="inner-teacher-drawer"
-      size="60%"
+      size="50%"
     >
       <div style="padding:0 20px;">
         <VisibleRangeForT @confrim="confrimT" v-show="showOrganizationsSelectorFlag" :school-id="schoolId" ref="tDrawer" />
@@ -191,6 +191,8 @@ export default {
         studentTags: [],
         files: ""
       },
+      teacherTags: 2,
+      studentTags: 2,
       rules: {
         title: [
           { required: true, message: "请输入标题", trigger: "blur" },
@@ -204,7 +206,7 @@ export default {
       },
       notice:{
         id:'',
-        schoolId:'',
+        // school_id:'',
         title:'',
         content:'',
         image:'',
@@ -216,6 +218,8 @@ export default {
         status:false,
         attachments:[],
         // selectedOrganizations:[],
+        organization: [],
+        grade: [],
         organization_id: [],
         grade_id: []
       },
@@ -224,7 +228,7 @@ export default {
   created(){
     console.log("AAA")
       const dom = document.getElementById('app-init-data-holder');
-      this.notice.schoolId = dom.dataset.school;
+      // this.notice.school_id = dom.dataset.school;
       this.types = JSON.parse(dom.dataset.types);
   },
   methods: {
@@ -232,6 +236,7 @@ export default {
       this.innerDrawer = true; 
       this.showOrganizationsSelectorFlag = true;
       this.$nextTick(() => {
+        console.log('sss')
         this.$refs.tDrawer.thandleOpen(val)
       })
     },
@@ -243,6 +248,8 @@ export default {
       })
     },
     addhandleOpen(val) {
+      delete this.notice.selectedOrganizations
+      delete this.notice.selected_organizations
       this.notice.id = '';
       this.notice.title = '';
       this.notice.type = '1';
@@ -254,19 +261,41 @@ export default {
       this.notice.user_id = '';
       this.notice.status = false;
       this.notice.attachments = [];
-      // this.notice.selectedOrganizations = [];
       this.notice.organization_id = []
       this.notice.grade_id = []
+      this.notice.organization = []
+      this.notice.grade = []
+      this.form.studentTags = []
+      this.form.teacherTags = []
+      this.teacherTags = 2
+      this.studentTags = 2
     },
     handleOpen(val) {
       console.log('CCC',val)
       this.notice = val;
       this.notice.type = val.type + '';
-      // this.form.teacherTags = this.notice.organization
-      // this.form.studentTags = this.notice.grade
+      delete this.notice.selectedOrganizations
+      delete this.notice.selected_organizations
+      delete this.notice.school_id
+      if (this.notice.organization.length > 0) {
+        this.notice.organization[0].organization_id == 0 ? this.teacherTags = 0 : this.teacherTags = 1
+      } else {
+        this.teacherTags = 2
+      }
+      if (this.notice.grade.length > 0) {
+        this.notice.grade[0].grade_id == 0 ? this.studentTags = 0 : this.studentTags = 1
+      } else {
+        this.studentTags = 2
+      }
+      this.form.studentTags = this.notice.grade
+      this.form.teacherTags = this.notice.organization
+      // delete this.notice.grade
+      // delete this.notice.organization
     },
     handleClose(done) {
-      this.releaseDrawer = true
+      // this.releaseDrawer = true
+      this.$refs.tDrawer.initData()
+      this.$refs.sDrawer.initData()
       done();
     },
     pickFileHandler1(payload) {
@@ -290,10 +319,33 @@ export default {
     confrimT(value) {
       // console.log('confrimT')
       this.form.teacherTags = value;
+      console.log('EEE',value)
+      if (this.form.teacherTags === '0') {
+        console.log('1111')
+        this.teacherTags = 0
+        this.notice.organization = [{name: "",organization_id: 0}]
+      } else if (this.form.teacherTags.length > 0) {
+        this.teacherTags = 1
+        this.notice.organization = value
+      } else {
+        this.teacherTags = 2
+        this.notice.organization = []
+      }
       this.innerDrawer = false;
     },
     confrimS(value) {
+      console.log('RRR',value)
       this.form.studentTags = value;
+      if (this.form.studentTags === '0') {
+        this.studentTags = 0
+        this.notice.grade = [{name: "",grade_id: 0}]
+      } else if (this.form.studentTags.length > 0) {
+        this.studentTags = 1
+        this.notice.grade = value
+      } else {
+        this.studentTags = 2
+        this.notice.grade = []
+      }
       this.innerDrawer = false;
     },
     deleteFile(index) {
@@ -318,13 +370,13 @@ export default {
         this.notice.organization_id =
           this.form.teacherTags == 0
             ? [0]
-            : this.form.teacherTags.map(e => e.id);
+            : this.form.teacherTags.map(e => e.id || e.organization_id);
       }
       if (this.form.studentTags == "0" || this.form.studentTags.length) {
         this.notice.grade_id =
           this.form.studentTags == 0
             ? [0]
-            : this.form.studentTags.map(e => e.id);
+            : this.form.studentTags.map(e => e.id || e.grade_id);
       }
       if (!(this.notice.organization_id) && !(this.notice.grade_id)) {
         this.$message({

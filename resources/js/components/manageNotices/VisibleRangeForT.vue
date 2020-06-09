@@ -69,9 +69,20 @@ export default {
 	},
 	
 	methods: {
+    initData() {
+      this.visibleform.allOran = false
+      this.selectTags = []
+    },
     thandleOpen(val) {
       console.log('TT',val)
-      this.selectTags = val
+      if (val[0].organization_id === 0) {
+        console.log('111')
+        this.visibleform.allOran = true
+      } else {
+        console.log('222')
+        this.visibleform.allOran = false
+        this.selectTags = val
+      }
     },
 		async getOrganizansList( parent_id = 0,queryString) {
 			let organizansList  = [];
@@ -117,7 +128,8 @@ export default {
 		},
 		confrim(){
       console.log('QQQ',this.selectTags)
-			this.$emit('confrim',this.visibleform.allOran ? '0' : this.selectTags)
+      this.$emit('confrim',this.visibleform.allOran ? '0' : this.selectTags)
+      this.selectTags = []
 		}
 	}
 };

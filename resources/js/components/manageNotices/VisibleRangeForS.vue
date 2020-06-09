@@ -82,8 +82,20 @@ export default {
 		};
 	},
 	methods: {
+    initData() {
+      this.form.allOran = false
+      this.selectTags = []
+    },
     shandleOpen(val) {
-      this.selectTags = val
+      console.log(val)
+      if (val[0].grade_id === 0) {
+        console.log('111')
+        this.form.allOran = true
+      } else {
+        console.log('222')
+        this.form.allOran = false
+        this.selectTags = val
+      }
     },
      LoadisAdviser(){
        axios.post("/api/Oa/is-adviser").then(res => {
@@ -114,7 +126,7 @@ export default {
 				});
     },
     async getGrade(item,keyword =''){
-        await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}`).then(res => {
+        await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}&school_id=${this.schoolId}`).then(res => {
 					if (Util.isAjaxResOk(res)) {
             console.log(res)
             this.grades = res.data.data;
