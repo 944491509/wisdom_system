@@ -114,7 +114,6 @@ class NoticeDao
                 $data['range'] = Notice::RANGE_ALL;
             }
             $attachments = $data['attachments'];
-            $selectedOrganizations = $data['selectedOrganizations'];
             unset($data['attachments']);
 
             Notice::where('id', $data['id'])->update($data);
