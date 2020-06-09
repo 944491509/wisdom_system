@@ -24,7 +24,7 @@
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization)">选择教师可见范围</el-button>
               <!-- <div>选择教师可见范围</div> -->
-              <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
+              <div class="dayu">
                 <template v-if="teacherTags == 0">
                   <span>所有部门</span>
                 </template>
@@ -37,7 +37,7 @@
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="sDrawerOpen(notice.grade)">选择学生可见范围</el-button>
               <!-- <div>选择学生可见范围</div> -->
-              <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
+              <div class="dayu">
                 <template v-if="studentTags == 0">
                   <span>所有班级</span>
                 </template>
@@ -410,6 +410,26 @@ export default {
           }
           this.isLoading = false;
       })
+    },
+    deleteNoticeMedia: function(id){
+        this.isLoading = true;
+        axios.post(
+            '/school_manager/notice/delete-media',
+            {id: id}
+        ).then(res => {
+            if(Util.isAjaxResOk(res)){
+                const idx = Util.GetItemIndexById(id, this.notice.attachments);
+                this.notice.attachments.splice(idx, 1);
+                this.$message({
+                    type:'success',
+                    message:'删除成功'
+                });
+            }
+            else{
+                this.$message.error(res.data.message);
+            }
+            this.isLoading = false;
+        });
     },
   }
 };
