@@ -33,16 +33,47 @@ class NoticeController extends Controller
             $where = ['school_id' => $schoolId];
         }
 
-        $data                      = $dao->getNoticeBySchoolId($where);
+        $data = $dao->getNoticeBySchoolId($where);
         foreach ($data as $key => $val) {
-            $gradeIds = $val->grades->pluck('grade_id')->toArray();
+            $grades = $val->grades;
+            $grade = [];
+            $organization = [];
+            foreach ($grades as $k => $item) {
+                if($item->grade_id != 0) {
+                    $grade[] = [
+                        'grade_id' => $item->grade->id,
+                        'name' => $item->grade->name,
+                    ];
+                }
+                else {
+                    $grade[] = [
+                        'grade_id' => $item->grade_id,
+                        'name' => '',
+                    ];
+                }
+            }
             unset($val->grades);
-            $organizationIds = $val->selectedOrganizations;
+            $organizations = $val->selectedOrganizations;
+            foreach ($organizations as $k => $item) {
+                if($item->organization_id != 0 ) {
+                    $organization[] = [
+                        'organization_id' => $item->organization->id,
+                        'name' => $item->organization->name,
+                    ];
+                } else {
+                    $organization[] = [
+                        'organization_id' => $item->organization_id,
+                        'name' => '',
+                    ];
+                }
+
+            }
             unset($val->selectedOrganizations);
-            $data[$key]['grade_id'] = $gradeIds;
-            $data[$key]['organization_id'] = $organizationIds->pluck('organization_id')->toArray();
+            $data[$key]['grade'] = $grade;
+            $data[$key]['organization'] = $organization;
 
         }
+        dd($data);
         $this->dataForView['data'] = $data;
         $this->dataForView['schoolId'] = $schoolId;
         $this->dataForView['userRoles'] = null;

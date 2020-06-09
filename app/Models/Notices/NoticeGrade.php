@@ -4,6 +4,7 @@
 namespace App\Models\Notices;
 
 
+use App\Models\Schools\Grade;
 use Illuminate\Database\Eloquent\Model;
 
 class NoticeGrade extends Model
@@ -14,6 +15,13 @@ class NoticeGrade extends Model
 
     public function notice() {
         return $this->belongsTo(Notice::class);
+    }
+
+
+    public function grade() {
+        if($this->grade_id != 0) {
+            return $this->belongsTo(Grade::class);
+        }
     }
 
 }
