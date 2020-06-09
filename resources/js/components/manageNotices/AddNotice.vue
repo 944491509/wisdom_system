@@ -289,8 +289,7 @@ export default {
       }
       this.form.studentTags = this.notice.grade
       this.form.teacherTags = this.notice.organization
-      // delete this.notice.grade
-      // delete this.notice.organization
+      
     },
     handleClose(done) {
       // this.releaseDrawer = true
@@ -353,6 +352,8 @@ export default {
     },
 
     onSubmit: function(){
+      delete this.notice.grade
+      delete this.notice.organization
       if(this.notice.title.trim() === ''){
           this.$message.error('标题必须填写');
           return false;
