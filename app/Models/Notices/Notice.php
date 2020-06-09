@@ -96,8 +96,22 @@ class Notice extends Model
             ->select($this->attachment_field);
     }
 
+
+    /**
+     * 教师组织架构范围
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function selectedOrganizations(){
         return $this->hasMany(NoticeOrganization::class);
+    }
+
+
+    /**
+     * 学生班级范围
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function grades() {
+        return $this->hasMany(NoticeGrade::class);
     }
 
     public function getImageAttribute($value){
