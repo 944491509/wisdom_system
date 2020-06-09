@@ -117,19 +117,16 @@ class NoticeDao
             unset($data['attachments']);
 
             Notice::where('id', $data['id'])->update($data);
+            // 重置附件
+            NoticeMedia::where('notice_id', $data['id'])->delete();
             foreach ($attachments as $key => $val) {
-                $found = NoticeMedia::where('notice_id',$data['id'])
-                    ->where('media_id',$val['id'])
-                    ->first();
-                if(!$found){
-                    $insert = [
-                        'notice_id' => $data['id'],
-                        'media_id'  => $val['id'],
-                        'file_name' => $val['file_name'],
-                        'url'       => $val['url'],
-                    ];
-                    NoticeMedia::create($insert);
-                }
+                $insert = [
+                    'notice_id' => $data['id'],
+                    'media_id'  => $val['id'],
+                    'file_name' => $val['file_name'],
+                    'url'       => $val['url'],
+                ];
+                NoticeMedia::create($insert);
             }
 
             // 重置所有的通知关联的部门机构
