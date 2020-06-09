@@ -135,9 +135,9 @@ class NoticeController extends Controller
         $data              = $request->get('notice');
         $data['school_id'] = $schoolId;
         $data['user_id']   = $request->user()->id;
-        $selectedOrganizations = $data['selectedOrganizations'] ?? [];
+        $selectedOrganizations = $data['organization_id'] ?? [];
         $gradeIds = $data['grade_id'] ?? [];
-        unset($data['selectedOrganizations']);
+        unset($data['organization_id']);
         unset($data['grade_id']);
 
 
