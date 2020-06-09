@@ -5,7 +5,31 @@ use App\Utils\UI\Button;
 
 @extends('layouts.app')
 @section('content')
-    <div id="school-add-student-app">
+    <style>
+        .teacher-edit-form .el-select{
+            width: 100%;
+        }
+        .teacher-edit-form .el-input{
+            width: 100%;
+        }
+        .teacher-edit-form .el-cascader{
+            width: 100%;
+        }
+        .teacher-edit-form .el-col.col--5{
+            width: 20%;
+            float: left;
+        }
+        .teacher-edit-form .el-divider--horizontal{
+            margin-top: 12px;
+        }
+        .teacher-edit-form .form-divider{
+            font-size: 18px;
+            color: #313B4C;
+            margin-top: 12px;
+        }
+    </style>
+    <div id="school-add-teacher-app">
+        <div id="app-init-data-holder" style="display: none" data-school="{{ session('school.id') }}"></div>
         <div class="row">
             <div class="col-sm-12 col-md-12 col-xl-12">
                 <div class="card">
@@ -14,7 +38,49 @@ use App\Utils\UI\Button;
                             创建新的教职工档案
                         </header>
                     </div>
-                    <div class="card-body">
+                    <div class="teacher-edit-form">
+                        <el-form label-position="top" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" style="padding: 20px">
+                            <el-row :gutter="20" v-for="(group, index) in form">
+                                <div class="form-divider" v-if="group.title">
+                                    <span>@{{group.title}}</span>
+                                    <el-divider></el-divider>
+                                </div>
+                                <el-col :span="isNaN(group.span)?null:group.span" v-for="(field, index) in group.fields" :class="group.span ==='x'?'col--5':''">
+                                    <el-form-item :label="field.name" :prop="field.key">
+                                        <el-input v-if="field.type==='text'" v-model="field.value"></el-input>
+                                        <el-select v-else-if="field.type==='select'" v-model="field.value" :filterable="field.filterable">
+                                            <el-option
+                                            v-for="(item, index) in field.options"
+                                            :key="index"
+                                            :label="item.label"
+                                            :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                        <el-date-picker
+                                            v-else-if="field.type==='date'"
+                                            v-model="field.value"
+                                            type="date"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            :picker-options="{disabledDate(time) {
+                                                return time.getTime() > Date.now();
+                                            }}"
+                                            placeholder="选择日期">
+                                        </el-date-picker>
+                                        <number-input v-else-if="field.type==='number'" :decimalLen="0" v-model="field.value"></number-input>
+                                        <area-selector
+                                            v-else-if="field.type==='areas'" 
+                                            v-model="field.value"
+                                            ></area-selector>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm">提交</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <!-- <div class="card-body">
                         <form action="{{ route('school_manager.teachers.save-profile') }}" method="post">
                             @csrf
                             <input type="hidden" name="profile[school_id]" value="{{ session('school.id') }}">
@@ -205,11 +271,8 @@ use App\Utils\UI\Button;
                                 <textarea class="form-control" placeholder="选填: 备注" name="profile[notes]"></textarea>
                             </div>
                             <div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
-                            <?php
-                            Button::Print(['id'=>'btn-create-building','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
-                            ?>&nbsp;
                         </form>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

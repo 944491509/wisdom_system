@@ -83,6 +83,9 @@ if (document.getElementById("school-add-student-app")) {
           this.getGrades();
         }
       }
+    },
+    created(){
+      debugger
     }
   });
 }
