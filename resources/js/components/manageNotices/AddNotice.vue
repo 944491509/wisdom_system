@@ -403,7 +403,7 @@ export default {
           {notice: this.notice}
       ).then(res => {
           if(Util.isAjaxResOk(res)){
-              // window.location.reload();
+              window.location.reload();
           }
           else{
               this.$message.error(res.data.message);
