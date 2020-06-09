@@ -73,7 +73,6 @@ class NoticeController extends Controller
             $data[$key]['organization'] = $organization;
 
         }
-        dd($data);
         $this->dataForView['data'] = $data;
         $this->dataForView['schoolId'] = $schoolId;
         $this->dataForView['userRoles'] = null;
