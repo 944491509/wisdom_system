@@ -82,6 +82,9 @@ export default {
 		};
 	},
 	methods: {
+    shandleOpen(val) {
+      this.selectTags = val
+    },
      LoadisAdviser(){
        axios.post("/api/Oa/is-adviser").then(res => {
 					if (Util.isAjaxResOk(res)) {

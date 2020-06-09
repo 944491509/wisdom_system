@@ -1,30 +1,5 @@
 <template>
   <div class="drawer_content">
-    <div class="selectBlock" style="border-top: 1px solid #EAEDF2">
-      <div>选择教师可见范围</div>
-      <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
-        <template v-if="form.teacherTags == '0'">
-          <span>所有部门</span>
-        </template>
-        <template v-else-if="form.teacherTags.length">
-          <span>已选择</span>
-        </template>
-        <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
-      </div>
-    </div>
-    <div class="selectBlock">
-      <div>选择学生可见范围</div>
-      <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
-        <template v-if="form.studentTags == '0'">
-          <span>所有班级</span>
-        </template>
-        <template v-else-if="form.studentTags.length">
-          <span>已选择</span>
-        </template>
-        <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
-      </div>
-    </div>
-
     <div class="card-body p-3">
       <el-form ref="noticeForm" :model="notice" label-width="80px">
           <!-- <div>
@@ -45,6 +20,34 @@
               </el-form-item>
               <el-divider></el-divider>
           </div> -->
+          <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;">
+            <div class="selectBlock">
+              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization_id)">选择教师可见范围</el-button>
+              <!-- <div>选择教师可见范围</div> -->
+              <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = true;">
+                <template v-if="form.teacherTags == '0'">
+                  <span>所有部门</span>
+                </template>
+                <template v-else-if="form.teacherTags.length">
+                  <span>已选择</span>
+                </template>
+                <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
+              </div>
+            </div>
+            <div class="selectBlock">
+              <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="sDrawerOpen(notice.grade_id)">选择学生可见范围</el-button>
+              <!-- <div>选择学生可见范围</div> -->
+              <div class="dayu" @click="innerDrawer = true; showOrganizationsSelectorFlag = false;">
+                <template v-if="form.studentTags == '0'">
+                  <span>所有班级</span>
+                </template>
+                <template v-else-if="form.studentTags.length">
+                  <span>已选择</span>
+                </template>
+                <i class="el-icon-arrow-right" style="font-size: 20px;"></i>
+              </div>
+            </div>
+          </el-form-item>
           <el-form-item label="类型">
               <el-select v-model="notice.type" placeholder="请选择类型">
                   <el-option v-for="(ty, idx) in types" :label="ty" :value="idx" :key="idx"></el-option>
@@ -127,12 +130,8 @@
       size="60%"
     >
       <div style="padding:0 20px;">
-        <VisibleRangeForT @confrim="confrimT" v-show="showOrganizationsSelectorFlag" :school-id="schoolId"/>
-        <VisibleRangeForS
-          :school-id="schoolId"
-          @confrim="confrimS"
-          v-show="!showOrganizationsSelectorFlag"
-        />
+        <VisibleRangeForT @confrim="confrimT" v-show="showOrganizationsSelectorFlag" :school-id="schoolId" ref="tDrawer" />
+        <VisibleRangeForS :school-id="schoolId" @confrim="confrimS" v-show="!showOrganizationsSelectorFlag" ref="sDrawer" />
       </div>
     </el-drawer>
 
@@ -229,6 +228,20 @@ export default {
       this.types = JSON.parse(dom.dataset.types);
   },
   methods: {
+    tDrawerOpen(val) {
+      this.innerDrawer = true; 
+      this.showOrganizationsSelectorFlag = true;
+      this.$nextTick(() => {
+        this.$refs.tDrawer.thandleOpen(val)
+      })
+    },
+    sDrawerOpen(val) {
+      this.innerDrawer = true; 
+      this.showOrganizationsSelectorFlag = false;
+      this.$nextTick(() => {
+        this.$refs.sDrawer.shandleOpen(val)
+      })
+    },
     addhandleOpen(val) {
       this.notice.id = '';
       this.notice.title = '';
@@ -249,76 +262,12 @@ export default {
       console.log('CCC',val)
       this.notice = val;
       this.notice.type = val.type + '';
+      // this.form.teacherTags = this.notice.organization
+      // this.form.studentTags = this.notice.grade
     },
     handleClose(done) {
       this.releaseDrawer = true
       done();
-    },
-    release() {
-      this.$refs["ruleForm"].validate(valid => {
-        console.log("发布通知");
-        if (valid) {
-          let params = {
-            title: this.form.title,
-            content: this.form.textarea,
-            attachments: (this.form.files||[]).map(e => {
-              return {
-                media_id: e.id,
-                file_name: e.file_name,
-                url: e.url
-              };
-            })
-          };
-          if (this.form.teacherTags == "0" || this.form.teacherTags.length) {
-            params.organization_id =
-              this.form.teacherTags == 0
-                ? [0]
-                : this.form.teacherTags.map(e => e.id);
-          }
-          if (this.form.studentTags == "0" || this.form.studentTags.length) {
-            params.grade_id =
-              this.form.studentTags == 0
-                ? [0]
-                : this.form.studentTags.map(e => e.id);
-          }
-          if (!(params.organization_id) && !(params.grade_id)) {
-            this.$message({
-              message: '请选择可见范围',
-              type: "warning"
-            });
-            return
-          }
-          // if (!(params.organization_id === 0 || params.organization_id)) {
-          //   this.$message({
-          //     message: '请选择教师可见范围',
-          //     type: "warning"
-          //   });
-          //   return
-          // }
-          // if (!(params.grade_id === 0 || params.grade_id)) {
-          //   this.$message({
-          //     message: '请选择学生可见范围',
-          //     type: "warning"
-          //   });
-          //   return
-          // }
-          axios.post("/api/notice/issue-notice", params).then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.$message({
-                message: "发布成功！正在刷新数据...",
-                type: "success"
-              });
-              window.location.reload();
-            } else {
-              this.$message({
-                message: res.data.message,
-                type: "error"
-              });
-              // window.location.reload()
-            }
-          });
-        }
-      });
     },
     pickFileHandler1(payload) {
       console.log("pickFileHandler", payload);
@@ -384,6 +333,20 @@ export default {
         });
         return
       }
+      if (!this.notice.content) {
+        this.$message({
+          message: '请填写文字说明！',
+          type: "warning"
+        });
+        return
+      }
+      if (!this.notice.release_time) {
+        this.$message({
+          message: '请选择发布时间',
+          type: "warning"
+        });
+        return
+      }
       this.isLoading = true;
       axios.post(
           '/school_manager/notice/save-notice',
@@ -410,8 +373,8 @@ export default {
 .selectBlock {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #eaedf2;
-  padding: 15px 20px;
+  // border-bottom: 1px solid #eaedf2;
+  padding: 15px 10px;
 }
 .dayu {
   color: #ccc;

@@ -69,6 +69,10 @@ export default {
 	},
 	
 	methods: {
+    thandleOpen(val) {
+      console.log('TT',val)
+      this.selectTags = val
+    },
 		async getOrganizansList( parent_id = 0,queryString) {
 			let organizansList  = [];
 			await axios
@@ -112,6 +116,7 @@ export default {
 			this.visibleform.tags = this.visibleform.tags.filter(arr => !arr.includes(tag.id))
 		},
 		confrim(){
+      console.log('QQQ',this.selectTags)
 			this.$emit('confrim',this.visibleform.allOran ? '0' : this.selectTags)
 		}
 	}
