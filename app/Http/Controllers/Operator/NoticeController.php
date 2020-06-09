@@ -43,12 +43,10 @@ class NoticeController extends Controller
             $data[$key]['organization_id'] = $organizationIds->pluck('organization_id')->toArray();
 
         }
-        dd($data->toArray());
         $this->dataForView['data'] = $data;
         $this->dataForView['schoolId'] = $schoolId;
         $this->dataForView['userRoles'] = null;
         $this->dataForView['inspect_types'] = (new NoticeInspectDao())->getInspectsBySchoolId($schoolId);
-            dd($this->dataForView);
         return view('school_manager.notice.list', $this->dataForView);
     }
 
