@@ -144,7 +144,8 @@ class NoticeDao
                 ];
                 NoticeOrganization::create($insert);
             }
-
+            // 重置学生范围
+            NoticeGrade::where('notice_id', $data['id'])->delete();
             // 学生查看通知范围
             foreach ($gradeIds as $key => $item) {
                 $grade = [
