@@ -146,10 +146,15 @@ class NoticeController extends Controller
      * @throws ValidationException
      */
     public function gradeList(NoticeRequest $request) {
+        $user = $request->user();
         $year = $request->get('year');
         $keyword = $request->get('keyword');
         $gradeDao = new GradeDao();
-        $schoolId = $request->user()->getSchoolId();
+        if($user->isSuperAdmin()) {
+            $schoolId = $request->get('school_id');
+        } else {
+            $schoolId = $request->user()->getSchoolId();
+        }
         $gradeList = $gradeDao->gradeListByYear($schoolId, $year, $keyword);
         return JsonBuilder::Success($gradeList);
     }

@@ -71,7 +71,7 @@ class NoticeDao
             // 教师的部门
             foreach ($selectedOrganizations as $selectedOrganization) {
                 $insert = [
-                    'school_id'=>$data['schoolId'],
+                    'school_id'=>$data['school_id'],
                     'notice_id'=>$result->id,
                     'organization_id'=>$selectedOrganization['id']
                 ];
