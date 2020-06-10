@@ -33,8 +33,9 @@ class NoticeDao
     public function getNoticeById($id)
     {
         return Notice::where('id', $id)
-            ->with('attachments')
-            ->with('selectedOrganizations')
+//            ->with('attachments')
+//            ->with('selectedOrganizations')
+//            ->with('grades')
             ->first();
     }
 
@@ -223,7 +224,8 @@ class NoticeDao
      * @return mixed
      */
     public function delete($id){
-        return Notice::where('id',$id)->delete();
+        $upd = ['status'=>Notice::STATUS_DELETE];
+        return Notice::where('id',$id)->update($upd);
     }
 
 
@@ -327,6 +329,11 @@ class NoticeDao
     }
 
 
+    /**
+     * 后台通知消息列表
+     * @param $data
+     * @return mixed
+     */
     public function adminNoticeList($data) {
         $map = [['school_id', '=', $data['school_id']]];
         // 类型

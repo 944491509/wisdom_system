@@ -70,6 +70,20 @@ class NoticeController extends Controller
         if(is_null($result)) {
             return JsonBuilder::Error('该通知不存在');
         }
+        $attachments = $result->attachments;
+        unset($result['attachments']);
+        foreach ($attachments as $key => $item) {
+            $result['attachments'] = [
+                'id'=> $item->id,
+                'url' => $item->url
+            ];
+        }
+        $range = $result->range();
+        $result['scope'] = $range;
+
+        unset($result['grades']);
+        unset($result['selectedOrganizations']);
+
         $data = ['notice_id'=>$noticeId, 'user_id'=>$userId];
         // 添加阅读记录
         $dao->addReadLog($data);
@@ -195,11 +209,6 @@ class NoticeController extends Controller
 
         $return['list'] = $data;
         return JsonBuilder::Success($return);
-    }
-
-
-    public function delete() {
-
     }
 
 }
