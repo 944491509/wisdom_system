@@ -2,7 +2,7 @@
   <div class="page">
     <el-pagination
       layout="prev, pager, next, total"
-      :page-size="10"
+      :page-size="15"
       @current-change="handleEvent"
       :current-page.sync="pageNum"
       :total="totalCount"
@@ -18,29 +18,26 @@ export default {
     }
   },
   props: {
-    getPageData: {
+    getpagedata: {
       type: Object,
-    },
-    getListFun: {
-      type: Function,
-    },
+    }
   },
   computed: {
     totalCount () {
-      return this.getPageData.total
+      return this.getpagedata.total
     }
   },
   mounted() {
-    console.log('CCC',this.getPageData)
   },
   methods: {
     handleEvent(e) {
-      this.pageNum = type
+      this.pageNum = e
       if (this.totalCount === 0) {
         this.pageNum = 0;
       }
-      this.getPageData.currentPage = this.pageNum;
-      this.getListFun()
+      this.getpagedata.page = this.pageNum;
+      console.log('get-list-fun()',this.getpagedata)
+      this.$emit('get-list-fun')
     }
   }
 }

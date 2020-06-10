@@ -4,7 +4,7 @@
 import {Util} from "../../common/utils";
 import {Constants} from "../../common/constants";
 import AddNotice from '../../components/manageNotices/AddNotice';
-import page from '../../components/page/page';
+import page from '../../components/manageNotices/page';
 
 if(document.getElementById('notice-manager-app')){
     new Vue({
@@ -138,6 +138,7 @@ if(document.getElementById('notice-manager-app')){
               start_time: this.screen.start_time,
               end_time: this.screen.end_time,
               keyword: this.screen.keyword,
+              page: this.tableData.page
             }
             axios.post('/api/notice/show-notice', params).then(res => {
               if(Util.isAjaxResOk(res)){
@@ -146,19 +147,20 @@ if(document.getElementById('notice-manager-app')){
                 console.log('AAA',list)
                 list = list.map(e => {
                   e.rangeList = []
-                  Object.entries(e.range).map(([key, value], i) => {
+                  Object.entries(e.range).map(([key, arr], i) => {
+                    
                     let str = ''
-                    value.map(e => {
+                    arr.map(e => {
                       str = str + e.name + ';'
                     })
-                    e.rangeList.push(str)
+                    str && e.rangeList.push(str)
                     e.rangeList.reverse()
                   })
                   return e
                 })
                 this.tableData.table = list
-                this.tableData.currentPage = list.currentPage
-                this.tableData.total = list.total
+                this.tableData.page = res.data.data.currentPage
+                this.tableData.total = res.data.data.total
                 this.$message({
                     type:'success',
                     message:'查询通知列表成功！'
@@ -180,8 +182,11 @@ if(document.getElementById('notice-manager-app')){
               if(Util.isAjaxResOk(res)){
                 console.log(res)
                 let o = res.data.data.notice
-                o.organization = o.scope.teacher ? o.scope.teacher : []
-                o.grade = o.scope.student ? o.scope.student : []
+                o.organization = o.scope.teacher || []
+                o.grade = o.scope.student || []
+                o.organization = o.organization.map(e => { return {organization_id:e.id,name:e.name} })
+                o.grade = o.grade.map(e => { return {grade_id:e.id,name:e.name} })
+                console.log('o.grade',o.grade)
                 // this.$message({
                 //     type:'success',
                 //     message:'查询通知列表成功！'

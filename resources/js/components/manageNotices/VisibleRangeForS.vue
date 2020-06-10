@@ -88,7 +88,7 @@ export default {
     },
     shandleOpen(val) {
       console.log(val)
-      if (val[0].grade_id === 0) {
+      if (val[0] && val[0].grade_id === 0) {
         console.log('111')
         this.form.allOran = true
       } else {

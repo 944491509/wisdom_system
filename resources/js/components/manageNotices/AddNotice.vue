@@ -279,12 +279,12 @@ export default {
       delete this.notice.selected_organizations
       delete this.notice.school_id
       if (this.notice.organization.length > 0) {
-        this.notice.organization[0].id == 0 ? this.teacherTags = 0 : this.teacherTags = 1
+        this.notice.organization[0].organization_id == 0 ? this.teacherTags = 0 : this.teacherTags = 1
       } else {
         this.teacherTags = 2
       }
       if (this.notice.grade.length > 0) {
-        this.notice.grade[0].id == 0 ? this.studentTags = 0 : this.studentTags = 1
+        this.notice.grade[0].grade_id == 0 ? this.studentTags = 0 : this.studentTags = 1
       } else {
         this.studentTags = 2
       }
@@ -300,24 +300,15 @@ export default {
     },
     pickFileHandler1(payload) {
       console.log("pickFileHandler", payload);
-      // if (!this.form.files) this.form.files = [];
-      // if (!this.form.files.find(e => e.id == payload.file.id)) {
-      //   this.form.files.push(payload.file);
-      // }
       this.notice.image = payload.file.url;
       this.showFileManagerFlag = false;
     },
     pickFileHandler2(payload) {
       console.log("pickFileHandler", payload);
-      // if (!this.form.files) this.form.files = [];
-      // if (!this.form.files.find(e => e.id == payload.file.id)) {
-      //   this.form.files.push(payload.file);
-      // }
       this.notice.attachments.push(payload.file);
       this.showAttachmentManagerFlag = false;
     },
     confrimT(value) {
-      // console.log('confrimT')
       this.form.teacherTags = value;
       if (this.form.teacherTags === '0') {
         this.teacherTags = 0
@@ -352,6 +343,7 @@ export default {
     onSubmit: function(){
       delete this.notice.grade
       delete this.notice.organization
+      delete this.notice.scope
       if(this.notice.title.trim() === ''){
           this.$message.error('标题必须填写');
           return false;
@@ -377,7 +369,7 @@ export default {
             ? [0]
             : this.form.studentTags.map(e => e.id || e.grade_id);
       }
-      if (!(this.notice.organization_id) && !(this.notice.grade_id)) {
+      if ((this.notice.organization_id.length === 0) && (this.notice.grade_id.length === 0)) {
         this.$message({
           message: '请选择可见范围',
           type: "warning"
@@ -404,7 +396,7 @@ export default {
           {notice: this.notice}
       ).then(res => {
           if(Util.isAjaxResOk(res)){
-              // window.location.reload();
+              window.location.reload();
           }
           else{
               this.$message.error(res.data.message);

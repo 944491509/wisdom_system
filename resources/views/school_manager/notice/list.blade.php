@@ -120,12 +120,6 @@ use App\Utils\UI\Button;
     </div> -->
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
-            <!-- <div class="card-head">
-                <header class="full-width">
-                    <span class="pull-left pt-3">列表</span>
-                    <el-button class="pull-right" type="primary" @click="newNotice">添加</el-button>
-                </header>
-            </div> -->
             <div style="margin-top: 20px;margin-left: 10px;" class="aa">
               <el-form :inline="true" :model="screen" class="">
                 <el-form-item label="类型">
@@ -211,7 +205,7 @@ use App\Utils\UI\Button;
                   </el-table-column>
                 </el-table>
               </div>
-              <page :getPageData.sync="tableData" :getListFun="getTableList"></page>
+              <page :getpagedata.sync="tableData" v-on:get-list-fun="getTableList"></page>
               <!-- <div class="pageBlock" style="margin-top: 20px;">
                 <el-pagination
                   layout="prev, pager, next, total"
