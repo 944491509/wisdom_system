@@ -487,6 +487,10 @@ Route::prefix('notice')->middleware('auth:api')->group(function () {
     // 获取年级下的班级
     Route::get('/grade-list', 'Api\Notice\NoticeController@gradeList')
         ->name('api.notice.grade-list');
+    // 后台管理通知公告列表
+    Route::post('/show-notice', 'Api\Notice\NoticeController@NoticeList')
+        ->name('api.notice.show-notice');
+
 });
 
 // APP banner 接口

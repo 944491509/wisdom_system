@@ -159,4 +159,37 @@ class NoticeController extends Controller
         return JsonBuilder::Success($gradeList);
     }
 
+
+    // 后台管理员查看通知列表
+    public function NoticeList(NoticeRequest $request) {
+        $rules = [
+            'school_id' => 'required | int',
+        ];
+
+        $this->validate($request,$rules);
+        $all = $request->all();
+        $dao = new NoticeDao();
+
+        $list = $dao->adminNoticeList($all);
+        $data = [];
+        foreach ($list as $key => $item) {
+            $data[] = [
+                'id' => $item->id,
+                'type' => $item->getTypeText(),
+                'title' => $item->title,
+                'accept' => $item->accept(),
+                'range' => $item->range(),
+                'created_at' => $item->created_at,
+                'release_time' => $item->release_time,
+                'create_user' => $item->user->name,
+                'status' => $item->getStatusTest(),
+            ];
+        }
+        $return = pageReturn($list);
+
+
+        $return['list'] = $data;
+        return JsonBuilder::Success($return);
+    }
+
 }

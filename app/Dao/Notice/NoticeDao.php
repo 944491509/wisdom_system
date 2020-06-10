@@ -325,4 +325,34 @@ class NoticeDao
         }
         return $messageBag;
     }
+
+
+    public function adminNoticeList($data) {
+        $map = [['school_id', '=', $data['school_id']]];
+        // 类型
+        if(!empty($data['type'])) {
+            $map[] = ['type', '=', $data['type']];
+        }
+        // 范围
+        if(!empty($data['range'])) {
+            $map[] = ['range', '=', $data['range']];
+        }
+        // 开始时间
+        if(!empty($data['start_time']) && empty($data['end_time'])) {
+            $map[] = ['release_time','>=', $data['start_time']];
+        }
+        // 结束时间
+        if(empty($data['start_time']) && !empty($data['end_time'])) {
+            $map[] = ['release_time', '<=', $data['end_time'].' '.'23:59:59'];
+        }
+
+        $result = Notice::where($map)
+            ->orderBy('id', 'desc');
+        if(!empty($data['start_time']) && !empty($data['end_time'])) {
+            $result = $result->whereBetween('release_time', [$data['start_time'], $data['end_time'].' '.'23:59:59']);
+        }
+        return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
 }
