@@ -31,19 +31,24 @@ if (dom) {
               }
             })
           })
+          let params = {
+            school_id: schoolId,
+            campus_id: this.ruleForm.campus_id,
+            teacher: {
+              name: this.ruleForm.name,
+              mobile: this.ruleForm.mobile,
+              status: this.ruleForm.status
+            },
+            profile: {
+              ...this.ruleForm
+            }
+          }
+          delete params.profile['campus_id']
+          delete params.profile['name']
+          delete params.profile['mobile']
+          delete params.profile['status']
           axios
-            .post('/school_manager/teachers/save-profile', {
-              school: schoolId,
-              campus_id: this.ruleForm.campus_id,
-              teacher: {
-                name: this.ruleForm.name,
-                mobile: this.ruleForm.mobile,
-                status: this.ruleForm.status
-              },
-              profile: {
-                ...this.ruleForm
-              }
-            })
+            .post('/school_manager/teachers/save-profile', params)
             .then(res => {
               if (Util.isAjaxResOk(res)) {
                 debugger
@@ -485,7 +490,19 @@ if (dom) {
               name: '聘任状态',
               type: 'select',
               value: '',
-              options: [],
+              options: [{
+                label: '在职',
+                value: 3,
+              }, {
+                label: '离职',
+                value: 4,
+              }, {
+                label: '退休',
+                value: 5,
+              }, {
+                label: '调离',
+                value: 6,
+              }],
               validator: [{
                 required: true,
                 trigger: 'change',
@@ -568,10 +585,6 @@ if (dom) {
         code: 4,
         key: ['title']
       }, {
-        code: 5,
-        isID: true,
-        key: ['status']
-      }, {
         code: 6,
         key: ['mode']
       }].forEach(opt => {
@@ -581,423 +594,423 @@ if (dom) {
               type: opt.code
             })
             .then(res => {
-              if (opt.code === 5) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 84,
-                    "name": "在职",
-                    "type": 5
-                  }, {
-                    "id": 85,
-                    "name": "离职",
-                    "type": 5
-                  }, {
-                    "id": 86,
-                    "name": "退休",
-                    "type": 5
-                  }, {
-                    "id": 87,
-                    "name": "调离",
-                    "type": 5
-                  }]
-                }
-              }
-              if (opt.code === 2) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 69,
-                    "name": "小学",
-                    "type": 2
-                  }, {
-                    "id": 70,
-                    "name": "初中",
-                    "type": 2
-                  }, {
-                    "id": 71,
-                    "name": "高中",
-                    "type": 2
-                  }, {
-                    "id": 72,
-                    "name": "中专",
-                    "type": 2
-                  }, {
-                    "id": 73,
-                    "name": "大专",
-                    "type": 2
-                  }, {
-                    "id": 74,
-                    "name": "硕士研究生",
-                    "type": 2
-                  }, {
-                    "id": 75,
-                    "name": "博士研究生",
-                    "type": 2
-                  }]
-                }
-              }
-              if (opt.code === 4) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 79,
-                    "name": "高级助讲",
-                    "type": 4
-                  }, {
-                    "id": 80,
-                    "name": "助教",
-                    "type": 4
-                  }, {
-                    "id": 81,
-                    "name": "讲师",
-                    "type": 4
-                  }, {
-                    "id": 82,
-                    "name": "副教授",
-                    "type": 4
-                  }, {
-                    "id": 83,
-                    "name": "教授",
-                    "type": 4
-                  }]
-                }
-              }
-              if (opt.code === 6) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 88,
-                    "name": "在编",
-                    "type": 6
-                  }, {
-                    "id": 89,
-                    "name": "外聘兼职",
-                    "type": 6
-                  }, {
-                    "id": 90,
-                    "name": "借调",
-                    "type": 6
-                  }, {
-                    "id": 91,
-                    "name": "实习",
-                    "type": 6
-                  }, {
-                    "id": 92,
-                    "name": "其他",
-                    "type": 6
-                  }]
-                }
-              }
-              if (opt.code === 0) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 1,
-                    "name": "汉族",
-                    "type": 0
-                  }, {
-                    "id": 2,
-                    "name": "蒙古族",
-                    "type": 0
-                  }, {
-                    "id": 3,
-                    "name": "回族",
-                    "type": 0
-                  }, {
-                    "id": 4,
-                    "name": "藏族",
-                    "type": 0
-                  }, {
-                    "id": 5,
-                    "name": "维吾尔族",
-                    "type": 0
-                  }, {
-                    "id": 6,
-                    "name": "苗族",
-                    "type": 0
-                  }, {
-                    "id": 7,
-                    "name": "彝族",
-                    "type": 0
-                  }, {
-                    "id": 8,
-                    "name": "壮族",
-                    "type": 0
-                  }, {
-                    "id": 9,
-                    "name": "布依族",
-                    "type": 0
-                  }, {
-                    "id": 10,
-                    "name": "朝鲜族",
-                    "type": 0
-                  }, {
-                    "id": 11,
-                    "name": "满族",
-                    "type": 0
-                  }, {
-                    "id": 12,
-                    "name": "侗族",
-                    "type": 0
-                  }, {
-                    "id": 13,
-                    "name": "瑶族",
-                    "type": 0
-                  }, {
-                    "id": 14,
-                    "name": "土家族",
-                    "type": 0
-                  }, {
-                    "id": 15,
-                    "name": "哈尼族",
-                    "type": 0
-                  }, {
-                    "id": 16,
-                    "name": "哈萨克族",
-                    "type": 0
-                  }, {
-                    "id": 17,
-                    "name": "傣族",
-                    "type": 0
-                  }, {
-                    "id": 18,
-                    "name": "黎族",
-                    "type": 0
-                  }, {
-                    "id": 19,
-                    "name": "僳僳族",
-                    "type": 0
-                  }, {
-                    "id": 20,
-                    "name": "佤族",
-                    "type": 0
-                  }, {
-                    "id": 21,
-                    "name": "畲族",
-                    "type": 0
-                  }, {
-                    "id": 22,
-                    "name": "高山族",
-                    "type": 0
-                  }, {
-                    "id": 23,
-                    "name": "拉祜族",
-                    "type": 0
-                  }, {
-                    "id": 24,
-                    "name": "水族",
-                    "type": 0
-                  }, {
-                    "id": 25,
-                    "name": "东乡族",
-                    "type": 0
-                  }, {
-                    "id": 26,
-                    "name": "纳西族",
-                    "type": 0
-                  }, {
-                    "id": 27,
-                    "name": "景颇族",
-                    "type": 0
-                  }, {
-                    "id": 28,
-                    "name": "柯尔克孜族",
-                    "type": 0
-                  }, {
-                    "id": 29,
-                    "name": "土族",
-                    "type": 0
-                  }, {
-                    "id": 30,
-                    "name": "达斡尔族",
-                    "type": 0
-                  }, {
-                    "id": 31,
-                    "name": "仫佬族",
-                    "type": 0
-                  }, {
-                    "id": 32,
-                    "name": "羌族",
-                    "type": 0
-                  }, {
-                    "id": 33,
-                    "name": "布朗族",
-                    "type": 0
-                  }, {
-                    "id": 34,
-                    "name": "撒拉族",
-                    "type": 0
-                  }, {
-                    "id": 35,
-                    "name": "毛南族",
-                    "type": 0
-                  }, {
-                    "id": 36,
-                    "name": "仡佬族",
-                    "type": 0
-                  }, {
-                    "id": 37,
-                    "name": "锡伯族",
-                    "type": 0
-                  }, {
-                    "id": 38,
-                    "name": "阿昌族",
-                    "type": 0
-                  }, {
-                    "id": 39,
-                    "name": "普米族",
-                    "type": 0
-                  }, {
-                    "id": 40,
-                    "name": "塔吉克族",
-                    "type": 0
-                  }, {
-                    "id": 41,
-                    "name": "怒族",
-                    "type": 0
-                  }, {
-                    "id": 42,
-                    "name": "乌孜别克族",
-                    "type": 0
-                  }, {
-                    "id": 43,
-                    "name": "俄罗斯族",
-                    "type": 0
-                  }, {
-                    "id": 44,
-                    "name": "鄂温克族",
-                    "type": 0
-                  }, {
-                    "id": 45,
-                    "name": "德昂族",
-                    "type": 0
-                  }, {
-                    "id": 46,
-                    "name": "保安族",
-                    "type": 0
-                  }, {
-                    "id": 47,
-                    "name": "裕固族",
-                    "type": 0
-                  }, {
-                    "id": 48,
-                    "name": "京族",
-                    "type": 0
-                  }, {
-                    "id": 49,
-                    "name": "塔塔尔族",
-                    "type": 0
-                  }, {
-                    "id": 50,
-                    "name": "独龙族",
-                    "type": 0
-                  }, {
-                    "id": 51,
-                    "name": "鄂伦春族",
-                    "type": 0
-                  }, {
-                    "id": 52,
-                    "name": "赫哲族",
-                    "type": 0
-                  }, {
-                    "id": 53,
-                    "name": "门巴族",
-                    "type": 0
-                  }, {
-                    "id": 54,
-                    "name": "珞巴族",
-                    "type": 0
-                  }, {
-                    "id": 55,
-                    "name": "基诺族",
-                    "type": 0
-                  }]
-                }
-              }
-              if (opt.code === 1) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 56,
-                    "name": "中共党员",
-                    "type": 1
-                  }, {
-                    "id": 57,
-                    "name": "中共预备党员",
-                    "type": 1
-                  }, {
-                    "id": 58,
-                    "name": "共青团员",
-                    "type": 1
-                  }, {
-                    "id": 59,
-                    "name": "民革党员",
-                    "type": 1
-                  }, {
-                    "id": 60,
-                    "name": "民盟盟员",
-                    "type": 1
-                  }, {
-                    "id": 61,
-                    "name": "民建会员",
-                    "type": 1
-                  }, {
-                    "id": 62,
-                    "name": "民进会员",
-                    "type": 1
-                  }, {
-                    "id": 63,
-                    "name": "农工党党员",
-                    "type": 1
-                  }, {
-                    "id": 64,
-                    "name": "致公党党员",
-                    "type": 1
-                  }, {
-                    "id": 65,
-                    "name": "九三学社社员",
-                    "type": 1
-                  }, {
-                    "id": 66,
-                    "name": "台盟盟员",
-                    "type": 1
-                  }, {
-                    "id": 67,
-                    "name": "无党派人士",
-                    "type": 1
-                  }, {
-                    "id": 68,
-                    "name": "群众",
-                    "type": 1
-                  }]
-                }
-              }
-              if (opt.code === 3) {
-                res.data = {
-                  "code": 1000,
-                  "message": "OK",
-                  "data": [{
-                    "id": 76,
-                    "name": "学士",
-                    "type": 3
-                  }, {
-                    "id": 77,
-                    "name": "硕士",
-                    "type": 3
-                  }, {
-                    "id": 78,
-                    "name": "博士",
-                    "type": 3
-                  }]
-                }
-              }
+            //   if (opt.code === 5) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 84,
+            //         "name": "在职",
+            //         "type": 5
+            //       }, {
+            //         "id": 85,
+            //         "name": "离职",
+            //         "type": 5
+            //       }, {
+            //         "id": 86,
+            //         "name": "退休",
+            //         "type": 5
+            //       }, {
+            //         "id": 87,
+            //         "name": "调离",
+            //         "type": 5
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 2) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 69,
+            //         "name": "小学",
+            //         "type": 2
+            //       }, {
+            //         "id": 70,
+            //         "name": "初中",
+            //         "type": 2
+            //       }, {
+            //         "id": 71,
+            //         "name": "高中",
+            //         "type": 2
+            //       }, {
+            //         "id": 72,
+            //         "name": "中专",
+            //         "type": 2
+            //       }, {
+            //         "id": 73,
+            //         "name": "大专",
+            //         "type": 2
+            //       }, {
+            //         "id": 74,
+            //         "name": "硕士研究生",
+            //         "type": 2
+            //       }, {
+            //         "id": 75,
+            //         "name": "博士研究生",
+            //         "type": 2
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 4) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 79,
+            //         "name": "高级助讲",
+            //         "type": 4
+            //       }, {
+            //         "id": 80,
+            //         "name": "助教",
+            //         "type": 4
+            //       }, {
+            //         "id": 81,
+            //         "name": "讲师",
+            //         "type": 4
+            //       }, {
+            //         "id": 82,
+            //         "name": "副教授",
+            //         "type": 4
+            //       }, {
+            //         "id": 83,
+            //         "name": "教授",
+            //         "type": 4
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 6) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 88,
+            //         "name": "在编",
+            //         "type": 6
+            //       }, {
+            //         "id": 89,
+            //         "name": "外聘兼职",
+            //         "type": 6
+            //       }, {
+            //         "id": 90,
+            //         "name": "借调",
+            //         "type": 6
+            //       }, {
+            //         "id": 91,
+            //         "name": "实习",
+            //         "type": 6
+            //       }, {
+            //         "id": 92,
+            //         "name": "其他",
+            //         "type": 6
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 0) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 1,
+            //         "name": "汉族",
+            //         "type": 0
+            //       }, {
+            //         "id": 2,
+            //         "name": "蒙古族",
+            //         "type": 0
+            //       }, {
+            //         "id": 3,
+            //         "name": "回族",
+            //         "type": 0
+            //       }, {
+            //         "id": 4,
+            //         "name": "藏族",
+            //         "type": 0
+            //       }, {
+            //         "id": 5,
+            //         "name": "维吾尔族",
+            //         "type": 0
+            //       }, {
+            //         "id": 6,
+            //         "name": "苗族",
+            //         "type": 0
+            //       }, {
+            //         "id": 7,
+            //         "name": "彝族",
+            //         "type": 0
+            //       }, {
+            //         "id": 8,
+            //         "name": "壮族",
+            //         "type": 0
+            //       }, {
+            //         "id": 9,
+            //         "name": "布依族",
+            //         "type": 0
+            //       }, {
+            //         "id": 10,
+            //         "name": "朝鲜族",
+            //         "type": 0
+            //       }, {
+            //         "id": 11,
+            //         "name": "满族",
+            //         "type": 0
+            //       }, {
+            //         "id": 12,
+            //         "name": "侗族",
+            //         "type": 0
+            //       }, {
+            //         "id": 13,
+            //         "name": "瑶族",
+            //         "type": 0
+            //       }, {
+            //         "id": 14,
+            //         "name": "土家族",
+            //         "type": 0
+            //       }, {
+            //         "id": 15,
+            //         "name": "哈尼族",
+            //         "type": 0
+            //       }, {
+            //         "id": 16,
+            //         "name": "哈萨克族",
+            //         "type": 0
+            //       }, {
+            //         "id": 17,
+            //         "name": "傣族",
+            //         "type": 0
+            //       }, {
+            //         "id": 18,
+            //         "name": "黎族",
+            //         "type": 0
+            //       }, {
+            //         "id": 19,
+            //         "name": "僳僳族",
+            //         "type": 0
+            //       }, {
+            //         "id": 20,
+            //         "name": "佤族",
+            //         "type": 0
+            //       }, {
+            //         "id": 21,
+            //         "name": "畲族",
+            //         "type": 0
+            //       }, {
+            //         "id": 22,
+            //         "name": "高山族",
+            //         "type": 0
+            //       }, {
+            //         "id": 23,
+            //         "name": "拉祜族",
+            //         "type": 0
+            //       }, {
+            //         "id": 24,
+            //         "name": "水族",
+            //         "type": 0
+            //       }, {
+            //         "id": 25,
+            //         "name": "东乡族",
+            //         "type": 0
+            //       }, {
+            //         "id": 26,
+            //         "name": "纳西族",
+            //         "type": 0
+            //       }, {
+            //         "id": 27,
+            //         "name": "景颇族",
+            //         "type": 0
+            //       }, {
+            //         "id": 28,
+            //         "name": "柯尔克孜族",
+            //         "type": 0
+            //       }, {
+            //         "id": 29,
+            //         "name": "土族",
+            //         "type": 0
+            //       }, {
+            //         "id": 30,
+            //         "name": "达斡尔族",
+            //         "type": 0
+            //       }, {
+            //         "id": 31,
+            //         "name": "仫佬族",
+            //         "type": 0
+            //       }, {
+            //         "id": 32,
+            //         "name": "羌族",
+            //         "type": 0
+            //       }, {
+            //         "id": 33,
+            //         "name": "布朗族",
+            //         "type": 0
+            //       }, {
+            //         "id": 34,
+            //         "name": "撒拉族",
+            //         "type": 0
+            //       }, {
+            //         "id": 35,
+            //         "name": "毛南族",
+            //         "type": 0
+            //       }, {
+            //         "id": 36,
+            //         "name": "仡佬族",
+            //         "type": 0
+            //       }, {
+            //         "id": 37,
+            //         "name": "锡伯族",
+            //         "type": 0
+            //       }, {
+            //         "id": 38,
+            //         "name": "阿昌族",
+            //         "type": 0
+            //       }, {
+            //         "id": 39,
+            //         "name": "普米族",
+            //         "type": 0
+            //       }, {
+            //         "id": 40,
+            //         "name": "塔吉克族",
+            //         "type": 0
+            //       }, {
+            //         "id": 41,
+            //         "name": "怒族",
+            //         "type": 0
+            //       }, {
+            //         "id": 42,
+            //         "name": "乌孜别克族",
+            //         "type": 0
+            //       }, {
+            //         "id": 43,
+            //         "name": "俄罗斯族",
+            //         "type": 0
+            //       }, {
+            //         "id": 44,
+            //         "name": "鄂温克族",
+            //         "type": 0
+            //       }, {
+            //         "id": 45,
+            //         "name": "德昂族",
+            //         "type": 0
+            //       }, {
+            //         "id": 46,
+            //         "name": "保安族",
+            //         "type": 0
+            //       }, {
+            //         "id": 47,
+            //         "name": "裕固族",
+            //         "type": 0
+            //       }, {
+            //         "id": 48,
+            //         "name": "京族",
+            //         "type": 0
+            //       }, {
+            //         "id": 49,
+            //         "name": "塔塔尔族",
+            //         "type": 0
+            //       }, {
+            //         "id": 50,
+            //         "name": "独龙族",
+            //         "type": 0
+            //       }, {
+            //         "id": 51,
+            //         "name": "鄂伦春族",
+            //         "type": 0
+            //       }, {
+            //         "id": 52,
+            //         "name": "赫哲族",
+            //         "type": 0
+            //       }, {
+            //         "id": 53,
+            //         "name": "门巴族",
+            //         "type": 0
+            //       }, {
+            //         "id": 54,
+            //         "name": "珞巴族",
+            //         "type": 0
+            //       }, {
+            //         "id": 55,
+            //         "name": "基诺族",
+            //         "type": 0
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 1) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 56,
+            //         "name": "中共党员",
+            //         "type": 1
+            //       }, {
+            //         "id": 57,
+            //         "name": "中共预备党员",
+            //         "type": 1
+            //       }, {
+            //         "id": 58,
+            //         "name": "共青团员",
+            //         "type": 1
+            //       }, {
+            //         "id": 59,
+            //         "name": "民革党员",
+            //         "type": 1
+            //       }, {
+            //         "id": 60,
+            //         "name": "民盟盟员",
+            //         "type": 1
+            //       }, {
+            //         "id": 61,
+            //         "name": "民建会员",
+            //         "type": 1
+            //       }, {
+            //         "id": 62,
+            //         "name": "民进会员",
+            //         "type": 1
+            //       }, {
+            //         "id": 63,
+            //         "name": "农工党党员",
+            //         "type": 1
+            //       }, {
+            //         "id": 64,
+            //         "name": "致公党党员",
+            //         "type": 1
+            //       }, {
+            //         "id": 65,
+            //         "name": "九三学社社员",
+            //         "type": 1
+            //       }, {
+            //         "id": 66,
+            //         "name": "台盟盟员",
+            //         "type": 1
+            //       }, {
+            //         "id": 67,
+            //         "name": "无党派人士",
+            //         "type": 1
+            //       }, {
+            //         "id": 68,
+            //         "name": "群众",
+            //         "type": 1
+            //       }]
+            //     }
+            //   }
+            //   if (opt.code === 3) {
+            //     res.data = {
+            //       "code": 1000,
+            //       "message": "OK",
+            //       "data": [{
+            //         "id": 76,
+            //         "name": "学士",
+            //         "type": 3
+            //       }, {
+            //         "id": 77,
+            //         "name": "硕士",
+            //         "type": 3
+            //       }, {
+            //         "id": 78,
+            //         "name": "博士",
+            //         "type": 3
+            //       }]
+            //     }
+            //   }
               if (Util.isAjaxResOk(res)) {
                 let options = res.data.data.map((item, index) => {
                   return {
