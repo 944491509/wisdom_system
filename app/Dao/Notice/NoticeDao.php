@@ -41,13 +41,23 @@ class NoticeDao
     /**
      * 添加
      * @param $data
-     * @return mixed
+     * @param $selectedOrganizations
+     * @param $gradeIds
+     * @return MessageBag
      */
-    public function add($data)
+    public function add($data, $selectedOrganizations, $gradeIds)
     {
         DB::beginTransaction();
         try{
+            if(!empty($selectedOrganizations) && empty($gradeIds)) {
+                $data['range'] = Notice::RANGE_TEACHER;
+            } elseif(empty($selectedOrganizations) && !empty($gradeIds)) {
+                $data['range'] = Notice::RANGE_STUDENT;
+            } else {
+                $data['range'] = Notice::RANGE_ALL;
+            }
             $result = Notice::create($data);
+            // 附件
             foreach ($data['attachments'] as $key => $val) {
                 $insert = [
                     'notice_id' => $result->id,
@@ -58,25 +68,23 @@ class NoticeDao
                 NoticeMedia::create($insert);
             }
 
-            if(isset($data['selectedOrganizations']) && count($data['selectedOrganizations'])>0){
-                // 部分人员可见
-                foreach ($data['selectedOrganizations'] as $selectedOrganization) {
-                    $insert = [
-                        'school_id'=>$data['schoolId'],
-                        'notice_id'=>$result->id,
-                        'organization_id'=>$selectedOrganization['id']
-                    ];
-                    NoticeOrganization::create($insert);
-                }
-            }
-            else{
-                // 全部人员可见
+            // 教师的部门
+            foreach ($selectedOrganizations as $item) {
                 $insert = [
-                    'school_id'=>$data['schoolId'],
+                    'school_id'=>$data['school_id'],
                     'notice_id'=>$result->id,
-                    'organization_id'=>0
+                    'organization_id'=>$item
                 ];
                 NoticeOrganization::create($insert);
+            }
+
+            // 学生查看通知范围
+            foreach ($gradeIds as $key => $item) {
+                $grade = [
+                    'notice_id' => $result->id,
+                    'grade_id' => $item,
+                ];
+                NoticeGrade::create($grade);
             }
 
             DB::commit();
@@ -90,60 +98,61 @@ class NoticeDao
     /**
      * 修改
      * @param $data
+     * @param $selectedOrganizations
+     * @param $gradeIds
      * @return MessageBag
      */
-    public function update($data)
+    public function update($data, $selectedOrganizations, $gradeIds)
     {
         DB::beginTransaction();
         try{
+            if(!empty($selectedOrganizations) && empty($gradeIds)) {
+                $data['range'] = Notice::RANGE_TEACHER;
+            } elseif(empty($selectedOrganizations) && !empty($gradeIds)) {
+                $data['range'] = Notice::RANGE_STUDENT;
+            } else {
+                $data['range'] = Notice::RANGE_ALL;
+            }
             $attachments = $data['attachments'];
-            $selectedOrganizations = $data['selectedOrganizations'];
             unset($data['attachments']);
-            unset($data['selectedOrganizations']);
-            unset($data['selected_organizations']);
+
             Notice::where('id', $data['id'])->update($data);
+            // 重置附件
+            NoticeMedia::where('notice_id', $data['id'])->delete();
             foreach ($attachments as $key => $val) {
-                $found = NoticeMedia::where('notice_id',$data['id'])
-                    ->where('media_id',$val['id'])
-                    ->first();
-                if(!$found){
-                    $insert = [
-                        'notice_id' => $data['id'],
-                        'media_id'  => $val['id'],
-                        'file_name' => $val['file_name'],
-                        'url'       => $val['url'],
-                    ];
-                    NoticeMedia::create($insert);
-                }
+                $insert = [
+                    'notice_id' => $data['id'],
+                    'media_id'  => $val['id'],
+                    'file_name' => $val['file_name'],
+                    'url'       => $val['url'],
+                ];
+                NoticeMedia::create($insert);
             }
 
             // 重置所有的通知关联的部门机构
             NoticeOrganization::where('notice_id',$data['id'])->delete();
 
-            if(count($selectedOrganizations) > 0){
-                // 部分人员可见
-                foreach ($selectedOrganizations as $selectedOrganization) {
-                    $insert = [
-                        'school_id'=>$data['school_id'],
-                        'notice_id'=>$data['id'],
-                        'organization_id'=>$selectedOrganization['id']
-                    ];
-                    NoticeOrganization::create($insert);
-                }
-            }
-            else{
-                // 全部人员可见
+            // 部分人员可见
+            foreach ($selectedOrganizations as $item) {
                 $insert = [
                     'school_id'=>$data['school_id'],
                     'notice_id'=>$data['id'],
-                    'organization_id'=>0
+                    'organization_id'=>$item
                 ];
                 NoticeOrganization::create($insert);
             }
-
-
+            // 重置学生范围
+            NoticeGrade::where('notice_id', $data['id'])->delete();
+            // 学生查看通知范围
+            foreach ($gradeIds as $key => $item) {
+                $grade = [
+                    'notice_id' => $data['id'],
+                    'grade_id' => $item,
+                ];
+                NoticeGrade::create($grade);
+            }
             DB::commit();
-            return new MessageBag(JsonBuilder::CODE_SUCCESS,'创建成功', Notice::where('id', $data['id'])->first());//?update 后如何直接返回对象
+            return new MessageBag(JsonBuilder::CODE_SUCCESS,'编辑成功', Notice::where('id', $data['id'])->first());//?update 后如何直接返回对象
         }catch (\Exception $e) {
             DB::rollBack();
             return new MessageBag(JsonBuilder::CODE_ERROR, $e->getMessage());

@@ -3,10 +3,14 @@
  */
 import {Util} from "../../common/utils";
 import {Constants} from "../../common/constants";
+import AddNotice from '../../components/manageNotices/AddNotice';
 
 if(document.getElementById('notice-manager-app')){
     new Vue({
         el:'#notice-manager-app',
+        components:{
+          AddNotice
+        },
         data(){
             return {
                 notice:{
@@ -33,6 +37,8 @@ if(document.getElementById('notice-manager-app')){
                 // 可见范围选择
                 showOrganizationsSelectorFlag: false,
                 showInspectTypesSelectorFlag: false,
+                releaseDrawer: false,
+                userUuid: null
             }
         },
         computed: {
@@ -59,10 +65,28 @@ if(document.getElementById('notice-manager-app')){
         created(){
             const dom = document.getElementById('app-init-data-holder');
             this.notice.schoolId = dom.dataset.school;
+            this.userUuid = dom.dataset.useruuid;
             this.types = JSON.parse(dom.dataset.types);
             this.inspectTypes = JSON.parse(dom.dataset.inspecttypes);
         },
         methods: {
+          handleClose() {
+            this.releaseDrawer = false
+          },
+          // handleOpen(val) {
+          //   console.log('BBB',val)
+          //   this.$nextTick(() => {
+
+          //     this.$refs.childDrawer.handleOpen(val)
+          //   })
+          // },
+          edit(id) {
+            console.log('BBB',id)
+            this.releaseDrawer = true
+            this.$nextTick(() => {
+              this.$refs.childDrawer.handleOpen(id)
+            })
+          },
             loadNotice: function(id){
                 this.isLoading = true;
                 axios.post(
@@ -100,7 +124,7 @@ if(document.getElementById('notice-manager-app')){
                     {notice: this.notice}
                 ).then(res => {
                     if(Util.isAjaxResOk(res)){
-                        window.location.reload();
+                        // window.location.reload();
                     }
                     else{
                         this.$message.error(res.data.message);
@@ -117,18 +141,10 @@ if(document.getElementById('notice-manager-app')){
                 this.notice.attachments.push(payload.file);
             },
             newNotice: function(){
-                this.notice.id = '';
-                this.notice.title = '';
-                this.notice.type = '1';
-                this.notice.content = '';
-                this.notice.image = '';
-                this.notice.release_time = '';
-                this.notice.note = '';
-                this.notice.inspect_id = '';
-                this.notice.user_id = '';
-                this.notice.status = false;
-                this.notice.attachments = [];
-                this.notice.selectedOrganizations = [];
+              this.releaseDrawer = true
+              this.$nextTick(() => {
+                this.$refs.childDrawer.addhandleOpen()
+              })
             },
             deleteNotice: function(id){
                 this.$confirm('此操作将永久删除该通知, 是否继续?', '提示', {
