@@ -72,12 +72,14 @@ class NoticeController extends Controller
         }
         $attachments = $result->attachments;
         unset($result['attachments']);
+        $attach = [];
         foreach ($attachments as $key => $item) {
-            $result['attachments'] = [
+            $attach[] = [
                 'id'=> $item->id,
                 'url' => $item->url
             ];
         }
+        $result['attachments'] = $attach;
         $range = $result->range();
         $result['scope'] = $range;
 
