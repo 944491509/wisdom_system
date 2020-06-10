@@ -180,6 +180,8 @@ if(document.getElementById('notice-manager-app')){
               if(Util.isAjaxResOk(res)){
                 console.log(res)
                 let o = res.data.data.notice
+                o.organization = o.scope.teacher ? o.scope.teacher : []
+                o.grade = o.scope.student ? o.scope.student : []
                 // this.$message({
                 //     type:'success',
                 //     message:'查询通知列表成功！'
@@ -187,7 +189,7 @@ if(document.getElementById('notice-manager-app')){
                 // this.notice = res.data.notice
                 this.releaseDrawer = true
                 this.$nextTick(() => {
-                  this.$refs.childDrawer.handleOpen(res.data.data.notice)
+                  this.$refs.childDrawer.handleOpen(o)
                 })
               }
               else{

@@ -279,12 +279,12 @@ export default {
       delete this.notice.selected_organizations
       delete this.notice.school_id
       if (this.notice.organization.length > 0) {
-        this.notice.organization[0].organization_id == 0 ? this.teacherTags = 0 : this.teacherTags = 1
+        this.notice.organization[0].id == 0 ? this.teacherTags = 0 : this.teacherTags = 1
       } else {
         this.teacherTags = 2
       }
       if (this.notice.grade.length > 0) {
-        this.notice.grade[0].grade_id == 0 ? this.studentTags = 0 : this.studentTags = 1
+        this.notice.grade[0].id == 0 ? this.studentTags = 0 : this.studentTags = 1
       } else {
         this.studentTags = 2
       }
@@ -404,7 +404,7 @@ export default {
           {notice: this.notice}
       ).then(res => {
           if(Util.isAjaxResOk(res)){
-              window.location.reload();
+              // window.location.reload();
           }
           else{
               this.$message.error(res.data.message);
