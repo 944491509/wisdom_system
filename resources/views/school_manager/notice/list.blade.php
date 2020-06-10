@@ -120,17 +120,101 @@ use App\Utils\UI\Button;
     </div> -->
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
-            <div class="card-head">
-                <header class="full-width">
-                    <span class="pull-left pt-3">列表</span>
-                    <el-button class="pull-right" type="primary" @click="newNotice">添加</el-button>
-                </header>
+            <div style="margin-top: 20px;margin-left: 10px;" class="aa">
+              <el-form :inline="true" :model="screen" class="">
+                <el-form-item label="类型">
+                  <el-select v-model="screen.type" placeholder="活动区域" clearable>
+                    <el-option label="通知" value="1"></el-option>
+                    <el-option label="公告" value="2"></el-option>
+                    <el-option label="检查" value="3"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="接收对象">
+                  <el-select v-model="screen.range" placeholder="活动区域" clearable>
+                    <el-option label="老师" value="1"></el-option>
+                    <el-option label="学生" value="2"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="发布时间">
+                <el-date-picker
+                  v-model="screen.start_time"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="保护起始时间">
+                </el-date-picker>
+                至
+                <el-date-picker
+                  v-model="screen.end_time"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="保护终止时间">
+                </el-date-picker>
+                </el-form-item>
+                <el-form-item label="">
+                  <el-input v-model="screen.keyword" placeholder="标题"></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="getTableList">查询</el-button>
+                </el-form-item>
+                <el-form-item style="float: right;">
+                  <el-button class="pull-right" type="primary" @click="newNotice">添加</el-button>
+                </el-form-item>
+              </el-form>
             </div>
             <div class="card-body">
-                <div class="row">
-
-                </div>
-                <div class="row">
+              <div class="row">
+                <el-table
+                  :data="tableData.table"
+                  stripe
+                  height="650"
+                  style="width: 100%">
+                  <template v-for="(item, index) in tableData.tableHolder">
+                    <el-table-column
+                      v-if="item.type === 1"
+                      :prop="item.prop"
+                      :label="item.label"
+                      :width="item.width">
+                      <template slot-scope="scope">
+                        <div v-for="(hold, i) in scope.row[item.prop]">@{{ hold }}</div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      v-else-if="item.type === 2"
+                      :prop="item.prop"
+                      :label="item.label"
+                      :width="item.width">
+                      <template slot-scope="scope">
+                        <div v-for="(hold, i) in scope.row[item.prop]" :class="i === 1 ? 'borTop' : '' ">@{{ hold }}</div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      v-else
+                      :prop="item.prop"
+                      :label="item.label"
+                      :width="item.width">
+                    </el-table-column>
+                  </template>
+                  <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="100">
+                    <template slot-scope="scope">
+                      <el-button type="text" size="small" icon="el-icon-edit" @click="edit(scope.row.id)" style="font-size: 20px;"></el-button>
+                      <el-button type="text" size="small" icon="el-icon-delete" @click="deleteNotice(scope.row.id)" style="font-size: 20px;"></el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+              <page :getpagedata.sync="tableData" v-on:get-list-fun="getTableList"></page>
+              <!-- <div class="pageBlock" style="margin-top: 20px;">
+                <el-pagination
+                  layout="prev, pager, next, total"
+                  :page-size="10"
+                  @current-change="handleUrl"
+                  :total="1000">
+                </el-pagination>
+              </div> -->
+                <!-- <div class="row">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                             <tr>
@@ -170,7 +254,6 @@ use App\Utils\UI\Button;
                                         @endif
                                     </td>
                                      <td class="text-center">
-                                         <!-- <el-button size="mini" icon="el-icon-edit" @click="loadNotice({{ $val->id }})"></el-button> -->
                                          <el-button size="mini" icon="el-icon-edit" @click="edit({{ $val }})"></el-button>
                                          <el-button type="danger" size="mini" icon="el-icon-delete" @click="deleteNotice({{ $val->id }})"></el-button>
                                      </td>
@@ -180,7 +263,7 @@ use App\Utils\UI\Button;
                         </table>
                     </div>
                     {{ $data->links() }}
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -199,6 +282,12 @@ use App\Utils\UI\Button;
 <style>
     #notice-manager-app .el-drawer__body{
         overflow-y:auto;
+    }
+    .aa .el-form-item {
+      margin-bottom: 0;
+    }
+    .borTop {
+      border-top: 1px dashed #000; 
     }
 </style>
 <div id="app-init-data-holder"
