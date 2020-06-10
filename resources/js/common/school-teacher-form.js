@@ -32,7 +32,7 @@ if (dom) {
             })
           })
         let params = {
-            school: schoolId,
+            school_id: schoolId,
             campus_id: this.ruleForm.campus_id,
             teacher: {
               name: this.ruleForm.name,
