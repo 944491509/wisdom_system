@@ -25,6 +25,7 @@ use App\User;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,12 @@ use Ramsey\Uuid\Uuid;
 
 class ProfilesController extends Controller
 {
+    /**
+     * 添加教师
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws Exception
+     */
     public function save(MyStandardRequest $request)
     {
 
@@ -96,16 +103,23 @@ class ProfilesController extends Controller
         }
     }
 
-    public function add_new(MyStandardRequest $request){
+    /**
+     * 添加教师页面
+     * @param MyStandardRequest $request
+     * @return Application|Factory|View
+     */
+    public function add_new(MyStandardRequest $request)
+    {
         $this->dataForView['pageTitle'] = '教师档案管理';
-        $schoolId = session('school.id');
+        $schoolId                       = session('school.id');
         $this->dataForView['school_id'] = $schoolId;
         return view('teacher.profile.add_new', $this->dataForView);
     }
 
-    public function edit(MyStandardRequest $request){
+    public function edit(MyStandardRequest $request)
+    {
         $schoolId = session('school.id');
-        if($request->isMethod('post')) {
+        if ($request->isMethod('post')) {
             $data = $request->all();
             $userId = $data['uuid'];
             unset($data['uuid']);
@@ -256,7 +270,7 @@ class ProfilesController extends Controller
             return JsonBuilder::Success('教师档案修改成功');
         } catch (Exception $exception) {
             DB::rollBack();
-            return JsonBuilder::Error('修改识别');
+            return JsonBuilder::Error('修改识别:' . $exception->getMessage());
         }
 
     }

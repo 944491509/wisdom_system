@@ -410,8 +410,7 @@ class GradeUserDao
      */
     public function updateDataByUserId($userId, $data)
     {
-        return GradeUser::where('user_id', $userId)
-            ->update($data);
+        return GradeUser::where('user_id', $userId)->update($data);
     }
 
     /**

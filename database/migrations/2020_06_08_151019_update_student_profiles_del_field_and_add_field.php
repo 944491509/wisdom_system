@@ -13,6 +13,7 @@ class UpdateStudentProfilesDelFieldAndAddField extends Migration
      */
     public function up()
     {
+
         Schema::table('student_profiles', function (Blueprint $table) {
             $table->dropColumn('postcode');
             $table->dropColumn('political_code');
@@ -29,6 +30,8 @@ class UpdateStudentProfilesDelFieldAndAddField extends Migration
             $table->dropColumn('city');
             $table->dropColumn('area');
 
+            $table->string('year')->default(0)->change();
+            $table->string('serial_number')->default(0)->change();
             $table->string('student_code', 100)->nullable()->comment('学籍号');
             $table->integer('health_status')->default(0)->comment('健康状态');
             $table->string('graduate_school', 100)->nullable()->comment('毕业学校');
@@ -83,6 +86,8 @@ class UpdateStudentProfilesDelFieldAndAddField extends Migration
             $table->string('state')->nullable();
             $table->string('city')->nullable();
             $table->string('area')->nullable();
+            $table->string('year')->change();
+            $table->string('serial_number')->change();
 
             $table->dropColumn('graduate_type');
             $table->dropColumn('student_code');

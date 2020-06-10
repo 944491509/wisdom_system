@@ -6,6 +6,7 @@ use App\Models\RecruitStudent\RegistrationInformatics;
 use App\User;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\LabelAlignment;
@@ -26,46 +27,16 @@ class StudentProfile extends Model
     const DRIVER_QI_NIU   = 3;
 
     protected $fillable = [
-        'uuid',
-        'user_id',
-        'device',
-        'year', // 招生年度
-        'serial_number', // 录取编号
-        'gender',
-        'country',
-        'state',
-        'city',
-        'postcode',
-        'area', // 地区名称
-        'address_line',
-        'address_in_school',
-        'student_number', // 考生号
-        'license_number', // 准考证号
-        'id_number', // 身份证号
-        'birthday',
-        'avatar',
-        'qq',
-        'wx',
-        'examination_score', // 中高考分数
-        'source_place',     // 生源地
-        'political_code', // 政治面貌代码
-        'political_name', // 政治面貌名称
-        'nation_code', // 民族代码
-        'nation_name', // 民族名称
-        'parent_name', // 家长姓名
-        'parent_mobile', // 家长手机号
-        'source',// 统招还是自招
-        'qr_code_url', // 统招还是自招
-        'create_file', //
-        'special_support', //
-        'very_poor', //
-        'disability', //
-        'resident_type', //
-        'resident_suburb', //
-        'resident_village', //
-        'comments', //
-        'origin', // 来源(0:未知,1:后台导入,2:后台添加,3:app招生添加)
+        'uuid', 'user_id', 'device', 'year', 'serial_number', 'gender', 'country', 'address_line', 'address_in_school',
+        'student_number', 'license_number', 'id_number', 'birthday', 'avatar', 'qq', 'wx', 'examination_score',
+        'political_name', 'nation_name', 'parent_name', 'parent_mobile', 'source', 'create_file', 'resident_type',
+        'resident_suburb', 'resident_village', 'comments', 'origin', 'student_code', 'health_status', 'graduate_school',
+        'graduate_type', 'cooperation_type', 'source_place_state', 'source_place_city', 'recruit_type', 'volunteer',
+        'examination_site', 'resident_state', 'resident_city', 'resident_area', 'family_poverty_status', 'zip_code',
+        'residence_type', 'current_residence', 'relationship', 'enrollment_at', 'learning_form', 'educational_system',
+        'entrance_type', 'student_type', 'segmented_type'
     ];
+
 
     public $dates = ['birthday'];
 
@@ -95,16 +66,16 @@ class StudentProfile extends Model
                 $qrCode->setRoundBlockSize(true);
                 $qrCode->setValidateResult(false);
                 $qrCode->setWriterOptions(['exclude_xml_declaration' => true]);
-                $folder = 'users/'.$this->user_id.'/profile/qrcode';
-                if(!is_dir(storage_path('app/public/'.$folder))){
-                    mkdir(storage_path('app/public/'.$folder),0777, true);
+                $folder = 'users/' . $this->user_id . '/profile/qrcode';
+                if (!is_dir(storage_path('app/public/' . $folder))) {
+                    mkdir(storage_path('app/public/' . $folder), 0777, true);
                 }
-                $path = $folder.'/p_qr.png';
-                $qrCode->writeFile(storage_path('app/public/'.$path));
-                $this->qr_code_url = '/storage/'.$path;
+                $path = $folder . '/p_qr.png';
+                $qrCode->writeFile(storage_path('app/public/' . $path));
+                $this->qr_code_url = '/storage/' . $path;
                 $this->save();
-            }catch (\Exception $exception){
-                Log::critical('用户唯一二维码生成错误',['msg'=>$exception->getMessage(),'id'=>$this->user_id]);
+            } catch (Exception $exception) {
+                Log::critical('用户唯一二维码生成错误', ['msg' => $exception->getMessage(), 'id' => $this->user_id]);
             }
         }
         return $this->qr_code_url;
@@ -112,15 +83,21 @@ class StudentProfile extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class,'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     public function registrationInformatics()
     {
-        return $this->hasMany(RegistrationInformatics::class,'user_id', 'user_id');
+        return $this->hasMany(RegistrationInformatics::class, 'user_id', 'user_id');
     }
 
-    public function getAvatarAttribute($value){
+    public function additionInformation()
+    {
+        return $this->hasOne(StudentAdditionInformation::class, 'user_id', 'user_id');
+    }
+
+    public function getAvatarAttribute($value)
+    {
         if ($this->gender == self::GENDER_MAN) {
             return asset(empty($value) ? User::DEFAULT_USER_AVATAR : $value);
         } else {
