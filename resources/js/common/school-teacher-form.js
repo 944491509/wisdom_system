@@ -31,7 +31,7 @@ if (dom) {
               }
             })
           })
-        let params = {
+          let params = {
             school_id: schoolId,
             campus_id: this.ruleForm.campus_id,
             teacher: {
@@ -490,7 +490,19 @@ if (dom) {
               name: '聘任状态',
               type: 'select',
               value: '',
-              options: [],
+              options: [{
+                label: '在职',
+                value: 3,
+              }, {
+                label: '离职',
+                value: 4,
+              }, {
+                label: '退休',
+                value: 5,
+              }, {
+                label: '调离',
+                value: 6,
+              }],
               validator: [{
                 required: true,
                 trigger: 'change',
@@ -572,10 +584,6 @@ if (dom) {
       }, {
         code: 4,
         key: ['title']
-      }, {
-        code: 5,
-        isID: true,
-        key: ['status']
       }, {
         code: 6,
         key: ['mode']
