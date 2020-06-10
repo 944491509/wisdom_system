@@ -160,7 +160,12 @@ class NoticeController extends Controller
     }
 
 
-    // 后台管理员查看通知列表
+    /**
+     * 后台管理员查看通知列表
+     * @param NoticeRequest $request
+     * @return string
+     * @throws ValidationException
+     */
     public function NoticeList(NoticeRequest $request) {
         $rules = [
             'school_id' => 'required | int',
@@ -190,6 +195,11 @@ class NoticeController extends Controller
 
         $return['list'] = $data;
         return JsonBuilder::Success($return);
+    }
+
+
+    public function delete() {
+
     }
 
 }

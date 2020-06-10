@@ -337,6 +337,9 @@ class NoticeDao
         if(!empty($data['range'])) {
             $map[] = ['range', '=', $data['range']];
         }
+        if(!empty($data['keyword'])) {
+            $map[] = ['title', 'like', '%'.$data['keyword'].'%'];
+        }
         // 开始时间
         if(!empty($data['start_time']) && empty($data['end_time'])) {
             $map[] = ['release_time','>=', $data['start_time']];
