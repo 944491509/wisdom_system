@@ -502,10 +502,10 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
         Route::post('save-profile', 'Teachers\ProfilesController@save')
             ->name('school_manager.teachers.save-profile');
 
-        Route::post('get-teacher-profile', 'Operator\Teachers\ProfilesController@teacherProfileInfo')
-            ->name('api.teachers.get-teacher-profile');
-        Route::post('update-teacher-profile', 'Operator\Teachers\ProfilesController@editTeacherInfo')
-            ->name('api.teachers.get-teacher-profile');
+        Route::post('get-teacher-profile', 'Teachers\ProfilesController@teacherProfileInfo')
+            ->name('school_manager.teachers.get-teacher-profile');
+        Route::post('update-teacher-profile', 'Teachers\ProfilesController@editTeacherInfo')
+            ->name('school_manager.teachers.update-teacher-profile');
 
         Route::get('manage-performance', 'Teachers\ProfilesController@manage_performance')
             ->name('school_manager.teachers.manage-performance');
