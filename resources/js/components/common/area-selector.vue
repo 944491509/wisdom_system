@@ -7,7 +7,7 @@
     }"
     separator="/"
     :options="options"
-    v-model="value"
+    v-model="areas"
     filterable
   ></el-cascader>
 </template>
@@ -17,15 +17,23 @@ import cities from "../../includes/backend/auto-flow/common/cityies";
 export default {
   data() {
     return {
-      value: [],
+      areas: [],
       options: cities
     };
   },
+  props: {
+    value: {
+      default: ""
+    }
+  },
   watch: {
-    value: function(val) {
+    areas: function(val) {
       setTimeout(() => {
         this.$emit("input", this.$refs.areaSelector.inputValue);
       }, 50);
+    },
+    value: function(str) {
+      this.$refs.areaSelector.inputValue = str;
     }
   }
 };

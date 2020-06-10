@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operator;
 
 use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\MajorDao;
+use App\Dao\Students\StudentAdditionInformationDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
@@ -16,6 +17,7 @@ use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -28,19 +30,19 @@ class StudentsController extends Controller
         $this->middleware('auth');
     }
 
-    public function add(MyStandardRequest $request){
+    /**
+     * 添加学生页面
+     * @param MyStandardRequest $request
+     * @return Application|Factory|View
+     */
+    public function add(MyStandardRequest $request)
+    {
         $this->dataForView['pageTitle'] = '学生档案管理';
-        $schoolId                       = session('school.id');
-        $this->dataForView['school_id'] = $schoolId;
-
-        // 列出学校所有专业
-        $this->dataForView['majors'] = (new MajorDao())->getMajorsBySchool($request->getSchoolId());
-        $this->dataForView['grades'] = (new GradeDao())->getAllBySchool($request->getSchoolId());
-
+        $this->dataForView['school_id'] = session('school.id');
         return view('teacher.profile.add_new_student', $this->dataForView);
     }
 
-    public function update(StudentRequest $request)
+    public function create(StudentRequest $request)
     {
 
         $userData    = $request->get('user');
@@ -84,6 +86,7 @@ class StudentsController extends Controller
 
             if ($status == User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
                 $gradeUserDao->create([
+                    'school_id'       => 1,
                     'user_id'         => $user->id,
                     'name'            => $user->name,
                     'user_type'       => $user->type,
@@ -94,7 +97,7 @@ class StudentsController extends Controller
                     'user_id'         => $user->id,
                     'name'            => $user->name,
                     'user_type'       => $user->type,
-                    'school_id'       => $request->getSchoolId(),
+                    'school_id'       => 1,
                     'campus_id'       => $major->campus_id,
                     'institute_id'    => $major->institute_id,
                     'department_id'   => $major->department_id,
@@ -110,11 +113,17 @@ class StudentsController extends Controller
             $profileData['uuid']     = Uuid::uuid4()->toString();
             $profileData['birthday'] = GradeAndYearUtil::IdNumberToBirthday($profileData['id_number'])->getData();
             $studentProfileDao->create($profileData);
+
+            $additionDao = new StudentAdditionInformationDao;
+
+            $addition['user_id'] = $user->id;
+            $additionDao->create($addition);
+
             DB::commit();
             return JsonBuilder::Success('档案创建成功, 登陆密码为学生身份证的后六位: ' . substr($profileData['id_number'], -6));
         } catch (Exception $exception) {
             DB::rollBack();
-            return JsonBuilder::Error('添加失败');
+            return JsonBuilder::Error('添加失败, 异常信息:' . $exception->getMessage());
         }
     }
 

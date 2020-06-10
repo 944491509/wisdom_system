@@ -666,13 +666,17 @@ Route::post('/index/sms', 'Api\Home\IndexController@sendSms')
 // 地区列表
 Route::prefix('location')->group(function () {
     // 省份列表
-    Route::get('/get-provinces','Api\Location\AreaController@getProvinces')
+    Route::get('/get-provinces', 'Api\Location\AreaController@getProvinces')
         ->name('api.location.get-provinces');
     // 城市列表
-    Route::post('/get-cities','Api\Location\AreaController@getCities')
+    Route::post('/get-cities', 'Api\Location\AreaController@getCities')
         ->name('api.location.get-cities');
     // 区县列表
-    Route::post('/get-districts','Api\Location\AreaController@getDistricts')
+    Route::post('/get-districts', 'Api\Location\AreaController@getDistricts')
+        ->name('api.location.get-districts');
+
+    // 五级联动
+    Route::post('/get-area', 'Api\Location\NewAreaController@getArea')
         ->name('api.location.get-districts');
 });
 
@@ -1228,7 +1232,8 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     // 统一认证 - 批量修改学生状态
     Route::post('update-status', 'Operator\SchoolsController@updateStatus')->name('api.school.update-status');
 
-//    Route::post('student/update', 'Operator\StudentsController@update')->name('school_manager.student.update');
+    Route::post('student/info', 'Student\StudentsController@info')->name('api.student.info');      // 学生信息
+    Route::post('student/update', 'Student\StudentsController@update')->name('api.student.update');      // 学生信息修改
 });
 
 // 教材
