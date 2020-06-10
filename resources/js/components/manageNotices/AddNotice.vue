@@ -65,7 +65,7 @@
           </el-form-item>
 
           <el-form-item label="标题">
-              <el-input placeholder="必填: 标题" v-model="notice.title"></el-input>
+              <el-input placeholder="必填: 标题" v-model="notice.title" maxlength="30" show-word-limit></el-input>
           </el-form-item>
 
           <el-form-item label="发布">
@@ -77,7 +77,7 @@
           </el-form-item>
 
           <el-form-item label="文字说明">
-              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content"></el-input>
+              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content" maxlength="500" show-word-limit></el-input>
           </el-form-item>
           <el-form-item label="发布日期">
               <el-date-picker
@@ -271,6 +271,7 @@ export default {
       this.studentTags = 2
     },
     handleOpen(val) {
+      console.log('BBB',val)
       this.notice = val;
       this.notice.type = val.type + '';
       this.notice.status = this.notice.status === 1 ? true : false
