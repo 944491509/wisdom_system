@@ -17,7 +17,7 @@
                         <br>
                         <label for="">事件标签</label><br>
                         <el-select
-                                v-model="form.type"
+                                v-model="form.tag"
                                 style="width: 100%;"
                                 multiple
                                 filterable
@@ -28,7 +28,7 @@
                                     v-for="(item, id) in tags"
                                     :key="id"
                                     :label="item"
-                                    :value="id">
+                                    :value="item">
                             </el-option>
                         </el-select>
                         <br>
