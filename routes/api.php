@@ -668,10 +668,9 @@ Route::prefix('location')->group(function () {
     // 区县列表
     Route::post('/get-districts', 'Api\Location\AreaController@getDistricts')
         ->name('api.location.get-districts');
-
     // 五级联动
     Route::post('/get-area', 'Api\Location\NewAreaController@getArea')
-        ->name('api.location.get-districts');
+        ->name('api.location.get-area');
 });
 
 // 会议管理
@@ -1226,8 +1225,6 @@ Route::prefix('pc')->middleware('auth:api')->group(function(){
     // 统一认证 - 批量修改学生状态
     Route::post('update-status', 'Operator\SchoolsController@updateStatus')->name('api.school.update-status');
 
-    Route::post('student/info', 'Student\StudentsController@info')->name('api.student.info');      // 学生信息
-    Route::post('student/update', 'Student\StudentsController@update')->name('api.student.update');      // 学生信息修改
 });
 
 // 教材
