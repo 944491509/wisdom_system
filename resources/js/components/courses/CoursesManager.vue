@@ -310,7 +310,7 @@ export default {
 
     // 获取学校的每天的教学时间段安排
     // const noTime = true;
-    getTimeSlots(this.schoolId).then(res => {
+    getTimeSlots(this.schoolId,'','',-1).then(res => {
       if (Util.isAjaxResOk(res)) {
         this.timeSlots = res.data.data.time_frame;
         this.totalWeeks = res.data.data.total_weeks;
