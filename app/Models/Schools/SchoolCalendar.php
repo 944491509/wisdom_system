@@ -12,6 +12,7 @@ class SchoolCalendar extends Model
 
     protected $casts = [
         'tag' => 'array',
+        'type' => 'array',
         'event_time' => 'datetime:Y-m-d',
     ];
 
