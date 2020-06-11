@@ -17,18 +17,18 @@
                         <br>
                         <label for="">事件标签</label><br>
                         <el-select
-                                v-model="form.tag"
+                                v-model="form.type"
                                 style="width: 100%;"
                                 multiple
                                 filterable
                                 allow-create
                                 default-first-option
-                                placeholder="请选择文章标签">
+                                placeholder="请选择事件标签">
                             <el-option
                                     v-for="(item, id) in tags"
                                     :key="id"
                                     :label="item"
-                                    :value="item">
+                                    :value="id">
                             </el-option>
                         </el-select>
                         <br>
