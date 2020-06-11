@@ -51,7 +51,7 @@
           v-for="item in options.mode"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-select v-model="values.education" clearable placeholder="请选择学历">
@@ -59,7 +59,7 @@
           v-for="item in options.education"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-select v-model="values.title" clearable placeholder="请选择职称">
@@ -67,7 +67,7 @@
           v-for="item in options.title"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-input style="width: initial" placeholder="教职工姓名、手机号" v-model="values.keyword"></el-input>
