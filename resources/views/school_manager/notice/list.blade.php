@@ -123,14 +123,14 @@ use App\Utils\UI\Button;
             <div style="margin-top: 20px;margin-left: 10px;" class="aa">
               <el-form :inline="true" :model="screen" class="">
                 <el-form-item label="类型">
-                  <el-select v-model="screen.type" placeholder="活动区域" clearable>
+                  <el-select v-model="screen.type" placeholder="请选择类型" clearable>
                     <el-option label="通知" value="1"></el-option>
                     <el-option label="公告" value="2"></el-option>
                     <el-option label="检查" value="3"></el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item label="接收对象">
-                  <el-select v-model="screen.range" placeholder="活动区域" clearable>
+                  <el-select v-model="screen.range" placeholder="请选择接收对象" clearable>
                     <el-option label="老师" value="1"></el-option>
                     <el-option label="学生" value="2"></el-option>
                   </el-select>
@@ -140,18 +140,18 @@ use App\Utils\UI\Button;
                   v-model="screen.start_time"
                   type="date"
                   value-format="yyyy-MM-dd"
-                  placeholder="保护起始时间">
+                  placeholder="起始时间">
                 </el-date-picker>
                 至
                 <el-date-picker
                   v-model="screen.end_time"
                   type="date"
                   value-format="yyyy-MM-dd"
-                  placeholder="保护终止时间">
+                  placeholder="结束时间">
                 </el-date-picker>
                 </el-form-item>
                 <el-form-item label="">
-                  <el-input v-model="screen.keyword" placeholder="标题"></el-input>
+                  <el-input v-model="screen.keyword" placeholder="请输入标题"></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" @click="getTableList">查询</el-button>

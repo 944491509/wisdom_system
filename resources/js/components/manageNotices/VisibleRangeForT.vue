@@ -75,7 +75,7 @@ export default {
     },
     thandleOpen(val) {
       console.log('TT',val)
-      if ( val[0] && val[0].organization_id === 0) {
+      if ( val && val[0].organization_id === 0) {
         console.log('111')
         this.visibleform.allOran = true
       } else {
