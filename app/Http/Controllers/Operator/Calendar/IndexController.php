@@ -6,6 +6,7 @@ use App\Dao\Calendar\CalendarDao;
 use App\Dao\Schools\SchoolDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Calendar\CalendarRequest;
+use App\Models\Schools\SchoolCalendar;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use Carbon\Carbon;
@@ -95,15 +96,8 @@ class IndexController extends Controller
         $school = (new SchoolDao())->getSchoolById($request->getSchoolId());
 
         $data = $dao->getCalendarEvent($schoolId);
-
-        $tags = [];
-        foreach ($data as $datum) {
-            if($datum->tag){
-                foreach ($datum->tag as $item) {
-                    $tags[] = $item;
-                }
-            }
-        }
+        $calendar = new SchoolCalendar();
+        $tags = $calendar->getAllType();
 
         $this->dataForView['events'] = $data;
         $this->dataForView['tags'] = $tags;
@@ -112,7 +106,6 @@ class IndexController extends Controller
         $this->dataForView['school'] = $school;
         $this->dataForView['config'] = $school->configuration;
         $this->dataForView['weeks'] = $school->configuration->getAllWeeksOfTerm();
-
         return view('school_manager.calendar.index', $this->dataForView);
     }
 
@@ -128,4 +121,7 @@ class IndexController extends Controller
         $data = $dao->getEventById($id);
         return JsonBuilder::Success($data, '获取校历事件详情');
     }
+
+
+
 }

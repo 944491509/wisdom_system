@@ -187,6 +187,9 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
         ->name('school_manager.textbook.submit');
 
 
+    // 校历事件类型标签
+    Route::any('calendar/tagList', 'Calendar\IndexController@tagList')->name('school_manger.school.calendar.tagList');
+
     // 校历事件添加
     Route::any('calendar/save', 'Calendar\IndexController@save')->name('school_manger.school.calendar.save');
     // 校历事件的删除

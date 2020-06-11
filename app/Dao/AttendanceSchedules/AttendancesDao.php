@@ -3,6 +3,7 @@
 namespace App\Dao\AttendanceSchedules;
 
 
+use App\Models\Schools\SchoolCalendar;
 use App\User;
 use Carbon\Carbon;
 use App\Dao\Schools\SchoolDao;
@@ -285,6 +286,44 @@ class AttendancesDao
             ->select('grade_id')
             ->distinct('grade_id')
             ->get();
+    }
+
+
+    /**
+     * 判断当前时间是否是休息
+     * @param $schoolId
+     * @param Carbon|null $now
+     * @return bool true 休息 false 不休息
+     */
+    public function isWantSign($schoolId, Carbon $now = null) {
+        if(is_null($now)) {
+            $now = Carbon::now();
+        }
+        $dateTime = $now->toDateString();
+        // 判断当前是否是休息
+        $calendars = new SchoolCalendar();
+        $re = $calendars->where('school_id', $schoolId)
+            ->whereDate('event_time', $dateTime)
+            ->get();
+        if(count($re) > 0) {
+
+            $rest = [
+                SchoolCalendar::WEEKEND_REST,
+                SchoolCalendar::STATUTORY_HOLIDAY,
+                SchoolCalendar::TEMPORARY_REST,
+            ];
+
+            foreach ($re as $key => $item) {
+                $type = json_decode($item->type, true);
+                $result = array_intersect($type, $rest);
+                if(!empty($result)) {
+                    // 当前时间需要休息
+                    return true;
+                }
+            }
+        }
+        // 当前时间不需要休息
+        return false;
     }
 
 }
