@@ -150,12 +150,22 @@ class Notice extends Model
 
 
     /**
-     * 发布时间
+     * 创建时间
      * @param $value
      * @return string
      */
     public function getCreatedAtAttribute($value)
     {
+        return Carbon::parse($value)->format('Y-m-d H:i');
+    }
+
+
+    /**
+     * 发布时间
+     * @param $value
+     * @return string
+     */
+    public function getReleaseTimeAttribute($value) {
         return Carbon::parse($value)->format('Y-m-d H:i');
     }
 
@@ -167,9 +177,9 @@ class Notice extends Model
     public function accept() {
         switch ($this->range) {
             case self::RANGE_ALL:
-                return ['学生','老师'];
+                return ['学生','教师'];
             case self::RANGE_TEACHER:
-                return ['老师'];
+                return ['教师'];
             case self::RANGE_STUDENT:
                 return ['学生'];
 
