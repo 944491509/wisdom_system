@@ -43,7 +43,7 @@
           v-for="item in options.status"
           :key="item.value"
           :label="item.label"
-          :value="item.label"
+          :value="item.value"
         ></el-option>
       </el-select>
       <el-select v-model="values.mode" clearable placeholder="请选择聘任方式">
