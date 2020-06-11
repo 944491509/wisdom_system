@@ -5,6 +5,7 @@ namespace App\Models\Schools;
 use App\Models\Course;
 use App\Models\Courses\CourseTextbook;
 use Illuminate\Database\Eloquent\Model;
+use function Complex\sec;
 
 /**
  * @property int $id
@@ -45,6 +46,16 @@ class Textbook extends Model
     const TYPE_SCHOOL_BOOK_TEXT   = '校本教材';
 
 
+    const TERM_1 = '第一学期';
+    const TERM_2 = '第二学期';
+
+    const YEAR_1 = '一年级';
+    const YEAR_2 = '二年级';
+    const YEAR_3 = '三年级';
+    const YEAR_4 = '四年级';
+    const YEAR_5 = '五年级';
+
+
     /**
      * 教材类型
      * @return string[]
@@ -68,6 +79,30 @@ class Textbook extends Model
         $all = $this->getAllType();
         return $all[$this->type] ?? '';
     }
+
+
+    public function getTermTextAttribute() {
+        $term  = [
+            1=>self::TERM_1,
+            2=>self::TERM_2,
+        ];
+        return $term[$this->term] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getYearTextAttribute() {
+        $year = [
+            1=>self::YEAR_1,
+            2=>self::YEAR_2,
+            3=>self::YEAR_3,
+            4=>self::YEAR_4,
+            5=>self::YEAR_5,
+        ];
+        return $year[$this->year];
+    }
+
 
     /**
      * 图书关联的图片
