@@ -10,7 +10,7 @@
     >
       <el-row :gutter="20" v-for="(group, index) in form" :key="index">
         <div class="form-divider" v-if="group.title">
-          <span>@{{group.title}}</span>
+          <span>{{group.title}}</span>
           <el-divider></el-divider>
         </div>
         <el-col
@@ -49,6 +49,13 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row :gutter="20">
+          <el-col :span="24">
+              <el-form-item label="备注" prop="notes">
+                  <el-input type="textarea" v-model="notes"></el-input>
+              </el-form-item>
+          </el-col>
+      </el-row>
       <el-form-item>
         <el-button :loading="pending" type="primary" @click="submitForm">提交</el-button>
       </el-form-item>
@@ -79,6 +86,10 @@ export default {
               field.validator[0].required &&
               !field.value
             ) {
+              this.$message({
+                message: field.validator[0].message,
+                type: "error"
+              });
               throw new Error("校验未通过");
             }
           });
@@ -93,7 +104,8 @@ export default {
             status: this.ruleForm.status
           },
           profile: {
-            ...this.ruleForm
+            ...this.ruleForm,
+            notes: this.notes
           }
         };
         delete params.profile["campus_id"];
@@ -170,6 +182,7 @@ export default {
   data() {
     return {
       pending: false,
+      notes: '',
       form: [
         {
           title: "",
