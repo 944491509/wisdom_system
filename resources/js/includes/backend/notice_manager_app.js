@@ -187,11 +187,6 @@ if(document.getElementById('notice-manager-app')){
                 o.organization = o.organization.map(e => { return {organization_id:e.id,name:e.name} })
                 o.grade = o.grade.map(e => { return {grade_id:e.id,name:e.name} })
                 console.log('o.grade',o.grade)
-                // this.$message({
-                //     type:'success',
-                //     message:'查询通知列表成功！'
-                // });
-                // this.notice = res.data.notice
                 this.releaseDrawer = true
                 this.$nextTick(() => {
                   this.$refs.childDrawer.handleOpen(o)

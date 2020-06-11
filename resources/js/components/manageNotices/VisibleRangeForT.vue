@@ -74,12 +74,9 @@ export default {
       this.selectTags = []
     },
     thandleOpen(val) {
-      console.log('TT',val)
-      if ( val[0] && val[0].organization_id === 0) {
-        console.log('111')
+      if ( val && val[0].organization_id === 0) {
         this.visibleform.allOran = true
       } else {
-        console.log('222')
         this.visibleform.allOran = false
         this.selectTags = val
       }
@@ -101,12 +98,10 @@ export default {
 		},
 		async querySearchAsync(queryString, cb){
 			let organ = await  this.getOrganizansList(0,queryString)
-			console.log('querySearchAsync',organ)
 			organ = organ.filter(e => !e.status)
 			cb(organ || [])
 		},
 		handleSelect(item){
-			console.log(item)
 			if(!this.selectTags.find(e => e.id == item.id)){
 				this.selectTags.push(item);
 				this.visibleform.tags.push(item.id)
@@ -123,11 +118,9 @@ export default {
 		},
 		deleteTag(tag) {
 			this.selectTags.splice(this.selectTags.indexOf(tag), 1);
-			console.log('deleteTag',tag)
 			this.visibleform.tags = this.visibleform.tags.filter(arr => !arr.includes(tag.id))
 		},
 		confrim(){
-      console.log('QQQ',this.selectTags)
       this.$emit('confrim',this.visibleform.allOran ? '0' : this.selectTags)
       this.selectTags = []
 		}

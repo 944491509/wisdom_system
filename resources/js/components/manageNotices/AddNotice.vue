@@ -65,7 +65,7 @@
           </el-form-item>
 
           <el-form-item label="标题">
-              <el-input placeholder="必填: 标题" v-model="notice.title" maxlength="30" show-word-limit></el-input>
+              <el-input placeholder="必填: 标题" v-model="notice.title"></el-input>
           </el-form-item>
 
           <el-form-item label="发布">
@@ -77,14 +77,14 @@
           </el-form-item>
 
           <el-form-item label="文字说明">
-              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content" maxlength="500" show-word-limit></el-input>
+              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content"></el-input>
           </el-form-item>
           <el-form-item label="发布日期">
               <el-date-picker
                       v-model="notice.release_time"
-                      type="date"
-                      format="yyyy-MM-dd"
-                      value-format="yyyy-MM-dd"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      value-format="yyyy-MM-dd HH:mm:ss"
                       placeholder="选择日期">
               </el-date-picker>
           </el-form-item>
@@ -226,17 +226,37 @@ export default {
     };
   },
   created(){
-    console.log("AAA")
       const dom = document.getElementById('app-init-data-holder');
       // this.notice.school_id = dom.dataset.school;
       this.types = JSON.parse(dom.dataset.types);
+  },
+  watch: {
+    'notice.title': {
+      handler(val) {
+        if (val.length > 30) {
+          this.$message({
+            message: '最多输入30字！',
+            type: "warning"
+          });
+        }
+      }
+    },
+    'notice.content': {
+      handler(val) {
+        if (val.length > 500) {
+          this.$message({
+            message: '最多输入500字！',
+            type: "warning"
+          });
+        }
+      }
+    }
   },
   methods: {
     tDrawerOpen(val) {
       this.innerDrawer = true; 
       this.showOrganizationsSelectorFlag = true;
       this.$nextTick(() => {
-        console.log('sss')
         this.$refs.tDrawer.thandleOpen(val)
       })
     },
@@ -271,7 +291,6 @@ export default {
       this.studentTags = 2
     },
     handleOpen(val) {
-      console.log('BBB',val)
       this.notice = val;
       this.notice.type = val.type + '';
       this.notice.status = this.notice.status === 1 ? true : false
@@ -369,7 +388,7 @@ export default {
             ? [0]
             : this.form.studentTags.map(e => e.id || e.grade_id);
       }
-      if ((this.notice.organization_id.length === 0) && (this.notice.grade_id.length === 0)) {
+      if ((this.notice.organization_id && this.notice.organization_id.length === 0) && (this.notice.grade_id && this.notice.grade_id.length === 0)) {
         this.$message({
           message: '请选择可见范围',
           type: "warning"
@@ -379,6 +398,27 @@ export default {
       if (!this.notice.content) {
         this.$message({
           message: '请填写文字说明！',
+          type: "warning"
+        });
+        return
+      }
+      if (this.notice.content.length > 500) {
+        this.$message({
+          message: '文字说明最多可输入500字！',
+          type: "warning"
+        });
+        return
+      }
+      if (!this.notice.title) {
+        this.$message({
+          message: '请填写标题！',
+          type: "warning"
+        });
+        return
+      }
+      if (this.notice.title.length > 30) {
+        this.$message({
+          message: '标题最多可输入30字！',
           type: "warning"
         });
         return
