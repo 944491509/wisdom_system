@@ -199,8 +199,10 @@ use App\Utils\UI\Button;
                     label="操作"
                     width="100">
                     <template slot-scope="scope">
-                      <el-button type="text" size="small" icon="el-icon-edit" @click="edit(scope.row.id)" style="font-size: 20px;"></el-button>
-                      <el-button type="text" size="small" icon="el-icon-delete" @click="deleteNotice(scope.row.id)" style="font-size: 20px;"></el-button>
+                      <span class="editIcon" @click="edit(scope.row.id)"><i class="el-icon-edit"></i></span>
+                      <span class="deleteIcon"><i class="el-icon-delete" @click="deleteNotice(scope.row.id)"></i></span>
+                      <!-- <el-button type="text" size="small" icon="el-icon-edit" @click="edit(scope.row.id)" style="font-size: 20px;"></el-button>
+                      <el-button type="text" size="small" icon="el-icon-delete" @click="deleteNotice(scope.row.id)" style="font-size: 20px;"></el-button> -->
                     </template>
                   </el-table-column>
                 </el-table>
@@ -288,6 +290,28 @@ use App\Utils\UI\Button;
     }
     .borTop {
       border-top: 1px dashed #000; 
+    }
+    .editIcon {
+      padding: 1px 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .editIcon .el-icon-edit {
+      font-size: 13px;
+      color: #443f3f;
+    }
+    .deleteIcon {
+      padding: 1px 8px;
+      background-color: rgb(245,108,108);
+      border: 1px solid rgb(245,108,108);
+      border-radius: 3px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .deleteIcon .el-icon-delete {
+      font-size: 13px;
+      color: #fff;
     }
 </style>
 <div id="app-init-data-holder"

@@ -2,28 +2,9 @@
   <div class="drawer_content">
     <div class="card-body p-3">
       <el-form ref="noticeForm" :model="notice" label-width="80px">
-          <!-- <div>
-              <el-form-item label="可见范围" style="margin-bottom: 3px;">
-
-                  <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showOrganizationsSelectorFlag=true">管理可见范围</el-button>
-              </el-form-item>
-              <el-form-item v-if="notice.selectedOrganizations.length > 0">
-                  <el-tag
-                          v-for="item in notice.selectedOrganizations"
-                          :key="item.id"
-                          type="info"
-                          effect="plain"
-                          class="m-2"
-                  >
-                      @{{ item.name }}
-                  </el-tag>
-              </el-form-item>
-              <el-divider></el-divider>
-          </div> -->
           <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;">
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization)">选择教师可见范围</el-button>
-              <!-- <div>选择教师可见范围</div> -->
               <div class="dayu">
                 <template v-if="teacherTags == 0">
                   <span>所有部门</span>
@@ -36,7 +17,6 @@
             </div>
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="sDrawerOpen(notice.grade)">选择学生可见范围</el-button>
-              <!-- <div>选择学生可见范围</div> -->
               <div class="dayu">
                 <template v-if="studentTags == 0">
                   <span>所有班级</span>
