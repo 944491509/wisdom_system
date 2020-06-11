@@ -226,7 +226,6 @@ export default {
     };
   },
   created(){
-    console.log("AAA")
       const dom = document.getElementById('app-init-data-holder');
       // this.notice.school_id = dom.dataset.school;
       this.types = JSON.parse(dom.dataset.types);
@@ -258,7 +257,6 @@ export default {
       this.innerDrawer = true; 
       this.showOrganizationsSelectorFlag = true;
       this.$nextTick(() => {
-        console.log('sss')
         this.$refs.tDrawer.thandleOpen(val)
       })
     },
@@ -293,7 +291,6 @@ export default {
       this.studentTags = 2
     },
     handleOpen(val) {
-      console.log('BBB',val)
       this.notice = val;
       this.notice.type = val.type + '';
       this.notice.status = this.notice.status === 1 ? true : false

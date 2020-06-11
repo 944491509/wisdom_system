@@ -87,12 +87,9 @@ export default {
       this.selectTags = []
     },
     shandleOpen(val) {
-      console.log(val)
       if (val[0] && val[0].grade_id === 0) {
-        console.log('111')
         this.form.allOran = true
       } else {
-        console.log('222')
         this.form.allOran = false
         this.selectTags = val
       }
@@ -114,7 +111,6 @@ export default {
 			this.selectTags.splice(this.selectTags.indexOf(tag), 1);
     },
     confrim(){
-      console.log('confrim')
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
     },
     async getYears(){
@@ -138,7 +134,6 @@ export default {
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
     },
     handleSelect(item){
-			console.log(item)
 			if(!this.selectTags.find(e => e.grade_id == item.grade_id)){
 				this.selectTags.push(item);
 				this.form.tags.push(item.id)
@@ -147,7 +142,6 @@ export default {
 		},
 		deleteTag(tag) {
 			this.selectTags.splice(this.selectTags.indexOf(tag), 1);
-			console.log('deleteTag',tag)
 			this.form.tags = this.form.tags.filter(arr => !arr.includes(tag.id))
     },
     async querySearchAsync(queryString, cb){

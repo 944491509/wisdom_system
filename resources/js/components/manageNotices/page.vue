@@ -36,7 +36,6 @@ export default {
         this.pageNum = 0;
       }
       this.getpagedata.page = this.pageNum;
-      console.log('get-list-fun()',this.getpagedata)
       this.$emit('get-list-fun')
     }
   }
