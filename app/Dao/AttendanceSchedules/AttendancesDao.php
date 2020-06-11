@@ -314,8 +314,7 @@ class AttendancesDao
             ];
 
             foreach ($re as $key => $item) {
-                $type = json_decode($item->type, true);
-                $result = array_intersect($type, $rest);
+                $result = array_intersect($item->type, $rest);
                 if(!empty($result)) {
                     // 当前时间需要休息
                     return true;
