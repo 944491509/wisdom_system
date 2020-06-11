@@ -1,91 +1,67 @@
-import { Util } from "./utils";
-import { Constants } from "./constants";
+// 添加、编辑教师
+import StudentForm from '../components/student/student-form'
+import {
+  Util
+} from '../common/utils'
 
-if (document.getElementById("school-add-student-app")) {
+function getQueryString(name) {
+  var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+  var r = window.location.search.substr(1).match(reg); //search,查询？后面的参数，并匹配正则
+  if (r != null) return unescape(r[2]);
+  return null;
+}
+
+const dom = document.getElementById("school-add-student-app")
+
+if (dom) {
   const dom = document.getElementById("app-init-data-holder");
-  const schoolId = dom.dataset.school;
-
+  const schoolid = dom.dataset.school;
   new Vue({
     el: "#school-add-student-app",
-    data: {
-      majors: [],
-      grades: [],
-      institutes: [],
-      gradeId: "",
-      majorId: "",
-      year: "",
-      status: ""
+    components: {
+      StudentForm
     },
-    methods: {
-      getMajors() {
-        const url = Util.buildUrl(Constants.API.LOAD_MAJORS_BY_SCHOOL);
-        axios
-          .post(url, {
-            id: schoolId
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.majors = res.data.data.majors;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      },
-      getGrades() {
-        const url = Util.buildUrl(Constants.API.LOAD_GRADES_BY_MAJOR);
-        axios
-          .post(url, {
-            year: this.year,
-            id: this.majorId
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.grades = res.data.data.grades;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      },
-      getInstitutes() {
-        const url = Util.buildUrl(Constants.API.LOAD_INSTITUTES_BY_SCHOOL);
-        axios.post(url, {
-            school_id: schoolId
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              this.institutes = res.data.data;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      },
-      changeMajor() {
-        this.getGrades();
-        this.gradeId = "";
-      },
-      changeStatus(status) {
-       this.status = status.target.value;
+    data() {
+      return {
+        schoolid,
+        teacherName: '',
+        teacher_id: ''
       }
     },
-    mounted() {
-      this.getMajors();
-      let dom = document.getElementById("school-add-student-app");
-      if (dom) {
-        let { gradeid, majorid, year, status} = $(dom).data();
-        if (majorid) {
-          this.status  = status;
-          this.majorId = majorid;
-          this.gradeId = gradeid;
-          this.year = year;
-          this.getGrades();
-        }
+    created() {
+      if (window.location.pathname.endsWith('modify')) {
+        this.teacher_id = getQueryString('uuid')
+        axios
+          .post("/school_manager/teachers/get-teacher-profile", {
+            teacher_id: this.teacher_id
+          })
+          .then(res => {
+            if (Util.isAjaxResOk(res)) {
+              let data = {
+                campus_id: res.data.data.campus_id,
+                ...res.data.data.profile,
+                ...res.data.data.teacher,
+              };
+              ['birthday',
+                'party_time',
+                'graduation_time',
+                'final_graduation_time',
+                'title_start_at',
+                'work_start_at',
+                'hired_at'
+              ].forEach(k => {
+                if (data[k].includes('.')) {
+                  data[k] = data[k].replace(/\./g, "-")
+                //   if (data[k].split('-').length < 3) {
+                //     data[k] = data[k] + '-01'
+                //   }
+                }
+              })
+              this.$refs.teacherform.setData(data)
+              this.teacherName = res.data.data.teacher.name
+            }
+          });
       }
-    },
-    created(){
-      debugger
     }
-  });
+  })
 }

@@ -113,7 +113,24 @@ export default {
         grade: [],
         mode: [],
         title: [],
-        status: [],
+        status: [
+          {
+            label: "在职",
+            value: 3
+          },
+          {
+            label: "离职",
+            value: 4
+          },
+          {
+            label: "退休",
+            value: 5
+          },
+          {
+            label: "调离",
+            value: 6
+          }
+        ],
         education: []
       }
     };
@@ -162,11 +179,13 @@ export default {
     },
     initStudentOptions() {
       // api/school/load-config-year
-      axios.get("/api/notice/school-year?school_id=" + this.schoolid).then(res => {
-        if (Util.isAjaxResOk(res)) {
-          this.options.year = this.toOptions(res.data.data, "name", "year");
-        }
-      });
+      axios
+        .get("/api/notice/school-year?school_id=" + this.schoolid)
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.year = this.toOptions(res.data.data, "name", "year");
+          }
+        });
       axios
         .post(Constants.API.LOAD_MAJORS_BY_SCHOOL, {
           id: this.schoolid,
@@ -209,10 +228,6 @@ export default {
         {
           code: 6,
           field: "mode"
-        },
-        {
-          code: 5,
-          field: "status"
         }
       ].forEach(item => {
         axios
