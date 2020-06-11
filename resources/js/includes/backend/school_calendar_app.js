@@ -15,7 +15,7 @@ if(document.getElementById('school-calendar-app')){
                 tags: [],
                 form:{
                     event_time:'',
-                    tag:[],
+                    tag:'',
                     content:'',
                     id:'',
                     type: []
@@ -107,7 +107,7 @@ if(document.getElementById('school-calendar-app')){
                     this.$message.error('请填写活动内容');
                     return;
                 }
-                if (this.form.type.length = 0) {
+                if (this.form.type.length == 0) {
                   this.$message.error('请选择事件标签');
                   return;
                 }
