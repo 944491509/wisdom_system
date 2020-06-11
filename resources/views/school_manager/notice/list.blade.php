@@ -131,7 +131,7 @@ use App\Utils\UI\Button;
                 </el-form-item>
                 <el-form-item label="接收对象">
                   <el-select v-model="screen.range" placeholder="请选择接收对象" clearable>
-                    <el-option label="老师" value="1"></el-option>
+                    <el-option label="教师" value="1"></el-option>
                     <el-option label="学生" value="2"></el-option>
                   </el-select>
                 </el-form-item>
@@ -289,7 +289,7 @@ use App\Utils\UI\Button;
       margin-bottom: 0;
     }
     .borTop {
-      border-top: 1px dashed #000; 
+      border-top: 1px dashed #000;
     }
     .editIcon {
       padding: 1px 8px;
