@@ -312,7 +312,7 @@ class AttendancesDao
                 SchoolCalendar::STATUTORY_HOLIDAY,
                 SchoolCalendar::TEMPORARY_REST,
             ];
-            $type = [];
+
             foreach ($re as $key => $item) {
                 $type = json_decode($item->type, true);
                 $result = array_intersect($type, $rest);
