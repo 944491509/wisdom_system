@@ -24,7 +24,7 @@ class Notice extends Model
     const STATUS_UNPUBLISHED = 0;
     const STATUS_PUBLISH     = 1;
     const STATUS_DELETE     = 2;
-    const STATUS_UNPUBLISHED_TEXT = '未发布';
+    const STATUS_UNPUBLISHED_TEXT = '待发布';
     const STATUS_PUBLISH_TEXT     = '已发布';
     const STATUS_DELETE_TEXT      = '已删除';
 
