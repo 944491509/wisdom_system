@@ -124,6 +124,7 @@ use App\Utils\UI\Button;
               <el-form :inline="true" :model="screen" class="">
                 <el-form-item label="类型">
                   <el-select v-model="screen.type" placeholder="请选择类型" clearable>
+                    <el-option label="全部" value=""></el-option>
                     <el-option label="通知" value="1"></el-option>
                     <el-option label="公告" value="2"></el-option>
                     <el-option label="检查" value="3"></el-option>
@@ -131,6 +132,7 @@ use App\Utils\UI\Button;
                 </el-form-item>
                 <el-form-item label="接收对象">
                   <el-select v-model="screen.range" placeholder="请选择接收对象" clearable>
+                    <el-option label="全部" value=""></el-option>
                     <el-option label="教师" value="1"></el-option>
                     <el-option label="学生" value="2"></el-option>
                   </el-select>
