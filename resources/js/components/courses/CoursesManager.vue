@@ -4,8 +4,8 @@
       <p class="courses-list-title">
         <filters-from :majors="majors" :years="grades" @searchSubmit="searchSubmit" />
         <el-button type="primary" @click="downloadTable">导出</el-button>
-        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
-        <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
+        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加课程</el-button>
+        <!-- <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button> -->
       </p>
       <courses-list
         :courses="courses"
