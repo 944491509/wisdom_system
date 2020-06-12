@@ -393,10 +393,8 @@ class CourseDao
         try{
             $data['uuid'] = Uuid::uuid4()->toString();
             $fillableData = $this->getFillableData($courseModel,$data);
-
             // 先保存课程数据
             $course = Course::create($fillableData);
-
             if($course){
                 // 保存授课老师
                 if(!empty($teachersId)){
@@ -442,13 +440,13 @@ class CourseDao
                 }
 
                 // 检查是选修课还是必修课, 如果是选修课, 则需要保留选修课的上课时间信息, 并保存到单独的记录表中
-                if(intval($data['optional']) === Course::ELECTIVE_COURSE){
-                    // 是选修课
-                    $this->_saveCourseArrangement($course, $data);
-                    //添加course_electives表的关联数据
-                    $this->_saveCourseElective($course, $data);
-
-                }
+//                if(intval($data['optional']) === Course::ELECTIVE_COURSE){
+//                    // 是选修课
+//                    $this->_saveCourseArrangement($course, $data);
+//                    //添加course_electives表的关联数据
+//                    $this->_saveCourseElective($course, $data);
+//
+//                }
 
                 DB::commit();
                 $messageBag->setCode(JsonBuilder::CODE_SUCCESS);
