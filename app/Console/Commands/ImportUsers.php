@@ -6,7 +6,7 @@ use App\BusinessLogic\ImportExcel\Factory;
 use App\Dao\Importer\ImporterDao;
 use Illuminate\Console\Command;
 
-class importerUsers extends Command
+class importUsers extends Command
 {
     /**
      * The name and signature of the console command.

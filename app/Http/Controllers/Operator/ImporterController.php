@@ -8,7 +8,7 @@ use App\BusinessLogic\ImportExcel\Factory;
 use App\Dao\Importer\ImporterDao;
 use App\Dao\Users\UserDao;
 use App\Http\Controllers\Controller;
-use App\Models\Importer\ImoprtTask;
+use App\Models\Importer\ImportTask;
 use App\User;
 use App\Utils\FlashMessageBuilder;
 use Illuminate\Http\Request;
@@ -18,45 +18,33 @@ use Illuminate\Support\Facades\Storage;
 
 class ImporterController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     public function manager(Request $request)
     {
-        $schoolId= $request->session()->get('school.id');
-        $dao = new ImporterDao();
-        $tasks = $dao->getTasks($schoolId);
+        $schoolId                   = $request->session()->get('school.id');
+        $dao                        = new ImporterDao();
+        $tasks                      = $dao->getTasks($schoolId);
         $this->dataForView['tasks'] = $tasks;
         return view('school_manager.importer.list', $this->dataForView);
-
     }
 
-    public function add(){
-        $this->dataForView['task'] = new ImoprtTask();
+    public function add()
+    {
+        $this->dataForView['task'] = new ImportTask();
         return view('school_manager.importer.add', $this->dataForView);
     }
 
-    public function edit(Request $request){
-        $dao = new ImporterDao();
-        $task = $dao->getTaskById($request->id);
-        $task->congig = json_encode(json_decode($task->config,1),JSON_PRETTY_PRINT);
-        $this->dataForView['task'] = $task;
-        return view('school_manager.importer.edit', $this->dataForView);
-    }
-
-    public function update(Request $request)
+    public function save(Request $request)
     {
-        $schoolId= $request->session()->get('school.id');
-        $data = [];
-        $dao = new ImporterDao();
-        $data = $request->get('task');
+        $schoolId = $request->session()->get('school.id');
+        $data     = [];
+        $dao      = new ImporterDao();
+        $data     = $request->get('task');
         if ($data['type'] == 1) {
-            $data['config'] = json_encode(json_decode(strip_tags($data['config']),1));
+            $data['config'] = json_encode(json_decode(strip_tags($data['config']), 1));
         }
-        $data['title']  = strip_tags($data['title']);
-        $user = $request->user();
+        $data['title']      = strip_tags($data['title']);
+        $user               = $request->user();
         $data['manager_id'] = $user->id;
 
 
@@ -107,7 +95,6 @@ class ImporterController extends Controller
 
     }
 
-
     public function result(Request $request,$id)
     {
         $schoolId= $request->session()->get('school.id');
@@ -117,6 +104,5 @@ class ImporterController extends Controller
         return view('school_manager.importer.result', $this->dataForView);
 
     }
-
 
 }

@@ -5,23 +5,24 @@ namespace App\Console\Commands;
 use App\BusinessLogic\ImportExcel\Factory;
 use App\Dao\Importer\ImporterDao;
 use App\Dao\Users\UserDao;
+use App\Models\Importer\ImportTask;
 use Illuminate\Console\Command;
 
-class importer extends Command
+class importStudent extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'importer {configId}';
+    protected $signature = 'importStudent';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '导入用户资料';
+    protected $description = '导入带专业班级的学生';
 
     /**
      * Create a new command instance.
@@ -41,17 +42,19 @@ class importer extends Command
     public function handle()
     {
         $this->info('任务开始');
-        $optUserId = 1;
-        $id = $this->argument('configId');
-        $dao = new ImporterDao();
-        $taskObj = $dao->getTaskById($id);
-        $taskConfig = json_decode($taskObj->config, true);
-        $taskConfig['importerName'] = 'App\BusinessLogic\ImportExcel\Impl\\' . $taskConfig['importerName'] . 'Importer';
-        $taskConfig['file_path'] = $taskObj->file_path;
-        $taskConfig['task_id'] = $id;
-        $taskConfig['manager_id'] = $optUserId;
-        $obj = Factory::createAdapter($taskConfig);
-        $obj->handle();
+        $dao = new ImporterDao;
+        // 正在执行的导入任务
+        $execution = $dao->getTasksByStatus(ImportTask::IMPORT_TASK_EXECUTION_TEXT);
+        if (!is_null($execution)) {
+            $this->info('已经有正在执行的导入任务了......');
+            exit();
+        }
+        // 等待中的任务
+        $waiting = $dao->getTasksByStatus(ImportTask::IMPORT_TASK_WAITING);
+        if ($waiting) {
+            $result = Factory::createAdapter('import_student');
+            $result->handle();
+        }
         $this->info('任务结束');
     }
 

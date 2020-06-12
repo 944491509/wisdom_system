@@ -39,7 +39,7 @@ class ImporterStudentAccommodation extends Command
     public function handle()
     {
         $this->info('任务开始');
-        $result = Factory::createAdapter(['importerName' => 'importer_student_accommodation']);
+        $result = Factory::createAdapter();
         $result->handle();
         $this->info('任务结束');
     }

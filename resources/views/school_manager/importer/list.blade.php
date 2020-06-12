@@ -38,7 +38,6 @@ use App\Utils\UI\Button;
                                 @if(count($tasks) == 0)
                                     <tr>
                                         <td colspan="6">还没有内容 </td>
-
                                     </tr>
                                 @endif
                                 @foreach($tasks as $index=>$task)
@@ -49,8 +48,7 @@ use App\Utils\UI\Button;
                                         <td><pre>{{ $task->file_path }} </pre></td>
                                         <td class="text-center">{{ $task->file_info }}</td>
                                         <td class="text-center">
-                                            {{ Anchor::Print(['text'=>'编辑','class'=>'btn-edit-building','href'=>route('school_manager.importer.edit',['id'=>$task->id])], Button::TYPE_DEFAULT,'edit') }}
-{{--                                            {{ Anchor::Print(['text'=>'结果','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id'=>$task->id])], Button::TYPE_DEFAULT,'result') }}--}}
+                                            {{ Anchor::Print(['text'=>'结果','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id'=>$task->id])], Button::TYPE_DEFAULT,'result') }}
                                         </td>
                                     </tr>
                                 @endforeach
