@@ -291,7 +291,7 @@ use App\Utils\UI\Button;
       margin-bottom: 0;
     }
     .borTop {
-      border-top: 1px dashed #000;
+      border-top: 1px dashed #ccc;
     }
     .editIcon {
       padding: 1px 8px;
