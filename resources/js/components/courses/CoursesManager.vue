@@ -28,7 +28,7 @@
     </div>
 
     <el-dialog
-      title="必修课程登记表"
+      title="课程登记表"
       :visible.sync="showCourseFormFlag"
       :fullscreen="true"
       custom-class="course-form-drawer"
@@ -91,6 +91,7 @@
             <el-form-item label="课程类型">
               <el-select v-model="courseModel.optional" placeholder="课程类型">
                 <el-option label="必修课" value="0"></el-option>
+                <el-option label="选修课" value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
