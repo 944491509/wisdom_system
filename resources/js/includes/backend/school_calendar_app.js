@@ -98,7 +98,9 @@ if(document.getElementById('school-calendar-app')){
                 this.form.id = '';
             },
             onSubmit: function(){
-              this.form.tag = this.form.type.map(e => this.tags[e])
+              this.form.type = this.form.tag.map(e => {
+                return this.tags.findIndex(a => e === a)
+              })
                 if(Util.isEmpty(this.form.event_time)){
                     this.$message.error('请填写活动日期');
                     return;
@@ -120,7 +122,7 @@ if(document.getElementById('school-calendar-app')){
                             message: '校历保存成功',
                             type: 'success'
                         });
-                        this._reloadCurrentPage();
+                        // this._reloadCurrentPage();
                     }
                 })
             },
@@ -167,6 +169,8 @@ if(document.getElementById('school-calendar-app')){
              * @returns {*}
              */
             getEvent: function(day){
+              // console.log(day)
+              // console.log(this._locateEvent(day))
                 return this._locateEvent(day);
             },
             _locateEvent: function(day){
