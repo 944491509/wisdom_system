@@ -144,7 +144,7 @@ class GradeUser extends Model
     }
 
     /**
-     * 返回教职工所工作的地方的描述
+     * 返回学生所在班级的描述
      * @return string
      */
     public function studyAt(){

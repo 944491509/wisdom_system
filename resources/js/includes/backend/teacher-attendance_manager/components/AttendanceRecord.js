@@ -327,7 +327,7 @@ Vue.component("AttendanceRecord", {
           const data = this.formatJson(filterVal, this.formatList())
           let excelName = this.dateByDay + '考勤记录'
           export_json_to_excel(tHeader, data, excelName)
-      })
+      },'ex2Excel/ex2Excel')
     }, 
     formatJson(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))

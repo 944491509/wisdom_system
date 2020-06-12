@@ -151,4 +151,12 @@ class MyStandardRequest extends FormRequest
         $schoolId = $this->user()->getSchoolId();
         return (new SchoolDao())->getSchoolById($schoolId);
     }
+
+    /**
+     * 获取上传文件
+     * @return array|\Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|null
+     */
+    public function getFile() {
+        return $this->file('file',null);
+    }
 }

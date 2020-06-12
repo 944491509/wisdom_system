@@ -5,6 +5,8 @@
 /public/js/*
 /public/css/*
 /public/special/*
+/public/vendors~ex2Excel/*
+/public/ex2Excel/*
 /storage/*.key
 /vendor
 .env

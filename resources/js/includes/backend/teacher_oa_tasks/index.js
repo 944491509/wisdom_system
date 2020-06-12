@@ -44,10 +44,19 @@ if (app) {
         }
       },
       checkClose(close) {
-        if (!this.$refs.addTaskDrawer.$children[0].selectMb) {
-          close()
+        // 多了ICON 元素
+        if (this.$refs.addTaskDrawer.$children[1]) {
+          if (!this.$refs.addTaskDrawer.$children[1].selectMb) {
+            close()
+          } else {
+            this.$refs.addTaskDrawer.$children[1].selectMb = false
+          }
         } else {
-          this.$refs.addTaskDrawer.$children[0].selectMb = false
+          if (!this.$refs.addTaskDrawer.$children[0].selectMb) {
+            close()
+          } else {
+            this.$refs.addTaskDrawer.$children[0].selectMb = false
+          }
         }
       }
     },

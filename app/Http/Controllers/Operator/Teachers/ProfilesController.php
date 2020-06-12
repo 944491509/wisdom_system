@@ -23,6 +23,7 @@ use App\Models\Teachers\Teacher;
 use App\Models\Teachers\TeacherQualification;
 use App\User;
 use App\Utils\FlashMessageBuilder;
+use App\Utils\JsonBuilder;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -36,57 +37,63 @@ use Ramsey\Uuid\Uuid;
 
 class ProfilesController extends Controller
 {
-    public function save(MyStandardRequest $request){
+    public function save(MyStandardRequest $request)
+    {
+
         DB::beginTransaction();
-        try{
+        try {
             $teacherData = $request->get('teacher');
             $profileData = $request->get('profile');
-            $instituteId = $request->get('institute_id');
+            $schoolId    = $request->get('school_id');
+            $campusId    = $request->get('campus_id');
 
-            $teacherData['uuid'] = Uuid::uuid4()->toString();
+            $userDao    = new UserDao();
+            $profileDao = new TeacherProfileDao();
+            $mobile     = $userDao->getUserByMobile($teacherData['mobile']);
+            if ($mobile) {
+                return JsonBuilder::Error('该手机号已注册过了');
+            }
+
+            $idNumber = $profileDao->getTeacherProfileByIdNumber($profileData['id_number']);
+            if ($idNumber) {
+                return JsonBuilder::Error('该身份证号已注册过了');
+            }
+
+            $teacherData['uuid']      = Uuid::uuid4()->toString();
             $teacherData['api_token'] = Uuid::uuid4()->toString();
-            $teacherData['type'] = Role::TEACHER;
-            $teacherData['status'] = User::STATUS_VERIFIED;
-            $pwd = substr($profileData['id_number'],-6); // 身份证的后六位
-            $teacherData['password'] = Hash::make($pwd);
+            $teacherData['type']      = Role::TEACHER;
+            $pwd                      = substr($profileData['id_number'], -6); // 身份证的后六位
+            $teacherData['password']  = Hash::make($pwd);
 
-            $userDao = new UserDao();
+
             $user = $userDao->createUser($teacherData);
 
-            $profileDao = new TeacherProfileDao();
-            $profileData['user_id'] = $user->id;
-            $profileData['uuid'] = Uuid::uuid4()->toString();
+
+            $profileData['school_id'] = $schoolId;
+            $profileData['user_id']   = $user->id;
+            $profileData['uuid']      = Uuid::uuid4()->toString();
             $profileDao->createProfile($profileData);
 
             $gGao = new GradeUserDao();
-            $firstInstitute = (new InstituteDao())->getInstituteById($instituteId);
 
             $gGao->create([
-                'user_id'         =>$user->id,
-                'name'            =>$user->name,
-                'user_type'       =>Role::TEACHER,
-                'school_id'       =>session('school.id'),
-                'campus_id'       =>$firstInstitute->campus->id,
-                'institute_id'    =>$firstInstitute->id,
+                'user_id'         => $user->id,
+                'name'            => $user->name,
+                'user_type'       => Role::TEACHER,
+                'school_id'       => $schoolId,
+                'campus_id'       => $campusId,
+                'institute_id'    => 0,
                 'department_id'   => 0,
                 'grade_id'        => 0,
                 'last_updated_by' => Auth::user()->id,
             ]);
 
             DB::commit();
-            FlashMessageBuilder::Push(
-                $request,
-                'success',
-                '教师档案保存成功, 登陆用户名: ' . $user->mobile . ', 登陆密码: ' . $pwd . '(即身份证的后 6 位)');
+            return JsonBuilder::Success('教师档案保存成功, 登陆用户名:' . $user->mobile . '登陆密码:' . $pwd . '(即身份证的后 6 位)');
         } catch (Exception $exception) {
             DB::rollBack();
-            FlashMessageBuilder::Push(
-                $request,
-                'error',
-                $exception->getMessage());
+            return JsonBuilder::Error('保存失败');
         }
-
-        return redirect()->route('school_manager.school.teachers');
     }
 
     public function add_new(MyStandardRequest $request){

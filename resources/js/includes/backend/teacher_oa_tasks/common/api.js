@@ -59,3 +59,14 @@ export const finishTask = function (data) {
     data
   })
 }
+
+export const addOaTask = function (data) {
+  return axios({
+    method: 'post',
+    url: API_MAP.addOaTaskInfo,
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
+    },
+    data
+  })
+}

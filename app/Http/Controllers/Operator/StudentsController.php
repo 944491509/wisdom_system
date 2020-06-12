@@ -13,7 +13,10 @@ use App\Http\Requests\User\StudentRequest;
 use App\Models\Acl\Role;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\Time\GradeAndYearUtil;
+use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Ramsey\Uuid\Uuid;
 
 class StudentsController extends Controller
@@ -68,32 +71,31 @@ class StudentsController extends Controller
             $major = (new MajorDao())->getMajorById($majorData['id']);
 
             $gradeUserDao->create([
-                'user_id'=>$user->id,
-                'name'=>$user->name,
-                'user_type' => $user->type,
-                'school_id'=>$request->getSchoolId(),
-                'campus_id'=>$major->campus_id,
-                'institute_id'=>$major->institute_id,
-                'department_id'=>$major->department_id,
-                'major_id'=>$major->id,
-                'grade_id'=>$gradeData['id'],
-                'last_updated_by'=>$request->user()->id
+                'user_id'         =>$user->id,
+                'name'            =>$user->name,
+                'user_type'       => $user->type,
+                'school_id'       => $request->getSchoolId(),
+                'campus_id'       => $major->campus_id,
+                'institute_id'    => $major->institute_id,
+                'department_id'   => $major->department_id,
+                'major_id'        => $major->id,
+                'grade_id'        => $gradeData['id'],
+                'last_updated_by' => $request->user()->id
             ]);
 
-            $studentProfileDao = new StudentProfileDao();
-            $profileData['user_id'] = $user->id;
-            $profileData['uuid'] = Uuid::uuid4()->toString();
+            $studentProfileDao       = new StudentProfileDao();
+            $profileData['user_id']  = $user->id;
+            $profileData['uuid']     = Uuid::uuid4()->toString();
             $profileData['birthday'] = GradeAndYearUtil::IdNumberToBirthday($profileData['id_number'])->getData();
             $studentProfileDao->create($profileData);
             DB::commit();
             FlashMessageBuilder::Push($request,
                 'success',
-                '学生档案创建成功, 登陆密码为学生身份证的后六位: '.substr($profileData['id_number'], -6)
+                '学生档案创建成功, 登陆密码为学生身份证的后六位: ' . substr($profileData['id_number'], -6)
             );
-        }
-        catch (\Exception $exception){
+        } catch (Exception $exception) {
             DB::rollBack();
-            FlashMessageBuilder::Push($request,'danger',$exception->getMessage());
+            FlashMessageBuilder::Push($request, 'danger', $exception->getMessage());
         }
         return redirect()->route('school_manager.school.students');
     }
@@ -102,16 +104,10 @@ class StudentsController extends Controller
     /**
      * 已注册用户
      * @param StudentRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function school_users(StudentRequest $request)
     {
-        $dao = new GradeUserDao;
-        $data = $dao->getBySchool(session('school.id'), [Role::REGISTERED_USER]);
-        foreach ($data as $key => $val) {
-            $val->user;
-        }
-        $this->dataForView['students'] = $data;
         $this->dataForView['pageTitle'] = '已注册用户管理';
         return view('teacher.users.users', $this->dataForView);
 
