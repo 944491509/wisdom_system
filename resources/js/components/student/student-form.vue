@@ -16,10 +16,11 @@
         <el-col
           :span="isNaN(group.span)?null:group.span"
           v-for="(field, index_) in group.fields"
-          :class="field.type==='arearemote'? ('arealevel'+field.level): (group.span ==='x'?'col--5':'')"
+          :class="field.type === 'arearemote' ? ('arealevel'+field.level): (group.span ==='x'?'col--5':'')"
+          :style="field.type === 'empty'? {'visibility':'hidden'}:{} "
           :key="index_"
         >
-          <el-form-item :label="field.name" :prop="field.key">
+          <el-form-item :label="field.type === 'empty'?'empty':field.name" :prop="field.key">
             <el-input v-if="field.type==='text'" v-model="field.value"></el-input>
             <el-select
               v-else-if="field.type==='select'"
@@ -46,14 +47,29 @@
             ></el-date-picker>
             <number-input v-else-if="field.type==='number'" :decimalLen="0" v-model="field.value"></number-input>
             <area-selector v-else-if="field.type==='areas'" v-model="field.value"></area-selector>
-            <area-selector-remote v-else-if="field.type==='arearemote'" :level="field.level"></area-selector-remote>
+            <area-selector-remote
+              v-else-if="field.type==='arearemote'"
+              :level="field.level"
+              v-model="field.value"
+              :ref="field.key+'arearemote'"
+            ></area-selector-remote>
+            <el-input v-else readonly></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
+        <div class="form-divider">
+          <span>奖惩信息</span>
+          <el-divider></el-divider>
+        </div>
         <el-col :span="24">
-          <el-form-item label="备注" prop="notes">
-            <el-input type="textarea" v-model="notes"></el-input>
+          <el-form-item label="奖励记录" prop="reward">
+            <el-input type="textarea" v-model="reward"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="惩罚记录" prop="punishment">
+            <el-input type="textarea" v-model="punishment"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -67,9 +83,12 @@
 import NumberInput from "../common/number-input";
 import AreaSelector from "../common/area-selector";
 import AreaSelectorRemote from "../common/area-each-selector";
-
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
+
+// const BASE_URL = "http://localhost:9999";
+const BASE_URL = "";
+
 export default {
   name: "teacher-form",
   components: {
@@ -93,37 +112,39 @@ export default {
                 message: field.validator[0].message,
                 type: "error"
               });
-              throw new Error("校验未通过");
+              //   throw new Error("校验未通过");
             }
           });
         });
         this.pending = true;
         let params = {
-          school_id: this.schoolid,
-          campus_id: this.ruleForm.campus_id,
-          teacher: {
-            name: this.ruleForm.name,
-            mobile: this.ruleForm.mobile,
-            status: this.ruleForm.status
-          },
-          profile: {
-            ...this.ruleForm,
-            notes: this.notes
-          }
+          status: 2, // 2 学生  1 未认证
+          ...this.ruleForm
         };
-        delete params.profile["campus_id"];
-        delete params.profile["name"];
-        delete params.profile["mobile"];
-        delete params.profile["status"];
-        let url = "/school_manager/teachers/save-profile";
-        if (this.teacher_id) {
-          params.teacher_id = this.teacher_id;
+        Object.keys(params).forEach(key => {
+          if (key.indexOf("$") > -1) {
+            let tk = key.split("$");
+            if (!params[tk[0]]) {
+              params[tk[0]] = {};
+            }
+            params[tk[0]][tk[1]] = params[key];
+            delete params[key];
+          }
+        });
+        let url = "/school_manager/student/create";
+        if (this.student_id) {
+          params.student_id = this.student_id;
           url = "/school_manager/teachers/update-teacher-profile";
         }
-        axios.post(url, params).then(res => {
+        if (!params.addition) {
+          params.addition = {};
+        }
+        params.addition.reward = this.reward;
+        params.addition.punishment = this.punishment;
+        axios.post(BASE_URL + url, params).then(res => {
           this.pending = false;
           if (Util.isAjaxResOk(res)) {
-            if (this.teacher_id) {
+            if (this.student_id) {
               this.$message({
                 message: "保存成功",
                 type: "success"
@@ -135,20 +156,112 @@ export default {
               this.$alert(res.data.message, "添加成功", {
                 confirmButtonText: "我知道了",
                 callback: action => {
-                  window.location.href = "/school_manager/school/teachers";
+                  window.location.href = "/school_manager/school/students";
                 }
               });
             }
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error"
+            });
           }
         });
       } catch (e) {}
     },
     setData(data) {
+      Object.keys(data).forEach(key => {
+        if (typeof data[key] === "object") {
+          Object.keys(data[key]).forEach(subkey => {
+            if (["reward", "punishment"].includes(subkey)) {
+              this[subkey] = data[key][subkey];
+              return;
+            }
+            let resident = [
+              "resident_state",
+              "resident_city",
+              "resident_area",
+              "resident_suburb",
+              "resident_village"
+            ];
+            let source_place = ["source_place_state", "source_place_city"];
+            if (resident.includes(subkey)) {
+              if (!data[key + "$resident"]) {
+                data[key + "$resident"] = [];
+              }
+              let index = resident.indexOf(subkey);
+              data[key + "$resident"][index] = data[key][subkey];
+            } else if (source_place.includes(subkey)) {
+              if (!data[key + "$source_place"]) {
+                data[key + "$source_place"] = [];
+              }
+              let index = source_place.indexOf(subkey);
+              data[key + "$source_place"][index] = data[key][subkey];
+            } else {
+              data[key + "$" + subkey] = data[key][subkey];
+            }
+          });
+          delete data[key];
+        }
+      });
       this.form.forEach(group => {
         group.fields.forEach(field => {
           field.value = data[field.key];
         });
       });
+      if (this.$refs.profile$residentarearemote) {
+        this.$refs.profile$residentarearemote[0].setData(data.profile$resident);
+      }
+      if (this.$refs.profile$source_placearearemote) {
+        this.$refs.profile$residentarearemote[0].setData(
+          data.profile$source_place
+        );
+      }
+    },
+    resetGrade(major_id) {
+      if (this.gradeOptCache && this.gradeOptCache[major_id]) {
+        this.form.forEach(group => {
+          group.fields.forEach(filed => {
+            if (filed.key === "grade_id") {
+              filed.value = "";
+              filed.options = this.gradeOptCache[major_id];
+            }
+          });
+        });
+      } else {
+        axios
+          .post("/api/school/load-major-grades", {
+            id: major_id
+          })
+          .then(res => {
+            if (Util.isAjaxResOk(res)) {
+              let options = res.data.data.grades.map((item, index) => {
+                return {
+                  label: item.name,
+                  value: item.id
+                };
+              });
+              if (!this.gradeOptCache) {
+                this.gradeOptCache = {};
+              }
+              this.gradeOptCache[major_id] = options;
+              this.form.forEach(group => {
+                group.fields.forEach(field => {
+                  if (field.key === "grade_id") {
+                    field.options = options;
+                    if (
+                      field.value &&
+                      options.find(item => item.value === field.value)
+                    ) {
+                      return;
+                    }
+                    field.value = "";
+                  }
+                });
+              });
+            }
+          });
+      }
     }
   },
   computed: {
@@ -175,7 +288,9 @@ export default {
         let obj = {};
         forms.forEach(group => {
           group.fields.forEach(field => {
-            obj[field.key] = field.value;
+            if (field.key) {
+              obj[field.key] = field.value;
+            }
           });
         });
         return obj;
@@ -185,14 +300,15 @@ export default {
   data() {
     return {
       pending: false,
-      notes: "",
+      reward: "",
+      punishment: "",
       form: [
         {
           title: "",
           span: "x",
           fields: [
             {
-              key: "name",
+              key: "user$name",
               name: "姓名",
               type: "text",
               value: "",
@@ -212,7 +328,7 @@ export default {
               ]
             },
             {
-              key: "gender",
+              key: "profile$gender",
               name: "性别",
               type: "select",
               value: "",
@@ -243,11 +359,12 @@ export default {
               ]
             },
             {
-              key: "nation_name",
+              key: "profile$nation_name",
               name: "民族",
               type: "select",
               value: "",
               filterable: true,
+              code: 0,
               options: [],
               validator: [
                 {
@@ -265,24 +382,12 @@ export default {
               ]
             },
             {
-              key: "political_name",
+              key: "profile$political_name",
               name: "政治面貌",
               type: "select",
+              code: 1,
               value: "",
-              options: [
-                {
-                  label: "党员",
-                  value: "党员"
-                },
-                {
-                  label: "团员",
-                  value: "团员"
-                },
-                {
-                  label: "群众",
-                  value: "群众"
-                }
-              ],
+              options: [],
               validator: [
                 {
                   required: true,
@@ -299,7 +404,7 @@ export default {
               ]
             },
             {
-              key: "birthday",
+              key: "profile$birthday",
               name: "出生日期",
               type: "date",
               value: "",
@@ -319,7 +424,7 @@ export default {
               ]
             },
             {
-              key: "mobile",
+              key: "user$mobile",
               name: "本人电话号码",
               type: "number",
               value: "",
@@ -336,7 +441,7 @@ export default {
               ]
             },
             {
-              key: "id_number",
+              key: "profile$id_number",
               name: "身份证号",
               type: "number",
               value: "",
@@ -357,7 +462,7 @@ export default {
               ]
             },
             {
-              key: "student_code",
+              key: "profile$student_code",
               name: "学籍号",
               type: "text",
               value: "",
@@ -377,7 +482,7 @@ export default {
               ]
             },
             {
-              key: "country",
+              key: "profile$country",
               name: "籍贯",
               type: "text",
               value: "",
@@ -397,9 +502,11 @@ export default {
               ]
             },
             {
-              key: "health_status",
+              key: "profile$health_status",
               name: "健康状况",
               type: "select",
+              isId: true,
+              code: 7,
               value: "",
               options: [],
               validator: [
@@ -424,7 +531,7 @@ export default {
           span: "x",
           fields: [
             {
-              key: "graduate_school",
+              key: "profile$graduate_school",
               name: "毕业学校",
               type: "text",
               value: "",
@@ -444,7 +551,7 @@ export default {
               ]
             },
             {
-              key: "graduate_type",
+              key: "profile$graduate_type",
               name: "学生来源（招生对象）",
               type: "select",
               value: "",
@@ -474,9 +581,11 @@ export default {
               ]
             },
             {
-              key: "cooperation_type",
+              key: "profile$cooperation_type",
               name: "联招合作类型",
               type: "select",
+              code: 16,
+              isId: true,
               value: "",
               options: [
                 {
@@ -503,29 +612,29 @@ export default {
                 }
               ]
             },
+            // {
+            //   key: "profile$source_place",
+            //   name: "生源地",
+            //   type: "arearemote",
+            //   level: 2,
+            //   value: "",
+            //   validator: [
+            //     {
+            //       required: true,
+            //       trigger: "change",
+            //       message: "请选择生源地",
+            //       validator: (r, v, c) => {
+            //         if (!v) {
+            //           c(new Error(r.message));
+            //         } else {
+            //           c();
+            //         }
+            //       }
+            //     }
+            //   ]
+            // },
             {
-              key: "source_place",
-              name: "生源地",
-              type: "arearemote",
-              level: 2,
-              value: "",
-              validator: [
-                {
-                  required: true,
-                  trigger: "change",
-                  message: "请选择生源地",
-                  validator: (r, v, c) => {
-                    if (!v) {
-                      c(new Error(r.message));
-                    } else {
-                      c();
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              key: "recruit_type",
+              key: "profile$recruit_type",
               name: "招生方式",
               type: "select",
               code: 17,
@@ -547,25 +656,25 @@ export default {
               ]
             },
             {
-              key: "volunteer",
+              key: "profile$volunteer",
               name: "报名志愿",
               type: "text",
               value: ""
             },
             {
-              key: "license_number",
+              key: "profile$license_number",
               name: "准考证号",
               type: "text",
               value: ""
             },
             {
-              key: "examination_site",
+              key: "profile$examination_site",
               name: "考点",
               type: "text",
               value: ""
             },
             {
-              key: "examination_score",
+              key: "profile$examination_score",
               name: "考试成绩",
               type: "text",
               value: ""
@@ -577,94 +686,25 @@ export default {
           span: "x",
           fields: [
             {
-              key: "work_start_at",
-              name: "参加工作时间",
-              type: "date",
-              value: "",
-              validator: [
-                {
-                  required: true,
-                  trigger: "change",
-                  message: "请设置参加工作时间",
-                  validator: (r, v, c) => {
-                    if (!v) {
-                      c(new Error(r.message));
-                    } else {
-                      c();
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              key: "hired_at",
-              name: "本校聘任开始时间",
-              type: "date",
-              value: "",
-              validator: [
-                {
-                  required: true,
-                  trigger: "change",
-                  message: "请设置本校聘任开始时间",
-                  validator: (r, v, c) => {
-                    if (!v) {
-                      c(new Error(r.message));
-                    } else {
-                      c();
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              key: "campus_id",
-              name: "办公校区",
-              type: "select",
-              value: "",
-              options: [],
-              validator: [
-                {
-                  required: true,
-                  trigger: "change",
-                  message: "请选择办公校区",
-                  validator: (r, v, c) => {
-                    if (!v) {
-                      c(new Error(r.message));
-                    } else {
-                      c();
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              key: "status",
-              name: "聘任状态",
+              key: "profile$resident_type",
+              name: "户口性质",
               type: "select",
               value: "",
               options: [
                 {
-                  label: "在职",
-                  value: 3
+                  label: "农业",
+                  value: "农业"
                 },
                 {
-                  label: "离职",
-                  value: 4
-                },
-                {
-                  label: "退休",
-                  value: 5
-                },
-                {
-                  label: "调离",
-                  value: 6
+                  label: "非农业",
+                  value: "非农业"
                 }
               ],
               validator: [
                 {
                   required: true,
                   trigger: "change",
-                  message: "请选择聘任状态",
+                  message: "请选择户口性质",
                   validator: (r, v, c) => {
                     if (!v) {
                       c(new Error(r.message));
@@ -676,16 +716,36 @@ export default {
               ]
             },
             {
-              key: "mode",
-              name: "聘任方式",
-              type: "select",
+              key: "profile$resident",
+              name: "户籍地（户口所在地）",
+              type: "arearemote",
+              level: 5,
               value: "",
-              options: [],
               validator: [
                 {
                   required: true,
                   trigger: "change",
-                  message: "请选择聘任方式",
+                  message: "请选择户籍地",
+                  validator: (r, v, c) => {
+                    if (!v || !v[0] || !v[1]) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$detailed_address",
+              name: "户籍详细地址",
+              type: "text",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "blur",
+                  message: "请填写户籍详细地址",
                   validator: (r, v, c) => {
                     if (!v) {
                       c(new Error(r.message));
@@ -697,33 +757,128 @@ export default {
               ]
             },
             {
-              key: "category_teach",
-              name: "授课类别",
+              key: "profile$family_poverty_status",
+              name: "家庭贫困程度",
+              type: "select",
+              code: 12,
+              isId: true,
+              value: "",
+              options: []
+            },
+            {
+              key: "profile$zip_code",
+              name: "家庭地址邮编",
+              type: "number",
+              value: ""
+            },
+            {
+              key: "profile$residence_type",
+              name: "学生居住地类型",
+              type: "select",
+              code: 8,
+              isId: true,
+              value: "",
+              options: []
+            },
+            {
+              key: "profile$current_residence",
+              name: "现居住地址",
+              type: "text",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "blur",
+                  message: "请填写现居住地址",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$create_file",
+              name: "是否建档立卡贫困户",
               type: "select",
               value: "",
               options: [
                 {
                   value: 1,
-                  label: "文化课"
+                  label: "是"
                 },
                 {
-                  value: 2,
-                  label: "专业课"
-                },
-                {
-                  value: 3,
-                  label: "实训课"
-                },
-                {
-                  value: 4,
-                  label: "其他"
+                  value: 0,
+                  label: "否"
                 }
               ],
               validator: [
                 {
                   required: true,
                   trigger: "change",
-                  message: "请选择授课类别",
+                  message: "请确定是否建档立卡贫困户",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$parent_name",
+              name: "监护人姓名",
+              type: "text",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "blur",
+                  message: "请填写监护人姓名",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$parent_mobile",
+              name: "监护人电话",
+              type: "number",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  validator: (r, v, c) => {
+                    if (!/^1[3-9]\d{9}$/.test(v)) {
+                      c(new Error("请输入正确的手机号！"));
+                    }
+                  },
+                  trigger: "blur"
+                }
+              ]
+            },
+            {
+              key: "profile$relationship",
+              name: "与本人关系",
+              type: "select",
+              value: "",
+              code: 11,
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学生与监护人关系",
                   validator: (r, v, c) => {
                     if (!v) {
                       c(new Error(r.message));
@@ -735,80 +890,343 @@ export default {
               ]
             }
           ]
+        },
+        {
+          title: "在校信息",
+          span: "x",
+          fields: [
+            {
+              key: "profile$enrollment_at",
+              name: "入学年月",
+              type: "date",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学生入学年月",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "major_id",
+              name: "专业",
+              type: "select",
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择专业",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "grade_id",
+              name: "班级",
+              type: "select",
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择班级",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$learning_form",
+              name: "学习形式",
+              type: "select",
+              value: "",
+              options: [
+                {
+                  label: "全日制",
+                  value: "全日制"
+                },
+                {
+                  label: "非全日制",
+                  value: "非全日制"
+                }
+              ]
+            },
+            {
+              key: "profile$educational_system",
+              name: "学制",
+              type: "select",
+              code: 13,
+              isId: true,
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学制",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$entrance_type",
+              name: "入学方式",
+              type: "select",
+              code: 9,
+              isId: true,
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择入学方式",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$student_type",
+              name: "学生类别",
+              type: "select",
+              code: 14,
+              isId: true,
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学生类别",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$segmented_type",
+              name: "分段培养方式",
+              type: "select",
+              code: 10,
+              isId: true,
+              value: "",
+              options: [],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学生类别",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              type: "empty"
+            },
+            {
+              type: "empty"
+            },
+            {
+              key: "profile$student_number",
+              name: "学号",
+              type: "text",
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "blur",
+                  message: "请填学号",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              key: "profile$qq",
+              name: "QQ号",
+              type: "number",
+              value: ""
+            },
+            {
+              key: "profile$wx",
+              name: "微信号",
+              type: "text",
+              value: ""
+            },
+            {
+              key: "user$email",
+              name: "邮箱",
+              type: "text",
+              value: "",
+              validator: [
+                {
+                  required: false,
+                  validator: (r, v, c) => {
+                    if (
+                      !!v &&
+                      !/^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/.test(
+                        v
+                      )
+                    ) {
+                      c(new Error("请输入正确的邮箱！"));
+                    }
+                  },
+                  trigger: "blur"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: "寄宿信息",
+          span: "x",
+          fields: [
+            {
+              key: "addition$borrow_type",
+              name: "类型",
+              type: "select",
+              value: "",
+              code: 18,
+              isId: true,
+              options: []
+            },
+            {
+              key: "addition$people",
+              name: "住宿联系人",
+              type: "text",
+              value: ""
+            },
+            {
+              key: "addition$mobile",
+              name: "联系电话",
+              type: "number",
+              value: "",
+              validator: [
+                {
+                  required: false,
+                  validator: (r, v, c) => {
+                    if (!/^1[3-9]\d{9}$/.test(v)) {
+                      c(new Error("请输入正确的手机号！"));
+                    }
+                  },
+                  trigger: "blur"
+                }
+              ]
+            },
+            {
+              key: "addition$address",
+              name: "住址",
+              type: "text",
+              value: ""
+            }
+          ]
         }
       ]
     };
   },
+  watch: {
+    "ruleForm.major_id": function(val) {
+      this.resetGrade(val);
+    }
+  },
   created() {
+    window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
-    this.teacher_id = this.$attrs.teacher_id;
-    return;
-    [
-      {
-        code: 0,
-        key: ["nation_name"]
-      },
-      {
-        code: 1,
-        key: ["political_name"]
-      },
-      {
-        code: 7,
-        key: ["health_status"]
-      },
-      {
-        code: 3,
-        key: ["degree", "final_degree"]
-      },
-      {
-        code: 4,
-        key: ["title"]
-      },
-      {
-        code: 6,
-        key: ["mode"]
-      }
-    ].forEach(opt => {
-      (opt => {
-        axios
-          .post("/api/pc/get-search-config", {
-            type: opt.code
-          })
-          .then(res => {
-            if (Util.isAjaxResOk(res)) {
-              let options = res.data.data.map((item, index) => {
-                return {
-                  label: item.name,
-                  value: opt.isID ? item.id : item.name
-                };
+    this.student_id = this.$attrs.student_id;
+    this.form.forEach((group, i) => {
+      group.fields.forEach((field, j) => {
+        ((f, gindex, findex) => {
+          if (f.code !== null && f.code !== undefined) {
+            axios
+              .post("/api/pc/get-search-config", {
+                type: f.code
+              })
+              .then(res => {
+                if (Util.isAjaxResOk(res)) {
+                  let options = res.data.data.map((item, index) => {
+                    return {
+                      label: item.name,
+                      value: f.isId ? item.id : item.name
+                    };
+                  });
+                  this.form[gindex].fields[findex].options = options;
+                }
               });
-              this.form.forEach(group => {
-                group.fields.forEach(field => {
-                  if (opt.key.includes(field.key)) {
-                    field.options = options;
-                  }
-                });
-              });
-            }
-          });
-      })(opt);
+          }
+        })(field, i, j);
+      });
     });
+
     axios
-      .post(Constants.API.LOAD_BUILDINGS_BY_SCHOOL, {
-        school: this.schoolid
+      .post("/api/school/load-majors", {
+        id: this.schoolid
       })
       .then(res => {
         if (Util.isAjaxResOk(res)) {
-          let options = res.data.data.campuses.map(campuse => {
+          let options = res.data.data.majors.map((item, index) => {
             return {
-              label: campuse.campus,
-              value: campuse.id
+              label: item.name,
+              value: item.id
             };
           });
           this.form.forEach(group => {
             group.fields.forEach(field => {
-              if (field.key === "campus_id") {
+              if (field.key === "major_id") {
                 field.options = options;
+              }
+              if (field.key === "grade_id") {
+                field.options = [];
+                field.value = "";
               }
             });
           });
@@ -843,8 +1261,11 @@ export default {
   float: left;
 }
 .teacher-edit-form .el-col.arealevel5 {
-  width: 40%;
+  width: 60%;
   float: left;
+  ::v-deep.el-select {
+    width: calc(20% - 4px);
+  }
 }
 .teacher-edit-form .el-divider--horizontal {
   margin-top: 12px;
@@ -853,5 +1274,11 @@ export default {
   font-size: 18px;
   color: #313b4c;
   margin-top: 12px;
+}
+.teacher-edit-form {
+  ::v-deep.el-form-item__label {
+    padding: 0;
+    margin: 0;
+  }
 }
 </style>
