@@ -52,7 +52,7 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="备注" prop="notes">
-            <el-input type="textarea" v-model="notes"></el-input>
+            <el-input type="textarea" placeholder="例：2020-01-23 代表我校参与优秀教师评选"  v-model="notes"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
