@@ -84,6 +84,7 @@ class StudentsController extends Controller
         $data       = [];
         $user       = $userDao->getUserById($studentId);
         $profile    = $profileDao->getStudentInfoByUserId($studentId);
+
         $data[]     = [
             'user'     => [
                 'name'   => $user->name,
