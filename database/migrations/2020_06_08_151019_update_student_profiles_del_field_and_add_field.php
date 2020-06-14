@@ -52,7 +52,7 @@ class UpdateStudentProfilesDelFieldAndAddField extends Migration
             $table->string('zip_code', 100)->nullable()->comment('家庭地址邮编');
             $table->integer('residence_type')->default(0)->comment('学生居住地类型');
             $table->string('current_residence')->nullable()->comment('现在居住地');
-            $table->integer('relationship')->default(0)->comment('与本人关系');
+            $table->string('relationship', 50)->nullable()->comment('与本人关系');
             $table->date('enrollment_at')->nullable()->comment('入学年月');
             $table->string('learning_form')->nullable()->comment('学习形式 全日志, 非全日制');
             $table->integer('educational_system')->default(0)->comment('学制');
