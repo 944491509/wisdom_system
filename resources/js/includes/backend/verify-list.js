@@ -92,7 +92,7 @@ if (appdom && schooldom) {
       optCommand(command, data) {
         switch (command) {
           case 'edit':
-            window.open('/verified_student/profile/edit?uuid=' + data.user_id)
+            window.location.href = '/verified_student/profile/edit?uuid=' + data.user_id
             break
           case 'photo':
             window.open('/teacher/student/edit-avatar?uuid=' + data.uuid)
@@ -102,7 +102,7 @@ if (appdom && schooldom) {
         }
       },
       gokeEdit(data) {
-        window.open('/verified_student/profile/edit?uuid=' + data.user_id + '&status=1')
+        window.location.href = '/verified_student/profile/edit?uuid=' + data.user_id + '&status=1'
       },
       gokebiao(data) {
         window.open('/school_manager/timetable/manager/view-grade-timetable?uuid=' + data.grade_id)

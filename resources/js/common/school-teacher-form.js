@@ -17,7 +17,7 @@ if (dom) {
   const dom = document.getElementById("app-init-data-holder");
   const schoolid = dom.dataset.school;
   new Vue({
-    el: "#",
+    el: "#school-add-teacher-app",
     components: {
       TeacherForm
     },

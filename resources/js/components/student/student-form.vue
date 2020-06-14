@@ -26,7 +26,11 @@
           :key="index_"
         >
           <el-form-item :label="field.type === 'empty'?'empty':field.name" :prop="field.key">
-            <el-input v-if="field.type==='text'" v-model="field.value" :maxlength="field.maxlength || 50"></el-input>
+            <el-input
+              v-if="field.type==='text'"
+              v-model="field.value"
+              :maxlength="field.maxlength || 50"
+            ></el-input>
             <el-select
               v-else-if="field.type==='select'"
               v-model="field.value"
@@ -113,10 +117,12 @@ export default {
             if (
               field.validator &&
               field.validator[0] &&
-              field.validator[0].required &&
-              !field.value && field.value !== 0 &&
               !field.hidden &&
-              field.key
+              field.key &&
+              ((field.validator[0].required &&
+                !field.value &&
+                field.value !== 0) ||
+                field.validator[0].validator(null, field.value) === false)
             ) {
               this.$message({
                 message: field.validator[0].message,
@@ -320,7 +326,7 @@ export default {
               {
                 required: false,
                 validator: (r, v, c) => {
-                  c();
+                  c && c();
                 }
               }
             ];
@@ -358,6 +364,7 @@ export default {
               name: "姓名",
               type: "text",
               value: "",
+              maxlength: 10,
               validator: [
                 {
                   required: true,
@@ -365,9 +372,10 @@ export default {
                   message: "请填写姓名",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -396,9 +404,10 @@ export default {
                   message: "请选择学生性别",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -419,9 +428,10 @@ export default {
                   message: "请选择学生民族",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -441,9 +451,10 @@ export default {
                   message: "请选择政治面貌",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -462,9 +473,10 @@ export default {
                   message: "请选择学生出生日期",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -478,9 +490,13 @@ export default {
               validator: [
                 {
                   required: true,
+                  message: "请输入正确的手机号！",
                   validator: (r, v, c) => {
                     if (!/^1[3-9]\d{9}$/.test(v)) {
-                      c(new Error("请输入正确的手机号！"));
+                      c && c(new Error(""));
+                      return false;
+                    } else {
+                      c && c();
                     }
                   },
                   trigger: "blur"
@@ -496,13 +512,17 @@ export default {
                 {
                   required: true,
                   trigger: "blur",
+                  message: "请输入正确的身份证号！",
                   validator: (r, v, c) => {
                     if (
                       !/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/.test(
                         v
                       )
                     ) {
-                      c(new Error("请输入正确的身份证号！"));
+                      c && c(new Error(r.message));
+                      return false;
+                    } else {
+                      c && c();
                     }
                   }
                 }
@@ -520,9 +540,10 @@ export default {
                   message: "请输入学生学籍号",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -540,9 +561,10 @@ export default {
                   message: "请输入学生籍贯地",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -564,9 +586,10 @@ export default {
                   message: "请选择学生健康状况",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -591,9 +614,10 @@ export default {
                   message: "请填写毕业学校",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -622,9 +646,10 @@ export default {
                   message: "请选择学生来源",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -655,9 +680,10 @@ export default {
                   message: "请选择招生类型",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -676,9 +702,10 @@ export default {
                   message: "请选择生源地",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -702,9 +729,10 @@ export default {
                   message: "请选择招生方式",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -733,9 +761,10 @@ export default {
                   message: "请选择学生来源",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -797,9 +826,10 @@ export default {
                   message: "请选择户口性质",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -818,9 +848,10 @@ export default {
                   message: "请选择户籍地",
                   validator: (r, v, c) => {
                     if (!v || !v[0] || !v[1] || !v[2]) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -838,9 +869,10 @@ export default {
                   message: "请填写户籍详细地址",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -886,9 +918,10 @@ export default {
                   message: "请填写现居住地址",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -917,9 +950,10 @@ export default {
                   message: "请确定是否建档立卡贫困户",
                   validator: (r, v, c) => {
                     if (v == null || v == undefined) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -937,9 +971,10 @@ export default {
                   message: "请填写监护人姓名",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -953,12 +988,15 @@ export default {
               validator: [
                 {
                   required: true,
+                  message: "请输入正确的手机号！",
                   validator: (r, v, c) => {
                     if (!/^1[3-9]\d{9}$/.test(v)) {
-                      c(new Error("请输入正确的手机号！"));
+                      c && c(new Error(r.message));
+                      return false;
+                    } else {
+                      c && c();
                     }
                   },
-                  message: "请填写正确的手机号码",
                   trigger: "blur"
                 }
               ]
@@ -977,9 +1015,10 @@ export default {
                   message: "请选择学生与监护人关系",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1012,9 +1051,10 @@ export default {
                   message: "请确定是否建档立卡",
                   validator: (r, v, c) => {
                     if (v == null || v == undefined) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1039,9 +1079,10 @@ export default {
                   message: "请选择学生入学年月",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1060,9 +1101,10 @@ export default {
                   message: "请选择专业",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1081,9 +1123,10 @@ export default {
                   message: "请选择班级",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1120,9 +1163,10 @@ export default {
                   message: "请选择学制",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1143,9 +1187,10 @@ export default {
                   message: "请选择入学方式",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1166,9 +1211,10 @@ export default {
                   message: "请选择学生类别",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1189,9 +1235,10 @@ export default {
                   message: "请选择学生类别",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1215,9 +1262,10 @@ export default {
                   message: "请填学号",
                   validator: (r, v, c) => {
                     if (!v) {
-                      c(new Error(r.message));
+                      c && c(new Error(r.message));
+                      return false;
                     } else {
-                      c();
+                      c && c();
                     }
                   }
                 }
@@ -1243,6 +1291,7 @@ export default {
               validator: [
                 {
                   required: false,
+                  message: "请输入正确的邮箱！",
                   validator: (r, v, c) => {
                     if (
                       !!v &&
@@ -1250,7 +1299,10 @@ export default {
                         v
                       )
                     ) {
-                      c(new Error("请输入正确的邮箱！"));
+                      c && c(new Error(r.message));
+                      return false;
+                    } else {
+                      c && c();
                     }
                   },
                   trigger: "blur"
@@ -1287,9 +1339,13 @@ export default {
               validator: [
                 {
                   required: false,
+                  message: "请输入正确的手机号！",
                   validator: (r, v, c) => {
-                    if (!/^1[3-9]\d{9}$/.test(v)) {
-                      c(new Error("请输入正确的手机号！"));
+                    if (v && !/^1[3-9]\d{9}$/.test(v)) {
+                      c && c(new Error(r.message));
+                      return false;
+                    } else {
+                      c && c();
                     }
                   },
                   trigger: "blur"
@@ -1313,7 +1369,7 @@ export default {
     }
   },
   created() {
-    // window.testInstance = this;
+    window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
     this.student_id = this.$attrs.student_id;
     this.status = this.$attrs.status;
