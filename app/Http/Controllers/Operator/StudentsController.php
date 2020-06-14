@@ -142,7 +142,7 @@ class StudentsController extends Controller
     {
         $data      = $request->getFormData();
         $studentId = $request->get('student_id');
-        $campusId  = $request->get('campus_id');
+        $majorId  = $request->get('major_id');
         $gradeId   = $request->get('grade_id');
 
         $userDao    = new UserDao;
@@ -162,12 +162,12 @@ class StudentsController extends Controller
         try {
             $userDao->updateUserInfo($studentId, $data['user']);
             $profileDao->updateStudentProfile($studentId, $data['profile']);
-            $gradeDao->updateDataByUserId($studentId, ['grade_id' => $gradeId, 'campus_id' => $campusId]);
+            $gradeDao->updateDataByUserId($studentId, ['grade_id' => $gradeId, 'campus_id' => $majorId]);
             DB::commit();
             return JsonBuilder::Success('学生档案修改成功');
         } catch (Exception $exception) {
             DB::rollBack();
-            return JsonBuilder::Error('修改成功');
+            return JsonBuilder::Error('修改失败'. $exception->getMessage());
         }
 
     }

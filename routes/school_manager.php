@@ -106,7 +106,7 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     // 学生管理: 只有 学校管理员以上级别的角色才可以添加,编辑,学生school_manager.scenery.edit
     Route::get('student/add', 'StudentsController@add')->name('school_manager.student.add');                // 添加学生页面
     Route::get('student/edit', 'StudentsController@edit')->name('school_manager.student.edit');             // 编辑学生页面
-    Route::post('student/update', 'StudentsController@update')->name('school_manager.student.update');      // 保存学生
+    Route::post('student/update', 'StudentsController@update')->name('school_manager.student.update');      // 修改学生
     Route::post('student/create', 'StudentsController@create')->name('school_manager.student.create');      // 保存学生
     Route::post('student/info', 'StudentsController@info')->name('school_manager.student.info');            // 学生信息
     Route::get('school/users', 'StudentsController@school_users')->name('school_manager.school.users');     // 已注册用户
