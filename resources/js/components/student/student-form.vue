@@ -26,7 +26,7 @@
           :key="index_"
         >
           <el-form-item :label="field.type === 'empty'?'empty':field.name" :prop="field.key">
-            <el-input v-if="field.type==='text'" v-model="field.value"></el-input>
+            <el-input v-if="field.type==='text'" v-model="field.value" :maxlength="field.maxlength || 50"></el-input>
             <el-select
               v-else-if="field.type==='select'"
               v-model="field.value"
@@ -69,12 +69,12 @@
         </div>
         <el-col :span="24">
           <el-form-item label="奖励记录" prop="reward">
-            <el-input type="textarea" v-model="reward"></el-input>
+            <el-input type="textarea" v-model="reward" :maxlength="500"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="惩罚记录" prop="punishment">
-            <el-input type="textarea" v-model="punishment"></el-input>
+            <el-input type="textarea" v-model="punishment" :maxlength="500"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -583,6 +583,7 @@ export default {
               name: "毕业学校",
               type: "text",
               value: "",
+              maxlength: 20,
               validator: [
                 {
                   required: true,
@@ -1312,8 +1313,7 @@ export default {
     }
   },
   created() {
-    debugger;
-    window.testInstance = this;
+    // window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
     this.student_id = this.$attrs.student_id;
     this.status = this.$attrs.status;
