@@ -48,8 +48,8 @@
 <script>
 import { Util } from "../../common/utils";
 
-const BASE_URL = "http://localhost:9999";
-// const BASE_URL = "";
+// const BASE_URL = "http://localhost:9999";
+const BASE_URL = "";
 
 export default {
   name: "AreaSelector",
