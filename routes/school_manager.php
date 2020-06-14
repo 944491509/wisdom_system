@@ -107,7 +107,7 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::get('student/add', 'StudentsController@add')->name('school_manager.student.add');                // 添加学生
     Route::get('student/edit', 'StudentsController@edit')->name('school_manager.student.edit');             // 编辑学生
     Route::post('student/create', 'StudentsController@create')->name('school_manager.student.create');      // 保存学生
-    Route::post('student/info', 'StudentsController@create')->name('school_manager.student.update');      // 学生信息
+    Route::post('student/info', 'StudentsController@info')->name('school_manager.student.info');      // 学生信息
     Route::get('school/users', 'StudentsController@school_users')->name('school_manager.school.users');      // 已注册用户
 
     // 学校风采管理
