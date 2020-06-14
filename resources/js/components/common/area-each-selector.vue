@@ -115,7 +115,7 @@ export default {
           resolve(this.cache[area_code]);
         } else {
           axios
-            .post("http://localhost:9999/api/location/get-area", {
+            .post("/api/location/get-area", {
               area_code
             })
             .then(res => {

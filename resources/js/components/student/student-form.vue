@@ -612,27 +612,27 @@ export default {
                 }
               ]
             },
-            // {
-            //   key: "profile$source_place",
-            //   name: "生源地",
-            //   type: "arearemote",
-            //   level: 2,
-            //   value: "",
-            //   validator: [
-            //     {
-            //       required: true,
-            //       trigger: "change",
-            //       message: "请选择生源地",
-            //       validator: (r, v, c) => {
-            //         if (!v) {
-            //           c(new Error(r.message));
-            //         } else {
-            //           c();
-            //         }
-            //       }
-            //     }
-            //   ]
-            // },
+            {
+              key: "profile$source_place",
+              name: "生源地",
+              type: "arearemote",
+              level: 2,
+              value: "",
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择生源地",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
             {
               key: "profile$recruit_type",
               name: "招生方式",
