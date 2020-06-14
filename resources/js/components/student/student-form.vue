@@ -269,13 +269,15 @@ export default {
           data.profile$source_place
         );
       }
+      this.major_initing = data.grade_id
     },
     resetGrade(major_id) {
       if (this.gradeOptCache && this.gradeOptCache[major_id]) {
         this.form.forEach(group => {
           group.fields.forEach(filed => {
             if (filed.key === "grade_id") {
-              filed.value = "";
+              filed.value = this.major_initing || '';
+              this.major_initing = ''
               filed.options = this.gradeOptCache[major_id];
             }
           });
@@ -1416,7 +1418,6 @@ export default {
               }
               if (field.key === "grade_id") {
                 field.options = [];
-                field.value = "";
               }
             });
           });
