@@ -8,7 +8,12 @@
       label-width="100px"
       style="padding: 20px"
     >
-      <el-row :gutter="20" v-for="(group, index) in form" :key="index">
+      <el-row
+        :gutter="20"
+        v-for="(group, index) in form"
+        :key="index"
+        :style="group.hidden === 'none'?{'display':'none'}:{}"
+      >
         <div class="form-divider" v-if="group.title">
           <span>{{group.title}}</span>
           <el-divider></el-divider>
@@ -17,7 +22,7 @@
           :span="isNaN(group.span)?null:group.span"
           v-for="(field, index_) in group.fields"
           :class="field.type === 'arearemote' ? ('arealevel'+field.level): (group.span ==='x'?'col--5':'')"
-          :style="field.type === 'empty'? {'visibility':'hidden'}:{} "
+          :style="field.hidden === 'none'?{'display':'none'}:((field.type === 'empty' || field.hidden === 'hidden')? {'visibility':'hidden'}:{})"
           :key="index_"
         >
           <el-form-item :label="field.type === 'empty'?'empty':field.name" :prop="field.key">
@@ -57,7 +62,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row :gutter="20" v-if="$attrs.status != 1">
         <div class="form-divider">
           <span>奖惩信息</span>
           <el-divider></el-divider>
@@ -101,18 +106,46 @@ export default {
       this.$refs.ruleForm.validate();
       try {
         this.form.forEach(group => {
+          if (group.hidden) {
+            return;
+          }
           group.fields.forEach(field => {
             if (
               field.validator &&
               field.validator[0] &&
               field.validator[0].required &&
-              !field.value
+              !field.value && field.value !== 0 &&
+              !field.hidden &&
+              field.key
             ) {
               this.$message({
                 message: field.validator[0].message,
                 type: "error"
               });
-              //   throw new Error("校验未通过");
+              throw new Error("校验未通过");
+            }
+            if (field.key === "profile$resident") {
+              if (
+                !field.value ||
+                !field.value[0] ||
+                !field.value[1] ||
+                !field.value[2]
+              ) {
+                this.$message({
+                  message: field.validator[0].message,
+                  type: "error"
+                });
+                throw new Error("校验未通过");
+              }
+            }
+            if (field.key === "profile$source_place") {
+              if (!field.value || !field.value[0] || !field.value[1]) {
+                this.$message({
+                  message: field.validator[0].message,
+                  type: "error"
+                });
+                throw new Error("校验未通过");
+              }
             }
           });
         });
@@ -134,10 +167,23 @@ export default {
         let url = "/school_manager/student/create";
         if (this.student_id) {
           params.student_id = this.student_id;
-          url = "/school_manager/teachers/update-teacher-profile";
+          url = "/school_manager/student/update";
         }
         if (!params.addition) {
           params.addition = {};
+        }
+        if (params.profile && params.profile.resident) {
+          params.profile.resident_state = params.profile.resident[0];
+          params.profile.resident_city = params.profile.resident[1];
+          params.profile.resident_area = params.profile.resident[2];
+          params.profile.resident_suburb = params.profile.resident[3];
+          params.profile.resident_village = params.profile.resident[4];
+          delete params.profile.resident;
+        }
+        if (params.profile && params.profile.source_place) {
+          params.profile.source_place_state = params.profile.source_place[0];
+          params.profile.source_place_city = params.profile.source_place[1];
+          delete params.profile.source_place;
         }
         params.addition.reward = this.reward;
         params.addition.punishment = this.punishment;
@@ -213,7 +259,7 @@ export default {
         this.$refs.profile$residentarearemote[0].setData(data.profile$resident);
       }
       if (this.$refs.profile$source_placearearemote) {
-        this.$refs.profile$residentarearemote[0].setData(
+        this.$refs.profile$source_placearearemote[0].setData(
           data.profile$source_place
         );
       }
@@ -404,10 +450,11 @@ export default {
               ]
             },
             {
-              key: "profile$birthday",
+              key: this.$attrs.status == 1 ? "" : "profile$birthday",
               name: "出生日期",
               type: "date",
               value: "",
+              hidden: this.$attrs.status == 1 ? "hidden" : false,
               validator: [
                 {
                   required: true,
@@ -502,9 +549,10 @@ export default {
               ]
             },
             {
-              key: "profile$health_status",
+              key: this.$attrs.status == 1 ? "" : "profile$health_status",
               name: "健康状况",
               type: "select",
+              hidden: this.$attrs.status == 1 ? "hidden" : false,
               isId: true,
               code: 7,
               value: "",
@@ -551,10 +599,11 @@ export default {
               ]
             },
             {
-              key: "profile$graduate_type",
+              key: this.$attrs.status == 1 ? "" : "profile$graduate_type",
               name: "学生来源（招生对象）",
               type: "select",
               value: "",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               options: [
                 {
                   label: "应届",
@@ -581,9 +630,10 @@ export default {
               ]
             },
             {
-              key: "profile$cooperation_type",
+              key: this.$attrs.status == 1 ? "" : "profile$cooperation_type",
               name: "联招合作类型",
               type: "select",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               code: 16,
               isId: true,
               value: "",
@@ -634,6 +684,10 @@ export default {
               ]
             },
             {
+              type: "empty",
+              hidden: this.$attrs.status == 1 ? "none" : false
+            },
+            {
               key: "profile$recruit_type",
               name: "招生方式",
               type: "select",
@@ -654,6 +708,41 @@ export default {
                   }
                 }
               ]
+            },
+            {
+              key: this.$attrs.status != 1 ? "" : "profile$graduate_type",
+              name: "学生来源",
+              type: "select",
+              value: "",
+              hidden: this.$attrs.status != 1 ? "none" : false,
+              options: [
+                {
+                  label: "应届",
+                  value: "应届"
+                },
+                {
+                  label: "往届",
+                  value: "往届"
+                }
+              ],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请选择学生来源",
+                  validator: (r, v, c) => {
+                    if (!v) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              type: "empty",
+              hidden: this.$attrs.status != 1 ? "none" : false
             },
             {
               key: "profile$volunteer",
@@ -727,7 +816,7 @@ export default {
                   trigger: "change",
                   message: "请选择户籍地",
                   validator: (r, v, c) => {
-                    if (!v || !v[0] || !v[1]) {
+                    if (!v || !v[0] || !v[1] || !v[2]) {
                       c(new Error(r.message));
                     } else {
                       c();
@@ -757,8 +846,10 @@ export default {
               ]
             },
             {
-              key: "profile$family_poverty_status",
+              key:
+                this.$attrs.status == 1 ? "" : "profile$family_poverty_status",
               name: "家庭贫困程度",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               type: "select",
               code: 12,
               isId: true,
@@ -766,15 +857,17 @@ export default {
               options: []
             },
             {
-              key: "profile$zip_code",
+              key: this.$attrs.status == 1 ? "" : "profile$zip_code",
               name: "家庭地址邮编",
               type: "number",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               value: ""
             },
             {
-              key: "profile$residence_type",
+              key: this.$attrs.status == 1 ? "" : "profile$residence_type",
               name: "学生居住地类型",
               type: "select",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               code: 8,
               isId: true,
               value: "",
@@ -801,9 +894,10 @@ export default {
               ]
             },
             {
-              key: "profile$create_file",
+              key: this.$attrs.status == 1 ? "" : "profile$create_file",
               name: "是否建档立卡贫困户",
               type: "select",
+              hidden: this.$attrs.status == 1 ? "none" : false,
               value: "",
               options: [
                 {
@@ -821,7 +915,7 @@ export default {
                   trigger: "change",
                   message: "请确定是否建档立卡贫困户",
                   validator: (r, v, c) => {
-                    if (!v) {
+                    if (v == null || v == undefined) {
                       c(new Error(r.message));
                     } else {
                       c();
@@ -863,6 +957,7 @@ export default {
                       c(new Error("请输入正确的手机号！"));
                     }
                   },
+                  message: "请填写正确的手机号码",
                   trigger: "blur"
                 }
               ]
@@ -888,11 +983,47 @@ export default {
                   }
                 }
               ]
+            },
+            {
+              type: "empty",
+              hidden: this.$attrs.status != 1 ? "none" : false
+            },
+            {
+              key: this.$attrs.status != 1 ? "" : "profile$create_file",
+              name: "是否建档立卡",
+              type: "select",
+              hidden: this.$attrs.status != 1 ? "none" : false,
+              value: "",
+              options: [
+                {
+                  value: 1,
+                  label: "是"
+                },
+                {
+                  value: 0,
+                  label: "否"
+                }
+              ],
+              validator: [
+                {
+                  required: true,
+                  trigger: "change",
+                  message: "请确定是否建档立卡",
+                  validator: (r, v, c) => {
+                    if (v == null || v == undefined) {
+                      c(new Error(r.message));
+                    } else {
+                      c();
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
         {
           title: "在校信息",
+          hidden: this.$attrs.status == 1 ? "none" : false,
           span: "x",
           fields: [
             {
@@ -1129,6 +1260,7 @@ export default {
         },
         {
           title: "寄宿信息",
+          hidden: this.$attrs.status == 1 ? "none" : false,
           span: "x",
           fields: [
             {
@@ -1180,6 +1312,7 @@ export default {
     }
   },
   created() {
+    debugger;
     window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
     this.student_id = this.$attrs.student_id;
@@ -1187,7 +1320,7 @@ export default {
     this.form.forEach((group, i) => {
       group.fields.forEach((field, j) => {
         ((f, gindex, findex) => {
-          if (f.code !== null && f.code !== undefined) {
+          if (f.code !== null && f.code !== undefined && !f.hidden) {
             axios
               .post("/api/pc/get-search-config", {
                 type: f.code
@@ -1251,10 +1384,10 @@ export default {
   float: left;
 }
 .teacher-edit-form .el-col.arealevel2 {
-  width: 40%;
+  width: 20%;
   float: left;
   ::v-deep.el-select {
-    width: 23%;
+    width: calc(50% - 4px);
   }
 }
 .teacher-edit-form .el-col.arealevel {

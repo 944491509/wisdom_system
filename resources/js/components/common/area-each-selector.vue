@@ -47,6 +47,10 @@
 </template>
 <script>
 import { Util } from "../../common/utils";
+
+// const BASE_URL = "http://localhost:9999";
+const BASE_URL = "";
+
 export default {
   name: "AreaSelector",
   props: {
@@ -115,7 +119,7 @@ export default {
           resolve(this.cache[area_code]);
         } else {
           axios
-            .post("/api/location/get-area", {
+            .post(BASE_URL + "/api/location/get-area", {
               area_code
             })
             .then(res => {

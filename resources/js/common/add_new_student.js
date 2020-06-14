@@ -24,14 +24,19 @@ if (dom) {
     data() {
       return {
         schoolid,
-        teacherName: '',
+        studentName: '',
         student_id: '',
+        title:'',
         status: 2 // 2 学生 1 未认证
       }
     },
     created() {
+
       if(getQueryString('status') == '1'){
         this.status = 1
+        this.title = '创建新的用户档案'
+      }else{
+        this.title = '创建新的学生档案'
       }
       if (window.location.pathname.endsWith('edit')) {
         this.student_id = getQueryString('uuid')
@@ -41,29 +46,8 @@ if (dom) {
           })
           .then(res => {
             if (Util.isAjaxResOk(res)) {
-              debugger
-              let data = {
-                campus_id: res.data.data.campus_id,
-                ...res.data.data.profile,
-                ...res.data.data.teacher,
-              };
-              ['birthday',
-                'party_time',
-                'graduation_time',
-                'final_graduation_time',
-                'title_start_at',
-                'work_start_at',
-                'hired_at'
-              ].forEach(k => {
-                if (data[k].includes('.')) {
-                  data[k] = data[k].replace(/\./g, "-")
-                //   if (data[k].split('-').length < 3) {
-                //     data[k] = data[k] + '-01'
-                //   }
-                }
-              })
-              this.$refs.teacherform.setData(data)
-              this.teacherName = res.data.data.teacher.name
+              this.studentName = res.data.data[0].user.name
+              this.$refs.studentform.setData(res.data.data[0])
             }
           });
       }

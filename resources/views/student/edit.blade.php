@@ -9,11 +9,11 @@
             <div class="col-sm-12 col-md-12 col-xl-12">
                 <div class="card">
                     <div class="card-head">
-                        <header class="full-width">
-                            创建新的学生档案
+                        <header class="full-width" v-if="studentName">
+                            编辑“@{{studentName}}”的档案
                         </header>
                     </div>
-                    <student-form ref="teacherform" :schoolid="schoolid" :student_id="student_id"></student-form>
+                    <student-form ref="studentform" :schoolid="schoolid" :student_id="student_id" :status="status"></student-form>
                 </div>
             </div>
         </div>
