@@ -1183,6 +1183,7 @@ export default {
     window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
     this.student_id = this.$attrs.student_id;
+    this.status = this.$attrs.status;
     this.form.forEach((group, i) => {
       group.fields.forEach((field, j) => {
         ((f, gindex, findex) => {

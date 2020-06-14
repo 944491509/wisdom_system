@@ -27,15 +27,6 @@ class StudentsController extends Controller
      */
     public function edit(StudentRequest $request)
     {
-        $dao                               = new UserDao();
-        $student                           = $dao->getUserByUuid($request->uuid());
-        $this->dataForView['gradeManager'] = GradeManager::where('monitor_id', $student->id)->first();
-        $this->dataForView['student']      = $student;
-        $grade                             = $student->gradeUser();
-        $this->dataForView['is_show']      = $grade ? 1 : 0;
-        $this->dataForView['pageTitle']    = '档案管理';
-        $this->dataForView['addition']     = StudentAdditionInformation::where('user_id', $student['id'])->first();
-        $this->dataForView['gradeUser']    = GradeUser::where('user_id', $student['id'])->first();
         return view('student.edit', $this->dataForView);
     }
 

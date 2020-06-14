@@ -92,7 +92,7 @@ if (appdom && schooldom) {
       optCommand(command, data) {
         switch (command) {
           case 'edit':
-            window.open('/verified_student/profile/edit?uuid=' + data.uuid)
+            window.open('/verified_student/profile/edit?uuid=' + data.user_id)
             break
           case 'photo':
             window.open('/teacher/student/edit-avatar?uuid=' + data.uuid)

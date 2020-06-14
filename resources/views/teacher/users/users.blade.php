@@ -32,6 +32,11 @@ use App\User;
                                         查询
                                     </el-button>
                                 </div>
+                                <div slot="opt" style="float: right;margin: 12px 0;">
+                                    <a href="{{ route('school_manager.student.add') }}?status=1" class="btn btn-primary pull-right">
+                                        添加新用户 <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
                             </search-bar-new>
                         </div>
                         <div class="table-responsive">

@@ -25,18 +25,23 @@ if (dom) {
       return {
         schoolid,
         teacherName: '',
-        teacher_id: ''
+        student_id: '',
+        status: 2 // 2 学生 1 未认证
       }
     },
     created() {
-      if (window.location.pathname.endsWith('modify')) {
-        this.teacher_id = getQueryString('uuid')
+      if(getQueryString('status') == '1'){
+        this.status = 1
+      }
+      if (window.location.pathname.endsWith('edit')) {
+        this.student_id = getQueryString('uuid')
         axios
-          .post("/school_manager/teachers/get-teacher-profile", {
-            teacher_id: this.teacher_id
+          .post("/school_manager/student/info", {
+            student_id: this.student_id
           })
           .then(res => {
             if (Util.isAjaxResOk(res)) {
+              debugger
               let data = {
                 campus_id: res.data.data.campus_id,
                 ...res.data.data.profile,
