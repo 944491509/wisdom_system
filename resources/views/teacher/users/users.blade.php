@@ -67,6 +67,15 @@ use App\User;
                                     prop="mobile"
                                     label="联系电话">
                                 </el-table-column>
+                                <el-table-column
+                                width="280"
+                                    label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" @click="gokeEdit(scope.row)">
+                                            <i class="el-icon-edit"></i> 编辑
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
                             </el-table>
                             <div class="table-footer">
                                 <el-pagination

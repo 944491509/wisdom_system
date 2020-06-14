@@ -101,6 +101,9 @@ if (appdom && schooldom) {
             break
         }
       },
+      gokeEdit(data) {
+        window.open('/verified_student/profile/edit?uuid=' + data.user_id + '&status=1')
+      },
       gokebiao(data) {
         window.open('/school_manager/timetable/manager/view-grade-timetable?uuid=' + data.grade_id)
       },
