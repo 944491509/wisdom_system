@@ -33,7 +33,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、手机号" v-model="values.keyword"></el-input>
       <slot></slot>
       <slot name="opt"></slot>
     </div>
@@ -75,7 +75,7 @@
       <slot name="opt"></slot>
     </div>
     <div v-if="mode === 'users'">
-      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、手机号" v-model="values.keyword"></el-input>
       <slot name="opt"></slot>
     </div>
   </div>
