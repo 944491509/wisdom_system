@@ -21,6 +21,9 @@ use App\User;
         .cell .转学{
             color: #66D9FF;
         }
+        .table-responsive .el-table__header{
+            border-bottom: 1px solid #dee2e6
+        }
     </style>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-xl-12">

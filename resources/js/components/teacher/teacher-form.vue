@@ -50,11 +50,11 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-          <el-col :span="24">
-              <el-form-item label="备注" prop="notes">
-                  <el-input type="textarea" v-model="notes"></el-input>
-              </el-form-item>
-          </el-col>
+        <el-col :span="24">
+          <el-form-item label="备注" prop="notes">
+            <el-input type="textarea" v-model="notes"></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
       <el-form-item>
         <el-button :loading="pending" type="primary" @click="submitForm">提交</el-button>
@@ -136,6 +136,11 @@ export default {
                 }
               });
             }
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error"
+            });
           }
         });
       } catch (e) {}
@@ -182,7 +187,7 @@ export default {
   data() {
     return {
       pending: false,
-      notes: '',
+      notes: "",
       form: [
         {
           title: "",
@@ -1350,7 +1355,7 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss" scoped>
 .teacher-edit-form .el-select {
   width: 100%;
 }
@@ -1366,6 +1371,12 @@ export default {
 }
 .teacher-edit-form .el-divider--horizontal {
   margin-top: 12px;
+}
+.teacher-edit-form {
+  ::v-deep.el-form-item__label {
+    padding: 0;
+    margin: 0;
+  }
 }
 .teacher-edit-form .form-divider {
   font-size: 18px;
