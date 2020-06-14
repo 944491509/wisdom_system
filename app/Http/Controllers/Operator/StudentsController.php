@@ -111,6 +111,8 @@ class StudentsController extends Controller
             $studentProfileDao       = new StudentProfileDao();
             $profileData['user_id']  = $user->id;
             $profileData['uuid']     = Uuid::uuid4()->toString();
+            $profileData['year']     = date('Y');
+            $profileData['serial_number']  = 0;
             $profileData['birthday'] = GradeAndYearUtil::IdNumberToBirthday($profileData['id_number'])->getData();
             $studentProfileDao->create($profileData);
 
@@ -140,7 +142,7 @@ class StudentsController extends Controller
     {
         $data      = $request->getFormData();
         $studentId = $request->get('student_id');
-        $campusId  = $request->get('campus_id');
+        $majorId  = $request->get('major_id');
         $gradeId   = $request->get('grade_id');
 
         $userDao    = new UserDao;
@@ -160,12 +162,12 @@ class StudentsController extends Controller
         try {
             $userDao->updateUserInfo($studentId, $data['user']);
             $profileDao->updateStudentProfile($studentId, $data['profile']);
-            $gradeDao->updateDataByUserId($studentId, ['grade_id' => $gradeId, 'campus_id' => $campusId]);
+            $gradeDao->updateDataByUserId($studentId, ['grade_id' => $gradeId, 'campus_id' => $majorId]);
             DB::commit();
             return JsonBuilder::Success('学生档案修改成功');
         } catch (Exception $exception) {
             DB::rollBack();
-            return JsonBuilder::Error('修改成功');
+            return JsonBuilder::Error('修改失败'. $exception->getMessage());
         }
 
     }
@@ -195,7 +197,7 @@ class StudentsController extends Controller
             'addition' => $user->profile->additionInformation,
             'major_id' => $user->gradeUser->major_id,
             'grade_id' => $user->gradeUser->grade_id,
-            'status'   => $user->status
+            'status'   => $user->status,
         ];
         return JsonBuilder::Success($data);
     }
