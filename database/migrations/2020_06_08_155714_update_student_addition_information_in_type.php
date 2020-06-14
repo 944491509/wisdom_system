@@ -14,7 +14,7 @@ class UpdateStudentAdditionInformationInType extends Migration
     public function up()
     {
         Schema::table('student_addition_information', function (Blueprint $table) {
-            $table->integer('borrow_type')->comment('寄宿类型');
+            $table->integer('borrow_type')->default(0)->comment('寄宿类型');
         });
     }
 

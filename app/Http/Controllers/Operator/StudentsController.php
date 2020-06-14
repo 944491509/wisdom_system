@@ -111,6 +111,8 @@ class StudentsController extends Controller
             $studentProfileDao       = new StudentProfileDao();
             $profileData['user_id']  = $user->id;
             $profileData['uuid']     = Uuid::uuid4()->toString();
+            $profileData['year']     = date('Y');
+            $profileData['serial_number']  = 0;
             $profileData['birthday'] = GradeAndYearUtil::IdNumberToBirthday($profileData['id_number'])->getData();
             $studentProfileDao->create($profileData);
 
@@ -195,7 +197,7 @@ class StudentsController extends Controller
             'addition' => $user->profile->additionInformation,
             'major_id' => $user->gradeUser->major_id,
             'grade_id' => $user->gradeUser->grade_id,
-            'status'   => $user->status
+            'status'   => $user->status,
         ];
         return JsonBuilder::Success($data);
     }
