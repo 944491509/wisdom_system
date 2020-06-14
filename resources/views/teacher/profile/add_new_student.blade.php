@@ -10,10 +10,10 @@
             <div class="card">
                 <div class="card-head">
                     <header class="full-width">
-                        创建新的学生档案
+                        <span>@{{title}}</span>
                     </header>
                 </div>
-                <student-form ref="teacherform" :schoolid="schoolid" :teacher_id="teacher_id"></student-form>
+                <student-form ref="teacherform" :schoolid="schoolid" :student_id="student_id" :status="status"></student-form>
             </div>
         </div>
     </div>

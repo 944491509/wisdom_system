@@ -32,6 +32,11 @@ use App\User;
                                         查询
                                     </el-button>
                                 </div>
+                                <div slot="opt" style="float: right;margin: 12px 0;">
+                                    <a href="{{ route('school_manager.student.add') }}?status=1" class="btn btn-primary pull-right">
+                                        添加新用户 <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
                             </search-bar-new>
                         </div>
                         <div class="table-responsive">
@@ -61,6 +66,15 @@ use App\User;
                                 <el-table-column
                                     prop="mobile"
                                     label="联系电话">
+                                </el-table-column>
+                                <el-table-column
+                                width="280"
+                                    label="操作">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" @click="gokeEdit(scope.row)">
+                                            <i class="el-icon-edit"></i> 编辑
+                                        </el-button>
+                                    </template>
                                 </el-table-column>
                             </el-table>
                             <div class="table-footer">

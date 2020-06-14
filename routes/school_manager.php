@@ -104,11 +104,12 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::any('grade/set-adviser', 'GradesController@set_adviser')->name('school_manager.grade.set-adviser');     // 设置班主任
 
     // 学生管理: 只有 学校管理员以上级别的角色才可以添加,编辑,学生school_manager.scenery.edit
-    Route::get('student/add', 'StudentsController@add')->name('school_manager.student.add');                // 添加学生
-    Route::get('student/edit', 'StudentsController@edit')->name('school_manager.student.edit');             // 编辑学生
+    Route::get('student/add', 'StudentsController@add')->name('school_manager.student.add');                // 添加学生页面
+    Route::get('student/edit', 'StudentsController@edit')->name('school_manager.student.edit');             // 编辑学生页面
+    Route::post('student/update', 'StudentsController@update')->name('school_manager.student.update');      // 保存学生
     Route::post('student/create', 'StudentsController@create')->name('school_manager.student.create');      // 保存学生
-    Route::post('student/info', 'StudentsController@create')->name('school_manager.student.update');      // 学生信息
-    Route::get('school/users', 'StudentsController@school_users')->name('school_manager.school.users');      // 已注册用户
+    Route::post('student/info', 'StudentsController@info')->name('school_manager.student.info');            // 学生信息
+    Route::get('school/users', 'StudentsController@school_users')->name('school_manager.school.users');     // 已注册用户
 
     // 学校风采管理
     Route::get('scenery/list', 'SceneryController@list')->name('school_manager.scenery.list');      // 风采列表
