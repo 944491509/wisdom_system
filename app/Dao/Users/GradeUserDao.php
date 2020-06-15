@@ -170,7 +170,7 @@ class GradeUserDao
         $map = ['grade_users.school_id' => $schoolId];
         // 年级
         if (isset($where['year'])) {
-            $map['student_profiles.year'] = $where['year'];
+            $map['grades.year'] = $where['year'];
         }
         // 专业
         if (isset($where['major_id'])) {
