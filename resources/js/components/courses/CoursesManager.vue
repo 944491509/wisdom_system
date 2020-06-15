@@ -4,8 +4,8 @@
       <p class="courses-list-title">
         <filters-from :majors="majors" :years="grades" @searchSubmit="searchSubmit" />
         <el-button type="primary" @click="downloadTable">导出</el-button>
-        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
-        <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
+        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加课程</el-button>
+        <!-- <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button> -->
       </p>
       <courses-list
         :courses="courses"
@@ -28,7 +28,7 @@
     </div>
 
     <el-dialog
-      title="必修课程登记表"
+      title="课程登记表"
       :visible.sync="showCourseFormFlag"
       :fullscreen="true"
       custom-class="course-form-drawer"
@@ -92,6 +92,7 @@
             <el-form-item label="课程类型">
               <el-select v-model="courseModel.optional" placeholder="课程类型">
                 <el-option label="必修课" value="0"></el-option>
+                <el-option label="选修课" value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
