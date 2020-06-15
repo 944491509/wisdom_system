@@ -58,7 +58,7 @@ if (appdom && schooldom) {
             where: {
               ...this.where,
               ...(mode === 'users' ? {
-                status: 5
+                status: 1 // 未认证
               } : {})
             }
           }
