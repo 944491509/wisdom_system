@@ -13,6 +13,11 @@
                             <el-date-picker
                               v-model="date"
                               type="date"
+                              :picker-options="{
+                                disabledDate(time) {
+                                    return time.getTime() > Date.now();
+                                }
+                              }"
                               placeholder="选择日期">
                             </el-date-picker>
                             <el-select size="small" v-model="gradeValue" placeholder="请选择班级">

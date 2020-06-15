@@ -33,7 +33,46 @@ class NoticeController extends Controller
             $where = ['school_id' => $schoolId];
         }
 
-        $data                      = $dao->getNoticeBySchoolId($where);
+        $data = $dao->getNoticeBySchoolId($where);
+        foreach ($data as $key => $val) {
+            $grades = $val->grades;
+            $grade = [];
+            $organization = [];
+            foreach ($grades as $k => $item) {
+                if($item->grade_id != 0) {
+                    $grade[] = [
+                        'grade_id' => $item->grade->id,
+                        'name' => $item->grade->name,
+                    ];
+                }
+                else {
+                    $grade[] = [
+                        'grade_id' => $item->grade_id,
+                        'name' => '',
+                    ];
+                }
+            }
+            unset($val->grades);
+            $organizations = $val->selectedOrganizations;
+            foreach ($organizations as $k => $item) {
+                if($item->organization_id != 0 ) {
+                    $organization[] = [
+                        'organization_id' => $item->organization->id,
+                        'name' => $item->organization->name,
+                    ];
+                } else {
+                    $organization[] = [
+                        'organization_id' => $item->organization_id,
+                        'name' => '',
+                    ];
+                }
+
+            }
+            unset($val->selectedOrganizations);
+            $data[$key]['grade'] = $grade;
+            $data[$key]['organization'] = $organization;
+
+        }
         $this->dataForView['data'] = $data;
         $this->dataForView['schoolId'] = $schoolId;
         $this->dataForView['userRoles'] = null;
@@ -96,6 +135,11 @@ class NoticeController extends Controller
         $data              = $request->get('notice');
         $data['school_id'] = $schoolId;
         $data['user_id']   = $request->user()->id;
+        $selectedOrganizations = $data['organization_id'] ?? [];
+        $gradeIds = $data['grade_id'] ?? [];
+        unset($data['organization_id']);
+        unset($data['grade_id']);
+
 
         if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
             return JsonBuilder::Error('封面图不能为空');
@@ -105,12 +149,11 @@ class NoticeController extends Controller
             return JsonBuilder::Error('检查类型不能为空');
         }
 
-
         $dao = new  NoticeDao;
         if (isset($data['id'])) {
-            $result = $dao->update($data);
+            $result = $dao->update($data, $selectedOrganizations, $gradeIds);
         } else {
-            $result = $dao->add($data);
+            $result = $dao->add($data, $selectedOrganizations, $gradeIds);
         }
         if ($result->isSuccess() && $result->getData()->status) {
             event(new NoticeSendEvent($result->getData()));

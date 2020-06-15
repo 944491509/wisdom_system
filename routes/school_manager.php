@@ -8,9 +8,10 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::get('school/majors', 'SchoolsController@majors')->name('school_manager.school.majors'); // 显示学校的所有专业
     Route::get('school/years', 'SchoolsController@years')->name('school_manager.school.years'); // 显示学校的所有年级
     Route::get('school/grades', 'SchoolsController@grades')->name('school_manager.school.grades'); // 显示学校的所有班级
-    Route::get('school/teachers', 'SchoolsController@teachers')->name('school_manager.school.teachers'); // 显示学校的所有老师
-    Route::get('school/students', 'SchoolsController@students')->name('school_manager.school.students'); // 显示学校的所有学生
-    Route::get('school/rooms', 'SchoolsController@rooms')->name('school_manager.school.rooms'); // 显示学校的所有学生
+    Route::get('school/teachers', 'SchoolsController@teachers')->name('school_manager.school.teachers'); // 显示学校的所有老师页面
+    Route::get('school/students', 'SchoolsController@students')->name('school_manager.school.students'); // 显示学校的所有学生页面
+
+    Route::get('school/rooms', 'SchoolsController@rooms')->name('school_manager.school.rooms'); // 显示学校的所有房间
     Route::get('school/organization-manager', 'SchoolsController@organization')
         ->name('school_manager.school.organization-manager'); // 显示学校的组织架构
     Route::post('organizations/load-parent', 'SchoolsController@load_parent')
@@ -187,6 +188,9 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::post('textbook-submit', 'TextbookController@submit')
         ->name('school_manager.textbook.submit');
 
+
+    // 校历事件类型标签
+    Route::any('calendar/tagList', 'Calendar\IndexController@tagList')->name('school_manger.school.calendar.tagList');
 
     // 校历事件添加
     Route::any('calendar/save', 'Calendar\IndexController@save')->name('school_manger.school.calendar.save');

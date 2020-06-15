@@ -222,19 +222,12 @@ class CourseDao
     }
 
     /**
-     * 根据 uuid 删除课程所有数据
-     * @param $uuid
+     * 删除课程所有数据
+     * @param $course
      * @return IMessageBag
      */
-    public function deleteCourseByUuid($uuid){
+    public function deleteCourseByUuid($course){
         $bag = new MessageBag(JsonBuilder::CODE_ERROR);
-        $course = $this->getCourseByUuid($uuid);
-        if($course){
-
-            if(count($course->timetableItems)){
-                $bag->setMessage('该课程已经在课程表中安排了课时, 无法删除');
-                return $bag;
-            }
 
             DB::beginTransaction();
             try{
@@ -252,7 +245,6 @@ class CourseDao
                 DB::rollBack();
                 $bag->setMessage($exception->getMessage());
             }
-        }
         return $bag;
     }
 
@@ -393,10 +385,8 @@ class CourseDao
         try{
             $data['uuid'] = Uuid::uuid4()->toString();
             $fillableData = $this->getFillableData($courseModel,$data);
-
             // 先保存课程数据
             $course = Course::create($fillableData);
-
             if($course){
                 // 保存授课老师
                 if(!empty($teachersId)){
@@ -442,13 +432,13 @@ class CourseDao
                 }
 
                 // 检查是选修课还是必修课, 如果是选修课, 则需要保留选修课的上课时间信息, 并保存到单独的记录表中
-                if(intval($data['optional']) === Course::ELECTIVE_COURSE){
-                    // 是选修课
-                    $this->_saveCourseArrangement($course, $data);
-                    //添加course_electives表的关联数据
-                    $this->_saveCourseElective($course, $data);
-
-                }
+//                if(intval($data['optional']) === Course::ELECTIVE_COURSE){
+//                    // 是选修课
+//                    $this->_saveCourseArrangement($course, $data);
+//                    //添加course_electives表的关联数据
+//                    $this->_saveCourseElective($course, $data);
+//
+//                }
 
                 DB::commit();
                 $messageBag->setCode(JsonBuilder::CODE_SUCCESS);

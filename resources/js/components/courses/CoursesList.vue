@@ -93,7 +93,7 @@
                 <template slot-scope="scope">
                     <el-button-group>
                         <el-button size="mini" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)"></el-button>
-                        <el-button size="mini" icon="el-icon-timer" @click="handleViewClick(scope.$index, scope.row)"></el-button>
+                        <!-- <el-button size="mini" icon="el-icon-timer" @click="handleViewClick(scope.$index, scope.row)"></el-button> -->
                         <el-button v-if="canDelete" size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index, scope.row)"></el-button>
                     </el-button-group>
                 </template>

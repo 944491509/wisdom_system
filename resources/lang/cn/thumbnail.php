@@ -185,5 +185,6 @@ return [
     'students-manager' => '学生信息',
     'grades-check-in' => '班级签到',
     'grades-evaluations' => '班级评分',
+    'task_detail' => '任务详情',
 ];
 

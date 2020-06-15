@@ -18,6 +18,7 @@ if(document.getElementById('school-calendar-app')){
                     tag:'',
                     content:'',
                     id:'',
+                    type: []
                 },
                 events: [],
                 schoolId: null,
@@ -97,6 +98,9 @@ if(document.getElementById('school-calendar-app')){
                 this.form.id = '';
             },
             onSubmit: function(){
+              this.form.type = this.form.tag.map(e => {
+                return this.tags.findIndex(a => e === a)
+              })
                 if(Util.isEmpty(this.form.event_time)){
                     this.$message.error('请填写活动日期');
                     return;
@@ -105,7 +109,10 @@ if(document.getElementById('school-calendar-app')){
                     this.$message.error('请填写活动内容');
                     return;
                 }
-
+                if (this.form.type.length == 0) {
+                  this.$message.error('请选择事件标签');
+                  return;
+                }
                 axios.post(
                     Constants.API.CALENDAR.SAVE,
                     {event: this.form}
@@ -115,7 +122,7 @@ if(document.getElementById('school-calendar-app')){
                             message: '校历保存成功',
                             type: 'success'
                         });
-                        this._reloadCurrentPage();
+                        // this._reloadCurrentPage();
                     }
                 })
             },
@@ -162,6 +169,8 @@ if(document.getElementById('school-calendar-app')){
              * @returns {*}
              */
             getEvent: function(day){
+              // console.log(day)
+              // console.log(this._locateEvent(day))
                 return this._locateEvent(day);
             },
             _locateEvent: function(day){

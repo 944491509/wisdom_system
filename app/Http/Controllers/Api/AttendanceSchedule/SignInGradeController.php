@@ -85,6 +85,12 @@ class SignInGradeController extends Controller
         $user = $request->user();
         $schoolId = $user->getSchoolId();
 
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
+
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById($schoolId);
         $configuration = $school->configuration;
@@ -447,6 +453,13 @@ class SignInGradeController extends Controller
             $gradeDao = new  GradeDao;
             $schoolId = $gradeDao->getGradeById($gradeId)->school_id;
         }
+
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
+
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById($schoolId);
         $configuration = $school->configuration;
@@ -568,6 +581,12 @@ class SignInGradeController extends Controller
         if (empty($schoolId)) {
             $gradeDao = new  GradeDao;
             $schoolId = $gradeDao->getGradeById($gradeId)->school_id;
+        }
+
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
         }
 
         $schoolDao = new SchoolDao();

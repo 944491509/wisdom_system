@@ -3,29 +3,31 @@
 
 namespace App\Http\Controllers\Api\Cloud;
 
-use App\User;
-use Exception;
-use App\Models\Acl\Role;
-use Endroid\QrCode\QrCode;
-use App\Utils\JsonBuilder;
-use Illuminate\Http\Request;
-use App\Models\Schools\Facility;
-use App\ThirdParty\CloudOpenApi;
-use App\Dao\Timetable\TimeSlotDao;
-use App\Http\Controllers\Controller;
-use App\Models\Users\UserCodeRecord;
-use Illuminate\Support\Facades\Redis;
-use App\Dao\Schools\GradeResourceDao;
-use App\Dao\FacilityManage\FacilityDao;
-use App\Dao\Students\StudentProfileDao;
-use App\Dao\Timetable\TimetableItemDao;
-use App\Models\Students\StudentProfile;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Cloud\CloudRequest;
 use App\Dao\AttendanceSchedules\AttendancesDao;
-use Endroid\QrCode\Exception\InvalidPathException;
-use App\Models\AttendanceSchedules\AttendancesDetail;
 use App\Dao\AttendanceSchedules\AttendancesDetailsDao;
+use App\Dao\FacilityManage\FacilityDao;
+use App\Dao\Schools\GradeResourceDao;
+use App\Dao\Students\StudentProfileDao;
+use App\Dao\Timetable\TimeSlotDao;
+use App\Dao\Timetable\TimetableItemDao;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Cloud\CloudRequest;
+use App\Models\Acl\Role;
+use App\Models\AttendanceSchedules\AttendancesDetail;
+use App\Models\Schools\Facility;
+use App\Models\Students\StudentProfile;
+use App\Models\Users\UserCodeRecord;
+use App\ThirdParty\CloudOpenApi;
+use App\User;
+use App\Utils\JsonBuilder;
+use App\Utils\Time\GradeAndYearUtil;
+use Carbon\Carbon;
+use Endroid\QrCode\Exception\InvalidPathException;
+use Endroid\QrCode\QrCode;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class CloudController extends Controller
 {
@@ -44,8 +46,13 @@ class CloudController extends Controller
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
         $school = $facility->school;
+<<<<<<< HEAD
         $res    = Redis::get('school:' . $school->id . ':info:' . $code);
         if (is_null($res)) {
+=======
+        $res = Redis::get('school:'.$school->id.':info:'.$code);
+        if(is_null($res)) {
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
             /**
              * @var Facility $facility
              */
@@ -95,10 +102,16 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
+<<<<<<< HEAD
 
         $res = Redis::get('grade:' . 'code_' . $code);
         if (is_null($res)) {
             $room        = $facility->room;
+=======
+        $res = Redis::get('grade:'.'code_'.$code);
+        if(is_null($res)) {
+            $room = $facility->room;
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
             $timeSlotDao = new TimeSlotDao;
             /**
              * 公有班牌
@@ -150,9 +163,15 @@ class CloudController extends Controller
                 'photo'  => $photo
             ];
             // 默认 60s
+<<<<<<< HEAD
             Redis::setex('grade:' . 'code_' . $code, 60 * 10, json_encode($data));
 
         } else {
+=======
+            Redis::setex('grade:'.'code_'.$code, 60 * 10, json_encode($data));
+        }
+        else {
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
             $data = json_decode($res, true);
         }
 
@@ -174,8 +193,13 @@ class CloudController extends Controller
         if (empty($facility)) {
             return JsonBuilder::Error('设备码错误,或设备已关闭');
         }
+<<<<<<< HEAD
         $res = Redis::get('course:code_' . $code);
         if (is_null($res)) {
+=======
+        $res = Redis::get('course:code_'.$code);
+        if(is_null($res)) {
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
             $timeSlotDao = new TimeSlotDao;
             /**
              * 公有班牌
@@ -210,7 +234,11 @@ class CloudController extends Controller
             // 默认 60s
             Redis::setex('course:code_' . $code, 60 * 10, json_encode($data));
         } else {
+<<<<<<< HEAD
             $data = json_decode($res, true);
+=======
+            $data  = json_decode($res, true);
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
         }
         return JsonBuilder::Success($data);
     }
@@ -266,7 +294,13 @@ class CloudController extends Controller
         } else {
             $data = json_decode($res, true);
         }
+<<<<<<< HEAD
         return JsonBuilder::Success($data, '签到二维码');
+=======
+
+
+        return JsonBuilder::Success($data,'签到二维码');
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
     }
 
     /**
@@ -294,11 +328,36 @@ class CloudController extends Controller
             return JsonBuilder::Error('暂无课程');
         }
 
+<<<<<<< HEAD
         $key  = 'school:' . $item->school_id . ':time_slot:' . $item->time_slot_id . ':grade:' . $item->grade_id;
         $sign = Redis::lrange($key . ':sign:', 0, -1);
 
         $no_sign = Redis::lrange($key . ':truant:', 0, -1);
         $leave   = Redis::lrange($key . ':leave:', 0, -1);
+=======
+        $key = 'school:'.$item->school_id.':time_slot:'.$item->time_slot_id.':grade:'.$item->grade_id;
+        $sign = Redis::lrange($key.':sign:', 0, -1);
+
+        $no_sign = Redis::lrange($key.':truant:', 0, -1);
+        $leave = Redis::lrange($key.':leave:', 0, -1);
+
+//        /**
+//         * @var School $school
+//         */
+//        $configuration = $item->school->configuration;
+//        $now = Carbon::now(GradeAndYearUtil::TIMEZONE_CN);
+//        $month = Carbon::parse($now)->month;
+//        $term = $configuration->guessTerm($month);
+//        $weeks = $configuration->getScheduleWeek($now, null, $term);
+//        if (is_null($weeks)) {
+//              return JsonBuilder::Error('暂无课程');
+//        }
+//
+//        $week = $weeks->getScheduleWeekIndex();
+//
+//        $dao = new AttendancesDao;
+//        $attendanceInfo = $dao->isAttendanceByTimetableAndWeek($item, $week);
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
 
         $data = [
             'sign'    => count($sign),
@@ -324,6 +383,13 @@ class CloudController extends Controller
         if (empty($student)) {
             return JsonBuilder::Error('未找到学生');
         }
+        $schoolId = $student->user->getSchoolId();
+
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
 
         $timetableItemDao = new TimetableItemDao;
         $item             = $timetableItemDao->getCurrentItemByUser($student->user);
@@ -338,13 +404,18 @@ class CloudController extends Controller
         $attendancesDetailsDao = new AttendancesDetailsDao;
         $attendancesDetail     = $attendancesDetailsDao->getDetailByTimeTableIdAndStudentId($item, $student->user);
         if ($attendancesDetail) {
-            return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
+            return JsonBuilder::Error('学生已经'. $attendancesDetail->typeText() .'了');
         }
 
         $dao            = new AttendancesDao;
         $attendanceInfo = $dao->arrive($item, $student->user, AttendancesDetail::TYPE_INTELLIGENCE);
+<<<<<<< HEAD
         if ($attendanceInfo) {
             return JsonBuilder::Success('签到成功');
+=======
+        if($attendanceInfo) {
+            return  JsonBuilder::Success('签到成功');
+>>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
         } else {
             return JsonBuilder::Error('服务器错误, 签到失败');
         }
@@ -358,7 +429,13 @@ class CloudController extends Controller
      */
     public function manual(Request $request)
     {
-        $user             = $request->user();
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $dao = new AttendancesDao;
+        $isRest = $dao->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
         $timetableItemDao = new TimetableItemDao;
         $item             = $timetableItemDao->getCurrentItemByUser($user);
 
@@ -375,7 +452,7 @@ class CloudController extends Controller
             return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
         }
 
-        $dao            = new AttendancesDao;
+
         $attendanceInfo = $dao->arrive($item, $user, AttendancesDetail::TYPE_SWEEP_CODE);
         if ($attendanceInfo) {
             return JsonBuilder::Success('签到成功');

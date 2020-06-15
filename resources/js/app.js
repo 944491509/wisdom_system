@@ -85,6 +85,7 @@ require('./includes/backend/recruitment_enrol_manager'); // 招生录取
 require('./includes/backend/file_manager_app'); // 云盘管理
 require('./includes/backend/teacher_apply_new_course'); // 云盘管理
 require('./includes/backend/user_finder_app'); // 快速定位用户
+require('./includes/backend/verify-list'); // 快速定位用户
 require('./includes/backend/application_type_app'); // 申请类型管理
 require('./includes/backend/welcome_students'); // 申请类型管理
 require('./includes/backend/adviser_editor_app'); // 系主任, 班主任, 教研组长, 班长等管理程序
@@ -128,7 +129,6 @@ require('./includes/backend/teacher_oa_meeting/index'); // 后台,会议
 require('./includes/backend/teacher_oa_meeting/detail'); // 后台,会议详情
 require('./includes/backend/teacher_elective_course_manage/index'); // 后台,oa-task
 require('./includes/backend/school_importer_student.js'); // 后台, exec 导入学生
-require('./includes/backend/facility_form.js'); // 后台, exec 导入学生
+require('./includes/backend/facility_form.js'); // 后台, 设备管理
 require('./common/add_new_student.js'); // 后台,学生档案
 require('./includes/backend/auth_manager/index');  // 权限管理
-

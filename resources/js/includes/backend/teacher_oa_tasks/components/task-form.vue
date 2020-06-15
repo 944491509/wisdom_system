@@ -62,7 +62,7 @@
           ></el-cascader>-->
         </el-form-item>
         <el-form-item label="任务描述">
-          <el-input type="textarea" v-model="form.task_content" placeholder="请输入"></el-input>
+          <el-input type="textarea" maxlength="1000" v-model="form.task_content" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="关联项目">
           <el-select v-model="form.projectid" placeholder="请输入（选填）">
@@ -74,6 +74,30 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <p class="upload-title">附件资料</p>
+        <div class="uploader-box">
+          <div class="img-box item" v-for="(img, index) in imglist" :key="index">
+            <img :src="img.src" alt />
+          </div>
+          <div class="img-box img-add" v-if="imglist.length < 9">
+            <label for="task-finish-upload" class="upload-desc">
+              <i class="el-icon-plus"></i>
+              <span>最多9张</span>
+              <span>（选填）</span>
+            </label>
+            <input
+              type="file"
+              name="file"
+              accept="image/gif, image/jpeg, image/jpg, image/png, image/svg"
+              @change="onFileSelected"
+              hidden
+              ref="referenceUpload"
+              multiple="multiple"
+              id="task-finish-upload"
+              class="el-upload__input"
+            />
+          </div>
+        </div>
       </el-form>
       <div class="btn-box">
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -88,7 +112,8 @@
   </div>
 </template>
 <script>
-import { TaskApi } from "../common/api";
+import { TaskApi, addOaTask } from "../common/api";
+import { getFileURL } from '../common/utils'
 import { Util } from "../../../../common/utils";
 // import MemberSelect from "./member-chose";
 import MemberSelect from "./setmember";
@@ -146,7 +171,16 @@ export default {
         "YYYY-MM-DD hh:mm:ss"
       );
       formdata.member_userids = formdata.member_userids.toString();
-      TaskApi.excute("addOaTaskInfo", formdata).then(res => {
+      const form = new FormData()
+      Object.keys(formdata).forEach(k=>{
+        form.append(k, formdata[k])
+      })
+      if (this.imglist.length > 0) {
+        this.imglist.forEach(img => {
+          form.append("file[]", img.file);
+        });
+      }
+      addOaTask(form).then(res => {
         this.$emit("done");
       });
     },
@@ -171,6 +205,20 @@ export default {
           };
         });
       });
+    },
+    onFileSelected(e) {
+      if (e.target.files.length + this.imglist.length > 9) {
+        this.$message.error("最多上传9张图");
+      } else {
+        for (let index = 0; index < e.target.files.length; index++) {
+          const file = e.target.files[index];
+          this.imglist.push({
+            src: getFileURL(file),
+            file
+          });
+        }
+      }
+      this.$refs.referenceUpload.value = null;
     }
   },
   data() {
@@ -179,6 +227,7 @@ export default {
       form: {
         member_userids: []
       },
+      imglist: [],
       selectMb: false,
       ownerOptions: [],
       projectOptions: [],
@@ -245,6 +294,48 @@ export default {
   }
   .member-select.vie {
     right: 0;
+  }
+  .upload-title {
+    font-size: 14px;
+    color: #475B6D;
+    margin: 10px 12px;
+  }
+  .uploader-box {
+    padding: 12px;
+    .img-box {
+      display: flex;
+      width: 120px;
+      border-radius: 4px;
+      text-align: center;
+      margin: 0 12px 12px 0;
+      height: 120px;
+      border: 1px solid #aaaaaa;
+      float: left;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+    .img-box.img-add {
+      color: #aaaaaa;
+      cursor: pointer;
+      .upload-desc {
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        justify-content: center;
+        margin: 0 !important;
+        i {
+          font-size: 38px;
+        }
+      }
+    }
   }
 }
 </style>
