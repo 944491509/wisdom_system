@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Operator;
 
-use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\MajorDao;
 use App\Dao\Students\StudentAdditionInformationDao;
 use App\Dao\Students\StudentProfileDao;
@@ -13,7 +12,6 @@ use App\Http\Requests\MyStandardRequest;
 use App\Http\Requests\User\StudentRequest;
 use App\Models\Acl\Role;
 use App\User;
-use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use App\Utils\Time\GradeAndYearUtil;
 use Exception;
@@ -35,13 +33,18 @@ class StudentsController extends Controller
      * @param MyStandardRequest $request
      * @return Application|Factory|View
      */
-    public function add(MyStandardRequest $request)
+    public function add()
     {
         $this->dataForView['pageTitle'] = '学生档案管理';
         $this->dataForView['school_id'] = session('school.id');
         return view('teacher.profile.add_new_student', $this->dataForView);
     }
 
+    /**
+     * 添加学生
+     * @param StudentRequest $request
+     * @return string
+     */
     public function create(StudentRequest $request)
     {
 
@@ -98,21 +101,26 @@ class StudentsController extends Controller
                     'name'            => $user->name,
                     'user_type'       => $user->type,
                     'school_id'       => 1,
-                    'campus_id'       => $major->campus_id,
-                    'institute_id'    => $major->institute_id,
-                    'department_id'   => $major->department_id,
-                    'major_id'        => $major->id,
-                    'grade_id'        => $gradeId,
+                    'campus_id'       => $major->campus_id ?? 0,
+                    'institute_id'    => $major->institute_id ?? 0,
+                    'department_id'   => $major->department_id ?? 0,
+                    'major_id'        => $major->id ?? 0,
+                    'grade_id'        => $gradeId ?? 0,
                     'last_updated_by' => $request->user()->id
                 ]);
             }
-
 
             $studentProfileDao       = new StudentProfileDao();
             $profileData['user_id']  = $user->id;
             $profileData['uuid']     = Uuid::uuid4()->toString();
             $profileData['year']     = date('Y');
             $profileData['serial_number']  = 0;
+            if ($status == User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) { // 未认证用户
+                $profileData['educational_system']  = 0;
+                $profileData['entrance_type']  = 0;
+                $profileData['student_type']  = 0;
+                $profileData['segmented_type']  = 0;
+            }
             $profileData['birthday'] = GradeAndYearUtil::IdNumberToBirthday($profileData['id_number'])->getData();
             $studentProfileDao->create($profileData);
 
@@ -209,7 +217,7 @@ class StudentsController extends Controller
      * @param StudentRequest $request
      * @return Factory|View
      */
-    public function school_users(StudentRequest $request)
+    public function school_users()
     {
         $this->dataForView['pageTitle'] = '已注册用户管理';
         return view('teacher.users.users', $this->dataForView);
