@@ -28,11 +28,18 @@ Vue.component("AttendanceList", {
         prop="using_afternoon"
         label="考勤班次"
         width="180">
-        <template slot-scope="scope">
-          <span v-if="scope.row.using_afternoon">早中晚</span>
-          <span v-else>早晚</span>
-        </template>
-        
+        <el-table-column label="上午" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.using_afternoon">早中晚</span>
+            <span v-else>早晚</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="下午">
+          <template slot-scope="scope" align="center">
+            <span v-if="scope.row.using_afternoon">早中晚</span>
+            <span v-else>早晚</span>
+          </template>
+        </el-table-column>
       </el-table-column>
       <el-table-column
         align="center"
