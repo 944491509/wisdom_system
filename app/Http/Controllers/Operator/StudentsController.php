@@ -41,7 +41,7 @@ class StudentsController extends Controller
     }
 
     /**
-     * 添加学生 | 添加未认证用户
+     * 添加学生
      * @param StudentRequest $request
      * @return string
      */
