@@ -383,6 +383,13 @@ class CloudController extends Controller
         if (empty($student)) {
             return JsonBuilder::Error('未找到学生');
         }
+        $schoolId = $student->user->getSchoolId();
+
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
 
         $timetableItemDao = new TimetableItemDao;
         $item             = $timetableItemDao->getCurrentItemByUser($student->user);
@@ -422,7 +429,13 @@ class CloudController extends Controller
      */
     public function manual(Request $request)
     {
-        $user             = $request->user();
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $dao = new AttendancesDao;
+        $isRest = $dao->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
         $timetableItemDao = new TimetableItemDao;
         $item             = $timetableItemDao->getCurrentItemByUser($user);
 
@@ -439,7 +452,7 @@ class CloudController extends Controller
             return JsonBuilder::Error('学生已经' . $attendancesDetail->typeText() . '了');
         }
 
-        $dao            = new AttendancesDao;
+
         $attendanceInfo = $dao->arrive($item, $user, AttendancesDetail::TYPE_SWEEP_CODE);
         if ($attendanceInfo) {
             return JsonBuilder::Success('签到成功');

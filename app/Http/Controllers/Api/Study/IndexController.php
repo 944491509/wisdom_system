@@ -30,6 +30,7 @@ class IndexController extends Controller
         $user = $request->user();
 
         $schoolId = $user->getSchoolId();
+
         $schoolDao = new SchoolDao();
         $school = $schoolDao->getSchoolById($schoolId);
         $configuration = $school->configuration;
