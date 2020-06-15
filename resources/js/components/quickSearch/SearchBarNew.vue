@@ -84,6 +84,9 @@
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
 
+const BASE_URL = ''
+// const BASE_URL = "http://localhost:9999";
+
 export default {
   name: "search-bar-new",
   props: {
@@ -139,19 +142,21 @@ export default {
     "values.major_id": function(nval) {
       if (!nval) {
         this.values.grade = null;
-        this.options.grade = [];
+        this.options.grade_id = [];
         return;
       }
-      axios.post(Constants.API.LOAD_GRADES_BY_MAJOR, { id: nval }).then(res => {
-        if (Util.isAjaxResOk(res)) {
-          this.options.grade = this.toOptions(
-            res.data.data.grades,
-            "name",
-            "id"
-          );
-          this.values.grade = null;
-        }
-      });
+      axios
+        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, { id: nval })
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.grade = this.toOptions(
+              res.data.data.grades,
+              "name",
+              "id"
+            );
+            this.values.grade = null;
+          }
+        });
     },
     values: {
       deep: true,
@@ -180,14 +185,14 @@ export default {
     initStudentOptions() {
       // api/school/load-config-year
       axios
-        .get("/api/notice/school-year?school_id=" + this.schoolid)
+        .get(BASE_URL + "/api/notice/school-year?school_id=" + this.schoolid)
         .then(res => {
           if (Util.isAjaxResOk(res)) {
             this.options.year = this.toOptions(res.data.data, "name", "year");
           }
         });
       axios
-        .post(Constants.API.LOAD_MAJORS_BY_SCHOOL, {
+        .post(BASE_URL + Constants.API.LOAD_MAJORS_BY_SCHOOL, {
           id: this.schoolid,
           pageNumber: 0
         })
@@ -200,7 +205,7 @@ export default {
             );
           }
         });
-      axios.post("/api/pc/get-search-student-status").then(res => {
+      axios.post(BASE_URL + "/api/pc/get-search-student-status").then(res => {
         if (Util.isAjaxResOk(res)) {
           this.options.status = this.toOptions(
             Object.keys(res.data.data).map(k => {
@@ -231,7 +236,7 @@ export default {
         }
       ].forEach(item => {
         axios
-          .post("/api/pc/get-search-config", {
+          .post(BASE_URL + "/api/pc/get-search-config", {
             type: item.code
           })
           .then(res => {

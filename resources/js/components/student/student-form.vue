@@ -269,15 +269,18 @@ export default {
           data.profile$source_place
         );
       }
-      this.major_initing = data.grade_id
+      if (this.$refs.profile$countryarearemote) {
+        this.$refs.profile$countryarearemote[0].setData([data.profile$country]);
+      }
+      this.major_initing = data.grade_id;
     },
     resetGrade(major_id) {
       if (this.gradeOptCache && this.gradeOptCache[major_id]) {
         this.form.forEach(group => {
           group.fields.forEach(filed => {
             if (filed.key === "grade_id") {
-              filed.value = this.major_initing || '';
-              this.major_initing = ''
+              filed.value = this.major_initing || "";
+              this.major_initing = "";
               filed.options = this.gradeOptCache[major_id];
             }
           });
@@ -554,7 +557,8 @@ export default {
             {
               key: "profile$country",
               name: "籍贯",
-              type: "text",
+              type: "arearemote",
+              level: 1,
               value: "",
               validator: [
                 {
@@ -1439,6 +1443,13 @@ export default {
 .teacher-edit-form .el-col.col--5 {
   width: 20%;
   float: left;
+}
+.teacher-edit-form .el-col.arealevel1 {
+  width: 20%;
+  float: left;
+  ::v-deep.el-select {
+    width: 100%;
+  }
 }
 .teacher-edit-form .el-col.arealevel2 {
   width: 20%;
