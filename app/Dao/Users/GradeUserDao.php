@@ -170,7 +170,7 @@ class GradeUserDao
         $map = ['grade_users.school_id' => $schoolId];
         // 年级
         if (isset($where['year'])) {
-            $map['student_profiles.year'] = $where['year'];
+            $map['grades.year'] = $where['year'];
         }
         // 专业
         if (isset($where['major_id'])) {
@@ -193,6 +193,7 @@ class GradeUserDao
         $query = GradeUser::where($map)
             ->select('users.status', 'users.name', 'user_type', 'grade_users.*', 'mobile')
             ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->join('grades', 'grades.id', '=', 'grade_users.grade_id')
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
             ->whereIn('user_type', $userType);
 
