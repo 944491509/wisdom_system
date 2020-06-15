@@ -116,7 +116,7 @@ export default {
         ],
         textarea: [
           { required: true, message: "请输入内容", trigger: "blur" },
-          // { min: 1, max: 500,  message: "最多输入500字！", trigger: "blur" }
+          // { min: 1, max: 1000,  message: "最多输入1000字！", trigger: "blur" }
         ],
         files: [{ required: true, message: "请选择附件" }]
       }
@@ -135,9 +135,9 @@ export default {
     },
     'form.textarea': {
       handler(val) {
-        if (val.length > 500) {
+        if (val.length > 1000) {
           this.$message({
-            message: '最多输入500字！',
+            message: '最多输入1000字！',
             type: "warning"
           });
         }
@@ -185,9 +185,9 @@ export default {
             });
             return
           }
-          if (this.form.textarea.length > 500) {
+          if (this.form.textarea.length > 1000) {
             this.$message({
-              message: '文字说明最多可输入500字！',
+              message: '文字说明最多可输入1000字！',
               type: "warning"
             });
             return
