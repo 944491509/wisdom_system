@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-select v-model="checked.province" filterable placeholder="省">
-      <span slot="prefix" style="color: #F56C6C">*</span>
+      <span slot="prefix" style="color: #F56C6C" v-if="level > 1">*</span>
       <el-option
         v-for="item in options.province"
         :key="item.area_code"
@@ -48,8 +48,8 @@
 <script>
 import { Util } from "../../common/utils";
 
-// const BASE_URL = "http://localhost:9999";
 const BASE_URL = "";
+// const BASE_URL = "http://localhost:9999";
 
 export default {
   name: "AreaSelector",
