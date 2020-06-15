@@ -138,6 +138,9 @@ class Role extends BaseRole
         return $roles;
     }
 
+    /**
+     * 已认证学生
+     */
     public static function GetStudentUserTypes(){
         return [
             // Role::REGISTERED_USER

@@ -10,6 +10,7 @@ namespace App\Dao\Users;
 
 use App\Models\Acl\Role;
 use App\Models\Users\GradeUser;
+use App\User;
 use App\Utils\Misc\ConfigurationTool;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -169,7 +170,7 @@ class GradeUserDao
         $map = ['grade_users.school_id' => $schoolId];
         // 年级
         if (isset($where['year'])) {
-            $map['student_profiles.year'] = $where['year'];
+            $map['grades.year'] = $where['year'];
         }
         // 专业
         if (isset($where['major_id'])) {
@@ -179,16 +180,22 @@ class GradeUserDao
         if (isset($where['grade_id'])) {
             $map['grade_users.grade_id'] = $where['grade_id'];
         }
+
         // 学生状态
+        $userType = Role::GetStudentUserTypes();
         if (isset($where['status'])) {
             $map['users.status'] = $where['status'];
-        }
 
+            if ($where['status'] == User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
+                $userType = [Role::REGISTERED_USER];
+            }
+        }
         $query = GradeUser::where($map)
             ->select('users.status', 'users.name', 'user_type', 'grade_users.*', 'mobile')
             ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->join('grades', 'grades.id', '=', 'grade_users.grade_id')
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
-            ->whereIn('user_type', array_merge(Role::GetStudentUserTypes(), [Role::REGISTERED_USER]));
+            ->whereIn('user_type', $userType);
 
         // 学生姓名, 手机号, 身份证号
         if (isset($where['keyword'])) {

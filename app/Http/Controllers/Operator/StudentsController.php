@@ -35,7 +35,7 @@ class StudentsController extends Controller
      */
     public function add()
     {
-        $this->dataForView['pageTitle'] = '学生档案管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         $this->dataForView['school_id'] = session('school.id');
         return view('teacher.profile.add_new_student', $this->dataForView);
     }
@@ -53,10 +53,9 @@ class StudentsController extends Controller
         $addition    = $request->get('addition');
         $majorId     = $request->get('major_id');
         $gradeId     = $request->get('grade_id');
+        $schoolId     = $request->session()->get('school.id');
         $status      = $request->get('status');
-
         DB::beginTransaction();
-
         try {
             // 创建用户数据
             // 创建用户班级的关联
@@ -89,7 +88,7 @@ class StudentsController extends Controller
 
             if ($status == User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
                 $gradeUserDao->create([
-                    'school_id'       => 1,
+                    'school_id'       => $schoolId,
                     'user_id'         => $user->id,
                     'name'            => $user->name,
                     'user_type'       => $user->type,
@@ -100,7 +99,7 @@ class StudentsController extends Controller
                     'user_id'         => $user->id,
                     'name'            => $user->name,
                     'user_type'       => $user->type,
-                    'school_id'       => 1,
+                    'school_id'       => $schoolId,
                     'campus_id'       => $major->campus_id ?? 0,
                     'institute_id'    => $major->institute_id ?? 0,
                     'department_id'   => $major->department_id ?? 0,
@@ -219,7 +218,7 @@ class StudentsController extends Controller
      */
     public function school_users()
     {
-        $this->dataForView['pageTitle'] = '已注册用户管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.users', $this->dataForView);
 
     }
