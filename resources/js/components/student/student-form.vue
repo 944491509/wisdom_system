@@ -157,7 +157,7 @@ export default {
         });
         this.pending = true;
         let params = {
-          status: 2, // 2 学生  1 未认证
+          status: this.status, // 2 学生  1 未认证
           ...this.ruleForm
         };
         Object.keys(params).forEach(key => {
@@ -1374,7 +1374,7 @@ export default {
     window.testInstance = this;
     this.schoolid = this.$attrs.schoolid;
     this.student_id = this.$attrs.student_id;
-    this.status = this.$attrs.status;
+    this.status = this.$attrs.status || 2;
     this.form.forEach((group, i) => {
       group.fields.forEach((field, j) => {
         ((f, gindex, findex) => {
