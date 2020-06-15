@@ -35,7 +35,7 @@ class StudentsController extends Controller
      */
     public function add()
     {
-        $this->dataForView['pageTitle'] = '学生档案管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         $this->dataForView['school_id'] = session('school.id');
         return view('teacher.profile.add_new_student', $this->dataForView);
     }
@@ -218,7 +218,7 @@ class StudentsController extends Controller
      */
     public function school_users()
     {
-        $this->dataForView['pageTitle'] = '已注册用户管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.users', $this->dataForView);
 
     }
