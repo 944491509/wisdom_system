@@ -193,6 +193,7 @@ class GradeUserDao
         $query = GradeUser::where($map)
             ->select('users.status', 'users.name', 'user_type', 'grade_users.*', 'mobile')
             ->join('users', 'users.id', '=', 'grade_users.user_id')
+            ->join('grades', 'grades.id', '=', 'grade_users.grade_id')
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
             ->whereIn('user_type', $userType);
 
