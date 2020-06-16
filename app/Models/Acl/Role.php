@@ -148,6 +148,9 @@ class Role extends BaseRole
         ];
     }
 
+    /**
+     * 已认证 教师 教工
+     */
     public static function GetTeacherUserTypes(){
         return [
             Role::TEACHER, Role::EMPLOYEE

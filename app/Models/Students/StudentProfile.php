@@ -35,7 +35,7 @@ class StudentProfile extends Model
         'graduate_type', 'cooperation_type', 'source_place_state', 'source_place_city', 'recruit_type', 'volunteer',
         'examination_site', 'resident_state', 'resident_city', 'resident_area', 'zip_code',
         'current_residence', 'relationship', 'enrollment_at', 'learning_form', 'educational_system',
-        'entrance_type', 'student_type', 'segmented_type'
+        'entrance_type', 'student_type', 'segmented_type', 'detailed_address'
     ];
 
 
