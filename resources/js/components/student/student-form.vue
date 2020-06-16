@@ -191,6 +191,9 @@ export default {
           params.profile.source_place_city = params.profile.source_place[1];
           delete params.profile.source_place;
         }
+        if (params.profile && params.profile.country) {
+          params.profile.country = params.profile.country[0];
+        }
         params.addition.reward = this.reward;
         params.addition.punishment = this.punishment;
         axios.post(BASE_URL + url, params).then(res => {
@@ -224,6 +227,7 @@ export default {
     setData(data) {
       Object.keys(data).forEach(key => {
         if (typeof data[key] === "object") {
+          // 把户籍和 生源地转成数组
           Object.keys(data[key]).forEach(subkey => {
             if (["reward", "punishment"].includes(subkey)) {
               this[subkey] = data[key][subkey];
@@ -566,7 +570,7 @@ export default {
                   trigger: "blur",
                   message: "请输入学生籍贯地",
                   validator: (r, v, c) => {
-                    if (!v) {
+                    if (!v || !v[0]) {
                       c && c(new Error(r.message));
                       return false;
                     } else {
@@ -707,7 +711,7 @@ export default {
                   trigger: "change",
                   message: "请选择生源地",
                   validator: (r, v, c) => {
-                    if (!v) {
+                    if (!v || !v[0] || !v[1]) {
                       c && c(new Error(r.message));
                       return false;
                     } else {
