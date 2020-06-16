@@ -193,6 +193,12 @@ class StudentsController extends Controller
         $data       = [];
         $user       = $userDao->getUserById($studentId);
         $profile    = $profileDao->getStudentInfoByUserId($studentId);
+        if ($profile->residence_type == 0) {
+            $profile->residence_type = '';
+        }
+        if ($profile->family_poverty_status == 0) {
+            $profile->family_poverty_status = '';
+        }
 
         $data[]     = [
             'user'     => [
@@ -206,6 +212,7 @@ class StudentsController extends Controller
             'grade_id' => $user->gradeUser->grade_id,
             'status'   => $user->status,
         ];
+
         return JsonBuilder::Success($data);
     }
 

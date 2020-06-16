@@ -48,9 +48,9 @@ class UpdateStudentProfilesDelFieldAndAddField extends Migration
             $table->string('resident_suburb', 50)->nullable()->comment('户籍所在乡镇')->change();
             $table->string('resident_village', 50)->nullable()->comment('户籍所在村')->change();
             $table->string('detailed_address')->nullable()->comment('户籍详细地址')->change();
-            $table->integer('family_poverty_status')->default(0)->comment('家庭贫困状况');
+            $table->integer('family_poverty_status')->nullable()->default(0)->comment('家庭贫困状况');
             $table->string('zip_code', 100)->nullable()->comment('家庭地址邮编');
-            $table->integer('residence_type')->default(0)->comment('学生居住地类型');
+            $table->integer('residence_type')->nullable()->default(0)->comment('学生居住地类型');
             $table->string('current_residence')->nullable()->comment('现在居住地');
             $table->string('relationship', 50)->nullable()->comment('与本人关系');
             $table->date('enrollment_at')->nullable()->comment('入学年月');
