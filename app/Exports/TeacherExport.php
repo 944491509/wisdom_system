@@ -31,7 +31,6 @@ class TeacherExport implements FromCollection
             $output[$key]['mobile'] = $row->mobile;
             $output[$key]['id_number'] = $row->id_number."\t";
             $output[$key]['resident'] = $row->resident;
-            $output[$key]['resident'] = $row->resident;
             $output[$key]['political_name'] = $row->political_name;
             $output[$key]['party_time'] = $row->party_time;
             $output[$key]['home_address'] = $row->home_address;
@@ -52,11 +51,13 @@ class TeacherExport implements FromCollection
             $output[$key]['hired_at'] = $row->hired_at;
             $output[$key]['status'] = $row->getTeacherText();
             $output[$key]['mode'] = $row->mode;
-            $output[$key]['category_teach'] = $row->category_teach?$category_teach[$row->category_teach]:'';;
+            $output[$key]['category_teach'] = $row->category_teach?$category_teach[$row->category_teach]:'';
+            $output[$key]['notes'] = $row->notes;
         }
-        $arr = ['姓名','性别','民族','出生日期','教师编号','手机号','身份证号','户籍所在地','政治面貌','入党时间','家庭住址',
+        $arr = [
+            '姓名','性别','民族','出生日期','教师编号','手机号','身份证号','户籍所在地','政治面貌','入党时间','家庭住址',
             '第一学历','第一学历专业', '学位', '毕业学校', '毕业时间','最高学历', '最高学历专业','学位', '毕业学校', '毕业时间',
-            '目前职称', '职称获取时间', '参加工作时间', '本校聘任时间', '聘任状态', '聘任方式', '授课类别'
+            '目前职称', '职称获取时间', '参加工作时间', '本校聘任时间', '聘任状态', '聘任方式', '授课类别', '备注'
         ];
         array_unshift($output, $arr);
         return collect($output);
