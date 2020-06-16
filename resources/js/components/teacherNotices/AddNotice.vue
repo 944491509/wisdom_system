@@ -2,10 +2,10 @@
   <div class="drawer_content">
     <el-form :model="form" label-width="55px" :rules="rules" ref="ruleForm">
       <el-form-item label="标题" prop="title">
-        <el-input v-model="form.title" autocomplete="off" maxlength="30" show-word-limit></el-input>
+        <el-input v-model="form.title" autocomplete="off" placeholder="请输入通知标题"></el-input>
       </el-form-item>
       <el-form-item label="内容" prop="textarea">
-        <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea" maxlength="500" show-word-limit></el-input>
+        <el-input type="textarea" :rows="4" placeholder="请输入通知内容" v-model="form.textarea"></el-input>
       </el-form-item>
     </el-form>
     <div class="selectBlock" style="border-top: 1px solid #EAEDF2">
@@ -41,9 +41,9 @@
       </p>
       <div class="fileList">
         <ul>
-          <li v-for="(file, index) in form.files" :key="file.id">
-            <a :href="file.url">{{file.file_name}}</a>
-            <i @click="deleteFile(index)" class="el-icon-close"></i>
+          <li v-for="(file, index) in form.files" :key="file.id" style="background-color: rgb(242,249,255);padding: 20px;">
+            <a :href="file.url" style="color: #000">{{file.file_name}}</a>
+            <span @click="deleteFile(index)" style="float:right;color: #409EFF;cursor: pointer;">删除</span>
           </li>
         </ul>
       </div>
@@ -112,17 +112,38 @@ export default {
       rules: {
         title: [
           { required: true, message: "请输入标题", trigger: "blur" },
-          { min: 1, max: 30, message: "最多输入20字！", trigger: "blur" }
+          // { min: 1, max: 30, message: "最多输入20字！", trigger: "blur" }
         ],
         textarea: [
           { required: true, message: "请输入内容", trigger: "blur" },
-          { min: 1, max: 500,  message: "最多输入500字！", trigger: "blur" }
+          // { min: 1, max: 1000,  message: "最多输入1000字！", trigger: "blur" }
         ],
         files: [{ required: true, message: "请选择附件" }]
       }
     };
   },
-
+  watch: {
+    'form.title': {
+      handler(val) {
+        if (val.length > 30) {
+          this.$message({
+            message: '最多输入30字！',
+            type: "warning"
+          });
+        }
+      }
+    },
+    'form.textarea': {
+      handler(val) {
+        if (val.length > 1000) {
+          this.$message({
+            message: '最多输入1000字！',
+            type: "warning"
+          });
+        }
+      }
+    }
+  },
   methods: {
     handleClose(done) {
       done();
@@ -164,20 +185,20 @@ export default {
             });
             return
           }
-          // if (!(params.organization_id === 0 || params.organization_id)) {
-          //   this.$message({
-          //     message: '请选择教师可见范围',
-          //     type: "warning"
-          //   });
-          //   return
-          // }
-          // if (!(params.grade_id === 0 || params.grade_id)) {
-          //   this.$message({
-          //     message: '请选择学生可见范围',
-          //     type: "warning"
-          //   });
-          //   return
-          // }
+          if (this.form.textarea.length > 1000) {
+            this.$message({
+              message: '文字说明最多可输入1000字！',
+              type: "warning"
+            });
+            return
+          }
+          if (this.form.title.length > 30) {
+            this.$message({
+              message: '标题最多可输入30字！',
+              type: "warning"
+            });
+            return
+          }
           axios.post("/api/notice/issue-notice", params).then(res => {
             if (Util.isAjaxResOk(res)) {
               this.$message({
