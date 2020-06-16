@@ -84,7 +84,7 @@
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
 
-const BASE_URL = ''
+const BASE_URL = "";
 // const BASE_URL = "http://localhost:9999";
 
 export default {
@@ -139,14 +139,20 @@ export default {
     };
   },
   watch: {
-    "values.major_id": function(nval) {
+    "values.year": function(nval) {
       if (!nval) {
-        this.values.grade = null;
+        this.values.grade_id = null;
         this.options.grade_id = [];
         return;
       }
+      let param = {
+        year: nval
+      };
+      if (this.values.major_id) {
+        param.id = this.values.major_id;
+      }
       axios
-        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, { id: nval })
+        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, param)
         .then(res => {
           if (Util.isAjaxResOk(res)) {
             this.options.grade = this.toOptions(
@@ -154,7 +160,32 @@ export default {
               "name",
               "id"
             );
-            this.values.grade = null;
+            this.values.grade_id = null;
+          }
+        });
+    },
+    "values.major_id": function(nval) {
+      if (!nval) {
+        this.values.grade_id = null;
+        this.options.grade_id = [];
+        return;
+      }
+      let param = {
+        id: nval
+      };
+      if (this.values.year) {
+        param.year = this.values.year;
+      }
+      axios
+        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, param)
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.grade = this.toOptions(
+              res.data.data.grades,
+              "name",
+              "id"
+            );
+            this.values.grade_id = null;
           }
         });
     },
@@ -191,6 +222,7 @@ export default {
             this.options.year = this.toOptions(res.data.data, "name", "year");
           }
         });
+
       axios
         .post(BASE_URL + Constants.API.LOAD_MAJORS_BY_SCHOOL, {
           id: this.schoolid,
