@@ -116,6 +116,7 @@ class GradeUserDao
 
 
     /**
+     * 查询 教师 教工
      * @param $schoolId
      * @param $where
      * @return mixed
@@ -159,6 +160,7 @@ class GradeUserDao
     }
 
     /**
+     * 查询 学生 未认证用户
      * @param $schoolId
      * @param $where
      * @param int $type 1 查询 2 修稿
@@ -190,12 +192,16 @@ class GradeUserDao
                 $userType = [Role::REGISTERED_USER];
             }
         }
+
         $query = GradeUser::where($map)
             ->select('users.status', 'users.name', 'user_type', 'grade_users.*', 'mobile')
             ->join('users', 'users.id', '=', 'grade_users.user_id')
-            ->join('grades', 'grades.id', '=', 'grade_users.grade_id')
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
             ->whereIn('user_type', $userType);
+
+        if ($where['status'] != User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
+            $query->join('grades', 'grades.id', '=', 'grade_users.grade_id');
+        }
 
         // 学生姓名, 手机号, 身份证号
         if (isset($where['keyword'])) {
