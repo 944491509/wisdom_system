@@ -199,7 +199,7 @@ class GradeUserDao
             ->join('student_profiles', 'student_profiles.user_id', '=', 'grade_users.user_id')
             ->whereIn('user_type', $userType);
 
-        if ($where['status'] != User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
+        if (!isset($where['status']) || $where['status']!= User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED) {
             $query->join('grades', 'grades.id', '=', 'grade_users.grade_id');
         }
 
