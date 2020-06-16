@@ -52,9 +52,9 @@ if (dom) {
               ].forEach(k => {
                 if (data[k].includes('.')) {
                   data[k] = data[k].replace(/\./g, "-")
-                //   if (data[k].split('-').length < 3) {
-                //     data[k] = data[k] + '-01'
-                //   }
+                }
+                if (data[k].split('-').length < 3) {
+                  data[k] = data[k] + '-01'
                 }
               })
               this.$refs.teacherform.setData(data)
