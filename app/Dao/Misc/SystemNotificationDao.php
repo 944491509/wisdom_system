@@ -98,7 +98,7 @@ class SystemNotificationDao
      * 根据学校ID 获取通知
      *
      * @param $schoolId
-     * @param $userId
+     * @param $user
      * @param int $pageSize
      * @return mixed
      */
@@ -108,6 +108,41 @@ class SystemNotificationDao
         ->orderBy('id','desc')
         ->simplePaginate($pageSize);
     }
+
+
+    /**
+     * 教师pc端查看消息列表
+     * @param $schoolId
+     * @param $user
+     * @param $category
+     * @param int $pageSize
+     * @return mixed
+     */
+    public function getNewsByUser($schoolId, $user, $category, $pageSize=ConfigurationTool::DEFAULT_PAGE_SIZE) {
+        $field = ['id', 'content', 'category', 'created_at', 'title', 'content', 'app_extra'];
+        return  $this->_build($schoolId, $user)->whereIn('category', $category)
+            ->orderBy('priority','desc')
+            ->orderBy('id','desc')
+            ->select($field)
+            ->paginate($pageSize);
+    }
+
+    /**
+     * 查询消息未读数
+     * @param $schoolId
+     * @param $user
+     * @param $category
+     * @param $readLogMaxId
+     * @return mixed
+     */
+    public function getNewsUnRead($schoolId, $user, $category, $readLogMaxId) {
+        return $this->_build($schoolId, $user, $readLogMaxId)
+            ->whereIn('category', $category)
+            ->select('id')
+            ->count();
+    }
+
+
 
     /**
      * 设置消息为已读
@@ -123,7 +158,7 @@ class SystemNotificationDao
     /**
      * 检查消息是否已读
      * @param $schoolId
-     * @param $userId
+     * @param $user
      * @return bool
      */
     public function checkNotificationHasRead($schoolId, $user) {
@@ -135,10 +170,11 @@ class SystemNotificationDao
     /**
      * 通用的查看自己消息的sql
      * @param $schoolId
-     * @param $userId
+     * @param $user
+     * @param $readLogMaxId
      * @return mixed
      */
-    private function _build($schoolId, $user) {
+    private function _build($schoolId, $user, $readLogMaxId = 0) {
         $organizationId = $user->organizations->pluck('organization_id')->toArray();
         array_push($organizationId, 0);
 
@@ -149,19 +185,21 @@ class SystemNotificationDao
         if ($user->isTeacher()) {
             $toArr[] = SystemNotification::TO_TEACHER;
         }
-        return SystemNotification::where(function ($query) use ($organizationId, $toArr) {
+        return SystemNotification::where(function ($query) use ($organizationId, $toArr, $readLogMaxId) {
             // 1: 系统发出的消息, 此类消息 school_id 为 0, 表示任何学校的用户都可以接收
-            $query->where('school_id', 0)->whereIn('to', $toArr)->whereHas('systemNotificationsOrganizations', function($q) use($organizationId) {
+            $query->where('school_id', 0)->where('id', '>', $readLogMaxId)->whereIn('to', $toArr)
+                ->whereHas('systemNotificationsOrganizations', function($q) use($organizationId) {
                 $q->whereIn('system_notifications_organizations.organization_id', $organizationId);
             });
-        })->orWhere(function ($query) use($schoolId, $organizationId, $toArr){
+        })->orWhere(function ($query) use($schoolId, $organizationId, $toArr, $readLogMaxId){
             // 2: 学校发出的消息, to 的值为 0, 表示该学校的所有的用户都可以收到
-            $query->where('school_id', $schoolId)->whereIn('to', $toArr)->whereHas('systemNotificationsOrganizations', function($q) use($organizationId) {
+            $query->where('school_id', $schoolId)->where('id', '>', $readLogMaxId)->whereIn('to', $toArr)
+                ->whereHas('systemNotificationsOrganizations', function($q) use($organizationId) {
                 $q->whereIn('system_notifications_organizations.organization_id', $organizationId);
             });
-        })->orWhere(function ($query) use($user){
+        })->orWhere(function ($query) use($user, $readLogMaxId){
             // 3: to 的值为 user id, 表示发给自己的消息
-            $query->where('to',$user->id);
+            $query->where('to',$user->id)->where('id', '>', $readLogMaxId);
         });
     }
 }
