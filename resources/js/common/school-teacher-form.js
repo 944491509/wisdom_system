@@ -51,9 +51,11 @@ if (dom) {
                 'hired_at'
               ].forEach(k => {
                 if (data[k].includes('.')) {
+                  // 把有点的时间换成'-'
                   data[k] = data[k].replace(/\./g, "-")
                 }
-                if (data[k].split('-').length < 3) {
+                if (data[k] && data[k].split('-').length < 3) {
+                  // 如果-分隔少于三个 当作是年月 没有日
                   data[k] = data[k] + '-01'
                 }
               })
