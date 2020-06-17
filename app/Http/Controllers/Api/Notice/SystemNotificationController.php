@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemNotificationController extends Controller
 {
-    //
+
     /**
      * 系统消息列表
      * @param Request $request
@@ -50,6 +50,8 @@ class SystemNotificationController extends Controller
 
     /**
      * 教师pc端的消息中心
+     * @param Request $request
+     * @return string
      */
     public function newsList(Request $request) {
         $user = $request->user();
@@ -86,5 +88,18 @@ class SystemNotificationController extends Controller
         $dao->setNotificationHasRead($user->getSchoolId(), $user);
 
         return JsonBuilder::Success($result);
+    }
+
+
+    /**
+     * 消息详情
+     * @param Request $request
+     * @return string
+     */
+    public function getNoticeInfo(Request $request) {
+        $noticeId = $request->get('notice_id');
+        $dao = new SystemNotificationDao();
+        $info = $dao->getNotificationInfo($noticeId);
+        return JsonBuilder::Success($info);
     }
 }

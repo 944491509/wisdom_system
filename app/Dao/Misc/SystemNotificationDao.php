@@ -202,4 +202,18 @@ class SystemNotificationDao
             $query->where('to',$user->id)->where('id', '>', $readLogMaxId);
         });
     }
+
+
+    /**
+     * 获取消息详情
+     * @param $notificationId
+     * @return mixed
+     */
+    public function getNotificationInfo($notificationId) {
+        $map = ['id' => $notificationId];
+        $field = ['id', 'content', 'category', 'created_at', 'title', 'content'];
+        return SystemNotification::where($map)
+            ->select($field)
+            ->first();
+    }
 }

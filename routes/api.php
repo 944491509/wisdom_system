@@ -572,6 +572,9 @@ Route::prefix('notification')->middleware('auth:api')->group(function () {
     // 教师pc端消息中心
     Route::any('/news-list','Api\Notice\SystemNotificationController@newsList')
         ->name('api.notification.news-list');
+    // 消息详情
+    Route::get('/news-info','Api\Notice\SystemNotificationController@getNoticeInfo')
+        ->name('api.notification.news-info');
 });
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {

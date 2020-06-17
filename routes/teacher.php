@@ -302,4 +302,12 @@ Route::prefix('teacher')->middleware('simpleacl')->group(function () {
     Route::get('manual-download','ManualController@download')
         ->name('teacher.manual.download');
 
+    // 消息中心
+    Route::prefix('notice')->group(function (){
+        // 消息详情
+        Route::get('/info','NoticeController@noticeInfo')
+            ->name('teacher.notice.info');
+    });
+
+
 });
