@@ -16,34 +16,14 @@ class ImporterDao
 {
     use BuildFillableData;
 
-    public function __construct()
-    {
-
-    }
-
+    /**
+     * 添加
+     * @param $data
+     * @return mixed
+     */
     public function create($data)
     {
-        if (!isset($data['id']) || empty($data['id'])) {
-            unset($data['id']);
-        }
-        $messageBag = new MessageBag(JsonBuilder::CODE_ERROR);
-        DB::beginTransaction();
-        try {
-            $fillableData = $this->getFillableData(new ImportTask(), $data);
-            $importTask   = ImportTask::create($fillableData);
-            if ($importTask) {
-                DB::commit();
-                $messageBag->setCode(JsonBuilder::CODE_SUCCESS);
-                $messageBag->setData($importTask);
-            } else {
-                DB::rollBack();
-                $messageBag->setMessage('保存导入任务失败, 请联系管理员');
-            }
-        } catch (Exception $exception) {
-            DB::rollBack();
-            $messageBag->setMessage($exception->getMessage());
-        }
-        return $messageBag;
+        return ImportTask::create($data);
     }
 
     public function update($data)

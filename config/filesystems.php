@@ -80,6 +80,7 @@ return [
         'import'        => [
             'driver'     => 'local',
             'root'       => storage_path('app/import'),
+            'path'       => storage_path('app'),
             'url'        => env('APP_URL') . '/storage/app/import',
             'visibility' => 'public',
         ],

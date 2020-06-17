@@ -10,17 +10,17 @@ use App\BusinessLogic\ImportExcel\Impl\UpdateTeacherPhone;
 
 class Factory
 {
-    public static function createAdapter($taskName)
+    public static function createAdapter($task)
     {
         $instance = null;
-        if ($taskName == 'update_teacher_phone') {
+        if ($task['adapter'] == 'update_teacher_phone') {
             $instance = new UpdateTeacherPhone; // 修改教师手机号
-        } elseif ($taskName == 'importer_student_accommodation') {
+        } elseif ($task['adapter'] == 'importer_student_accommodation') {
             $instance = new ImporterStudentAccommodation; // 导入学生住宿信息
-        } elseif ($taskName == 'import_student') {
+        } elseif ($task['adapter'] == 'import_student') {
             $instance = new ImportStudent; // 导入带专业班级的学生
-        } elseif ($taskName == 'import_users') {
-            $instance = new ImporterUsers; // 导入未认证的学生(不带专业班级)
+        } elseif ($task['adapter'] == 'import_users') {
+            $instance = new ImporterUsers($task); // 导入未认证的学生(不带专业班级)
         }
         return $instance;
     }

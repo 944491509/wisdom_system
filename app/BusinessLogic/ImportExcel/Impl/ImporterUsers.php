@@ -19,12 +19,10 @@ use Ramsey\Uuid\Uuid;
 
 class ImporterUsers extends AbstractImporter
 {
-    protected $task;
-    protected $data;
 
     public function __construct($task)
     {
-        $this->task = $task;
+        parent::__construct($task['data']['path']);
     }
 
     public function handle()
@@ -48,7 +46,7 @@ class ImporterUsers extends AbstractImporter
             echo '检查文件格式正确 开始循环....'.PHP_EOL;
             $student = [];
             $profile = [];
-//            dd($sheetData[0]);
+            dd($sheetData[0]);
             unset($sheetData[0]); // 去掉文件头
             foreach ($sheetData as $key => $val) {
                 if ($val[1] == '男') {
@@ -191,21 +189,6 @@ class ImporterUsers extends AbstractImporter
 
         }
 
-    }
-
-    /**
-     * 获取 excel 文件
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    public function loadExcelFile()
-    {
-        set_time_limit(0);
-        ini_set('memory_limit', -1);
-        $filePath = config('filesystems.disks.import')['root'].DIRECTORY_SEPARATOR .$this->task['file_path'];
-        $objReader = IOFactory::createReader('Xlsx');
-        $objPHPExcel = $objReader->load($filePath);
-        $worksheet = $objPHPExcel->getAllSheets();
-        $this->data = $worksheet;
     }
 
     /**
