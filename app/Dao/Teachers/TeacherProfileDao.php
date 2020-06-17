@@ -64,7 +64,7 @@ class TeacherProfileDao
      */
     public function updateTeacherProfile($userId, $profile)
     {
-        return TeacherProfile::where('user_id',$userId)->update($profile);
+        return TeacherProfile::where('user_id', $userId)->update($profile);
     }
 
     /**

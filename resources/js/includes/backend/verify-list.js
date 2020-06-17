@@ -58,7 +58,7 @@ if (appdom && schooldom) {
             where: {
               ...this.where,
               ...(mode === 'users' ? {
-                status: 5
+                status: 1 // 未认证
               } : {})
             }
           }
@@ -92,7 +92,7 @@ if (appdom && schooldom) {
       optCommand(command, data) {
         switch (command) {
           case 'edit':
-            window.open('/verified_student/profile/edit?uuid=' + data.uuid)
+            window.location.href = '/verified_student/profile/edit?uuid=' + data.user_id
             break
           case 'photo':
             window.open('/teacher/student/edit-avatar?uuid=' + data.uuid)
@@ -100,6 +100,9 @@ if (appdom && schooldom) {
           default:
             break
         }
+      },
+      gokeEdit(data) {
+        window.location.href = '/verified_student/profile/edit?uuid=' + data.user_id + '&status=1'
       },
       gokebiao(data) {
         window.open('/school_manager/timetable/manager/view-grade-timetable?uuid=' + data.grade_id)

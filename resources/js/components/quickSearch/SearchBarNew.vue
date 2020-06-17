@@ -33,7 +33,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、手机号" v-model="values.keyword"></el-input>
       <slot></slot>
       <slot name="opt"></slot>
     </div>
@@ -51,7 +51,7 @@
           v-for="item in options.mode"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-select v-model="values.education" clearable placeholder="请选择学历">
@@ -59,7 +59,7 @@
           v-for="item in options.education"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-select v-model="values.title" clearable placeholder="请选择职称">
@@ -67,7 +67,7 @@
           v-for="item in options.title"
           :key="item.value"
           :label="item.label"
-          :value="item.value"
+          :value="item.label"
         ></el-option>
       </el-select>
       <el-input style="width: initial" placeholder="教职工姓名、手机号" v-model="values.keyword"></el-input>
@@ -75,7 +75,7 @@
       <slot name="opt"></slot>
     </div>
     <div v-if="mode === 'users'">
-      <el-input style="width: 200px" placeholder="请输入学生姓名、身份证号" v-model="values.keyword"></el-input>
+      <el-input style="width: 200px" placeholder="请输入学生姓名、手机号" v-model="values.keyword"></el-input>
       <slot name="opt"></slot>
     </div>
   </div>
@@ -83,6 +83,9 @@
 <script>
 import { Util } from "../../common/utils";
 import { Constants } from "../../common/constants";
+
+const BASE_URL = "";
+// const BASE_URL = "http://localhost:9999";
 
 export default {
   name: "search-bar-new",
@@ -113,28 +116,78 @@ export default {
         grade: [],
         mode: [],
         title: [],
-        status: [],
+        status: [
+          {
+            label: "在职",
+            value: 3
+          },
+          {
+            label: "离职",
+            value: 4
+          },
+          {
+            label: "退休",
+            value: 5
+          },
+          {
+            label: "调离",
+            value: 6
+          }
+        ],
         education: []
       }
     };
   },
   watch: {
-    "values.major_id": function(nval) {
+    "values.year": function(nval) {
       if (!nval) {
-        this.values.grade = null;
-        this.options.grade = [];
+        this.values.grade_id = null;
+        this.options.grade_id = [];
         return;
       }
-      axios.post(Constants.API.LOAD_GRADES_BY_MAJOR, { id: nval }).then(res => {
-        if (Util.isAjaxResOk(res)) {
-          this.options.grade = this.toOptions(
-            res.data.data.grades,
-            "name",
-            "id"
-          );
-          this.values.grade = null;
-        }
-      });
+      let param = {
+        year: nval
+      };
+      if (this.values.major_id) {
+        param.id = this.values.major_id;
+      }
+      axios
+        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, param)
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.grade = this.toOptions(
+              res.data.data.grades,
+              "name",
+              "id"
+            );
+            this.values.grade_id = null;
+          }
+        });
+    },
+    "values.major_id": function(nval) {
+      if (!nval) {
+        this.values.grade_id = null;
+        this.options.grade_id = [];
+        return;
+      }
+      let param = {
+        id: nval
+      };
+      if (this.values.year) {
+        param.year = this.values.year;
+      }
+      axios
+        .post(BASE_URL + Constants.API.LOAD_GRADES_BY_MAJOR, param)
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.grade = this.toOptions(
+              res.data.data.grades,
+              "name",
+              "id"
+            );
+            this.values.grade_id = null;
+          }
+        });
     },
     values: {
       deep: true,
@@ -162,13 +215,16 @@ export default {
     },
     initStudentOptions() {
       // api/school/load-config-year
-      axios.get("/api/notice/school-year?school_id=" + this.schoolid).then(res => {
-        if (Util.isAjaxResOk(res)) {
-          this.options.year = this.toOptions(res.data.data, "name", "year");
-        }
-      });
       axios
-        .post(Constants.API.LOAD_MAJORS_BY_SCHOOL, {
+        .get(BASE_URL + "/api/notice/school-year?school_id=" + this.schoolid)
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            this.options.year = this.toOptions(res.data.data, "name", "year");
+          }
+        });
+
+      axios
+        .post(BASE_URL + Constants.API.LOAD_MAJORS_BY_SCHOOL, {
           id: this.schoolid,
           pageNumber: 0
         })
@@ -181,7 +237,7 @@ export default {
             );
           }
         });
-      axios.post("/api/pc/get-search-student-status").then(res => {
+      axios.post(BASE_URL + "/api/pc/get-search-student-status").then(res => {
         if (Util.isAjaxResOk(res)) {
           this.options.status = this.toOptions(
             Object.keys(res.data.data).map(k => {
@@ -209,14 +265,10 @@ export default {
         {
           code: 6,
           field: "mode"
-        },
-        {
-          code: 5,
-          field: "status"
         }
       ].forEach(item => {
         axios
-          .post("/api/pc/get-search-config", {
+          .post(BASE_URL + "/api/pc/get-search-config", {
             type: item.code
           })
           .then(res => {

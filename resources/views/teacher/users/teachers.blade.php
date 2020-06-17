@@ -5,6 +5,11 @@ use App\User;
 ?>
 @extends('layouts.app')
 @section('content')
+<style>
+    .table-responsive .el-table__header{
+        border-bottom: 1px solid #dee2e6
+    }
+</style>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-xl-12">
             <div class="card">
@@ -37,7 +42,7 @@ use App\User;
                             <el-table
                                 :data="list"
                                 class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
-                                style="width: 100%">
+                                style="width: 100%;">
                                 <el-table-column
                                     prop="hired"
                                     label="是否聘用"

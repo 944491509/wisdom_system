@@ -5,7 +5,8 @@ use App\Utils\UI\Button;
 
 @extends('layouts.app')
 @section('content')
-    <div id="school-add-student-app">
+    <div id="school-add-teacher-app">
+        <div id="app-init-data-holder" style="display: none" data-school="{{ session('school.id') }}"></div>
         <div class="row">
             <div class="col-sm-12 col-md-12 col-xl-12">
                 <div class="card">
@@ -14,7 +15,8 @@ use App\Utils\UI\Button;
                             创建新的教职工档案
                         </header>
                     </div>
-                    <div class="card-body">
+                    <teacher-form :schoolid="schoolid"></teacher-form>
+                    <!-- <div class="card-body">
                         <form action="{{ route('school_manager.teachers.save-profile') }}" method="post">
                             @csrf
                             <input type="hidden" name="profile[school_id]" value="{{ session('school.id') }}">
@@ -205,11 +207,8 @@ use App\Utils\UI\Button;
                                 <textarea class="form-control" placeholder="选填: 备注" name="profile[notes]"></textarea>
                             </div>
                             <div id="app-init-data-holder" data-school="{{ session('school.id') }}"></div>
-                            <?php
-                            Button::Print(['id'=>'btn-create-building','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
-                            ?>&nbsp;
                         </form>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

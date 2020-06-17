@@ -36,16 +36,61 @@ class UserSearchConfigSeeder extends Seeder
             ],
             [
                 'type' => UserSearchConfig::TYPE_4,
-                'name' => ['高级助讲','助教','讲师','副教授','教授']
+                'name' => ['高级助讲', '助教', '讲师', '副教授', '教授']
             ],
             [
-               'type' => UserSearchConfig::TYPE_5,
-               'name' => ['在职', '离职', '退休', '调离']
+                'type' => UserSearchConfig::TYPE_5,
+                'name' => ['在职', '离职', '退休', '调离']
             ],
             [
                 'type' => UserSearchConfig::TYPE_6,
                 'name' => ['在编', '外聘兼职', '借调', '实习', '其他']
             ],
+            [
+                'type' => UserSearchConfig::TYPE_7,
+                'name' => ['健康或良好', '一般或较弱', '有慢性病', '残疾']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_8,
+                'name' => ['农村', '县城', '乡镇非农', '城市']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_9,
+                'name' => ['统一招生考试/普通入学', '保送', '民族班', '定向培养', '体育特招', '文艺特招', '学生干部保送', '考试推荐', '外校转入', '恢复入学资格', '其他']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_10,
+                'name' => ['非分段培养', '中高职3+2', '五年一贯制', '中高职2+3', '中高职3+3', '中高职2.5+2.5', '中职本科3+4']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_11,
+                'name' => ['父亲', '母亲', '继父或养父', '继母或养母', '祖母', '外祖父', '外祖母', '兄弟', '姐妹', '其他亲属', '非亲属']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_12,
+                'name' => ['不困难', '一般困难', '困难', '特别困难']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_13,
+                'name' => ['三年制', '四年制', '五年制', '一年制', '一年半制', '两年制', '两年半制', '两年制', '三年半制', '四年半制', '五年半制', '六年制', '六年半制', '七年制', '八年制']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_14,
+                'name' => ['调整后中职学生', '职业高中学生', '普通中专学生', '成人中专学生', '技工学校学生']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_15,
+                'name' => ['应届初中毕业生', '应届高中毕业生', '往届初中毕业生', '进城务工人员', '农民', '退役军人', '城镇下岗职工', '高职高专学生', '本科及研究生学生', '其他']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_16,
+                'name' => ['非联合办学', '城乡联合办学', '东中西部联合办学']
+            ],
+            [
+                'type' => UserSearchConfig::TYPE_17,
+                'name' => ['统一招生', '自主招生', '其他']
+            ],
+
         ];
 
         foreach ($arr as $value) {
