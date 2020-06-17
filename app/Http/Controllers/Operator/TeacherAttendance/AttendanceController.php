@@ -38,6 +38,7 @@ class AttendanceController extends Controller
         $info = $clockinDao->getOneDayCount($attendance, $day);
         $return = [
             'using_afternoon' => $attendance->using_afternoon,
+            'using_morning' => $attendance->using_morning,
             'date' => $day,
             'info' => $info
         ];
@@ -59,6 +60,7 @@ class AttendanceController extends Controller
         $info = $clockinDao->getOneMonthCount($attendance, $monthStart, $monthEnd);
         $return = [
             'using_afternoon' => $attendance->using_afternoon,
+            'using_morning' => $attendance->using_morning,
             'month' => $month,
             'info' => $info
         ];
