@@ -203,7 +203,7 @@ class SchoolsController extends Controller
      */
     public function teachers(SchoolRequest $request)
     {
-        $this->dataForView['pageTitle'] = '教职工管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.teachers', $this->dataForView);
     }
 
@@ -266,7 +266,7 @@ class SchoolsController extends Controller
      */
     public function students(SchoolRequest $request)
     {
-        $this->dataForView['pageTitle'] = '学生管理';
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.students', $this->dataForView);
     }
 
@@ -362,11 +362,11 @@ class SchoolsController extends Controller
     public function studentStatus(SchoolRequest $request)
     {
         $data = [
-            User::STATUS_VERIFIED   => User::STATUS_VERIFIED_TEXT,
-            User::STATUS_SUSPENSION => User::STATUS_SUSPENSION_TEXT,
-            User::STATUS_DROP_OUT   => User::STATUS_DROP_OUT_TEXT,
-            User::STATUS_TRANSFER   => User::STATUS_TRANSFER_TEXT,
-            User::STATUS_FINISH     => User::STATUS_FINISH_TEXT,
+            User::STATUS_VERIFIED   => User::STUDENT_STATUS_VERIFIED_TEXT,
+            User::STATUS_SUSPENSION => User::STUDENT_STATUS_SUSPENSION_TEXT,
+            User::STATUS_DROP_OUT   => User::STUDENT_STATUS_DROP_OUT_TEXT,
+            User::STATUS_TRANSFER   => User::STUDENT_STATUS_TRANSFER_TEXT,
+            User::STATUS_FINISH     => User::STUDENT_STATUS_FINISH_TEXT,
         ];
         return JsonBuilder::Success($data);
     }

@@ -25,6 +25,7 @@ use App\User;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,12 @@ use Ramsey\Uuid\Uuid;
 
 class ProfilesController extends Controller
 {
+    /**
+     * 添加教师
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws Exception
+     */
     public function save(MyStandardRequest $request)
     {
 
@@ -96,16 +103,23 @@ class ProfilesController extends Controller
         }
     }
 
-    public function add_new(MyStandardRequest $request){
+    /**
+     * 添加教师页面
+     * @param MyStandardRequest $request
+     * @return Application|Factory|View
+     */
+    public function add_new(MyStandardRequest $request)
+    {
         $this->dataForView['pageTitle'] = '教师档案管理';
-        $schoolId = session('school.id');
+        $schoolId                       = session('school.id');
         $this->dataForView['school_id'] = $schoolId;
         return view('teacher.profile.add_new', $this->dataForView);
     }
 
-    public function edit(MyStandardRequest $request){
+    public function edit(MyStandardRequest $request)
+    {
         $schoolId = session('school.id');
-        if($request->isMethod('post')) {
+        if ($request->isMethod('post')) {
             $data = $request->all();
             $userId = $data['uuid'];
             unset($data['uuid']);
@@ -156,23 +170,121 @@ class ProfilesController extends Controller
 
 
             // 该教师的评聘佐证材料
-            $qualificationDao = new QualificationDao;
-            $qualification = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
+            $qualificationDao                   = new QualificationDao;
+            $qualification                      = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
             $this->dataForView['qualification'] = $qualification;
-//            dd($this->dataForView);
 
             return view('teacher.profile.edit', $this->dataForView);
         }
     }
 
     /**
+     * 教师信息详情
+     * @param MyStandardRequest $request
+     * @return string
+     */
+    public function teacherProfileInfo(MyStandardRequest $request)
+    {
+        $teacherId = $request->get('teacher_id');
+        $data      = [];
+
+        $profileDao = new TeacherProfileDao;
+        $profile    = $profileDao->getTeacherProfileByTeacherIdOrUuid((int)$teacherId);
+        $teacher    = $profile->user;
+        $data       = [
+            'campus_id' => $teacher->gradeUser[0]->campus_id,
+            'school_id' => $profile->school_id,
+            'teacher'   => [
+                'name'   => $teacher->name,
+                'mobile' => $teacher->mobile,
+                'status' => $teacher->status,
+            ],
+            'profile'   => [
+                'gender'                  => $profile->gender,
+                'nation_name'             => $profile->nation_name,
+                'birthday'                => $profile->birthday,
+                'serial_number'           => $profile->serial_number,
+                'id_number'               => $profile->id_number,
+                'resident'                => $profile->resident,
+                'political_name'          => $profile->political_name,
+                'party_time'              => $profile->party_time,
+                'home_address'            => $profile->home_address,
+                'education'               => $profile->education,
+                'degree'                  => $profile->degree,
+                'major'                   => $profile->major,
+                'graduation_school'       => $profile->graduation_school,
+                'graduation_time'         => $profile->graduation_time,
+                'final_education'         => $profile->final_education,
+                'final_degree'            => $profile->final_degree,
+                'final_major'             => $profile->final_major,
+                'final_graduation_school' => $profile->final_graduation_school,
+                'final_graduation_time'   => $profile->final_graduation_time,
+                'title'                   => $profile->title,
+                'title_start_at'          => $profile->title_start_at,
+                'work_start_at'           => $profile->work_start_at,
+                'hired_at'                => $profile->hired_at,
+                'mode'                    => $profile->mode,
+                'category_teach'          => $profile->category_teach,
+                'notes'                   => $profile->notes,
+            ]
+        ];
+        return JsonBuilder::Success($data);
+    }
+
+    /**
+     * 修改教师信息
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws Exception
+     */
+    public function editTeacherInfo(MyStandardRequest $request)
+    {
+        $teacherData = $request->get('teacher');
+        $profileData = $request->get('profile');
+        $schoolId    = $request->get('school_id');
+        $campusId    = $request->get('campus_id');
+        $teacherId   = $request->get('teacher_id');
+
+        $userDao    = new UserDao();
+        $profileDao = new TeacherProfileDao();
+        $mobile     = $userDao->getUserByMobile($teacherData['mobile']);
+        if (!empty($mobile) && $mobile->id != $teacherId) {
+            return JsonBuilder::Error('该手机号已注册过了');
+        }
+
+        $idNumber = $profileDao->getTeacherProfileByIdNumber($profileData['id_number']);
+        if (!empty($idNumber) && $idNumber->user_id != $teacherId) {
+            return JsonBuilder::Error('该身份证号已注册过了');
+        }
+
+        DB::beginTransaction();
+        try {
+            $userDao    = new UserDao;
+            $profileDao = new TeacherProfileDao;
+            $gradeDao   = new  GradeUserDao;
+
+            $userDao->updateUserInfo($teacherId, $teacherData);
+            $profileDao->updateTeacherProfile($teacherId, $profileData);
+            $gradeDao->updateDataByUserId($teacherId, ['school_id' => $schoolId, 'campus_id' => $campusId]);
+            DB::commit();
+            return JsonBuilder::Success('教师档案修改成功');
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return JsonBuilder::Error('修改识别:' . $exception->getMessage());
+        }
+
+    }
+
+
+    /**
      * 教师年终考评
      * @param MyStandardRequest $request
      * @return Factory|View
      */
-    public function manage_performance(MyStandardRequest $request){
-        $schoolDao = new SchoolDao();
-        $school = $schoolDao->getSchoolById(session('school.id'));
+    public function manage_performance(MyStandardRequest $request)
+    {
+        $schoolDao                    = new SchoolDao();
+        $school                       = $schoolDao->getSchoolById(session('school.id'));
         $this->dataForView['configs'] = $school->teacherPerformanceConfigs;
 
         $dao                          = new UserDao();

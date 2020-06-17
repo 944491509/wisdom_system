@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class StudentAdditionInformation extends Model
 {
-    protected $fillable = ['user_id', 'reward', 'punishment', 'people', 'mobile', 'address'];
+    protected $fillable = ['user_id', 'reward', 'punishment', 'people', 'mobile', 'address', 'borrow_type'];
 }

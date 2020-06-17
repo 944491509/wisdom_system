@@ -10,40 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 class TeacherProfile extends Model
 {
     protected $fillable = [
-        'uuid',
-        'user_id',
-        'name',
-        'school_id', // 教师任职的学校
-        'serial_number', // 教师编号
-        'group_name', // 所在部门: 基础教学部
-        'gender',
-        'title', // 教师职称: 教授, 讲师
-        'id_number', // 身份证号
-        'political_code',//政治面貌代码
-        'political_name',//政治面貌名称
-        'nation_code',//民族代码
-        'nation_name',//民族名称
-        'education',//学历
-        'degree',//学位
-        'birthday',
-        'joined_at', // 入职日期
-        'avatar',
-        'famous',
-        'work_start_at',
-        'major',
-        'final_education',
-        'final_major',
-        'title_start_at',
-        'title1_at',
-        'title1_hired_at',
-        'hired_at',
-        'hired',
-        'notes',
-        'category_teach',
-        'category_major',
+        'uuid', 'user_id', 'name', 'school_id', 'serial_number', 'gender', 'title', 'id_number',
+        'political_name', 'nation_name', 'education', 'degree', 'birthday', 'joined_at', 'avatar',
+        'work_start_at', 'major', 'final_education', 'final_major', 'title_start_at', 'hired_at',
+        'hired', 'notes', 'category_teach', 'mode', 'resident', 'party_time', 'home_address',
+        'graduation_school', 'graduation_time', 'final_degree', 'final_graduation_school',
+        'final_graduation_time', 'mode', 'resident', 'party_time', 'home_address', 'education',
+        'degree', 'graduation_school', 'graduation_time', 'final_degree', 'final_graduation_school',
+        'final_graduation_time'
     ];
-
-    public $casts = ['famous'=>'boolean','hired'=>'boolean'];
 
     public $dates = ['joined_at'];
 
@@ -67,8 +42,7 @@ class TeacherProfile extends Model
 
 
     public function user() {
-        $field = ['id','name','mobile', 'type', 'password'];
-        return $this->belongsTo(User::class)->select($field);
+        return $this->belongsTo(User::class);
     }
 
     public function getAvatarAttribute($value){

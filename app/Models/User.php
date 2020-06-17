@@ -48,15 +48,19 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED = 2;
     const STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT = '认证中';
     const STATUS_VERIFIED = 3;
-    const STATUS_VERIFIED_TEXT = '在校';
+    const STUDENT_STATUS_VERIFIED_TEXT = '在校';
+    const TEACHER_STATUS_VERIFIED_TEXT = '在职';
     const STATUS_SUSPENSION = 4;
-    const STATUS_SUSPENSION_TEXT = '休学';
+    const STUDENT_STATUS_SUSPENSION_TEXT = '休学';
+    const TEACHER_STATUS_SUSPENSION_TEXT = '离职';
     const STATUS_DROP_OUT = 5;
-    const STATUS_DROP_OUT_TEXT = '退学';
+    const STUDENT_STATUS_DROP_OUT_TEXT = '退学';
+    const TEACHER_STATUS_DROP_OUT_TEXT = '退休';
     const STATUS_TRANSFER = 6;
-    const STATUS_TRANSFER_TEXT = '转学';
+    const STUDENT_STATUS_TRANSFER_TEXT = '转学';
+    const TEACHER_STATUS_TRANSFER_TEXT = '调离';
     const STATUS_FINISH = 7;
-    const STATUS_FINISH_TEXT = '毕业';
+    const STUDENT_STATUS_FINISH_TEXT = '毕业';
 
     const TYPE_STUDENT = 1;
     const TYPE_EMPLOYEE = 2;
@@ -64,14 +68,6 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
     // 性别
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
-
-    // 生源类型:
-    const SOURCE_GENERAL = 1;
-    const SOURCE_SELF    = 2;
-    const SOURCE_AGENT   = 3;
-    const SOURCE_GENERAL_TEXT = '统招';
-    const SOURCE_SELF_TEXT    = '自招';
-    const SOURCE_AGENT_TEXT   = '中介';
 
     // 登录类型
     const MOBILE_LOGIN = 1; // 手机号登录
@@ -348,11 +344,26 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
         $arr = [
             self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED   => self::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED_TEXT,
             self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED => self::STATUS_WAITING_FOR_IDENTITY_TO_BE_VERIFIED_TEXT,
-            self::STATUS_VERIFIED                            => self::STATUS_VERIFIED_TEXT,
-            self::STATUS_SUSPENSION                          => self::STATUS_SUSPENSION_TEXT,
-            self::STATUS_DROP_OUT                            => self::STATUS_DROP_OUT_TEXT,
-            self::STATUS_TRANSFER                            => self::STATUS_TRANSFER_TEXT,
-            self::STATUS_FINISH                              => self::STATUS_FINISH_TEXT,
+            self::STATUS_VERIFIED                            => self::STUDENT_STATUS_VERIFIED_TEXT,
+            self::STATUS_SUSPENSION                          => self::STUDENT_STATUS_SUSPENSION_TEXT,
+            self::STATUS_DROP_OUT                            => self::STUDENT_STATUS_DROP_OUT_TEXT,
+            self::STATUS_TRANSFER                            => self::STUDENT_STATUS_TRANSFER_TEXT,
+            self::STATUS_FINISH                              => self::STUDENT_STATUS_FINISH_TEXT,
+        ];
+        return $arr[$this->status];
+    }
+
+    /**
+     * 获取教师的状态文字
+     * @return string
+     */
+    public function getTeacherText()
+    {
+        $arr = [
+            self::STATUS_VERIFIED   => self::TEACHER_STATUS_VERIFIED_TEXT,
+            self::STATUS_SUSPENSION => self::TEACHER_STATUS_SUSPENSION_TEXT,
+            self::STATUS_DROP_OUT   => self::TEACHER_STATUS_DROP_OUT_TEXT,
+            self::STATUS_TRANSFER   => self::TEACHER_STATUS_TRANSFER_TEXT,
         ];
         return $arr[$this->status];
     }
@@ -361,7 +372,8 @@ class User extends Authenticatable implements HasMobilePhone, HasDeviceId, IUser
      * 获取关联的用户班级
      * @return mixed
      */
-    public function gradeUser(){
+    public function gradeUser()
+    {
 
         if($this->isStudent() || $this->isSchoolManager()){
             return $this->hasOne(GradeUser::class);
