@@ -15,7 +15,7 @@ use App\Utils\UI\Button;
                     <form action="{{ route('admin.create.school-manager') }}" method="post">
                         <div class="form-group">
                             <label>登陆账户名</label>
-                            <input required type="text" class="form-control" value="" placeholder="必填: 登陆账号" name="user[mobile]">
+                            <input required type="text" class="form-control" value="" placeholder="必填: 登陆账号" name="user[mobile]" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
                             <label>登陆密码</label>

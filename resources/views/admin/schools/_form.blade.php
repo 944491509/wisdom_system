@@ -3,7 +3,7 @@
 
 <div class="form-group">
     <label>管理员姓名</label>
-    <input required type="text" class="form-control" value="{{ $user->name ?? old('name')}}" placeholder="必填: 管理员真实姓名" name="user[name]">
+    <input required type="text" class="form-control" value="{{ $user->name ?? old('name')}}" placeholder="必填: 管理员真实姓名" name="user[name]" AUTOCOMPLETE="OFF">
 </div>
 
 <div class="form-group">
