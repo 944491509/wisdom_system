@@ -34,7 +34,7 @@ class ImporterDao
 
     public function result($id)
     {
-       return ImportLog::where('task_id', $id)->where('task_status', ImportLog::FAIL_STATUS)->get();
+       return ImportLog::where('task_id', $id)->get();
     }
 
     /**

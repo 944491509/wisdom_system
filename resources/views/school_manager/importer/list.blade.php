@@ -48,10 +48,10 @@ use App\Utils\UI\Button;
                                         <td>{{ $task->path }}</td>
                                         <td>{{ $task->getStatus() }}</td>
                                         <td>{{ $task->created_at->format('Y-m-d H:i') }}</td>
-                                        <td>0</td>
-                                        <td>0</td>
+                                        <td>{{ $task->total }}</td>
+                                        <td>{{ $task->surplus }}</td>
                                         <td>
-                                            {{ Anchor::Print(['text'=>'结果','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id'=>$task->id])], Button::TYPE_DEFAULT,'result') }}
+                                            {{ Anchor::Print(['text'=>'结果','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id' => $task->id])], Button::TYPE_DEFAULT,'result') }}
                                         </td>
                                     </tr>
                                 @endforeach

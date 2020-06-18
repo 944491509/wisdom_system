@@ -618,9 +618,7 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
         Route::any('manager', 'ImporterController@manager')->name('school_manager.importer.manager');
         Route::any('save', 'ImporterController@save')->name('school_manager.importer.save');
         Route::any('add', 'ImporterController@add')->name('school_manager.importer.add');
-        Route::any('edit', 'ImporterController@edit')->name('school_manager.importer.edit');
-        Route::any('handle/{id}', 'ImporterController@handle')->name('school_manager.importer.handle');
-        Route::any('result/{id}', 'ImporterController@result')->name('school_manager.importer.result');
+        Route::any('result', 'ImporterController@result')->name('school_manager.importer.result');
     });
 
     // 会议

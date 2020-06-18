@@ -7,6 +7,7 @@ use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
+use App\Models\Importer\ImportLog;
 use App\Models\Importer\ImportTask;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -160,8 +161,10 @@ class ImporterUsers extends AbstractImporter
             }
         }
 
-        // 修改任务状态
-        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE]);
+        // 统计未导入总数
+        $count = ImportLog::where('task_id', $this->task['id'])->count();
+        // 修改任务状态 和 未导入条数
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE, 'surplus' => $count]);
     }
 
 

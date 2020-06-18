@@ -17,31 +17,34 @@ use App\Utils\UI\Button;
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
-                                <tr>
+                                <tr class="center">
                                     <th>#</th>
-                                    <th>错误原因</th>
-                                    <th>原始数据</th>
-                                    <th>操作</th>
+                                    <th>表格行数</th>
+                                    <th>姓名</th>
+                                    <th>身份证</th>
+                                    <th>未导入原因</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @if(count($messages) == 0)
                                     <tr>
                                         <td colspan="4">还没有内容 </td>
-
                                     </tr>
                                 @endif
                                 @foreach($messages as $index=>$info)
-                                    <tr>
+                                    <tr class="center">
                                         <td>{{ $index+1 }}</td>
-                                        <td>{{ json_encode(json_decode($info->result,1),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) }}</td>
-                                        <td>{{ json_encode(json_decode($info->source,1),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) }}</td>
-                                        <td class="text-center">
-                                        </td>
+                                        <td>{{ $info->number }}</td>
+                                        <td>{{ $info->name }}</td>
+                                        <td>{{ $info->id_number }}</td>
+                                        <td>{{ $info->error_log }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
                             </table>
+                            <?php
+                                Anchor::Print(['text'=>trans('general.return'),'href'=>route('school_manager.importer.manager'),'class'=>'pull-right link-return'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
+                            ?>
                         </div>
                     </div>
                 </div>

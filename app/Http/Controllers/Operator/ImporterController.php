@@ -72,11 +72,11 @@ class ImporterController extends Controller
         return redirect()->route('school_manager.importer.manager');
     }
 
-    public function result(Request $request, $id)
+    public function result(Request $request)
     {
-        $schoolId = $request->session()->get('school.id');
+        $id = $request->get('id');
         $dao = new ImporterDao();
-        $messages = $dao->result($id, $schoolId);
+        $messages = $dao->result($id);
         $this->dataForView['messages'] = $messages;
         return view('school_manager.importer.result', $this->dataForView);
 
