@@ -32,13 +32,13 @@ Vue.component("AttendanceList", {
         <el-table-column label="上午" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" v-if="!scope.row.using_morning">上班</el-button>
-            <el-button type="primary" size="mini" style="background-color: #67C23A;" v-else>下班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" v-else>下班</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="下午">
-          <template slot-scope="scope" align="center">
+        <el-table-column label="下午" align="center">
+          <template slot-scope="scope">
             <el-button type="primary" size="mini" v-if="scope.row.using_afternoon">上班</el-button>
-            <el-button type="primary" size="mini" style="background-color: #67C23A;" v-else>下班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" v-else>下班</el-button>
           </template>
         </el-table-column>
       </el-table-column>
@@ -111,11 +111,12 @@ Vue.component("AttendanceList", {
       this.SETOPTIONS({ visibleClockDrawer: true, isEditFormLoading: true });
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       if (err) return false;
-      const { clocksets, using_afternoon } = res;
+      const { clocksets, using_afternoon, using_morning } = res;
       if (clocksets.length) {
         this.SETOPTIONS({
           clockSetData: clocksets,
           usingAfternoon: using_afternoon == 1,
+          usingMorning: using_morning === 1,
           isEditFormLoading: false,
           attendance_id
         });
@@ -143,6 +144,7 @@ Vue.component("AttendanceList", {
         this.SETOPTIONS({
           clockSetData,
           usingAfternoon: using_afternoon == 1,
+          usingMorning: using_morning === 1,
           isEditFormLoading: false,
           attendance_id
         });

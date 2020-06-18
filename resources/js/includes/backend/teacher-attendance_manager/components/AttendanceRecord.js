@@ -4,7 +4,7 @@ Vue.component("AttendanceRecord", {
   template: `
     <div class="attendance-record-container">
       <el-row :gutter="20">
-        <el-col :span="13">
+        <el-col :span="11">
           <div class="recordLeft">
             <div class="leftTitle">
               <img class="icon" src="/assets/img/yinxin/recordLeft.png">
@@ -52,11 +52,11 @@ Vue.component("AttendanceRecord", {
                   <p class="itemTop color3">严重迟到</p>
                   <p class="itemBtm">{{resDate.morning ? resDate.morning.later.count :0}}<span v-if="resDate.morning.later.users">次/{{resDate.morning.later.users ? resDate.morning.later.users.length : 0}}人</span>人</p>
                 </div>
-                <div class="itemDiv border4" @click="clickItem(resDate.morning.ok.list)">
+                <div class="itemDiv border4" @click="clickItem(resDate.morning.ok.list)" v-if="isMor">
                   <p class="itemTop color4">按时下班</p>
                   <p class="itemBtm">{{resDate.morning ? resDate.morning_end.ok.count :0}}<span v-if="resDate.morning_end.ok.users">次/{{resDate.morning_end.ok.users ? resDate.morning_end.ok.users.length : 0}}人</span>人</p>
                 </div>
-                <div class="itemDiv border5" @click="clickItem(resDate.morning.ok.list)">
+                <div class="itemDiv border5" @click="clickItem(resDate.morning.ok.list)" v-if="isMor">
                   <p class="itemTop color5">早退</p>
                   <p class="itemBtm">{{resDate.morning ? resDate.morning_end.early.count :0}}<span v-if="resDate.morning_end.early.users">次/{{resDate.morning_end.early.users ? resDate.morning_end.early.users.length : 0}}人</span>人</p>
                 </div>
@@ -67,15 +67,15 @@ Vue.component("AttendanceRecord", {
               </div>
               <div class="text">下午</div>
               <div class="itemsDiv">
-                <div class="itemDiv border1" @click="clickItem(resDate.afternoon.ok.list)">
+                <div class="itemDiv border1" @click="clickItem(resDate.afternoon.ok.list)" v-if="isAft">
                   <p class="itemTop color1">按时上班</p>
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.ok.count :0}}<span v-if="resDate.afternoon.ok.users">次/{{resDate.afternoon.ok.users ? resDate.afternoon.ok.users.length : 0}}人</span>人</p>
                 </div>
-                <div class="itemDiv border2" @click="clickItem(resDate.afternoon.late.list)">
+                <div class="itemDiv border2" @click="clickItem(resDate.afternoon.late.list)" v-if="isAft">
                   <p class="itemTop color2">迟到</p>
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.late.count :0}}<span v-if="resDate.afternoon.late.users">次/{{resDate.afternoon.late.users ? resDate.afternoon.late.users.length : 0}}人</span>人</p>
                 </div>
-                <div class="itemDiv border3" @click="clickItem(resDate.afternoon.later.list)">
+                <div class="itemDiv border3" @click="clickItem(resDate.afternoon.later.list)" v-if="isAft">
                   <p class="itemTop color3">严重迟到</p>
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.later.count :0}}<span v-if="resDate.afternoon.later.users">次/{{resDate.afternoon.later.users ? resDate.afternoon.later.users.length : 0}}人</span>人</p>
                 </div>
@@ -110,7 +110,7 @@ Vue.component("AttendanceRecord", {
             </div>
           </div>
         </el-col>
-        <el-col :span="11" v-if="isShowTable">
+        <el-col :span="13" v-if="isShowTable">
           <div class="recordRight">
             <div class="leftTitle">
             <img class="icon" src="/assets/img/yinxin/recordRight.png">
@@ -175,7 +175,9 @@ Vue.component("AttendanceRecord", {
       tableList: [],
       isShowTable: false,
       isShow: false,
-      type: ''
+      type: '',
+      isMor: false,
+      isAft: false
     };
   },
   mounted() {
@@ -217,6 +219,8 @@ Vue.component("AttendanceRecord", {
         }
         const [err, res] = await catchErr(_load_clockins_daycount(params));
         this.resDate = res.info
+        this.isMor = res.using_morning
+        this.isAft = res.using_afternoon
         this.isShow = true
         console.log(this.resDate)
       } else if (this.dateByDay.split("-").length == 2) {
