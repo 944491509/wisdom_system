@@ -271,3 +271,7 @@ box-shadow: 0 2px 9px 0 #EAEDF2;
   border: 1px solid #904BF9;
 box-shadow: 0 2px 9px 0 #EAEDF2;
 }
+
+.opacity0 {
+  opacity: 0;
+}

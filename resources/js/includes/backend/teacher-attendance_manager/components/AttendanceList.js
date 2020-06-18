@@ -31,14 +31,14 @@ Vue.component("AttendanceList", {
         width="180">
         <el-table-column label="上午" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" v-if="!scope.row.using_morning">上班</el-button>
-            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" v-else>下班</el-button>
+            <el-button type="primary" size="mini">上班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" :class="scope.row.using_morning ? '' : 'opacity0'">下班</el-button>
           </template>
         </el-table-column>
         <el-table-column label="下午" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" v-if="scope.row.using_afternoon">上班</el-button>
-            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" v-else>下班</el-button>
+            <el-button type="primary" size="mini" :class="scope.row.using_afternoon ? '' : 'opacity0'">上班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" >下班</el-button>
           </template>
         </el-table-column>
       </el-table-column>
