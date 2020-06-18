@@ -5,7 +5,10 @@ namespace App\BusinessLogic\ImportExcel\Impl;
 
 
 use App\BusinessLogic\ImportExcel\Contracts\IImportExcel;
+use App\Dao\Importer\ImporterDao;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
 
 abstract class AbstractImporter implements IImportExcel
 {
@@ -21,7 +24,7 @@ abstract class AbstractImporter implements IImportExcel
     }
 
     /**
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws Exception
      */
     public function loadExcelFile()
     {
@@ -29,19 +32,11 @@ abstract class AbstractImporter implements IImportExcel
         ini_set('memory_limit', -1);
         $filePath = $this->getFileAbsolutePath();
         $objReader = IOFactory::createReader('Xlsx');
-        $objPHPExcel = $objReader->load($filePath);  //$filename可以是上传的表格，或者是指定的表格
+        $objPHPExcel = $objReader->load($filePath);
         $worksheet = $objPHPExcel->getAllSheets();
         $this->data = $worksheet;
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function getConfig()
-    {
-
-    }
 
     /**
      * 获取绝对文件路径
@@ -77,5 +72,16 @@ abstract class AbstractImporter implements IImportExcel
         return $this->data[$sheetIndex]->toArray();
     }
 
-
+    /**
+     * 错误记录
+     * @param $taskName
+     * @param $logArr
+     */
+    public function errorLog($taskName, $logArr)
+    {
+          $dao = new ImporterDao;
+          $dao->createErrorLog($logArr);
+          $logArr['title'] = $taskName;
+          Log::channel('import_log')->info($logArr);
+    }
 }
