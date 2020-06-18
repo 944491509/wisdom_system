@@ -13,9 +13,11 @@ use App\Utils\UI\Button;
                 </div>
                 <div class="card-body " id="bar-parent">
                     <form action="{{ route('admin.create.school-manager') }}" method="post">
+                        {{--此处是为了欺骗浏览器--}}
+                        <input type="password"  style="display:none"/>
                         <div class="form-group">
                             <label>登陆账户名</label>
-                            <input required type="text" class="form-control" value="" placeholder="必填: 登陆账号" name="user[mobile]" AUTOCOMPLETE="OFF">
+                            <input required type="text" class="form-control" placeholder="必填: 登陆账号" name="user[mobile]" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
                             <label>登陆密码</label>
