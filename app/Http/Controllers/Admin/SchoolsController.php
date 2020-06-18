@@ -169,7 +169,7 @@ class SchoolsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function list_school_manager(SchoolRequest $request) {
-        $schoolId = $request->get('school_id');
+        $schoolId = $request->getSchoolId();
         $gradeUserDao = new GradeUserDao();
         $list = $gradeUserDao->getSchoolManagerBySchoolId($schoolId);
         $this->dataForView['pageTitle'] = '学校管理员列表';
