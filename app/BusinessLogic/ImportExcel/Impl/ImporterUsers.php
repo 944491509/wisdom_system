@@ -2,10 +2,12 @@
 
 namespace App\BusinessLogic\ImportExcel\Impl;
 
+use App\Dao\Importer\ImporterDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
+use App\Models\Importer\ImportTask;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -27,6 +29,10 @@ class ImporterUsers extends AbstractImporter
         $userDao = new UserDao;
         $profileDao = new StudentProfileDao;
         $gradeUserDao = new GradeUserDao;
+        $importDao = new ImporterDao;
+        // 修改任务状态
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
+
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
         // 再次验证文件格式
@@ -40,6 +46,7 @@ class ImporterUsers extends AbstractImporter
             $this->errorLog($this->task['title'], $error);
             exit();
         }
+
         // 开始循环导入
         foreach($sheetIndexArray as $sheetIndex) {
             echo '已拿到第'. ($sheetIndex+1).' sheet的数据 开始循环.....'.PHP_EOL;
@@ -143,12 +150,16 @@ class ImporterUsers extends AbstractImporter
                     $gradeUserDao->create($gradeData);
                     DB::commit();
                     echo $val[0].'----------创建成功'.PHP_EOL;
+
                 }
                 catch (\Exception $exception){
                     DB::rollBack();
                 }
             }
         }
+
+        // 修改任务状态
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE]);
     }
 
 

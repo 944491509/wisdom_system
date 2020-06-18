@@ -38,15 +38,6 @@ class ImporterDao
     }
 
     /**
-     * 按顺序取出未处理的导入需求，每次只取一条处理，定时任务每小时执行一次，每天导入最多24条任务
-     * @return mixed
-     */
-    public function getTasksForNewPlan()
-    {
-        return ImportTask::where('status', 1)->where('school_id', '>', 0)->orderBy('id', 'asc')->first();
-    }
-
-    /**
      * 根据 状态 获取导入任务
      * @param $status
      * @return mixed
@@ -64,6 +55,17 @@ class ImporterDao
     public function createErrorLog($data)
     {
         return ImportLog::create($data);
+    }
+
+    /**
+     * 修改
+     * @param $id
+     * @param $data
+     * @return mixed
+     */
+    public function update($id ,$data)
+    {
+        return ImportTask::where('id', $id)->update($data);
     }
 
 }

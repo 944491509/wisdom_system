@@ -6,8 +6,9 @@ use App\BusinessLogic\ImportExcel\Factory;
 use App\Dao\Importer\ImporterDao;
 use App\Models\Importer\ImportTask;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
-class importUsers extends Command
+class ImportUsers extends Command
 {
     /**
      * The name and signature of the console command.
@@ -44,7 +45,7 @@ class importUsers extends Command
         $dao = new ImporterDao;
         $data = $dao->getTasksByStatus(ImportTask::IMPORT_TYPE_NO_IDENTITY);
         if (is_null($data)) {
-            $this->info('未找到任务, 请确定导入任务ID');die;
+            $this->info('未找到任务');die;
         }
         $result = Factory::createAdapter(['adapter'=> 'import_users' , 'data'=> $data]);
         $result->handle();
