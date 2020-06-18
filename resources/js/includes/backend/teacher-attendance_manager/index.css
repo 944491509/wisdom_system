@@ -155,17 +155,23 @@
   margin-right: 20px;
 }
 .attendance-manager-container .attendance-record-container .leftContent {
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  text-align: center;
+}
+.attendance-manager-container .attendance-record-container .leftContent .text {
+  margin-top: 15px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv {
-  height: 150px;
+  /* height: 130px; */
   display: flex;
   align-items: center;
-  padding-left: 30px;
+  /* padding-left: 30px; */
   border-bottom: 1px solid #eaedf2;
+  padding-top: 13px;
+  padding-bottom: 18px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv {
-  margin-left: 40px;
+  margin-left: 20px;
   height: 90px;
   width: 90px;
   text-align: center;
@@ -176,26 +182,96 @@
   box-shadow: #eaedf2 1px 1px 2px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color1 {
-  color: #6dcc58;
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+color: #6DCC58;
+letter-spacing: 0.16px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color2 {
-  color: #fa7921;
+  font-family: Helvetica;
+font-size: 14px;
+color: #FA7921;
+letter-spacing: 0.16px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color3 {
-  color: #fd1b1b;
+  font-family: Helvetica;
+font-size: 14px;
+color: #FD1B1B;
+letter-spacing: 0.16px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color4 {
-  color: #ababab;
+  font-family: PingFangSC-Medium;
+font-size: 14px;
+color: #6DCC58;
+letter-spacing: 0.16px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color5 {
+  font-family: PingFangSC-Medium;
+font-size: 14px;
+color: #FD1B1B;
+letter-spacing: 0.16px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color6 {
+  font-family: Helvetica;
+font-size: 14px;
+color: #ABABAB;
+letter-spacing: 0.16px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color7 {
+  font-family: PingFangSC-Medium;
+font-size: 14px;
+color: #FA7D27;
+letter-spacing: 0.16px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color8 {
+  font-family: PingFangSC-Medium;
+font-size: 14px;
+color: #5075FF;
+letter-spacing: 0.16px;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .itemDiv .color9 {
+  font-family: PingFangSC-Medium;
+font-size: 14px;
+color: #904BF9;
+letter-spacing: 0.16px;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border1 {
-  border: 1px solid #6dcc58;
+  border: 1px solid #6DCC58;
+  box-shadow: 0 2px 9px 0 #EAEDF2;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border2 {
-  border: 1px solid #fa7921;
+  border: 1px solid #FA7921;
+box-shadow: 0 2px 9px 0 #EAEDF2;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border3 {
-  border: 1px solid #fd1b1b;
+  border: 1px solid #FD1B1B;
+box-shadow: 0 2px 9px 0 #EAEDF2;
 }
 .attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border4 {
-  border: 1px solid #ababab;
+  border: 1px solid #6DCC58;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border5 {
+  border: 1px solid #FD1B1B;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border6 {
+  border: 1px solid #ABABAB;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border7 {
+  border: 1px solid #FA7D27;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border8 {
+  border: 1px solid #4E73FE;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+.attendance-manager-container .attendance-record-container .leftContent .itemsDiv .border9 {
+  border: 1px solid #904BF9;
+box-shadow: 0 2px 9px 0 #EAEDF2;
+}
+
+.opacity0 {
+  opacity: 0;
 }

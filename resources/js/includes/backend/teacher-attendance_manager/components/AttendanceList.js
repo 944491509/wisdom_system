@@ -5,6 +5,7 @@ Vue.component("AttendanceList", {
     <div class="attendance-list-container">
     <el-table
       :data="data.data"
+      stripe
       v-loading="isTableLoading"
       :empty-text="isTableLoading? ' ':'暂无数据'"
       :style="{'width': '100%','min-height':minHeight + 'px'}"
@@ -28,11 +29,18 @@ Vue.component("AttendanceList", {
         prop="using_afternoon"
         label="考勤班次"
         width="180">
-        <template slot-scope="scope">
-          <span v-if="scope.row.using_afternoon">早中晚</span>
-          <span v-else>早晚</span>
-        </template>
-        
+        <el-table-column label="上午" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini">上班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" :class="scope.row.using_morning ? '' : 'opacity0'">下班</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="下午" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" :class="scope.row.using_afternoon ? '' : 'opacity0'">上班</el-button>
+            <el-button type="primary" size="mini" style="background-color: #67C23A;border: 1px solid #67c23a;" >下班</el-button>
+          </template>
+        </el-table-column>
       </el-table-column>
       <el-table-column
         align="center"
@@ -85,14 +93,15 @@ Vue.component("AttendanceList", {
       }
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       if (err) return false;
-      const { id, school_id, title, wifi_name, using_afternoon, organizations,managers,exceptiondays} = res;
+      const { id, school_id, title, wifi_name, using_afternoon, using_morning, organizations,managers,exceptiondays} = res;
       const formData = {
         attendance: {
           id, //编辑时传递
           school_id,
           title,
           wifi_name,
-          using_afternoon: using_afternoon == 1
+          using_afternoon: using_afternoon == 1,
+          using_morning: using_morning === 1
         },
         organizations,
         managers,
@@ -103,11 +112,12 @@ Vue.component("AttendanceList", {
       this.SETOPTIONS({ visibleClockDrawer: true, isEditFormLoading: true });
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       if (err) return false;
-      const { clocksets, using_afternoon } = res;
+      const { clocksets, using_afternoon, using_morning } = res;
       if (clocksets.length) {
         this.SETOPTIONS({
           clockSetData: clocksets,
           usingAfternoon: using_afternoon == 1,
+          usingMorning: using_morning === 1,
           isEditFormLoading: false,
           attendance_id
         });
@@ -135,6 +145,7 @@ Vue.component("AttendanceList", {
         this.SETOPTIONS({
           clockSetData,
           usingAfternoon: using_afternoon == 1,
+          usingMorning: using_morning === 1,
           isEditFormLoading: false,
           attendance_id
         });

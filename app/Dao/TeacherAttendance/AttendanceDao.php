@@ -68,6 +68,13 @@ class AttendanceDao
                     $item['afternoon'] = null;
                     $item['afternoon_late'] = null;
                 }
+                if ($attendance->using_morning) {
+                    $item['morning_end'] = Carbon::parse($item['morning_end'])->format('H:i:s');
+                    $item['morning_end2'] = Carbon::parse($item['morning_end2'])->format('H:i:s');
+                }else {
+                    $item['morning_end'] = null;
+                    $item['morning_end2'] = null;
+                }
 
                 $clockSet = Clockset::where('teacher_attendance_id', $attendance->id)
                     ->where('week', $item['week'])->first();
@@ -80,6 +87,8 @@ class AttendanceDao
                     $clockSet->afternoon_start = $item['afternoon_start'];
                     $clockSet->afternoon = $item['afternoon'];
                     $clockSet->afternoon_late = $item['afternoon_late'];
+                    $clockSet->morning_end = $item['morning_end'];
+                    $clockSet->morning_end2 = $item['morning_end2'];
                     $clockSet->is_weekday = $item['is_weekday'];
                     $clockSet->save();
                 }else {
@@ -90,6 +99,8 @@ class AttendanceDao
                         'end' => $item['end'],
                         'morning' => $item['morning'],
                         'morning_late' => $item['morning_late'],
+                        'morning_end' => $item['morning_end'],
+                        'morning_end2' => $item['morning_end2'],
                         'evening' => $item['evening'],
                         'afternoon_start' => $item['afternoon_start'],
                         'afternoon' => $item['afternoon'],
@@ -148,6 +159,7 @@ class AttendanceDao
             $attendance->title = $data['title'];
             $attendance->wifi_name = $data['wifi_name'];
             $attendance->using_afternoon = $data['using_afternoon'];
+            $attendance->using_morning = $data['using_morning'];
             $attendance->save();
             //更新组织
             Organization::where('teacher_attendance_id', $attendance->id)->delete();

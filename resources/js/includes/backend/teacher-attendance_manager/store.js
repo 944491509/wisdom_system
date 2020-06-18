@@ -31,7 +31,8 @@ export default new Vuex.Store({
         school_id: "",
         title: "",
         wifi_name: "",
-        using_afternoon: true //是否启用中午打卡
+        using_afternoon: true, //是否启用中午打卡
+        using_morning: true //是否启用上午打卡
       },
       organizations: [],
       exceptiondays:[]
@@ -41,6 +42,7 @@ export default new Vuex.Store({
     visibleClockDrawer: false,
     clockSetData,
     usingAfternoon:false,
+    usingMorning:false,
     attendance_id:0,
     visibleHolidaySet:false, //节假日
     schoolIdx:'',

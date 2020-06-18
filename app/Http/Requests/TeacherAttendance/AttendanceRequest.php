@@ -68,6 +68,7 @@ class AttendanceRequest extends MyStandardRequest
      *      end:"22:00:00",
      *      morning:"09:00:00",
      *      morning_late:"09:30:00",
+     *      morning_end:"09:30:00",
      *      afternoon_start:"12:00:00",
      *      afternoon:"13:00:00",
      *      afternoon_late:"13:30:00",

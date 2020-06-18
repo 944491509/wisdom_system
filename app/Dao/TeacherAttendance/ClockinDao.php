@@ -6,6 +6,7 @@ use App\Models\TeacherAttendance\Attendance;
 use App\Models\TeacherAttendance\Clockin;
 use App\Models\TeacherAttendance\Clockset;
 use App\Models\TeacherAttendance\Leave;
+use App\Models\TeacherAttendance\LeaveDetail;
 use App\Models\Users\UserOrganization;
 use App\Utils\JsonBuilder;
 use App\Utils\Misc\Contracts\Title;
@@ -55,6 +56,16 @@ class ClockinDao
                 'ok' => ['count' => 0, 'users' => [], 'list' => []],
                 'early' => ['count' => 0, 'users' => [], 'list' => []],
                 'not' => ['count' => 0, 'users' => [], 'list' => []],
+            ],
+            'morning_end' => [
+                'ok' => ['count' => 0, 'users' => [], 'list' => []],
+                'early' => ['count' => 0, 'users' => [], 'list' => []],
+                'not' => ['count' => 0, 'users' => [], 'list' => []],
+            ],
+            'other' => [
+                'away' => ['count' => 0, 'users' => [], 'list' => []],
+                'leave' => ['count' => 0, 'users' => [], 'list' => []],
+                'travel' => ['count' => 0, 'users' => [], 'list' => []],
             ]
         ];
 
@@ -71,6 +82,9 @@ class ClockinDao
             ];
         }
 
+        $hasAwayId = [];
+        $hasTravelId = [];
+        $hasLeaveId = [];
         while ($monthStart->lte($monthEnd)) {
             $day = $monthStart->format('Y-m-d');
             $clockins = $attendance->clockins()->where('day', '=', $day)->orderBy('id', 'desc')->get();
@@ -119,6 +133,12 @@ class ClockinDao
                 }
             }
 
+            $leaveList = $attendance->leaves()->whereDate('start', '<=', $day)->whereDate('end', '>=', $day)->get();
+            $retLeave = [];
+            foreach ($leaveList as $item) {
+                $retLeave[$item->user_id][$item->source][] = $item;
+            }
+
             foreach ($userList as $userId => $user) {
                 $user['day'] = $day;
                 if (!in_array($userId, $hasUserId['morning'])) {
@@ -142,8 +162,48 @@ class ClockinDao
                         $return['evening']['not']['users'][] = $user['userid'];
                     }
                 }
-            }
 
+                $user['day'] = '';
+                if (isset($retLeave[$userId][Leave::SOURCE_LEAVE])) {
+                    foreach ($retLeave[$userId][Leave::SOURCE_LEAVE] as $it) {
+                        if (!in_array($it->id, $hasLeaveId)) {
+                            $return['other']['leave']['count']++;
+                            if (!in_array($user['userid'], $return['other']['leave']['users'])) {
+                                $return['other']['leave']['users'][] = $user['userid'];
+                            }
+                            $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');;
+                            $return['other']['leave']['list'][] = $user;
+                            $hasLeaveId[] = $it->id;
+                        }
+                    }
+                }
+                if (isset($retLeave[$userId][Leave::SOURCE_AWAY])) {
+                    foreach ($retLeave[$userId][Leave::SOURCE_AWAY] as $it) {
+                        if (!in_array($it->id, $hasAwayId)) {
+                            $return['other']['away']['count']++;
+                            if (!in_array($user['userid'], $return['other']['away']['users'])) {
+                                $return['other']['away']['users'][] = $user['userid'];
+                            }
+                            $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');;
+                            $return['other']['away']['list'][] = $user;
+                            $hasAwayId[] = $it->id;
+                        }
+                    }
+                }
+                if (isset($retLeave[$userId][Leave::SOURCE_TRAVEL])) {
+                    foreach ($retLeave[$userId][Leave::SOURCE_TRAVEL] as $it) {
+                        if (!in_array($it->id, $hasTravelId)) {
+                            $return['other']['travel']['count']++;
+                            if (!in_array($user['userid'], $return['other']['travel']['users'])) {
+                                $return['other']['travel']['users'][] = $user['userid'];
+                            }
+                            $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');;
+                            $return['other']['travel']['list'][] = $user;
+                            $hasTravelId[] = $it->id;
+                        }
+                    }
+                }
+            }
 
             $monthStart->addDay();
         }
@@ -169,6 +229,16 @@ class ClockinDao
                 'ok' => ['count' => 0, 'list' => []],
                 'early' => ['count' => 0, 'list' => []],
                 'not' => ['count' => 0, 'list' => []],
+            ],
+            'morning_end' => [
+                'ok' => ['count' => 0, 'list' => []],
+                'early' => ['count' => 0, 'list' => []],
+                'not' => ['count' => 0, 'list' => []],
+            ],
+            'other' => [
+                'leave' => ['count' => 0, 'list' => []],
+                'away' => ['count' => 0, 'list' => []],
+                'travel' => ['count' => 0, 'list' => []]
             ]
         ];
         $userOrganizationList = UserOrganization::whereIn('organization_id', $attendance->organizations()->pluck('organization_id')->toArray())->get();
@@ -215,6 +285,12 @@ class ClockinDao
                     break;
             }
         }
+
+        $leaveList = $attendance->leaves()->whereDate('start', '<=', $day)->whereDate('end', '>=', $day)->get();
+        $retLeave = [];
+        foreach ($leaveList as $item) {
+            $retLeave[$item->user_id][$item->source][] = $item;
+        }
         foreach ($userList as $userId => $user) {
             if (!in_array($userId, $hasUserId['morning'])) {
                 $return['morning']['not']['count']++;
@@ -227,6 +303,27 @@ class ClockinDao
             if (!in_array($userId, $hasUserId['evening'])) {
                 $return['evening']['not']['count']++;
                 $return['evening']['not']['list'][] = $user;
+            }
+            if (isset($retLeave[$userId][Leave::SOURCE_LEAVE])) {
+                $return['other']['leave']['count']++;
+                foreach ($retLeave[$userId][Leave::SOURCE_LEAVE] as $it) {
+                    $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');
+                    $return['other']['leave']['list'][] = $user;
+                }
+            }
+            if (isset($retLeave[$userId][Leave::SOURCE_AWAY])) {
+                $return['other']['away']['count']++;
+                foreach ($retLeave[$userId][Leave::SOURCE_AWAY] as $it) {
+                    $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');
+                    $return['other']['away']['list'][] = $user;
+                }
+            }
+            if (isset($retLeave[$userId][Leave::SOURCE_TRAVEL])) {
+                $return['other']['travel']['count']++;
+                foreach ($retLeave[$userId][Leave::SOURCE_TRAVEL] as $it) {
+                    $user['time'] = Carbon::parse($it->start)->format('m/d H:i') . ' ~ ' . Carbon::parse($it->end)->format('m/d H:i');
+                    $return['other']['travel']['list'][] = $user;
+                }
             }
         }
         return $return;

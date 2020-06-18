@@ -20,32 +20,46 @@ Vue.component("AttendanceForm", {
     <el-form-item label="指定WIFI" prop="attendance.wifi_name">
       <el-input v-model="formData.attendance.wifi_name"></el-input>
     </el-form-item>
-    <el-form-item label="打卡班次" >
-    <div class="using-switch">
-    <el-switch
-        size="mini"
-        v-model="using_default"
-        active-color="#4ca3ff"
-        inactive-color="#ccc9cd"
-        disabled
-        inactive-text="上午" />
+    <el-form-item label="上午打卡" >
+      <div class="using-switch">
         <el-switch
-        size="mini"
-        v-model="formData.attendance.using_afternoon"
-        active-color="#4ca3ff"
-        inactive-color="#ccc9cd"
-        inactive-text="下午" />
+          size="mini"
+          v-model="using_default"
+          active-color="#4ca3ff"
+          inactive-color="#ccc9cd"
+          disabled
+          inactive-text="上午" 
+        />
         <el-switch
-        size="mini"
-        v-model="using_default"
-        active-color="#4ca3ff"
-        inactive-color="#ccc9cd"
-        disabled
-        inactive-text="下班" />
-    </div>
+          size="mini"
+          v-model="formData.attendance.using_morning"
+          active-color="#4ca3ff"
+          inactive-color="#ccc9cd"
+          inactive-text="下班" 
+        />
+      </div>
     </el-form-item>
-     <Organization/>
-     <ManagerMents ref="ManagerMents" v-if="visibleFormDrawer"/>
+    <el-form-item label="下午打卡" >
+      <div class="using-switch">
+        <el-switch
+          size="mini"
+          v-model="formData.attendance.using_afternoon"
+          active-color="#4ca3ff"
+          inactive-color="#ccc9cd"
+          inactive-text="上班" 
+        />
+        <el-switch
+          size="mini"
+          v-model="using_default"
+          active-color="#4ca3ff"
+          inactive-color="#ccc9cd"
+          disabled
+          inactive-text="下班" 
+        />
+      </div>
+    </el-form-item>
+    <Organization/>
+    <ManagerMents ref="ManagerMents" v-if="visibleFormDrawer"/>
     </el-form>
     <div class="btn-create">
         <el-button  @click="_add()" :loading="isLoading" type="primary" size="mini">保存</el-button>
@@ -54,7 +68,7 @@ Vue.component("AttendanceForm", {
     `,
   mixins: [Mixins],
   methods: {
-    _add() {
+    _add() { 
       if (this.isLoading || this.isEditFormLoading) return false;
       this.isLoading = true;
       this.$refs["ruleForm"].validate(async valid => {

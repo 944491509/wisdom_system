@@ -12,7 +12,7 @@ class Attendance extends Model
     //
     public $table = 'teacher_attendances';
     protected $fillable = [
-        'school_id','title','wifi_name','using_afternoon'
+        'school_id','title','wifi_name','using_afternoon', 'using_morning'
     ];
 
     public function organizations()

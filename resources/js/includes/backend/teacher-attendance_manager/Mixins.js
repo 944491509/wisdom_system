@@ -13,6 +13,7 @@ export const Mixins = {
       'visibleClockDrawer',
       'clockSetData',
       'usingAfternoon',
+      'usingMorning',
       'attendance_id',
       'visibleHolidaySet',
       'schoolIdx',
