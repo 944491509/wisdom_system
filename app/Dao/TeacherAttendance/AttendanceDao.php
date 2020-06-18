@@ -70,8 +70,10 @@ class AttendanceDao
                 }
                 if ($attendance->using_morning) {
                     $item['morning_end'] = Carbon::parse($item['morning_end'])->format('H:i:s');
+                    $item['morning_end2'] = Carbon::parse($item['morning_end2'])->format('H:i:s');
                 }else {
                     $item['morning_end'] = null;
+                    $item['morning_end2'] = null;
                 }
 
                 $clockSet = Clockset::where('teacher_attendance_id', $attendance->id)
@@ -86,6 +88,7 @@ class AttendanceDao
                     $clockSet->afternoon = $item['afternoon'];
                     $clockSet->afternoon_late = $item['afternoon_late'];
                     $clockSet->morning_end = $item['morning_end'];
+                    $clockSet->morning_end2 = $item['morning_end2'];
                     $clockSet->is_weekday = $item['is_weekday'];
                     $clockSet->save();
                 }else {
@@ -97,6 +100,7 @@ class AttendanceDao
                         'morning' => $item['morning'],
                         'morning_late' => $item['morning_late'],
                         'morning_end' => $item['morning_end'],
+                        'morning_end2' => $item['morning_end2'],
                         'evening' => $item['evening'],
                         'afternoon_start' => $item['afternoon_start'],
                         'afternoon' => $item['afternoon'],
