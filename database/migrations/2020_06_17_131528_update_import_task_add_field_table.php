@@ -20,6 +20,8 @@ class UpdateImportTaskAddFieldTable extends Migration
             $table->smallInteger('status')->default(0)->comment('0:等待中, 1:导入中, 2:已完成 3:撤回')->change();
             $table->string('path')->comment('文件路径');
             $table->string('file_name')->comment('文件原始名称');
+            $table->integer('total')->default(0)->comment('已导入条数');
+            $table->integer('surplus')->default(0)->comment('未导入条数');
         });
     }
 
@@ -37,6 +39,8 @@ class UpdateImportTaskAddFieldTable extends Migration
             $table->smallInteger('status')->change();
             $table->dropColumn('path');
             $table->dropColumn('file_name');
+            $table->dropColumn('total');
+            $table->dropColumn('surplus');
         });
     }
 }

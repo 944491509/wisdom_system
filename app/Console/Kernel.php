@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
         // TODO 上线时打开此设置 每分钟扫描一次，将要下课还没签到的学生推送消息
 //         $schedule->command('noticeStudentAttendanceSignin')->everyMinute();
         // 每分钟扫描一次 导入学生
-        $schedule->command('importer_users')->everyMinute();
+//        $schedule->command('importer_users')->everyMinute();
     }
 
     /**

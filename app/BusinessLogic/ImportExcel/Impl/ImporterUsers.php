@@ -35,6 +35,7 @@ class ImporterUsers extends AbstractImporter
 
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
+
         // 再次验证文件格式
         $config = new ImporterConfig($this->fileRelativePath, $this->task['type']);
         $validation = $config->validation();
@@ -49,10 +50,10 @@ class ImporterUsers extends AbstractImporter
 
         // 开始循环导入
         foreach($sheetIndexArray as $sheetIndex) {
+
             echo '已拿到第'. ($sheetIndex+1).' sheet的数据 开始循环.....'.PHP_EOL;
             $sheetData = $this->getSheetData($sheetIndex);
             unset($sheetData[0]); // 去掉文件头
-
             foreach ($sheetData as $key => $val) {
 
                 $student = [
@@ -150,7 +151,8 @@ class ImporterUsers extends AbstractImporter
                     $gradeUserDao->create($gradeData);
                     DB::commit();
                     echo $val[0].'----------创建成功'.PHP_EOL;
-
+                    // 已导入条
+                    $importDao->increment($this->task['id']);
                 }
                 catch (\Exception $exception){
                     DB::rollBack();

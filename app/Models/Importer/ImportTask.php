@@ -24,7 +24,7 @@ class ImportTask extends Model
     protected $table = 'import_task';
 
     protected $fillable = [
-        'status', 'title', 'manager_id', 'path', 'type', 'file_name', 'school_id'
+        'status', 'title', 'manager_id', 'path', 'type', 'file_name', 'school_id', 'total', 'surplus'
     ];
 
     public function school()

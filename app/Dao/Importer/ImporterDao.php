@@ -68,4 +68,9 @@ class ImporterDao
         return ImportTask::where('id', $id)->update($data);
     }
 
+    public function increment($id)
+    {
+        return ImportTask::where('id', $id)->increment('total');
+    }
+
 }
