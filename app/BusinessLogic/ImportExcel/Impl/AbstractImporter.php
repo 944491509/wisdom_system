@@ -9,12 +9,15 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 abstract class AbstractImporter implements IImportExcel
 {
-    protected $filePath;
-    protected $data;
-    public function __construct($filePath)
+    protected $fileRelativePath;
+    private $data;
+    private $config;
+
+    public function __construct($fileRelativePath)
     {
-        $this->filePath = $filePath;
+        $this->fileRelativePath = $fileRelativePath;
         $this->data   = [];
+        $this->config = [];
     }
 
     /**
@@ -24,7 +27,7 @@ abstract class AbstractImporter implements IImportExcel
     {
         set_time_limit(0);
         ini_set('memory_limit', -1);
-        $filePath = config('filesystems.disks.import')['path'].DIRECTORY_SEPARATOR .$this->filePath;
+        $filePath = $this->getFileAbsolutePath();
         $objReader = IOFactory::createReader('Xlsx');
         $objPHPExcel = $objReader->load($filePath);  //$filename可以是上传的表格，或者是指定的表格
         $worksheet = $objPHPExcel->getAllSheets();
@@ -37,7 +40,16 @@ abstract class AbstractImporter implements IImportExcel
      */
     public function getConfig()
     {
-        return $this->config;
+
+    }
+
+    /**
+     * 获取绝对文件路径
+     * @return string
+     */
+    public function getFileAbsolutePath()
+    {
+        return config('filesystems.disks.import')['path'].DIRECTORY_SEPARATOR .$this->fileRelativePath;
     }
 
     /**

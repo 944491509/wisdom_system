@@ -4,16 +4,12 @@
 namespace App\Http\Controllers\Operator;
 
 
-use App\BusinessLogic\ImportExcel\Factory;
+use App\BusinessLogic\ImportExcel\Impl\ImporterConfig;
 use App\Dao\Importer\ImporterDao;
-use App\Dao\Users\UserDao;
 use App\Http\Controllers\Controller;
 use App\Models\Importer\ImportTask;
-use App\User;
 use App\Utils\FlashMessageBuilder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class ImporterController extends Controller
@@ -51,25 +47,29 @@ class ImporterController extends Controller
             $path = $file->store('import');
         }
 
-        if ($data['type'] == ImportTask::IMPORT_TYPE_NO_IDENTITY) {
-            // todo:: 验证
-        } elseif($data['type'] == ImportTask::IMPORT_TYPE_CERTIFIED) {
-            // todo:: 验证
-        }
-
-        $data['manager_id'] = $user->id;
-        $data['school_id'] = $schoolId;
-        $data['path'] = $path;
-        $data['file_name'] = $file->getClientOriginalName();
-        $result = $dao->create($data);
-        if ($result) {
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS, $data['title'] . '任务保存成功');
+        // 验证文件格式
+        $fileFormat = new ImporterConfig($path, $data['type']);
+        $validation = $fileFormat->validation();
+        if (!empty($validation)) {
+            Storage::delete($path); // 删除错误文件
+            $errorStr = '';
+            foreach ($validation as $value) {
+                $errorStr.= $value;
+            }
+            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '文件格式错误' . $errorStr);
         } else {
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '无法保存' . $data['title']);
+            $data['manager_id'] = $user->id;
+            $data['school_id'] = $schoolId;
+            $data['path'] = $path;
+            $data['file_name'] = $file->getClientOriginalName();
+            $result = $dao->create($data);
+            if ($result) {
+                FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS, $data['title'] . '任务保存成功');
+            } else {
+                FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '无法保存' . $data['title']);
+            }
         }
         return redirect()->route('school_manager.importer.manager');
-
-
     }
 
     public function result(Request $request, $id)

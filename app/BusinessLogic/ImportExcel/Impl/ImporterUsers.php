@@ -20,8 +20,10 @@ use Ramsey\Uuid\Uuid;
 class ImporterUsers extends AbstractImporter
 {
 
+    private  $task;
     public function __construct($task)
     {
+        $this->task = $task;
         parent::__construct($task['data']['path']);
     }
 
@@ -33,11 +35,14 @@ class ImporterUsers extends AbstractImporter
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
         $str = "文件数据格式有问题请重新上传, 第";
+        $config = new ImporterConfig($this->fileRelativePath, 0);
+        dd($config->validation());
         foreach($sheetIndexArray as $sheetIndex) {
             echo '已拿到第'. ($sheetIndex+1).' sheet的数据 开始循环.....'.PHP_EOL;
             $sheetData = $this->getSheetData($sheetIndex);
             echo '开始检查文件格式是否正确'.PHP_EOL;
             // 检查文件格式是否正确
+//            dd($sheetData);
             foreach ($sheetData[0] as $key => $val) {
                 if ($this->fileFormat()[$key] != $val) {
                     echo  $str. ($key+1) . "列应该是". $this->fileFormat()[$key];die;
@@ -202,30 +207,6 @@ class ImporterUsers extends AbstractImporter
         // todo :: 错误记录
     }
 
-
-    /**
-     * 文件格式标准
-     */
-    public function fileFormat()
-    {
-        return [
-            "姓名",
-            "性别",
-            "民族",
-            "身份证号码",
-            "户籍性质",
-            "户籍所在乡镇",
-            "户籍所在村",
-            "年级",
-            "学生电话",
-            "是否建档立卡",
-            "是否农村低保",
-            "是否农村特困",
-            "是否残疾",
-            "专业",
-            "班级"
-        ];
-    }
 
 
     /**
