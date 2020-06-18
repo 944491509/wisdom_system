@@ -16,12 +16,12 @@ use App\Utils\UI\Button;
                         {{--此处是为了欺骗浏览器--}}
                         <input type="password"  style="display:none"/>
                         <div class="form-group">
-                            <label>登陆账户名</label>
-                            <input required type="text" class="form-control" placeholder="必填: 登陆账号" name="user[mobile]" AUTOCOMPLETE="OFF">
+                            <label>登录账号</label>
+                            <input required type="text" class="form-control" placeholder="必填: 登录账号" name="user[mobile]" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
-                            <label>登陆密码</label>
-                            <input required type="password" class="form-control" value="" placeholder="登陆密码, 必填" name="user[password]">
+                            <label>登录密码</label>
+                            <input required type="password" class="form-control" value="" placeholder="登录密码, 必填" name="user[password]">
                         </div>
                         @include('admin.schools._form')
                         <?php
