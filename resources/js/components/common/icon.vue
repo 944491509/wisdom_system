@@ -40,7 +40,7 @@
   .common-icon-box {
     .icon {
       display: inline-block;
-      border-radius: 50%;
+      // border-radius: 50%;
       background-size: contain;
       background-repeat: no-repeat;
       margin-right: 5px;
