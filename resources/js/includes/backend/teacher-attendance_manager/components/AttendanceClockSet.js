@@ -119,38 +119,38 @@ Vue.component("AttendanceClockSet", {
             @change="_changeDate(item,'morning_late')"
           ></el-input>
         </el-form-item>
-        <el-form-item label="下班时间">
+        <el-form-item label="下班时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.evening"
-            @change="_changeDate(item,'evening')"
+            v-model="item.evening_end"
+            @change="_changeDate(item,'evening_end')"
           ></el-input>
         </el-form-item>
-        <el-form-item label="结束时间">
+        <el-form-item label="结束时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.end"
-            @change="_changeDate(item,'end')"
+            v-model="item.evening_end2"
+            @change="_changeDate(item,'evening_end2')"
           ></el-input>
         </el-form-item>
       </div>
       <div class="set-day">
         <div class="title">下午</div>
-        <el-form-item label="开始时间">
+        <el-form-item label="开始时间" v-if="usingAfternoon">
           <el-input
             size="mini"
             v-model="item.afternoon_start"
             @change="_changeDate(item,'afternoon_start')"
           ></el-input>
         </el-form-item>
-        <el-form-item label="上班时间">
+        <el-form-item label="上班时间" v-if="usingAfternoon">
           <el-input
             size="mini"
             v-model="item.afternoon"
             @change="_changeDate(item,'afternoon')"
           ></el-input>
         </el-form-item>
-        <el-form-item label="迟到">
+        <el-form-item label="迟到" v-if="usingAfternoon">
           <el-input
             size="mini"
             v-model="item.afternoon_late"
@@ -203,9 +203,9 @@ Vue.component("AttendanceClockSet", {
     },
     _copy(index) {
       const {
-        start,
-        morning,
-        morning_late,
+        // start,
+        // morning,
+        // morning_late,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -214,9 +214,9 @@ Vue.component("AttendanceClockSet", {
         is_weekday
       } = this.clockSetData[index - 1];
       const checkNullData = {
-        start,
-        morning,
-        morning_late,
+        // start,
+        // morning,
+        // morning_late,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -266,9 +266,9 @@ Vue.component("AttendanceClockSet", {
         });
         if (this.usingAfternoon) {
           const {
-            start,
-            morning,
-            morning_late,
+            // start,
+            // morning,
+            // morning_late,
             afternoon_start,
             afternoon,
             afternoon_late,
@@ -276,9 +276,9 @@ Vue.component("AttendanceClockSet", {
             end
           } = DateFullDay;
           cuDateFlag = !(
-            start <= morning &&
-            morning < morning_late &&
-            morning_late < afternoon_start &&
+            // start <= morning &&
+            // morning < morning_late &&
+            // morning_late < afternoon_start &&
             afternoon_start < afternoon &&
             afternoon < afternoon_late &&
             afternoon_late < evening &&

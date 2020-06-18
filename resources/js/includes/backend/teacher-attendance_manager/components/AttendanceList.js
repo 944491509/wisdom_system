@@ -93,14 +93,15 @@ Vue.component("AttendanceList", {
       }
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       if (err) return false;
-      const { id, school_id, title, wifi_name, using_afternoon, organizations,managers,exceptiondays} = res;
+      const { id, school_id, title, wifi_name, using_afternoon, using_morning, organizations,managers,exceptiondays} = res;
       const formData = {
         attendance: {
           id, //编辑时传递
           school_id,
           title,
           wifi_name,
-          using_afternoon: using_afternoon == 1
+          using_afternoon: using_afternoon == 1,
+          using_morning: using_morning === 1
         },
         organizations,
         managers,

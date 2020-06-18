@@ -32,37 +32,21 @@ Vue.component("AttendanceForm", {
         />
         <el-switch
           size="mini"
-          v-model="formData.attendance.using_afternoon"
+          v-model="formData.attendance.using_morning"
           active-color="#4ca3ff"
           inactive-color="#ccc9cd"
           inactive-text="下班" 
         />
-        // <el-switch
-        //   size="mini"
-        //   v-model="using_default"
-        //   active-color="#4ca3ff"
-        //   inactive-color="#ccc9cd"
-        //   disabled
-        //   inactive-text="下班" 
-        // />
       </div>
     </el-form-item>
     <el-form-item label="下午打卡" >
       <div class="using-switch">
         <el-switch
           size="mini"
-          v-model="using_default"
-          active-color="#4ca3ff"
-          inactive-color="#ccc9cd"
-          disabled
-          inactive-text="上午" 
-        />
-        <el-switch
-          size="mini"
           v-model="formData.attendance.using_afternoon"
           active-color="#4ca3ff"
           inactive-color="#ccc9cd"
-          inactive-text="下午" 
+          inactive-text="上班" 
         />
         <el-switch
           size="mini"
