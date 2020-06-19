@@ -840,6 +840,7 @@ class TeacherApplyElectiveCourseDao
                 DB::rollBack();
                 $messageBag->setMessage($course->getMessage());
             }
+            $courseDao->electiveSaveData($course, $data);
             //标记申请表为发布状态
             $this->publishedApply($applyId);
             //记录一下申请和课表对应id
