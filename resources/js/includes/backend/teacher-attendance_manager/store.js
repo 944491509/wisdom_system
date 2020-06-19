@@ -71,7 +71,8 @@ export default new Vuex.Store({
         later: {},
         not: {},
       }
-    }
+    },
+    groupTitle: ''
   },
   mutations: {
     SETOPTIONS(state, res) {

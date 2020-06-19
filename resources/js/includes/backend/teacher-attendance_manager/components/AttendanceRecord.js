@@ -8,7 +8,7 @@ Vue.component("AttendanceRecord", {
           <div class="recordLeft">
             <div class="leftTitle">
               <img class="icon" src="/assets/img/yinxin/recordLeft.png">
-              <span class="title1">教务处考勤组</span>
+              <span class="title1">{{groupTitle}}</span>
               <el-select v-model="selectDateType" placeholder="请选择" size="small">
                 <el-option
                   v-for="item in options"
@@ -40,71 +40,71 @@ Vue.component("AttendanceRecord", {
             <div class="leftContent" v-if="isShow">
               <div class="text">上午</div>
               <div class="itemsDiv">
-                <div class="itemDiv border1" @click="clickItem(resDate.morning.ok.list, '按时上班')">
+                <div class="itemDiv border1" @click="clickItem(resDate.morning.ok.list, '上午-按时上班')">
                   <p class="itemTop color1">按时上班</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning.ok.count :0}}<span v-if="resDate.morning.ok.users">次/{{resDate.morning.ok.users ? resDate.morning.ok.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning ? resDate.morning.ok.count :0}}<span v-if="!resDate.morning.ok.users">人</span><span v-if="resDate.morning.ok.users">次/{{resDate.morning.ok.users ? resDate.morning.ok.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border2" @click="clickItem(resDate.morning.late.list, '迟到')">
+                <div class="itemDiv border2" @click="clickItem(resDate.morning.late.list, '上午-迟到')">
                   <p class="itemTop color2">迟到</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning.late.count :0}}<span v-if="resDate.morning.late.users">次/{{resDate.morning.late.users ? resDate.morning.late.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning ? resDate.morning.late.count :0}}<span v-if="!resDate.morning.late.users">人</span><span v-if="resDate.morning.late.users">次/{{resDate.morning.late.users ? resDate.morning.late.users.length : 0}}</span></p>
                 </div>
-                <div class="itemDiv border3" @click="clickItem(resDate.morning.later.list, '严重迟到')">
+                <div class="itemDiv border3" @click="clickItem(resDate.morning.later.list, '上午-严重迟到')">
                   <p class="itemTop color3">严重迟到</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning.later.count :0}}<span v-if="resDate.morning.later.users">次/{{resDate.morning.later.users ? resDate.morning.later.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning ? resDate.morning.later.count :0}}<span v-if="!resDate.morning.later.users">人</span><span v-if="resDate.morning.later.users">次/{{resDate.morning.later.users ? resDate.morning.later.users.length : 0}}</span></p>
                 </div>
-                <div class="itemDiv border4" @click="clickItem(resDate.morning.ok.list, '按时下班')" v-if="isMor">
+                <div class="itemDiv border4" @click="clickItem(resDate.morning_end.ok.list, '上午-按时下班')" v-if="isMor">
                   <p class="itemTop color4">按时下班</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning_end.ok.count :0}}<span v-if="resDate.morning_end.ok.users">次/{{resDate.morning_end.ok.users ? resDate.morning_end.ok.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning_end ? resDate.morning_end.ok.count :0}}<span v-if="!resDate.morning_end.ok.users">人</span><span v-if="resDate.morning_end.ok.users">次/{{resDate.morning_end.ok.users ? resDate.morning_end.ok.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border5" @click="clickItem(resDate.morning.ok.list, '早退')" v-if="isMor">
+                <div class="itemDiv border5" @click="clickItem(resDate.morning_end.early.list, '上午-早退')" v-if="isMor">
                   <p class="itemTop color5">早退</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning_end.early.count :0}}<span v-if="resDate.morning_end.early.users">次/{{resDate.morning_end.early.users ? resDate.morning_end.early.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning_end ? resDate.morning_end.early.count :0}}<span v-if="!resDate.morning_end.early.users">人</span><span v-if="resDate.morning_end.early.users">次/{{resDate.morning_end.early.users ? resDate.morning_end.early.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border6" @click="clickItem(resDate.morning.not.list, '未打卡')">
+                <div class="itemDiv border6" @click="clickItem(resDate.morning.not.list, '上午-未打卡')">
                   <p class="itemTop color6">未打卡</p>
-                  <p class="itemBtm">{{resDate.morning ? resDate.morning.not.count :0}}<span v-if="resDate.morning.not.users">次/{{resDate.morning.not.users ? resDate.morning.not.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.morning ? resDate.morning.not.count :0}}<span v-if="!resDate.morning.not.users">人</span><span v-if="resDate.morning.not.users">次/{{resDate.morning.not.users ? resDate.morning.not.users.length : 0}}人</span></p>
                 </div>
               </div>
               <div class="text">下午</div>
               <div class="itemsDiv">
-                <div class="itemDiv border1" @click="clickItem(resDate.afternoon.ok.list, '按时上班')" v-if="isAft">
+                <div class="itemDiv border1" @click="clickItem(resDate.afternoon.ok.list, '下午-按时上班')" v-if="isAft">
                   <p class="itemTop color1">按时上班</p>
-                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.ok.count :0}}<span v-if="resDate.afternoon.ok.users">次/{{resDate.afternoon.ok.users ? resDate.afternoon.ok.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.ok.count :0}}<span v-if="!resDate.afternoon.ok.users">人</span><span v-if="resDate.afternoon.ok.users">次/{{resDate.afternoon.ok.users ? resDate.afternoon.ok.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border2" @click="clickItem(resDate.afternoon.late.list, '迟到')" v-if="isAft">
+                <div class="itemDiv border2" @click="clickItem(resDate.afternoon.late.list, '下午-迟到')" v-if="isAft">
                   <p class="itemTop color2">迟到</p>
-                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.late.count :0}}<span v-if="resDate.afternoon.late.users">次/{{resDate.afternoon.late.users ? resDate.afternoon.late.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.late.count :0}}<span v-if="!resDate.afternoon.late.users">人</span><span v-if="resDate.afternoon.late.users">次/{{resDate.afternoon.late.users ? resDate.afternoon.late.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border3" @click="clickItem(resDate.afternoon.later.list, '严重迟到')" v-if="isAft">
+                <div class="itemDiv border3" @click="clickItem(resDate.afternoon.later.list, '下午-严重迟到')" v-if="isAft">
                   <p class="itemTop color3">严重迟到</p>
-                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.later.count :0}}<span v-if="resDate.afternoon.later.users">次/{{resDate.afternoon.later.users ? resDate.afternoon.later.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.later.count :0}}<span v-if="!resDate.afternoon.later.users">人</span><span v-if="resDate.afternoon.later.users">次/{{resDate.afternoon.later.users ? resDate.afternoon.later.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border4" @click="clickItem(resDate.evening.ok.list, '按时下班')">
+                <div class="itemDiv border4" @click="clickItem(resDate.evening.ok.list, '下午-按时下班')">
                   <p class="itemTop color4">按时下班</p>
-                  <p class="itemBtm">{{resDate.evening ? resDate.evening.ok.count :0}}<span v-if="resDate.evening.ok.users">次/{{resDate.evening.ok.users ? resDate.evening.ok.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.evening ? resDate.evening.ok.count :0}}<span v-if="!resDate.evening.ok.users">人</span><span v-if="resDate.evening.ok.users">次/{{resDate.evening.ok.users ? resDate.evening.ok.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border5" @click="clickItem(resDate.evening.early.list, '早退')">
+                <div class="itemDiv border5" @click="clickItem(resDate.evening.early.list, '下午-早退')">
                   <p class="itemTop color5">早退</p>
-                  <p class="itemBtm">{{resDate.evening ? resDate.evening.early.count :0}}<span v-if="resDate.evening.early.users">次/{{resDate.evening.early.users ? resDate.evening.early.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.evening ? resDate.evening.early.count :0}}<span v-if="!resDate.evening.early.users">人</span><span v-if="resDate.evening.early.users">次/{{resDate.evening.early.users ? resDate.evening.early.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border6" @click="clickItem(resDate.afternoon.not.list, '下午未打卡')">
+                <div class="itemDiv border6" @click="clickItem(resDate.afternoon.not.list, '下午-下午未打卡')">
                   <p class="itemTop color6">下午未打卡</p>
-                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.not.count :0}}<span v-if="resDate.afternoon.not.users">次/{{resDate.afternoon.not.users ? resDate.afternoon.not.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.not.count :0}}<span v-if="!resDate.afternoon.not.users">人</span></span><span v-if="resDate.afternoon.not.users">次/{{resDate.afternoon.not.users ? resDate.afternoon.not.users.length : 0}}人</span></p>
                 </div>
               </div>
               <div class="text">其他</div>
               <div class="itemsDiv">
                 <div class="itemDiv border7" @click="clickItem(resDate.other.list, '请假')">
                   <p class="itemTop color7">请假</p>
-                  <p class="itemBtm">{{resDate ? resDate.other.leave.count :0}}<span v-if="resDate.other.leave.users">次/{{resDate.other.leave.users ? resDate.other.leave.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate ? resDate.other.leave.count :0}}<span v-if="!resDate.other.leave.users">人</span><span v-if="resDate.other.leave.users">次/{{resDate.other.leave.users ? resDate.other.leave.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border8" @click="clickItem(resDate.other.travel.list, '出差')">
                   <p class="itemTop color8">出差</p>
-                  <p class="itemBtm">{{resDate ? resDate.other.travel.count :0}}<span v-if="resDate.other.travel.users">次/{{resDate.other.travel.users ? resDate.other.travel.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate ? resDate.other.travel.count :0}}<span v-if="!resDate.other.travel.users">人</span><span v-if="resDate.other.travel.users">次/{{resDate.other.travel.users ? resDate.other.travel.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border9" @click="clickItem(resDate.other.away.list, '外出')">
                   <p class="itemTop color9">外出</p>
-                  <p class="itemBtm">{{resDate ? resDate.other.away.count :0}}<span v-if="resDate.other.away.users">次/{{resDate.other.away.users ? resDate.other.away.users.length : 0}}人</span>人</p>
+                  <p class="itemBtm">{{resDate ? resDate.other.away.count :0}}<span v-if="!resDate.other.away.users">人</span><span v-if="resDate.other.away.users">次/{{resDate.other.away.users ? resDate.other.away.users.length : 0}}人</span></p>
                 </div>
               </div>
             </div>
@@ -114,7 +114,7 @@ Vue.component("AttendanceRecord", {
           <div class="recordRight">
             <div class="leftTitle">
             <img class="icon" src="/assets/img/yinxin/recordRight.png">
-              上午-{{statusText}}</div>
+              {{statusText}}</div>
             <el-table
               :data="tableList"
               :style="{}"
@@ -282,7 +282,7 @@ Vue.component("AttendanceRecord", {
           return '未打卡'
           break
         case 1: 
-          return '正常'
+          return '按时打卡'
           break
         case 2: 
           return '迟到'
@@ -340,8 +340,8 @@ Vue.component("AttendanceRecord", {
           let tHeader = []
           let filterVal = []
           if (this.dateByDay.split("-").length == 3) {
-            tHeader = ['日期', '姓名', '打卡类型', '打卡时间', '打卡状态']
-            filterVal = ['date', 'name', 'type', 'time', 'dakaStatus']
+            tHeader = ['姓名', '日期', '类型', '打卡时间', '打卡状态']
+            filterVal = ['name', 'date', 'type', 'time', 'dakaStatus']
           } else if (this.dateByDay.split("-").length == 2) {
             tHeader = ['日期', '打卡类型', '按时打卡次数', '按时打卡人数', '迟到/早退次数', '迟到/早退人数', '严重迟到次数', '严重迟到人数', '未打卡次数', '未打卡人数']
             filterVal = ['date', 'type', 'okCount', 'okTimes', 'lateCount', 'lateTimes', 'laterCount', 'laterTimes', 'notCount', 'notTimes']
