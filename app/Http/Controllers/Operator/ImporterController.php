@@ -127,6 +127,9 @@ class ImporterController extends Controller
             case ImportTask::IMPORT_TYPE_CERTIFIED:
                 $file = 'import/template/新生导入模板.xlsx';
                 break;
+            case ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION:
+                $file = 'import/template/导入学生寄宿信息模板.xlsx';
+                break;
         }
         return Storage::download($file);
     }
