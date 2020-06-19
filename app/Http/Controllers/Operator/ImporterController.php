@@ -115,20 +115,20 @@ class ImporterController extends Controller
     /**
      * 下载模板
      * @param Request $request
-     * @return
+     * @return mixed
      */
     public function download(Request $request)
     {
         $type = $request->get('type');
         switch ($type) {
             case ImportTask::IMPORT_TYPE_NO_IDENTITY:
-                $file = 'app/Console/Commands/template/未认证用户导入模板.xlsx';
+                $file = 'import/template/未认证用户导入模板.xlsx';
                 break;
             case ImportTask::IMPORT_TYPE_CERTIFIED:
-                $file = 'app/Console/Commands/template/新生导入模板.xlsx';
+                $file = 'import/template/新生导入模板.xlsx';
                 break;
         }
-        return response()->download();
+        return Storage::download($file);
     }
 
 }
