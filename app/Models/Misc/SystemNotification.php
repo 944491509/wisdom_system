@@ -74,7 +74,7 @@ class SystemNotification extends Model
     const COMMON_CATEGORY_NOTICE_INSPECTION_TEXT = '检查';
     const TEACHER_CATEGORY_MEETING_TEXT = '会议';
     const TEACHER_CATEGORY_IMAIL_TEXT = '内部信';
-    const TEACHER_CATEGORY_MESSAGE_TEXT = '消息';
+    const COMMON_CATEGORY_MESSAGE_TEXT = '消息';
     const TEACHER_CATEGORY_COURSE_TEXT = '选课';
     const TEACHER_CATEGORY_APPLY_STUDENT_TEXT = '学生审批';
 
@@ -179,7 +179,7 @@ class SystemNotification extends Model
             self::COMMON_CATEGORY_NOTICE_INSPECTION,
             self::TEACHER_CATEGORY_MEETING,
             self::TEACHER_CATEGORY_IMAIL,
-            self::TEACHER_CATEGORY_MESSAGE,
+            self::COMMON_CATEGORY_MESSAGE,
             self::TEACHER_CATEGORY_COURSE,
             self::TEACHER_CATEGORY_APPLY_STUDENT,
         ];
@@ -199,7 +199,7 @@ class SystemNotification extends Model
             self::COMMON_CATEGORY_NOTICE_INSPECTION => self::COMMON_CATEGORY_NOTICE_INSPECTION_TEXT,
             self::TEACHER_CATEGORY_MEETING => self::TEACHER_CATEGORY_MEETING_TEXT,
             self::TEACHER_CATEGORY_IMAIL => self::TEACHER_CATEGORY_IMAIL_TEXT,
-            self::TEACHER_CATEGORY_MESSAGE => self::TEACHER_CATEGORY_MESSAGE_TEXT,
+            self::COMMON_CATEGORY_MESSAGE => self::COMMON_CATEGORY_MESSAGE_TEXT,
             self::TEACHER_CATEGORY_COURSE => self::TEACHER_CATEGORY_COURSE_TEXT,
             self::TEACHER_CATEGORY_APPLY_STUDENT => self::TEACHER_CATEGORY_APPLY_STUDENT_TEXT,
         ];
@@ -215,7 +215,7 @@ class SystemNotification extends Model
             self::COMMON_CATEGORY_NOTICE_INSPECTION => 'teacher/ly/oa/notices-center',
             self::TEACHER_CATEGORY_MEETING => 'teacher/ly/oa/meetings',
             self::TEACHER_CATEGORY_IMAIL => 'teacher/ly/oa/internal-messages',
-            self::TEACHER_CATEGORY_MESSAGE => '',
+            self::COMMON_CATEGORY_MESSAGE => '',
             self::TEACHER_CATEGORY_COURSE => 'teacher/elective-course/manager',
             self::TEACHER_CATEGORY_APPLY_STUDENT => 'teacher/ly/assistant/index',
         ];
