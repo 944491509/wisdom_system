@@ -10,7 +10,7 @@
       <div class="item" v-for="(item) in list" :key="item.id">
         <div class="notify-header">
           <pf-icon
-            :iconsrc="getIcon(item.category).src"
+            :iconsrc="(getIcon(item.category) || {}).src"
             width="18px"
             height="18px"
             :text="item.type"
@@ -106,8 +106,8 @@ export default {
       });
     },
     goDetail(notify) {
-        window.open('/teacher/notice/info?notice_id='+notify.id)
-    //   window.open("/" + notify.url + "?notice_id=" + notify.id);
+        // window.open('/teacher/notice/info?notice_id='+notify.id)
+      window.open("/" + notify.url + "?notice_id=" + notify.id);
     }
   },
   created() {
