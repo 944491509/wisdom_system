@@ -105,6 +105,14 @@ return [
             'level' => 'debug',
             'days' => 1,
         ],
+
+        // 导入exec
+        'import_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/import-log.log'),
+            'level' => 'debug',
+            'days' => 1,
+        ],
     ],
 
 ];

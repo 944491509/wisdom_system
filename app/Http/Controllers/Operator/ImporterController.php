@@ -4,119 +4,134 @@
 namespace App\Http\Controllers\Operator;
 
 
-use App\BusinessLogic\ImportExcel\Factory;
+use App\BusinessLogic\ImportExcel\Impl\ImporterConfig;
 use App\Dao\Importer\ImporterDao;
-use App\Dao\Users\UserDao;
 use App\Http\Controllers\Controller;
-use App\Models\Importer\ImoprtTask;
-use App\User;
+use App\Models\Importer\ImportTask;
 use App\Utils\FlashMessageBuilder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class ImporterController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
+    /**
+     * 列表
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function manager(Request $request)
     {
-        $schoolId= $request->session()->get('school.id');
+        $schoolId = $request->session()->get('school.id');
         $dao = new ImporterDao();
         $tasks = $dao->getTasks($schoolId);
         $this->dataForView['tasks'] = $tasks;
         return view('school_manager.importer.list', $this->dataForView);
-
     }
 
-    public function add(){
-        $this->dataForView['task'] = new ImoprtTask();
+    /**
+     * 添加页面
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function add()
+    {
+        $this->dataForView['task'] = new ImportTask();
         return view('school_manager.importer.add', $this->dataForView);
     }
 
-    public function edit(Request $request){
-        $dao = new ImporterDao();
-        $task = $dao->getTaskById($request->id);
-        $task->congig = json_encode(json_decode($task->config,1),JSON_PRETTY_PRINT);
-        $this->dataForView['task'] = $task;
-        return view('school_manager.importer.edit', $this->dataForView);
-    }
-
-    public function update(Request $request)
+    /**
+     * 保存
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function save(Request $request)
     {
-        $schoolId= $request->session()->get('school.id');
-        $data = [];
-        $dao = new ImporterDao();
+        $schoolId = $request->session()->get('school.id');
         $data = $request->get('task');
-        if ($data['type'] == 1) {
-            $data['config'] = json_encode(json_decode(strip_tags($data['config']),1));
-        }
-        $data['title']  = strip_tags($data['title']);
         $user = $request->user();
-        $data['manager_id'] = $user->id;
 
+        $dao = new ImporterDao;
 
-        $fileCharater = $request->file('source');
-        if (!empty($fileCharater) && $fileCharater->isValid()) {
-            //获取文件的扩展名
-            $ext = $fileCharater->getClientOriginalExtension();
+        $file = $request->file('source');
 
-            if ('xlsx' != $ext)
-            {
-                FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER,'资源文件类型错误');
-                return redirect()->back()->withInput();
-            }
-            if ($data['type'] == 0) {
-                $fileName = $schoolId.'/'.rand(1, 99).time().'/'.$fileCharater->getClientOriginalName();
-            } else {
-                $fileName = $schoolId.'/'.$fileCharater->getClientOriginalName();
-            }
-            //获取文件的绝对路径
-            $path = $fileCharater->getRealPath();
-            //存储文件。disk里面的public。总的来说，就是调用disk模块里的public配置
-            $uploadResult = Storage::disk('import')->put($fileName, file_get_contents($path));
-            if ($uploadResult)
-            {
-                $fileConfig = config('filesystems.disks.import');
-                $data['file_path'] =$fileName;
-            }
-
+        if ('xlsx' != $file->extension()) {
+            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '资源文件类型错误');
+            return redirect()->back()->withInput();
+        } else {
+            $path = $file->store('import');
         }
-
-        if(isset($data['id'])){
+        // 验证文件格式
+        $fileFormat = new ImporterConfig($path, $data['type']);
+        $validation = $fileFormat->validation();
+        if (!empty($validation)) {
+            Storage::delete($path); // 删除错误文件
+            $errorStr = '';
+            foreach ($validation as $value) {
+                $errorStr.= $value;
+            }
+            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '文件格式错误' . $errorStr);
+        } else {
+            $data['manager_id'] = $user->id;
             $data['school_id'] = $schoolId;
-            $result = $dao->update($data);
-        }
-        else{
-            $data['status'] = 1;
-            $data['school_id'] = $schoolId;
+            $data['path'] = $path;
+            $data['file_name'] = $file->getClientOriginalName();
             $result = $dao->create($data);
-        }
-
-        if($result){
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,$data['title'].'任务保存成功');
-        }else{
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER,'无法保存'.$data['title']);
+            if ($result) {
+                FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS, $data['title'] . '任务保存成功');
+            } else {
+                FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '无法保存' . $data['title']);
+            }
         }
         return redirect()->route('school_manager.importer.manager');
-
-
     }
 
-
-    public function result(Request $request,$id)
+    /**
+     * 结果页面
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function result(Request $request)
     {
-        $schoolId= $request->session()->get('school.id');
+        $id = $request->get('id');
         $dao = new ImporterDao();
-        $messages = $dao->result($id,$schoolId);
+        $messages = $dao->result($id);
         $this->dataForView['messages'] = $messages;
         return view('school_manager.importer.result', $this->dataForView);
-
     }
 
+    /**
+     * 撤回
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function withdraw(Request $request)
+    {
+        $id = $request->get('id');
+        $dao = new ImporterDao;
+        $dao->update($id, ['status' => ImportTask::IMPORT_TASK_WITHDRAW]);
+        return redirect()->route('school_manager.importer.manager');
+    }
+
+    /**
+     * 下载模板
+     * @param Request $request
+     * @return mixed
+     */
+    public function download(Request $request)
+    {
+        $type = $request->get('type');
+        switch ($type) {
+            case ImportTask::IMPORT_TYPE_NO_IDENTITY:
+                $file = 'import/template/未认证用户导入模板.xlsx';
+                break;
+            case ImportTask::IMPORT_TYPE_CERTIFIED:
+                $file = 'import/template/新生导入模板.xlsx';
+                break;
+            case ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION:
+                $file = 'import/template/导入学生寄宿信息模板.xlsx';
+                break;
+        }
+        return Storage::download($file);
+    }
 
 }
