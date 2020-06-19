@@ -458,11 +458,11 @@ class CourseDao
     }
 
     public function electiveSaveData($course, $data) {
-        $days = $data['dayIndexes'];
+        /*$days = $data['dayIndexes'];
         $timeSlotIds = $data['timeSlots'];
         $weeks = $data['weekNumbers'];
         $arrangement = new CourseArrangementDao($course);
-        $arrangement->save($weeks, $days, $timeSlotIds);
+        $arrangement->save($weeks, $days, $timeSlotIds);*/
 
         $d = [
             'course_id'     => $course->id,
