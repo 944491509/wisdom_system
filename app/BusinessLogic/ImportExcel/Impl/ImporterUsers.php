@@ -110,14 +110,14 @@ class ImporterUsers extends AbstractImporter
                 if (empty($student['mobile']) || strlen($student['mobile'])!= 11 ) {
                     $errorArr['error_log'] = '手机号为空或者位数不对';
                     $this->errorLog($this->task['title'], $errorArr);
-//                    echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
+                    echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 // 身份证
                 if (empty($profile['id_number']) || strlen($profile['id_number'])!= 18) {
                      $errorArr['error_log'] = '身份证号格式错误';
                      $this->errorLog($this->task['title'], $errorArr);
-//                    echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
+                     echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 $userResult = $userDao->getUserByMobile($student['mobile']);

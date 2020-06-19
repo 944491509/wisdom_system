@@ -3,12 +3,14 @@
 namespace App\BusinessLogic\ImportExcel\Impl;
 
 use App\Dao\Importer\ImporterDao;
+use App\Dao\Students\StudentAdditionInformationDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
 use App\Models\Importer\ImportLog;
 use App\Models\Importer\ImportTask;
+use App\Models\Users\UserSearchConfig;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +31,7 @@ class ImporterStudent extends AbstractImporter
         $profileDao = new StudentProfileDao;
         $gradeUserDao = new GradeUserDao;
         $importDao = new ImporterDao;
+        $additionDao = new StudentAdditionInformationDao;
         // 修改任务状态
         $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
 
@@ -54,7 +57,6 @@ class ImporterStudent extends AbstractImporter
             $sheetData = $this->getSheetData($sheetIndex);
             unset($sheetData[0]); // 去掉文件头
             foreach ($sheetData as $key => $val) {
-
                 $student = [
                     'uuid' => Uuid::uuid4()->toString(),
                     'name' => $val[0],
@@ -64,7 +66,18 @@ class ImporterStudent extends AbstractImporter
                     'type' => Role::VERIFIED_USER_STUDENT,
                     'status' => User::STATUS_VERIFIED,
                 ];
-                $aa = new
+                foreach ($val as $k => $v) {
+                    // 需要转换成 ID 的字段
+                    if (in_array($k, [11, 14, 28, 29, 30, 31, 43])) {
+                        $id = UserSearchConfig::where('name', $val[$k])->value('id');
+                        if ($id) {
+                            $val[$k] = $id;
+                        } else {
+                            $val[$k] = 0;
+                        }
+                    }
+                }
+
                 $profile = [
                     'origin' => 1,
                     'year' => date('Y'),
@@ -73,11 +86,11 @@ class ImporterStudent extends AbstractImporter
                     'gender'  => $val[4] == '男' ? 1 : 2, // 性别
                     'nation_name' => $val[5],   // 民族
                     'political_name' => $val[6], // 政治面貌
-                    'id_number' => $val[5], // 身份证号
+                    'id_number' => $val[8], // 身份证号
                     'birthday' => $this->getBirthday($val[5]), // 出生日期
                     'student_code' => $val[9], // 学籍号
                     'country' => $val[10], // 籍贯
-                    'health_status' => $val[10], // 健康状况 * 传ID
+                    'health_status' => $val[11], // 健康状况 * 传ID
                     'graduate_school' => $val[12], // 毕业学校
                     'graduate_type' => $val[13], // 学生来源
                     'cooperation_type' => $val[14], // 	联招合作类型 * 传ID
@@ -96,6 +109,7 @@ class ImporterStudent extends AbstractImporter
                     'enrollment_at' => $val[27] , // 入学日期
                     'educational_system' => $val[28], // 学制 * 传ID
                     'entrance_type' => $val[29], // 入学方式 * 传ID
+                    'student_type' => $val[30], // 学生类别 * 传ID
                     'segmented_type' => $val[31], // 分段培养方式 * 传ID
                     'student_number' => $val[32], // 学号
                     'qq' => $val[33], // QQ
@@ -112,7 +126,6 @@ class ImporterStudent extends AbstractImporter
                     'relationship' => $val[48], // 监护人关系
                     'learning_form' => $val[49], // 监护人关系
                 ];
-
                 $addition = [
                     'borrow_type' => $val[36], // 寄宿类型
                     'people' => $val[37], // 寄宿联系人
@@ -129,24 +142,28 @@ class ImporterStudent extends AbstractImporter
                 if (empty($student['mobile']) || strlen($student['mobile'])!= 11 ) {
                     $errorArr['error_log'] = '手机号为空或者位数不对';
                     $this->errorLog($this->task['title'], $errorArr);
+                    echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 // 身份证
                 if (empty($profile['id_number']) || strlen($profile['id_number'])!= 18) {
                      $errorArr['error_log'] = '身份证号格式错误';
                      $this->errorLog($this->task['title'], $errorArr);
-                    continue;
+                     echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
+                     continue;
                 }
                 $userResult = $userDao->getUserByMobile($student['mobile']);
                 if ($userResult) {
                     $errorArr['error_log'] = '手机号已经被注册了';
                     $this->errorLog($this->task['title'], $errorArr);
+                    echo $val[0]. "手机号已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
                 $profileResult = $profileDao->getStudentInfoByIdNumber($profile['id_number']);
                 if ($profileResult) {
                     $errorArr['error_log'] = '身份证号已经被注册了';
                     $this->errorLog($this->task['title'], $errorArr);
+                    echo $val[0]. "身份证已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
 
@@ -166,11 +183,12 @@ class ImporterStudent extends AbstractImporter
                         'school_id' => $this->task['school_id'],
                     ];
                     $gradeUserDao->create($gradeData);
-
-                    DB::commit();
-                    echo $val[0].'----------创建成功'.PHP_EOL;
+                    $addition['user_id'] = $user->id;
+                    $additionDao->create($addition);
                     // 已导入条
                     $importDao->increment($this->task['id']);
+                    DB::commit();
+                    echo $val[0].'----------创建成功'.PHP_EOL;
                 }
                 catch (\Exception $exception){
                     DB::rollBack();
