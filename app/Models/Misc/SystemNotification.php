@@ -215,7 +215,7 @@ class SystemNotification extends Model
             self::COMMON_CATEGORY_NOTICE_INSPECTION => 'teacher/ly/oa/notices-center',
             self::TEACHER_CATEGORY_MEETING => 'teacher/ly/oa/meetings',
             self::TEACHER_CATEGORY_IMAIL => 'teacher/ly/oa/internal-messages',
-            self::COMMON_CATEGORY_MESSAGE => '',
+            self::COMMON_CATEGORY_MESSAGE => 'teacher/notice/info',
             self::TEACHER_CATEGORY_COURSE => 'teacher/elective-course/manager',
             self::TEACHER_CATEGORY_APPLY_STUDENT => 'teacher/ly/assistant/index',
         ];
