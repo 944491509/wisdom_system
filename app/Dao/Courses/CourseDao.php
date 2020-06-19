@@ -457,6 +457,24 @@ class CourseDao
         return $messageBag;
     }
 
+    public function electiveSaveData($course, $data) {
+        $days = $data['dayIndexes'];
+        $timeSlotIds = $data['timeSlots'];
+        $weeks = $data['weekNumbers'];
+        $arrangement = new CourseArrangementDao($course);
+        $arrangement->save($weeks, $days, $timeSlotIds);
+
+        $d = [
+            'course_id'     => $course->id,
+            'open_num'      => $data['open_num'],
+            'max_num'       => $data['max_num'],
+            'start_year'    => $data['start_year'],
+            'enrol_start_at'=> $data['enrol_start_at'],
+            'expired_at'    => $data['expired_at'],
+        ];
+        return CourseElective::create($d);
+    }
+
     /**
      * Course
      * @param $course
