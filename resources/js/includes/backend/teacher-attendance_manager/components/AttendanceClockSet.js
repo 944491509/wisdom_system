@@ -122,15 +122,15 @@ Vue.component("AttendanceClockSet", {
         <el-form-item label="下班时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.evening_end"
-            @change="_changeDate(item,'evening_end')"
+            v-model="item.morning_end"
+            @change="_changeDate(item,'morning_end')"
           ></el-input>
         </el-form-item>
         <el-form-item label="结束时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.evening_end2"
-            @change="_changeDate(item,'evening_end2')"
+            v-model="item.morning_end2"
+            @change="_changeDate(item,'morning_end2')"
           ></el-input>
         </el-form-item>
       </div>
@@ -203,9 +203,11 @@ Vue.component("AttendanceClockSet", {
     },
     _copy(index) {
       const {
-        // start,
-        // morning,
-        // morning_late,
+        start,
+        morning,
+        morning_late,
+        morning_end,
+        morning_end2,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -214,9 +216,11 @@ Vue.component("AttendanceClockSet", {
         is_weekday
       } = this.clockSetData[index - 1];
       const checkNullData = {
-        // start,
-        // morning,
-        // morning_late,
+        start,
+        morning,
+        morning_late,
+        morning_end,
+        morning_end2,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -233,6 +237,7 @@ Vue.component("AttendanceClockSet", {
         delete checkNullData.morning_end2;
         // delete checkNullData.afternoon_late;
       }
+      // 之前检查时间逻辑 暂时注释
       if (!this._checkData([checkNullData])) return false;
       Object.keys(checkNullData).forEach(item => {
         this.clockSetData[index][item] = checkNullData[item];
@@ -302,17 +307,19 @@ Vue.component("AttendanceClockSet", {
           nullFlag = true
           break
         }
-        if(element.cuRegFlag) {
-          regFlag = true
-          break
-        }
-        if(element.cuDateFlag) {
-          dateFlag = true
-          break
-        }
+        // if(element.cuRegFlag) {
+        //   regFlag = true
+        //   break
+        // }
+        // if(element.cuDateFlag) {
+        //   dateFlag = true
+        //   break
+        // }
       }
-      if (nullFlag || regFlag || dateFlag) {
-        this.$message.error(nullFlag ? "请输入考勤时间" :regFlag ? '请输入正确的考勤时间' : '输入的时间顺序不正确' );
+      // if (nullFlag || regFlag || dateFlag) {
+      if (nullFlag) {
+        // this.$message.error(nullFlag ? "请输入考勤时间" :regFlag ? '请输入正确的考勤时间' : '输入的时间顺序不正确' );
+        this.$message.error('请输入考勤时间');
         return false;
       }
       return true;
@@ -325,6 +332,8 @@ Vue.component("AttendanceClockSet", {
           start,
           morning,
           morning_late,
+          morning_end,
+          morning_end2,
           afternoon_start,
           afternoon,
           afternoon_late,
@@ -336,12 +345,27 @@ Vue.component("AttendanceClockSet", {
             start,
             morning,
             morning_late,
+            // morning_end,
+            // morning_end2,
             afternoon_start,
             afternoon,
             afternoon_late,
             evening,
             end
           };
+        } else if (this.usingMorning) {
+          return {
+            start,
+            morning,
+            morning_late,
+            morning_end,
+            morning_end2,
+            // afternoon_start,
+            // afternoon,
+            // afternoon_late,
+            evening,
+            end
+          }
         } else {
           return {
             start,
@@ -352,6 +376,7 @@ Vue.component("AttendanceClockSet", {
           };
         }
       });
+      // 之前检查时间逻辑 暂时注释
       if (!this._checkData(clockSetData)) {
         this.isLoading = false;
         return false;
