@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ImporterController extends Controller
 {
-
+    /**
+     * 列表
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function manager(Request $request)
     {
         $schoolId = $request->session()->get('school.id');
@@ -24,12 +28,22 @@ class ImporterController extends Controller
         return view('school_manager.importer.list', $this->dataForView);
     }
 
+    /**
+     * 添加页面
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function add()
     {
         $this->dataForView['task'] = new ImportTask();
         return view('school_manager.importer.add', $this->dataForView);
     }
 
+    /**
+     * 保存
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
     public function save(Request $request)
     {
         $schoolId = $request->session()->get('school.id');
@@ -71,6 +85,11 @@ class ImporterController extends Controller
         return redirect()->route('school_manager.importer.manager');
     }
 
+    /**
+     * 结果页面
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function result(Request $request)
     {
         $id = $request->get('id');
@@ -78,7 +97,39 @@ class ImporterController extends Controller
         $messages = $dao->result($id);
         $this->dataForView['messages'] = $messages;
         return view('school_manager.importer.result', $this->dataForView);
+    }
 
+    /**
+     * 撤回
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function withdraw(Request $request)
+    {
+        $id = $request->get('id');
+        $dao = new ImporterDao;
+        $dao->update($id, ['status' => ImportTask::IMPORT_TASK_WITHDRAW]);
+        return redirect()->route('school_manager.importer.manager');
+    }
+
+    /**
+     * 下载模板
+     * @param Request $request
+     * @return
+     */
+    public function download(Request $request)
+    {
+        $type = $request->get('type');
+        switch ($type) {
+            case ImportTask::IMPORT_TYPE_NO_IDENTITY:
+                $file = '';
+                break;
+            case ImportTask::IMPORT_TYPE_CERTIFIED:
+                $file = '111';
+                break;
+        }
+
+        return Storage::download($file);
     }
 
 }

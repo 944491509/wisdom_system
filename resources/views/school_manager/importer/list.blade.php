@@ -9,7 +9,9 @@ use App\Utils\UI\Button;
         <div class="col-sm-12 col-md-12 col-xl-12">
             <div class="card-box">
                 <div class="card-head">
-                    <header>导入管理</header>
+                    <header>导入管理 </header>
+                    <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TASK_EXECUTION]) }}">下载新生导入模板</a>
+                    <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TYPE_NO_IDENTITY]) }}">下载未认证用户导入模板</a>
                 </div>
 
                 <div class="card-body">
@@ -18,7 +20,9 @@ use App\Utils\UI\Button;
                             <a href="{{ route('school_manager.importer.add') }}" class="btn btn-primary " id="btn-create-versions-from">
                                 创建导入任务 <i class="fa fa-plus"></i>
                             </a>
+
                         </div>
+
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle">
                                 <thead>
@@ -51,7 +55,13 @@ use App\Utils\UI\Button;
                                         <td>{{ $task->total }}</td>
                                         <td>{{ $task->surplus }}</td>
                                         <td>
-                                            {{ Anchor::Print(['text'=>'结果','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id' => $task->id])], Button::TYPE_DEFAULT,'result') }}
+                                            @if ($task->status == \App\Models\Importer\ImportTask::IMPORT_TASK_WAITING)
+                                                {{ Anchor::Print(['text'=>'撤回','class'=>'btn-edit-building','href'=>route('school_manager.importer.withdraw',['id' => $task->id])], Button::TYPE_WARNING,'result') }}
+                                            @elseif($task->status == \App\Models\Importer\ImportTask::IMPORT_TASK_WITHDRAW)
+                                                {{ Anchor::Print(['text'=>'已撤回','class'=>'btn-edit-building','href'=> '#'], Button::TYPE_INFO,'result') }}
+                                            @else
+                                                {{ Anchor::Print(['text'=>'错误详情','class'=>'btn-edit-building','href'=>route('school_manager.importer.result',['id' => $task->id])], Button::TYPE_DEFAULT,'result') }}
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

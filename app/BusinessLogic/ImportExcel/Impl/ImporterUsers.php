@@ -150,10 +150,10 @@ class ImporterUsers extends AbstractImporter
                         'school_id' => $this->task['school_id'],
                     ];
                     $gradeUserDao->create($gradeData);
-                    DB::commit();
-                    echo $val[0].'----------创建成功'.PHP_EOL;
                     // 已导入条
                     $importDao->increment($this->task['id']);
+                    DB::commit();
+                    echo $val[0].'----------创建成功'.PHP_EOL;
                 }
                 catch (\Exception $exception){
                     DB::rollBack();

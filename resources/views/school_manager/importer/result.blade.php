@@ -28,7 +28,7 @@ use App\Utils\UI\Button;
                                 <tbody>
                                 @if(count($messages) == 0)
                                     <tr>
-                                        <td colspan="4">还没有内容 </td>
+                                        <td colspan="5">还没有内容 </td>
                                     </tr>
                                 @endif
                                 @foreach($messages as $index=>$info)

@@ -628,6 +628,8 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
         Route::any('save', 'ImporterController@save')->name('school_manager.importer.save');
         Route::any('add', 'ImporterController@add')->name('school_manager.importer.add');
         Route::any('result', 'ImporterController@result')->name('school_manager.importer.result');
+        Route::any('withdraw', 'ImporterController@withdraw')->name('school_manager.importer.withdraw');
+        Route::any('download', 'ImporterController@download')->name('school_manager.importer.download');
     });
 
     // 会议
