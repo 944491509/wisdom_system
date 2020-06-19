@@ -122,14 +122,13 @@ class ImporterController extends Controller
         $type = $request->get('type');
         switch ($type) {
             case ImportTask::IMPORT_TYPE_NO_IDENTITY:
-                $file = '';
+                $file = 'Console/Commands/template/未认证用户导入模板.xls';
                 break;
             case ImportTask::IMPORT_TYPE_CERTIFIED:
-                $file = '111';
+                $file = 'Console/Commands/template/新生导入模板.xls';
                 break;
         }
-
-        return Storage::download($file);
+        response()->download($file);
     }
 
 }
