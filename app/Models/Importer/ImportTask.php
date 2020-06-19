@@ -20,6 +20,8 @@ class ImportTask extends Model
     const IMPORT_TYPE_NO_IDENTITY_TEXT = '未认证';
     const IMPORT_TYPE_CERTIFIED = 1;
     const IMPORT_TYPE_CERTIFIED_TEXT = '已认证';
+    const IMPORT_TYPE_ADDITIONAL_INFORMATION = 2;
+    const IMPORT_TYPE_ADDITIONAL_INFORMATION_TEXT = '学生住宿信息';
 
     protected $table = 'import_task';
 

@@ -6,7 +6,6 @@ use App\BusinessLogic\ImportExcel\Factory;
 use App\Dao\Importer\ImporterDao;
 use App\Models\Importer\ImportTask;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class ImportUsers extends Command
 {
@@ -22,7 +21,7 @@ class ImportUsers extends Command
      *
      * @var string
      */
-    protected $description = '导入无专业班级用户';
+    protected $description = '可用于导入无专业班级用户, 导入已认证用户, 导入学生住宿信息';
 
     /**
      * Create a new command instance.
@@ -47,7 +46,22 @@ class ImportUsers extends Command
         if (is_null($data)) {
             $this->info('未找到任务');die;
         }
-        $result = Factory::createAdapter(['adapter'=> 'import_users' , 'data'=> $data]);
+        switch ($data['type'])
+        {
+            case ImportTask::IMPORT_TYPE_NO_IDENTITY:
+                $adapter = 'import_users';
+                break;
+            case ImportTask::IMPORT_TYPE_CERTIFIED:
+                $adapter = 'import_student';
+                break;
+            case ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION:
+                $adapter = 'importer_student_accommodation';
+                break;
+            default:
+                $adapter = null;
+                break;
+        }
+        $result = Factory::createAdapter(['adapter'=> $adapter , 'data'=> $data]);
         $result->handle();
         $this->info('任务结束');
 

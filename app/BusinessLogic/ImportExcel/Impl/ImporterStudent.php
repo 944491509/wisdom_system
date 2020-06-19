@@ -14,10 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
-
-class ImporterUsers extends AbstractImporter
+class ImporterStudent extends AbstractImporter
 {
-
     private  $task;
     public function __construct($task)
     {
@@ -62,8 +60,8 @@ class ImporterUsers extends AbstractImporter
                     'name' => $val[0],
                     'mobile' => $val[1],
                     'password' => Hash::make(substr($val[5],-6)),
-                    'type' => Role::REGISTERED_USER,
-                    'status' => User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED,
+                    'type' => Role::VERIFIED_USER_STUDENT,
+                    'status' => User::STATUS_VERIFIED,
                 ];
 
                 $profile = [
@@ -71,10 +69,11 @@ class ImporterUsers extends AbstractImporter
                     'year' => date('Y'),
                     'serial_number' => '-',
                     'uuid' => Uuid::uuid4()->toString(),
-                    'gender'  => $val[2] == '男' ? 1 : 2, // 性别
-                    'nation_name' => $val[3],   // 民族
-                    'political_name' => $val[4], // 政治面貌
+                    'gender'  => $val[4] == '男' ? 1 : 2, // 性别
+                    'nation_name' => $val[5],   // 民族
+                    'political_name' => $val[6], // 政治面貌
                     'id_number' => $val[5], // 身份证号
+                    'birthday' => , // 出生日期
                     'student_code' => $val[6], // 学籍号
                     'country' => $val[7], // 籍贯
                     'graduate_school' => $val[8], // 毕业学校
@@ -110,28 +109,24 @@ class ImporterUsers extends AbstractImporter
                 if (empty($student['mobile']) || strlen($student['mobile'])!= 11 ) {
                     $errorArr['error_log'] = '手机号为空或者位数不对';
                     $this->errorLog($this->task['title'], $errorArr);
-//                    echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 // 身份证
                 if (empty($profile['id_number']) || strlen($profile['id_number'])!= 18) {
                      $errorArr['error_log'] = '身份证号格式错误';
                      $this->errorLog($this->task['title'], $errorArr);
-//                    echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 $userResult = $userDao->getUserByMobile($student['mobile']);
                 if ($userResult) {
                     $errorArr['error_log'] = '手机号已经被注册了';
                     $this->errorLog($this->task['title'], $errorArr);
-                    echo $val[0]. "手机号已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
                 $profileResult = $profileDao->getStudentInfoByIdNumber($profile['id_number']);
                 if ($profileResult) {
                     $errorArr['error_log'] = '身份证号已经被注册了';
                     $this->errorLog($this->task['title'], $errorArr);
-                    echo $val[0]. "身份证已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
 
@@ -166,6 +161,4 @@ class ImporterUsers extends AbstractImporter
         // 修改任务状态 和 未导入条数
         $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE, 'surplus' => $count]);
     }
-
-
 }

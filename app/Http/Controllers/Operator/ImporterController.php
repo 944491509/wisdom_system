@@ -46,7 +46,6 @@ class ImporterController extends Controller
         } else {
             $path = $file->store('import');
         }
-
         // 验证文件格式
         $fileFormat = new ImporterConfig($path, $data['type']);
         $validation = $fileFormat->validation();
