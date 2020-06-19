@@ -122,15 +122,15 @@ Vue.component("AttendanceClockSet", {
         <el-form-item label="下班时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.evening_end"
-            @change="_changeDate(item,'evening_end')"
+            v-model="item.morning_end"
+            @change="_changeDate(item,'morning_end')"
           ></el-input>
         </el-form-item>
         <el-form-item label="结束时间" v-if="usingMorning">
           <el-input
             size="mini"
-            v-model="item.evening_end2"
-            @change="_changeDate(item,'evening_end2')"
+            v-model="item.morning_end2"
+            @change="_changeDate(item,'morning_end2')"
           ></el-input>
         </el-form-item>
       </div>
@@ -332,6 +332,8 @@ Vue.component("AttendanceClockSet", {
           start,
           morning,
           morning_late,
+          morning_end,
+          morning_end2,
           afternoon_start,
           afternoon,
           afternoon_late,
@@ -343,12 +345,27 @@ Vue.component("AttendanceClockSet", {
             start,
             morning,
             morning_late,
+            // morning_end,
+            // morning_end2,
             afternoon_start,
             afternoon,
             afternoon_late,
             evening,
             end
           };
+        } else if (this.usingMorning) {
+          return {
+            start,
+            morning,
+            morning_late,
+            morning_end,
+            morning_end2,
+            // afternoon_start,
+            // afternoon,
+            // afternoon_late,
+            evening,
+            end
+          }
         } else {
           return {
             start,

@@ -14,6 +14,8 @@ const clockSetData = [
   end: "",
   morning: "",
   morning_late: "",
+  morning_end: "",
+  morning_end2: "",
   afternoon: "",
   afternoon_late: "",
   evening: "",
