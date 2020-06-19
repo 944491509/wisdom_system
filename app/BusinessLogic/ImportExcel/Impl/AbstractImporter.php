@@ -84,4 +84,18 @@ abstract class AbstractImporter implements IImportExcel
           $logArr['title'] = $taskName;
           Log::channel('import_log')->info($logArr);
     }
+
+    /**
+     * 根据身份证 获取 出生日期
+     * @param $idCard
+     * @return string
+     */
+    public function getBirthday($idCard)
+    {
+        $bir = substr($idCard, 6, 8);
+        $year = (int) substr($bir, 0, 4);
+        $month = (int) substr($bir, 4, 2);
+        $day = (int) substr($bir, 6, 2);
+        return $year . "-" . $month . "-" . $day;
+    }
 }

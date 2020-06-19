@@ -59,11 +59,12 @@ class ImporterStudent extends AbstractImporter
                     'uuid' => Uuid::uuid4()->toString(),
                     'name' => $val[0],
                     'mobile' => $val[1],
+                    'email' => $val[35], // 邮箱
                     'password' => Hash::make(substr($val[5],-6)),
                     'type' => Role::VERIFIED_USER_STUDENT,
                     'status' => User::STATUS_VERIFIED,
                 ];
-
+                $aa = new
                 $profile = [
                     'origin' => 1,
                     'year' => date('Y'),
@@ -73,30 +74,49 @@ class ImporterStudent extends AbstractImporter
                     'nation_name' => $val[5],   // 民族
                     'political_name' => $val[6], // 政治面貌
                     'id_number' => $val[5], // 身份证号
-                    'birthday' => , // 出生日期
-                    'student_code' => $val[6], // 学籍号
-                    'country' => $val[7], // 籍贯
-                    'graduate_school' => $val[8], // 毕业学校
-                    'graduate_type' => $val[9], // 学生来源
-                    'source_place_state' => $val[10], // 生源地(省)
-                    'source_place_city' => $val[11], // 生源地(省)
-                    'recruit_type' => $val[12], // 招生方式
-                    'resident_type' => $val[13], // 户口性质
-                    'resident_state' => $val[14], // 户籍所在省
-                    'resident_city' => $val[15], // 户籍所在市
-                    'resident_area' => $val[16], // 户籍所在区
-                    'resident_suburb' => $val[17], // 户籍所在乡镇
-                    'resident_village' => $val[18], // 户籍所在村
-                    'detailed_address' => $val[19], // 户籍详细地址
-                    'current_residence' => $val[20], // 现居住地址
-                    'parent_name' => $val[21], // 监护人
-                    'parent_mobile' => $val[22], // 监护人
-                    'relationship' => $val[23], // 监护人关系
-                    'create_file' => $val[24] == '是' ? 1 : 0 , // 是否建档贫困户
-                    'volunteer' => $val[25], // 报考支援
-                    'examination_site' => $val[26], // 考点
-                    'license_number' => $val[27], // 准考证号
-                    'examination_score' => $val[27], // 考试成绩
+                    'birthday' => $this->getBirthday($val[5]), // 出生日期
+                    'student_code' => $val[9], // 学籍号
+                    'country' => $val[10], // 籍贯
+                    'health_status' => $val[10], // 健康状况 * 传ID
+                    'graduate_school' => $val[12], // 毕业学校
+                    'graduate_type' => $val[13], // 学生来源
+                    'cooperation_type' => $val[14], // 	联招合作类型 * 传ID
+                    'source_place_state' => $val[15], // 生源地(省)
+                    'source_place_city' => $val[16], // 生源地(省)
+                    'recruit_type' => $val[17], // 招生方式
+                    'resident_type' => $val[18], // 户口性质
+                    'resident_state' => $val[19], // 户籍所在省
+                    'resident_city' => $val[20], // 户籍所在市
+                    'resident_area' => $val[21], // 户籍所在区
+                    'resident_suburb' => $val[22], // 户籍所在乡镇
+                    'resident_village' => $val[23], // 户籍所在村
+                    'detailed_address' => $val[24], // 户籍详细地址
+                    'current_residence' => $val[25], // 现居住地址
+                    'create_file' => $val[26] == '是' ? 1 : 0 , // 是否建档贫困户
+                    'enrollment_at' => $val[27] , // 入学日期
+                    'educational_system' => $val[28], // 学制 * 传ID
+                    'entrance_type' => $val[29], // 入学方式 * 传ID
+                    'segmented_type' => $val[31], // 分段培养方式 * 传ID
+                    'student_number' => $val[32], // 学号
+                    'qq' => $val[33], // QQ
+                    'wx' => $val[34], // 微信
+                    'volunteer' => $val[39], // 报考志愿
+                    'examination_site' => $val[41], // 考点
+                    'license_number' => $val[40], // 准考证号
+                    'examination_score' => $val[42], // 考试成绩
+                    'family_poverty_status' => $val[43], // 家庭贫困程度  * 传ID
+                    'zip_code' => $val[44], // 家庭地址邮编
+                    'residence_type' => $val[45], // 学生居住地类型
+                    'parent_name' => $val[46], // 监护人
+                    'parent_mobile' => $val[47], // 监护人手机号
+                    'relationship' => $val[48], // 监护人关系
+                    'learning_form' => $val[49], // 监护人关系
+                ];
+
+                $addition = [
+                    'borrow_type' => $val[36], // 寄宿类型
+                    'people' => $val[37], // 寄宿联系人
+                    'mobile' => $val[38] // 寄宿联系电话
                 ];
 
                 $errorArr = [
@@ -132,9 +152,10 @@ class ImporterStudent extends AbstractImporter
 
                 DB::beginTransaction();
                 try{
-                    // 创建用户数据
-                    // 创建用户班级的关联
-                    // 创建用户的档案
+                    // 创建学生数据
+                    // 创建学生班级的关联
+                    // 创建学生的档案
+                    // 创建学生的附件信息
                     $user = $userDao->createUser($student);
                     $profile['user_id'] = $user->id;
                     $profileDao->create($profile);
@@ -145,6 +166,7 @@ class ImporterStudent extends AbstractImporter
                         'school_id' => $this->task['school_id'],
                     ];
                     $gradeUserDao->create($gradeData);
+
                     DB::commit();
                     echo $val[0].'----------创建成功'.PHP_EOL;
                     // 已导入条
@@ -161,4 +183,6 @@ class ImporterStudent extends AbstractImporter
         // 修改任务状态 和 未导入条数
         $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE, 'surplus' => $count]);
     }
+
+
 }

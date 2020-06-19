@@ -146,7 +146,7 @@ class ImporterUsers extends AbstractImporter
                     $gradeData = [
                         'user_id' => $user->id,
                         'name' => $student['name'],
-                        'user_type' => Role::VERIFIED_USER_STUDENT,
+                        'user_type' => Role::REGISTERED_USER,
                         'school_id' => $this->task['school_id'],
                     ];
                     $gradeUserDao->create($gradeData);
