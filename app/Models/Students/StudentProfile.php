@@ -27,7 +27,7 @@ class StudentProfile extends Model
     const DRIVER_QI_NIU   = 3;
 
     protected $fillable = [
-        'uuid', 'user_id', 'device', 'year', 'serial_number', 'gender', 'country', 'address_line', 'address_in_school',
+        'uuid', 'user_id', 'year', 'serial_number', 'gender', 'country', 'address_line', 'address_in_school',
         'student_number', 'license_number', 'id_number', 'birthday', 'avatar', 'qq', 'wx', 'examination_score',
         'political_name', 'nation_name', 'parent_name', 'parent_mobile', 'source', 'create_file', 'resident_type',
         'resident_suburb', 'resident_village', 'comments', 'origin', 'student_code', 'health_status', 'graduate_school',

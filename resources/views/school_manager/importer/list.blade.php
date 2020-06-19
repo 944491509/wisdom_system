@@ -41,7 +41,7 @@ use App\Utils\UI\Button;
                                 <tbody>
                                 @if(count($tasks) == 0)
                                     <tr>
-                                        <td colspan="6">还没有内容 </td>
+                                        <td colspan="9">还没有内容 </td>
                                     </tr>
                                 @endif
                                 @foreach($tasks as $index=>$task)
