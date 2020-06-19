@@ -40,9 +40,8 @@ class UpdateTeacherPhone extends Command
     public function handle()
     {
         $this->info('任务开始');
-        $result = Factory::createAdapter(['importerName' => 'update_teacher_phone']);
+        $result = Factory::createAdapter('update_teacher_phone');
         $result->handle();
-
         $this->info('任务结束');
     }
 
