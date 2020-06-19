@@ -497,5 +497,14 @@ class UserDao
         return $query->take(ConfigurationTool::DEFAULT_PAGE_SIZE_QUICK_SEARCH)->get();
     }
 
+    /**
+     * @param $userIds
+     * @param $status
+     * @return mixed
+     */
+    public function updateStudentStatusByIds(array $userIds, $status)
+    {
+        return User::whereIn('id', $userIds)->update(['status' => $status]);
+    }
 
 }

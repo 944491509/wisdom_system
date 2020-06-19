@@ -218,7 +218,7 @@ class ProjectDao
 
 
     /**
-     * 参加的会议
+     * 参加的任务
      * @param $userId
      * @param $type
      * @return mixed

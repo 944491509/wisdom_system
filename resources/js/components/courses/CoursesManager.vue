@@ -4,8 +4,8 @@
       <p class="courses-list-title">
         <filters-from :majors="majors" :years="grades" @searchSubmit="searchSubmit" />
         <el-button type="primary" @click="downloadTable">导出</el-button>
-        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加必修课</el-button>
-        <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button>
+        <el-button icon="el-icon-circle-plus" type="primary" @click="newCourseForm">添加课程</el-button>
+        <!-- <el-button icon="el-icon-circle-plus" type="success" @click="newElectiveCourseForm">添加选修课</el-button> -->
       </p>
       <courses-list
         :courses="courses"
@@ -28,10 +28,11 @@
     </div>
 
     <el-dialog
-      title="必修课程登记表"
+      title="课程登记表"
       :visible.sync="showCourseFormFlag"
       :fullscreen="true"
       custom-class="course-form-drawer"
+      :before-close="closeFunction"
     >
       <el-form
         :model="courseModel"
@@ -91,6 +92,7 @@
             <el-form-item label="课程类型">
               <el-select v-model="courseModel.optional" placeholder="课程类型">
                 <el-option label="必修课" value="0"></el-option>
+                <el-option label="选修课" value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -127,8 +129,8 @@
             loading-text="正在查找 ..."
           >
             <el-option
-              v-for="(teacher, idx) in teachers"
-              :key="idx"
+              v-for="(teacher) in teachers"
+              :key="teacher.id"
               :label="teacher.name"
               :value="teacher.id"
             ></el-option>
@@ -140,7 +142,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="saveCourse">保存</el-button>
-          <el-button @click="showCourseFormFlag = false">取消</el-button>
+          <el-button @click="showCourseFormFlag = false; teachers = []">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -309,7 +311,7 @@ export default {
 
     // 获取学校的每天的教学时间段安排
     // const noTime = true;
-    getTimeSlots(this.schoolId).then(res => {
+    getTimeSlots(this.schoolId,'','',-1).then(res => {
       if (Util.isAjaxResOk(res)) {
         this.timeSlots = res.data.data.time_frame;
         this.totalWeeks = res.data.data.total_weeks;
@@ -317,6 +319,10 @@ export default {
     });
   },
   methods: {
+    closeFunction() {
+      this.teachers = []
+      this.showCourseFormFlag = false
+    },
     onPageChange(page) {
       this.pagination.page = page;
     },
@@ -514,6 +520,7 @@ export default {
             });
             this._getAllCourses();
             this.onDrawerClosed();
+            this.teachers = []
           } else {
             this.$notify.error({
               title: "错误",

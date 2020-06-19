@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('school')->middleware('auth:api')->group(function () {
     // 加载学校年制接口
-    Route::get('/load-config-year','Api\School\TimeSlotsController@load_year_school')
+    Route::any('/load-config-year','Api\School\TimeSlotsController@load_year_school')
         ->name('api.school.load.config.year');
 
     // 加载学校的作息时间表
@@ -102,8 +102,8 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
     Route::any('/calendar','Api\Home\IndexController@calendar')
         ->name('api.school.calendar');  // 校历接口
 
-    Route::any('/all-events','Api\Home\IndexController@all_events')
-        ->name('api.school.all-events'); // 历史事件
+    Route::get('/calendar/tagList','Api\Home\IndexController@tagList')
+        ->name('api.school.calendar.tagList'); // 校历类型列表
 
     // 搜索班级
     Route::any('/search-grade', 'Operator\GradesController@searchGrade')
@@ -481,6 +481,16 @@ Route::prefix('notice')->middleware('auth:api')->group(function () {
     // 发布通知
     Route::post('/issue-notice', 'Api\Notice\NoticeController@issueNotice')
         ->name('api.notice.issue-notice');
+    // 学校年级
+    Route::get('/school-year', 'Api\Notice\NoticeController@schoolYear')
+        ->name('api.notice.schoolYear');
+    // 获取年级下的班级
+    Route::get('/grade-list', 'Api\Notice\NoticeController@gradeList')
+        ->name('api.notice.grade-list');
+    // 后台管理通知公告列表
+    Route::post('/show-notice', 'Api\Notice\NoticeController@NoticeList')
+        ->name('api.notice.show-notice');
+
 });
 
 // APP banner 接口
@@ -660,14 +670,17 @@ Route::post('/index/sms', 'Api\Home\IndexController@sendSms')
 // 地区列表
 Route::prefix('location')->group(function () {
     // 省份列表
-    Route::get('/get-provinces','Api\Location\AreaController@getProvinces')
+    Route::get('/get-provinces', 'Api\Location\AreaController@getProvinces')
         ->name('api.location.get-provinces');
     // 城市列表
-    Route::post('/get-cities','Api\Location\AreaController@getCities')
+    Route::post('/get-cities', 'Api\Location\AreaController@getCities')
         ->name('api.location.get-cities');
     // 区县列表
-    Route::post('/get-districts','Api\Location\AreaController@getDistricts')
+    Route::post('/get-districts', 'Api\Location\AreaController@getDistricts')
         ->name('api.location.get-districts');
+    // 五级联动
+    Route::post('/get-area', 'Api\Location\NewAreaController@getArea')
+        ->name('api.location.get-area');
 });
 
 // 会议管理
@@ -1207,6 +1220,21 @@ Route::prefix('work')->middleware('auth:api')->group(function(){
         ->name('api.work.assess');
 });
 
+// PC端接口
+Route::prefix('pc')->middleware('auth:api')->group(function(){
+    // 统一认证 - 显示学校的所有老师接口
+    Route::post('get-teachers', 'Operator\SchoolsController@getTeachers')->name('api.school.get-teachers');
+    // 统一认证 - 显示学校的所有学生接口
+    Route::post('get-students', 'Operator\SchoolsController@getStudents')->name('api.school.get-students');
+    // 统一认证 - 搜索条件
+    Route::post('get-search-config', 'Operator\SchoolsController@searchConfig')->name('api.school.get-search-config');
+    // 统一认证 - 学生状态
+    Route::post('get-search-student-status', 'Operator\SchoolsController@studentStatus')->name('api.school.get-student-status');
+    // 统一认证 - 全选修改学生状态
+    Route::post('update-student-status', 'Operator\SchoolsController@updateStudentStatus')->name('api.school.update-student-status');
+    // 统一认证 - 批量修改学生状态
+    Route::post('update-status', 'Operator\SchoolsController@updateStatus')->name('api.school.update-status');
+});
 
 // 教材
 Route::prefix('textbook')->middleware('auth:api')->group(function() {

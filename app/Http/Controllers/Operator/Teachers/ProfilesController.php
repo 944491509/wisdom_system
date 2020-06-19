@@ -23,7 +23,9 @@ use App\Models\Teachers\Teacher;
 use App\Models\Teachers\TeacherQualification;
 use App\User;
 use App\Utils\FlashMessageBuilder;
+use App\Utils\JsonBuilder;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -36,69 +38,88 @@ use Ramsey\Uuid\Uuid;
 
 class ProfilesController extends Controller
 {
-    public function save(MyStandardRequest $request){
+    /**
+     * 添加教师
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws Exception
+     */
+    public function save(MyStandardRequest $request)
+    {
+
         DB::beginTransaction();
-        try{
+        try {
             $teacherData = $request->get('teacher');
             $profileData = $request->get('profile');
-            $instituteId = $request->get('institute_id');
+            $schoolId    = $request->get('school_id');
+            $campusId    = $request->get('campus_id');
 
-            $teacherData['uuid'] = Uuid::uuid4()->toString();
+            $userDao    = new UserDao();
+            $profileDao = new TeacherProfileDao();
+            $mobile     = $userDao->getUserByMobile($teacherData['mobile']);
+            if ($mobile) {
+                return JsonBuilder::Error('该手机号已注册过了');
+            }
+
+            $idNumber = $profileDao->getTeacherProfileByIdNumber($profileData['id_number']);
+            if ($idNumber) {
+                return JsonBuilder::Error('该身份证号已注册过了');
+            }
+
+            $teacherData['uuid']      = Uuid::uuid4()->toString();
             $teacherData['api_token'] = Uuid::uuid4()->toString();
-            $teacherData['type'] = Role::TEACHER;
-            $teacherData['status'] = User::STATUS_VERIFIED;
-            $pwd = substr($profileData['id_number'],-6); // 身份证的后六位
-            $teacherData['password'] = Hash::make($pwd);
+            $teacherData['type']      = Role::TEACHER;
+            $pwd                      = substr($profileData['id_number'], -6); // 身份证的后六位
+            $teacherData['password']  = Hash::make($pwd);
 
-            $userDao = new UserDao();
+
             $user = $userDao->createUser($teacherData);
 
-            $profileDao = new TeacherProfileDao();
-            $profileData['user_id'] = $user->id;
-            $profileData['uuid'] = Uuid::uuid4()->toString();
+
+            $profileData['school_id'] = $schoolId;
+            $profileData['user_id']   = $user->id;
+            $profileData['uuid']      = Uuid::uuid4()->toString();
             $profileDao->createProfile($profileData);
 
             $gGao = new GradeUserDao();
-            $firstInstitute = (new InstituteDao())->getInstituteById($instituteId);
 
             $gGao->create([
-                'user_id'         =>$user->id,
-                'name'            =>$user->name,
-                'user_type'       =>Role::TEACHER,
-                'school_id'       =>session('school.id'),
-                'campus_id'       =>$firstInstitute->campus->id,
-                'institute_id'    =>$firstInstitute->id,
+                'user_id'         => $user->id,
+                'name'            => $user->name,
+                'user_type'       => Role::TEACHER,
+                'school_id'       => $schoolId,
+                'campus_id'       => $campusId,
+                'institute_id'    => 0,
                 'department_id'   => 0,
                 'grade_id'        => 0,
                 'last_updated_by' => Auth::user()->id,
             ]);
 
             DB::commit();
-            FlashMessageBuilder::Push(
-                $request,
-                'success',
-                '教师档案保存成功, 登陆用户名: ' . $user->mobile . ', 登陆密码: ' . $pwd . '(即身份证的后 6 位)');
+            return JsonBuilder::Success('教师档案保存成功, 登陆用户名:' . $user->mobile . '登陆密码:' . $pwd . '(即身份证的后 6 位)');
         } catch (Exception $exception) {
             DB::rollBack();
-            FlashMessageBuilder::Push(
-                $request,
-                'error',
-                $exception->getMessage());
+            return JsonBuilder::Error('保存失败');
         }
-
-        return redirect()->route('school_manager.school.teachers');
     }
 
-    public function add_new(MyStandardRequest $request){
+    /**
+     * 添加教师页面
+     * @param MyStandardRequest $request
+     * @return Application|Factory|View
+     */
+    public function add_new(MyStandardRequest $request)
+    {
         $this->dataForView['pageTitle'] = '教师档案管理';
-        $schoolId = session('school.id');
+        $schoolId                       = session('school.id');
         $this->dataForView['school_id'] = $schoolId;
         return view('teacher.profile.add_new', $this->dataForView);
     }
 
-    public function edit(MyStandardRequest $request){
+    public function edit(MyStandardRequest $request)
+    {
         $schoolId = session('school.id');
-        if($request->isMethod('post')) {
+        if ($request->isMethod('post')) {
             $data = $request->all();
             $userId = $data['uuid'];
             unset($data['uuid']);
@@ -149,23 +170,121 @@ class ProfilesController extends Controller
 
 
             // 该教师的评聘佐证材料
-            $qualificationDao = new QualificationDao;
-            $qualification = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
+            $qualificationDao                   = new QualificationDao;
+            $qualification                      = $qualificationDao->getTeacherQualificationByTeacherId($teacher->id);
             $this->dataForView['qualification'] = $qualification;
-//            dd($this->dataForView);
 
             return view('teacher.profile.edit', $this->dataForView);
         }
     }
 
     /**
+     * 教师信息详情
+     * @param MyStandardRequest $request
+     * @return string
+     */
+    public function teacherProfileInfo(MyStandardRequest $request)
+    {
+        $teacherId = $request->get('teacher_id');
+        $data      = [];
+
+        $profileDao = new TeacherProfileDao;
+        $profile    = $profileDao->getTeacherProfileByTeacherIdOrUuid((int)$teacherId);
+        $teacher    = $profile->user;
+        $data       = [
+            'campus_id' => $teacher->gradeUser[0]->campus_id,
+            'school_id' => $profile->school_id,
+            'teacher'   => [
+                'name'   => $teacher->name,
+                'mobile' => $teacher->mobile,
+                'status' => $teacher->status,
+            ],
+            'profile'   => [
+                'gender'                  => $profile->gender,
+                'nation_name'             => $profile->nation_name,
+                'birthday'                => $profile->birthday,
+                'serial_number'           => $profile->serial_number,
+                'id_number'               => $profile->id_number,
+                'resident'                => $profile->resident,
+                'political_name'          => $profile->political_name,
+                'party_time'              => $profile->party_time,
+                'home_address'            => $profile->home_address,
+                'education'               => $profile->education,
+                'degree'                  => $profile->degree,
+                'major'                   => $profile->major,
+                'graduation_school'       => $profile->graduation_school,
+                'graduation_time'         => $profile->graduation_time,
+                'final_education'         => $profile->final_education,
+                'final_degree'            => $profile->final_degree,
+                'final_major'             => $profile->final_major,
+                'final_graduation_school' => $profile->final_graduation_school,
+                'final_graduation_time'   => $profile->final_graduation_time,
+                'title'                   => $profile->title,
+                'title_start_at'          => $profile->title_start_at,
+                'work_start_at'           => $profile->work_start_at,
+                'hired_at'                => $profile->hired_at,
+                'mode'                    => $profile->mode,
+                'category_teach'          => $profile->category_teach,
+                'notes'                   => $profile->notes,
+            ]
+        ];
+        return JsonBuilder::Success($data);
+    }
+
+    /**
+     * 修改教师信息
+     * @param MyStandardRequest $request
+     * @return string
+     * @throws Exception
+     */
+    public function editTeacherInfo(MyStandardRequest $request)
+    {
+        $teacherData = $request->get('teacher');
+        $profileData = $request->get('profile');
+        $schoolId    = $request->get('school_id');
+        $campusId    = $request->get('campus_id');
+        $teacherId   = $request->get('teacher_id');
+
+        $userDao    = new UserDao();
+        $profileDao = new TeacherProfileDao();
+        $mobile     = $userDao->getUserByMobile($teacherData['mobile']);
+        if (!empty($mobile) && $mobile->id != $teacherId) {
+            return JsonBuilder::Error('该手机号已注册过了');
+        }
+
+        $idNumber = $profileDao->getTeacherProfileByIdNumber($profileData['id_number']);
+        if (!empty($idNumber) && $idNumber->user_id != $teacherId) {
+            return JsonBuilder::Error('该身份证号已注册过了');
+        }
+
+        DB::beginTransaction();
+        try {
+            $userDao    = new UserDao;
+            $profileDao = new TeacherProfileDao;
+            $gradeDao   = new  GradeUserDao;
+
+            $userDao->updateUserInfo($teacherId, $teacherData);
+            $profileDao->updateTeacherProfile($teacherId, $profileData);
+            $gradeDao->updateDataByUserId($teacherId, ['school_id' => $schoolId, 'campus_id' => $campusId]);
+            DB::commit();
+            return JsonBuilder::Success('教师档案修改成功');
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return JsonBuilder::Error('修改识别:' . $exception->getMessage());
+        }
+
+    }
+
+
+    /**
      * 教师年终考评
      * @param MyStandardRequest $request
      * @return Factory|View
      */
-    public function manage_performance(MyStandardRequest $request){
-        $schoolDao = new SchoolDao();
-        $school = $schoolDao->getSchoolById(session('school.id'));
+    public function manage_performance(MyStandardRequest $request)
+    {
+        $schoolDao                    = new SchoolDao();
+        $school                       = $schoolDao->getSchoolById(session('school.id'));
         $this->dataForView['configs'] = $school->teacherPerformanceConfigs;
 
         $dao                          = new UserDao();

@@ -23,7 +23,7 @@
                                 filterable
                                 allow-create
                                 default-first-option
-                                placeholder="请选择文章标签">
+                                placeholder="请选择事件标签">
                             <el-option
                                     v-for="(item, id) in tags"
                                     :key="id"

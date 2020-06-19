@@ -14,6 +14,11 @@
                             <el-date-picker
                               v-model="date"
                               type="date"
+                              :picker-options="{
+                                disabledDate(time) {
+                                    return time.getTime() > Date.now();
+                                }
+                              }"
                               placeholder="选择日期">
                             </el-date-picker>
                             <el-select size="small" v-model="filterValue" placeholder="请选择">
@@ -59,7 +64,7 @@
                     </el-table>
                     <div v-show="data.length == 0" class="no-data-img">
                         <img src="{{ asset('assets/img/teacher_blade/no-data.png') }}" alt="">
-                        <p>当前列表暂时没有数据哦x~</p>
+                        <p>当前列表暂时没有数据哦~</p>
                     </div>
                 </div>
             </div>

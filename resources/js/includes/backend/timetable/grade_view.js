@@ -37,7 +37,7 @@ if(document.getElementById('school-timetable-grade-viewer-app')){
             }
 
             // 把时间段数据取来, 然后去生成课程表左边第一栏
-            getTimeSlots(this.schoolId).then(res => {
+            getTimeSlots(this.schoolId, false, this.gradeId).then(res => {
                 if(Util.isAjaxResOk(res)){
                     this.timeSlots = res.data.data.time_frame;
                 }

@@ -16,12 +16,12 @@ use App\Utils\UI\Button;
                         <input type="hidden" name="user[user_id]" value="{{ $user->user_id }}">
 
                         <div class="form-group">
-                            <label>登陆账户名</label>
-                            <input required type="text" class="form-control" value="{{$user->user->mobile ?? old('mobile')}}" placeholder="必填: 登陆账号" name="user[mobile]" readonly="true">
+                            <label>登录账号</label>
+                            <input required type="text" class="form-control" value="{{$user->user->mobile ?? old('mobile')}}" placeholder="必填: 登录账号" name="user[mobile]" readonly="true">
                         </div>
                         <div class="form-group">
-                            <label>登陆密码</label>
-                            <input  type="password" class="form-control" value="" placeholder="登陆密码, 为空表示密码不修改" name="user[password]">
+                            <label>登录密码</label>
+                            <input  type="password" class="form-control" value="" placeholder="登录密码, 为空表示密码不修改" name="user[password]">
                         </div>
                         @include('admin.schools._form')
                         <?php

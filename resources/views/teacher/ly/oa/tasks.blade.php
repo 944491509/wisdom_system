@@ -7,7 +7,7 @@
                 <div class="card-head">
                     <header class="full-width">
                         <div class="title">
-                          <span class="h-title">@{{activeNameText}}</span>  
+                          <span class="h-title"><span><pf-icon :iconsrc="`teacher/task-${activeName}`" :text="activeNameText"/></span></span>  
                           <el-button type="primary" size="small" @click="()=>{addDrawer=true}">创建任务</el-button>
                         </div>
                     </header>
@@ -27,6 +27,9 @@
             :before-close="checkClose"
             :visible.sync="addDrawer"
             direction="rtl">
+            <template slot="title">
+              <pf-icon :iconsrc="`teacher/task-create`" text="创建任务"/>
+            </template>
             <task-form @done="onTaskCreated" :currentUserId="currentUserId"/>
           </el-drawer>
         </div>

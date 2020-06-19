@@ -15,16 +15,19 @@ use App\Dao\Users\UserOrganizationDao;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Controllers\Controller;
 use App\Dao\Schools\SchoolDao;
-use App\Models\Acl\Role;
-use App\Models\Banner\Banner;
-use App\Models\School;
 use App\Models\Pipeline\Flow\Handler;
-use App\Models\Schools\TeachingAndResearchGroup;
+use App\Models\Teachers\Teacher;
+use App\Models\Users\UserSearchConfig;
+use App\User;
 use App\Utils\FlashMessageBuilder;
 use App\Dao\Schools\InstituteDao;
 use App\Utils\JsonBuilder;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
-use Psy\Util\Json;
+use Illuminate\View\View;
 
 class SchoolsController extends Controller
 {
@@ -94,7 +97,7 @@ class SchoolsController extends Controller
     /**
      * 管理员选择某个学校作为操作对象
      * @param SchoolRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function enter(SchoolRequest $request){
         $dao = new SchoolDao($request->user());
@@ -107,7 +110,7 @@ class SchoolsController extends Controller
     /**
      * 更新学校的配置信息
      * @param SchoolRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function config_update(SchoolRequest $request){
         $dao = new SchoolDao($request->user());
@@ -166,7 +169,7 @@ class SchoolsController extends Controller
     /**
      * 按年级显示
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function years(SchoolRequest $request){
         $dao = new GradeDao($request->user());
@@ -193,23 +196,186 @@ class SchoolsController extends Controller
         }
     }
 
-    public function teachers(SchoolRequest $request){
-        $dao = new GradeUserDao($request->user());
-        $this->dataForView['employees'] = $dao->getBySchool(session('school.id'), Role::GetTeacherUserTypes());
-        $this->dataForView['pageTitle'] = '教职工管理';
+    /**
+     * 教师/教工页面
+     * @param SchoolRequest $request
+     * @return Application|Factory|View
+     */
+    public function teachers(SchoolRequest $request)
+    {
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.teachers', $this->dataForView);
     }
 
-    public function students(SchoolRequest $request){
+    /**
+     * 获取 教师/教工
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function getTeachers(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where = $request->get('where');
+
         $dao = new GradeUserDao($request->user());
-        $this->dataForView['students'] = $dao->getBySchool(session('school.id'),Role::GetStudentUserTypes());
-        $this->dataForView['pageTitle'] = '学生管理';
+        $employees = $dao->getGradeTeacherBySchool($schoolId, $where);
+        $result = pageReturn($employees);
+        $list = [];
+
+        foreach ($result['list'] as $key => $val) {
+            $list[] = [
+                'user_id' => $val->user_id,
+                'hired' =>  $val->teacherProfile->hired ? '聘用' : '解聘',
+                'name' => $val->name,
+                'avatar' => $val->teacherProfile->avatar,
+                'organization' => '',
+                'year_manger' => '',
+            ];
+
+            $duties = Teacher::getTeacherAllDuties($val->user_id);
+
+            if ($duties['gradeManger']) {
+               $list[$key]['year_manger'] .= $duties['gradeManger']->grade->name.'班主任 ';
+            }
+
+            if ($duties['myTeachingAndResearchGroup']) {
+                foreach ($duties['myTeachingAndResearchGroup'] as $k => $v) {
+                    $list[$key]['year_manger'] .= $v->type.'-'.$v->name;
+                }
+            }
+
+            if ($duties['myYearManger']) {
+                $list[$key]['year_manger'] = $duties['myYearManger']->year.'年级主任';
+            }
+
+            foreach ($val->user->organizations as $k => $v) {
+                // 行政职务
+                $list[$key]['organization'] = $v->title. ' '. $list[$key]['organization'];
+            }
+        }
+
+        $result['list'] = $list;
+        return JsonBuilder::Success($result);
+    }
+
+
+    /**
+     * 已认证学生页面
+     * @param SchoolRequest $request
+     * @return Application|Factory|View
+     */
+    public function students(SchoolRequest $request)
+    {
+        $this->dataForView['pageTitle'] = '统一认证管理';
         return view('teacher.users.students', $this->dataForView);
     }
 
-    public function rooms(SchoolRequest $request){
-        $dao = new RoomDao($request->user());
-        $this->dataForView['rooms'] = $dao->getRoomsPaginate([['school_id','=',session('school.id')]]);
+    /**
+     * 获取学生
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function getStudents(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where    = $request->get('where');
+
+        $dao      = new GradeUserDao($request->user());
+        $students = $dao->getByStudentsBySchool($schoolId, $where, GradeUserDao::TYPE_SELECT);
+        $result   = pageReturn($students);
+        $data     = [];
+        foreach ($result['list'] as $student) {
+            $data[] = [
+                'user_id'        => $student->user_id,
+                'student_number' => $student->studentProfile->student_number ?? '-',
+                'name'           => $student->name,
+                'mobile'         => $student->mobile,
+                'grade'          => $student->studyAt(),
+                'enquiries'      => count($student->enquiries),
+                'grade_id'       => $student->grade_id,
+                'uuid'           => $student->user->uuid,
+                'status'         => $student->user->getStatusText()
+            ];
+        }
+        $result['list'] = $data;
+        return JsonBuilder::Success($result);
+    }
+
+    /**
+     * 全选修改学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function updateStudentStatus(SchoolRequest $request)
+    {
+        $schoolId = $request->get('school_id');
+        $where    = $request->get('where');
+        $status   = $request->get('update_status');
+        $dao      = new GradeUserDao($request->user());
+        $result   = $dao->getByStudentsBySchool($schoolId, $where, GradeUserDao::TYPE_UPDATE, $status);
+        if ($result) {
+            return JsonBuilder::Success('修改成功');
+        } else {
+            return JsonBuilder::Error('修改失败');
+        }
+    }
+
+    /**
+     * 批量修改学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function updateStatus(SchoolRequest $request)
+    {
+        $userIds = $request->get('user_id');
+        $status = $request->get('status');
+
+        $dao = new UserDao;
+        $result = $dao->updateStudentStatusByIds(explode(',', $userIds), $status);
+        if ($result) {
+            return JsonBuilder::Success('修改成功');
+        } else {
+            return JsonBuilder::Error('修改失败');
+        }
+    }
+
+
+
+
+    /**
+     * 搜索条件
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function searchConfig(SchoolRequest $request)
+    {
+        $type = $request->get('type');
+        $data = UserSearchConfig::where('type', $type)->get();
+        return JsonBuilder::Success($data);
+    }
+
+    /**
+     * 搜索条件 学生状态
+     * @param SchoolRequest $request
+     * @return string
+     */
+    public function studentStatus(SchoolRequest $request)
+    {
+        $data = [
+            User::STATUS_VERIFIED   => User::STUDENT_STATUS_VERIFIED_TEXT,
+            User::STATUS_SUSPENSION => User::STUDENT_STATUS_SUSPENSION_TEXT,
+            User::STATUS_DROP_OUT   => User::STUDENT_STATUS_DROP_OUT_TEXT,
+            User::STATUS_TRANSFER   => User::STUDENT_STATUS_TRANSFER_TEXT,
+            User::STATUS_FINISH     => User::STUDENT_STATUS_FINISH_TEXT,
+        ];
+        return JsonBuilder::Success($data);
+    }
+
+
+    public function rooms(SchoolRequest $request)
+    {
+        $dao                            = new RoomDao($request->user());
+        $this->dataForView['rooms']     = $dao->getRoomsPaginate([['school_id', '=', session('school.id')]]);
         $this->dataForView['pageTitle'] = '物业管理';
         return view('school_manager.school.rooms', $this->dataForView);
     }
@@ -217,13 +383,14 @@ class SchoolsController extends Controller
     /**
      * 加载学校的组织机构
      * @param SchoolRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
-    public function organization(SchoolRequest $request){
+    public function organization(SchoolRequest $request)
+    {
         $this->dataForView['pageTitle'] = '组织架构';
-        $dao = new OrganizationDao();
-        $this->dataForView['root'] = $dao->getRoot($request->getSchoolId());
-        $this->dataForView['level'] = $dao->getTotalLevel($request->getSchoolId());
+        $dao                            = new OrganizationDao();
+        $this->dataForView['root']      = $dao->getRoot($request->getSchoolId());
+        $this->dataForView['level']     = $dao->getTotalLevel($request->getSchoolId());
         return view('school_manager.school.organization', $this->dataForView);
     }
 
@@ -341,7 +508,7 @@ class SchoolsController extends Controller
      * 删除组织结构及人员
      * @param SchoolRequest $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function delete_organization(SchoolRequest $request){
         $id = $request->get('organization_id');
@@ -352,7 +519,7 @@ class SchoolsController extends Controller
             $dao->deleteOrganization($id);
             DB::commit();
             return JsonBuilder::Success();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             $msg = $e->getMessage();
             return JsonBuilder::Error($msg);

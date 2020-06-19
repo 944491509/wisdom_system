@@ -51,6 +51,8 @@ class TextbookController extends Controller
             'term' => 'required | int',
             'school_id' => 'required | int',
         ];
+        unset($all['type_text']);
+        unset($all['term_text']);
 
         $this->validate($request,$rules);
         $textbookDao = new TextbookDao();

@@ -28,7 +28,7 @@ export const TaskStatus = {
   },
   1: {
     text: '已接收',
-    classes: 'pending'
+    classes: 'received'
   },
   2: {
     text: '已完成',
@@ -46,12 +46,15 @@ export const TaskStatus = {
 
 export const TaskFinishStatus = {
   1: {
-    text: '待处理'
+    text: '待处理',
+    classes: 'pending',
   },
   2: {
     text: '已接收',
+    classes: 'received',
   },
   3: {
-    text: '已完成'
+    text: '已完成',
+    classes: 'done',
   }
 }

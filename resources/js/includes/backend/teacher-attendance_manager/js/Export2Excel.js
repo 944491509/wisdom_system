@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 require('script-loader!file-saver');
 require('script-loader!./Blob');
 require('script-loader!xlsx/dist/xlsx.core.min');

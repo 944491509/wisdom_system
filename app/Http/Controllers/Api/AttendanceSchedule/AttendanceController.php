@@ -175,6 +175,14 @@ class AttendanceController extends Controller
     public function teacherSweepQrCode(MyStandardRequest $request)
     {
         $user = $request->user();
+
+        $schoolId = $user->getSchoolId();
+        $Attendance = new AttendancesDao;
+        $isRest = $Attendance->isWantSign($schoolId);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
+
         $code = json_decode($request->get('code'), true);
 
         if ($code['teacher_id'] !== $user->id) {
@@ -235,6 +243,11 @@ class AttendanceController extends Controller
         $item = $item[0];
 
         $dao = new AttendancesDao;
+        $isRest = $dao->isWantSign($item->school_id);
+        if($isRest) {
+            return JsonBuilder::Error('当天时间是休息时间,不需要签到');
+        }
+
         $schoolDao = new SchoolDao;
         $school = $schoolDao->getSchoolById($item->school_id);
         $configuration = $school->configuration;

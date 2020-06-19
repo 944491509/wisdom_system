@@ -36,6 +36,7 @@ class Kernel extends ConsoleKernel
 //         $schedule->command('noticeStudentAttendanceSignin')->everyMinute();
         // 每分钟扫描一次 导入学生
 //        $schedule->command('importer_users')->everyMinute();
+
     }
 
     /**

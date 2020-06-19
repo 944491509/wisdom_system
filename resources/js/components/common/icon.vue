@@ -1,6 +1,6 @@
 <template>
-  <span class="common-icon-box">
-    <span class="icon" :style="{'background-image': `url(/assets/img/${iconsrc}.${type})`}"></span>
+  <span class="common-icon-box" @click="click">
+    <span class="icon" :style="{'background-image': `url(/assets/img/${iconsrc}.${type})`, width,height}"></span>
     <span class="text" v-if="text">{{text}}</span>
   </span>
 </template>
@@ -19,6 +19,19 @@
       text: {
         type: String,
         default: null
+      },
+      height: {
+        type: String,
+        default: '34px'
+      },
+      width: {
+        type: String,
+        default: '34px'
+      }
+    },
+    methods: {
+      click(){
+        this.$emit('click')
       }
     }
   };
@@ -27,8 +40,6 @@
   .common-icon-box {
     .icon {
       display: inline-block;
-      width: 34px;
-      height: 34px;
       border-radius: 50%;
       background-size: contain;
       background-repeat: no-repeat;

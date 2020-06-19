@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+
   .notices-card {
     flex: 1;
     height: 100%;
@@ -237,4 +238,41 @@
   [v-cloak] {
     display: none;
   }
+
+  .drawer_footer {
+    text-align: center;
+    margin-top: 80px;
+  }
+  .el-drawer__body {
+    padding: 20px;
+    overflow: auto;
+    .Oran-Tag .el-tag .el-tag__close{
+        color:#fff;
+    }
+  }
+  .inner-teacher-drawer {
+    .el-drawer__body {
+      padding: 20px;
+    }
+  }
+  .el-tag {
+    color: #fff;
+    background-color: #409EFF;
+    .el-tag__close {
+      color: #fff;
+    }
+  }
+  .el-tag .el-tag__close {
+    color: #fff;
+  }
+  .icon {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    right: -7px;
+    top: -9px;
+    cursor: pointer;
+  }
+
+
 }
