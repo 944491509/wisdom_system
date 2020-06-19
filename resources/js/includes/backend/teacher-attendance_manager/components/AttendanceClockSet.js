@@ -203,9 +203,11 @@ Vue.component("AttendanceClockSet", {
     },
     _copy(index) {
       const {
-        // start,
-        // morning,
-        // morning_late,
+        start,
+        morning,
+        morning_late,
+        morning_end,
+        morning_end2,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -214,9 +216,11 @@ Vue.component("AttendanceClockSet", {
         is_weekday
       } = this.clockSetData[index - 1];
       const checkNullData = {
-        // start,
-        // morning,
-        // morning_late,
+        start,
+        morning,
+        morning_late,
+        morning_end,
+        morning_end2,
         afternoon_start,
         afternoon,
         afternoon_late,
@@ -233,6 +237,7 @@ Vue.component("AttendanceClockSet", {
         delete checkNullData.morning_end2;
         // delete checkNullData.afternoon_late;
       }
+      // 之前检查时间逻辑 暂时注释
       if (!this._checkData([checkNullData])) return false;
       Object.keys(checkNullData).forEach(item => {
         this.clockSetData[index][item] = checkNullData[item];
@@ -302,17 +307,19 @@ Vue.component("AttendanceClockSet", {
           nullFlag = true
           break
         }
-        if(element.cuRegFlag) {
-          regFlag = true
-          break
-        }
-        if(element.cuDateFlag) {
-          dateFlag = true
-          break
-        }
+        // if(element.cuRegFlag) {
+        //   regFlag = true
+        //   break
+        // }
+        // if(element.cuDateFlag) {
+        //   dateFlag = true
+        //   break
+        // }
       }
-      if (nullFlag || regFlag || dateFlag) {
-        this.$message.error(nullFlag ? "请输入考勤时间" :regFlag ? '请输入正确的考勤时间' : '输入的时间顺序不正确' );
+      // if (nullFlag || regFlag || dateFlag) {
+      if (nullFlag) {
+        // this.$message.error(nullFlag ? "请输入考勤时间" :regFlag ? '请输入正确的考勤时间' : '输入的时间顺序不正确' );
+        this.$message.error('请输入考勤时间');
         return false;
       }
       return true;
@@ -352,6 +359,7 @@ Vue.component("AttendanceClockSet", {
           };
         }
       });
+      // 之前检查时间逻辑 暂时注释
       if (!this._checkData(clockSetData)) {
         this.isLoading = false;
         return false;
