@@ -33,7 +33,7 @@ export default new Vuex.Store({
         school_id: "",
         title: "",
         wifi_name: "",
-        using_afternoon: true, //是否启用中午打卡
+        using_afternoon: false, //是否启用中午打卡
         using_morning: true //是否启用上午打卡
       },
       organizations: [],

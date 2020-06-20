@@ -17,7 +17,8 @@ Vue.component("AttendanceAdd", {
           school_id:this.schoolIdx,
           title: "",
           wifi_name: "",
-          using_afternoon: true //是否启用中午打卡
+          using_afternoon: false, //是否启用中午打卡
+          using_morning: false
         },
         organizations: [],
         managers:[],

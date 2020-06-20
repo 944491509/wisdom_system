@@ -87,22 +87,22 @@ Vue.component("AttendanceRecord", {
                   <p class="itemTop color5">早退</p>
                   <p class="itemBtm">{{resDate.evening ? resDate.evening.early.count :0}}<span v-if="!resDate.evening.early.users">人</span><span v-if="resDate.evening.early.users">次/{{resDate.evening.early.users ? resDate.evening.early.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border6" @click="clickItem(resDate.afternoon.not.list, '下午-下午未打卡')">
+                <div class="itemDiv border6" @click="clickItem(resDate.afternoon.not.list, '下午-未打卡')">
                   <p class="itemTop color6">下午未打卡</p>
                   <p class="itemBtm">{{resDate.afternoon ? resDate.afternoon.not.count :0}}<span v-if="!resDate.afternoon.not.users">人</span></span><span v-if="resDate.afternoon.not.users">次/{{resDate.afternoon.not.users ? resDate.afternoon.not.users.length : 0}}人</span></p>
                 </div>
               </div>
               <div class="text">其他</div>
               <div class="itemsDiv">
-                <div class="itemDiv border7" @click="clickItem(resDate.other.list, '请假')">
+                <div class="itemDiv border7" @click="clickItem(resDate.other.list, '其他-请假')">
                   <p class="itemTop color7">请假</p>
                   <p class="itemBtm">{{resDate ? resDate.other.leave.count :0}}<span v-if="!resDate.other.leave.users">人</span><span v-if="resDate.other.leave.users">次/{{resDate.other.leave.users ? resDate.other.leave.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border8" @click="clickItem(resDate.other.travel.list, '出差')">
+                <div class="itemDiv border8" @click="clickItem(resDate.other.travel.list, '其他-出差')">
                   <p class="itemTop color8">出差</p>
                   <p class="itemBtm">{{resDate ? resDate.other.travel.count :0}}<span v-if="!resDate.other.travel.users">人</span><span v-if="resDate.other.travel.users">次/{{resDate.other.travel.users ? resDate.other.travel.users.length : 0}}人</span></p>
                 </div>
-                <div class="itemDiv border9" @click="clickItem(resDate.other.away.list, '外出')">
+                <div class="itemDiv border9" @click="clickItem(resDate.other.away.list, '其他-外出')">
                   <p class="itemTop color9">外出</p>
                   <p class="itemBtm">{{resDate ? resDate.other.away.count :0}}<span v-if="!resDate.other.away.users">人</span><span v-if="resDate.other.away.users">次/{{resDate.other.away.users ? resDate.other.away.users.length : 0}}人</span></p>
                 </div>
@@ -114,11 +114,11 @@ Vue.component("AttendanceRecord", {
           <div class="recordRight">
             <div class="leftTitle">
             <img class="icon" src="/assets/img/yinxin/recordRight.png">
-              {{statusText}}</div>
+              {{statusText}}AAA{{showDate}}</div>
             <el-table
               :data="tableList"
               :style="{}"
-              height="470"
+              height="519"
               border
               :header-cell-style="{'background':'#F8F9FB','color':'#313B4C'}"
               >
@@ -135,12 +135,20 @@ Vue.component("AttendanceRecord", {
                 width="180">
               </el-table-column>
               <el-table-column
+                v-show="showDate"
                 align="center"
                 prop="time"
-                label="打卡时间"
+                :label="dateLabel"
                 width="280">
               </el-table-column>
               <el-table-column
+                align="center"
+                prop="banci"
+                label="打卡班次"
+                width="280">
+              </el-table-column>
+              <el-table-column
+                v-if="showDate"
                 align="center"
                 prop="isRecord"
                 label="状态"
@@ -150,7 +158,7 @@ Vue.component("AttendanceRecord", {
           </div>
         </el-col>
       </el-row>
-      <div style="position: absolute;bottom: 72px;left: 50%;">
+      <div style="position: absolute;bottom: 33px;left: 50%;">
         <el-button type="primary" @click="cancel">取消</el-button>
       </div>
     </div>`,
@@ -180,6 +188,16 @@ Vue.component("AttendanceRecord", {
       isAft: false,
       statusText: ''
     };
+  },
+  computed: {
+    showDate(){
+      console.log('showDate',this.statusText,this.statusText.indexOf("未打卡") != -1)
+      return this.statusText.indexOf("未打卡") == -1
+    },
+    dateLabel(){
+      console.log('showDate',this.statusText,this.statusText.indexOf("其他"))
+      return this.statusText.indexOf("其他") != -1 ? '日期' : '打卡时间'
+    }
   },
   mounted() {
     let date = new Date()
@@ -256,6 +274,7 @@ Vue.component("AttendanceRecord", {
         } else if (e.status == 4) {
           e.isRecord = '早退'
         }
+        e.banci = this.statusText.split("-")[0]
         return e
       })
 
