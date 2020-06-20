@@ -66,10 +66,8 @@ class SystemNotificationController extends Controller
             $readLogMaxId = $readLog['system_notifications_maxid'];
         }
         $result = pageReturn($result);
-        $list = $result['list'];
 
-        $data = [];
-        foreach ($list as $key => $item) {
+        foreach ($result['list'] as $key => $item) {
             $item->type = $item->getCategoryText();
             $item->url = $item->getCategoryUrl();
             if($item->id > $readLogMaxId) {
@@ -78,10 +76,6 @@ class SystemNotificationController extends Controller
                 $item->read = '已读';
             }
         }
-
-        $data['list'] = $list;
-
-        $result['list'] = $data;
 
         //设置消息为已读
         $dao->setNotificationHasRead($schoolId, $user);
