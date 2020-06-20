@@ -55,8 +55,10 @@
                 <li class="dropdown dropdown-extended dropdown-notification" id="notification-app-data-top" data-schoolid="{{ session('school.id') }}">
                     <div id="{{ env('APP_DEBUG', true) ? null : 'header_notification_bar' }}" style="padding-top: 13px;">
                         <a href="javascript:;" @click="notifyDrawer = true">
-                            <i class="fa fa-bell-o"></i>
-                            <span style="margin-top: -4px;" class="badge headerBadgeColor1" v-if="hasNew"> 新 </span>
+                            <el-badge :value="count" :hidden="count?false:true" type="primary">
+                                <i class="fa fa-bell-o"></i>
+                            </el-badge>
+                            <!-- <span style="margin-top: -4px;" class="badge headerBadgeColor1" v-if="hasNew"> 新 </span> -->
                         </a>
                         <el-drawer
                             title=""

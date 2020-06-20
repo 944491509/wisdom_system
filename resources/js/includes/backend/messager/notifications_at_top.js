@@ -21,41 +21,32 @@ if (dom) {
     data() {
       return {
         schoolId: schoolId,
-        messages: [],
-        total: 0,
-        pageSize: 0,
-        hasNew: false,
+        count: 0,
         notifyDrawer: false
       };
     },
     created() {
       const that = this;
-    //   that.loadLastSixSystemMessage();
-      // 每分钟查询一次
-    //   window.setInterval(function () {
-    //     that.loadLastSixSystemMessage();
-    //   }, 60000)
+      that.loadLastSixSystemMessage();
+      //   每分钟查询一次
+      window.setInterval(function () {
+        that.loadLastSixSystemMessage();
+      }, 60000)
     },
     methods: {
       loadLastSixSystemMessage: function () {
         if (!Util.isEmpty(this.schoolId)) {
           loadMessages(this.schoolId).then(res => {
-            if (Util.isAjaxResOk(res) && !Util.isEmpty(res.data.data.messages)) {
+            if (Util.isAjaxResOk(res)) {
               // 检查是不是有新的消息
-              const newMessages = res.data.data.messages.data;
-              if (this.messages.length > 0) {
-                if (newMessages[0].id !== this.messages[0].id) {
-                  this.$notify.info({
-                    title: '消息',
-                    message: '你有一条新消息',
-                    duration: 0
-                  });
-                  this.hasNew = true;
-                }
+              if (res.data.data.unread !== this.count && res.data.data.unread > this.count) {
+                this.$notify.info({
+                  title: '消息',
+                  message: `你有${res.data.data.unread - this.count}条新消息`,
+                  duration: 0
+                });
               }
-              this.messages = newMessages;
-              this.total = res.data.data.messages.to;
-              this.pageSize = res.data.data.messages.per_page;
+              this.count = res.data.data.unread
             }
           })
         }
