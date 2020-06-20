@@ -575,6 +575,9 @@ Route::prefix('notification')->middleware('auth:api')->group(function () {
     // 消息详情
     Route::get('/news-info','Api\Notice\SystemNotificationController@getNoticeInfo')
         ->name('api.notification.news-info');
+    // 消息未读数
+    Route::get('/unread-news','Api\Notice\SystemNotificationController@unreadNews')
+        ->name('api.notification.unread-news');
 });
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {

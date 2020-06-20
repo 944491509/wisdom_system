@@ -67,14 +67,14 @@ class SystemNotification extends Model
 
 
     // 类型
-    const COMMON_CATEGORY_PIPELINE_TEXT = '审批';
+    const STUDENT_CATEGORY_APPLY_TEXT = '审批';
     const TEACHER_CATEGORY_TASK_TEXT = '任务';
     const COMMON_CATEGORY_NOTICE_NOTIFY_TEXT = '通知';
     const COMMON_CATEGORY_NOTICE_NOTICE_TEXT = '公告';
     const COMMON_CATEGORY_NOTICE_INSPECTION_TEXT = '检查';
     const TEACHER_CATEGORY_MEETING_TEXT = '会议';
     const TEACHER_CATEGORY_IMAIL_TEXT = '内部信';
-    const TEACHER_CATEGORY_MESSAGE_TEXT = '消息';
+    const COMMON_CATEGORY_MESSAGE_TEXT = '消息';
     const TEACHER_CATEGORY_COURSE_TEXT = '选课';
     const TEACHER_CATEGORY_APPLY_STUDENT_TEXT = '学生审批';
 
@@ -172,14 +172,14 @@ class SystemNotification extends Model
      */
     public static function teacherPcNewsCategory() {
         return [
-            self::COMMON_CATEGORY_PIPELINE,
+            self::STUDENT_CATEGORY_APPLY,
             self::TEACHER_CATEGORY_TASK,
             self::COMMON_CATEGORY_NOTICE_NOTIFY,
             self::COMMON_CATEGORY_NOTICE_NOTICE,
             self::COMMON_CATEGORY_NOTICE_INSPECTION,
             self::TEACHER_CATEGORY_MEETING,
             self::TEACHER_CATEGORY_IMAIL,
-            self::TEACHER_CATEGORY_MESSAGE,
+            self::COMMON_CATEGORY_MESSAGE,
             self::TEACHER_CATEGORY_COURSE,
             self::TEACHER_CATEGORY_APPLY_STUDENT,
         ];
@@ -192,14 +192,14 @@ class SystemNotification extends Model
      */
     public function categoryText() {
         return [
-            self::COMMON_CATEGORY_PIPELINE => self::COMMON_CATEGORY_PIPELINE_TEXT,
+            self::STUDENT_CATEGORY_APPLY => self::STUDENT_CATEGORY_APPLY_TEXT,
             self::TEACHER_CATEGORY_TASK => self::TEACHER_CATEGORY_TASK_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTIFY => self::COMMON_CATEGORY_NOTICE_NOTIFY_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTICE => self::COMMON_CATEGORY_NOTICE_NOTICE_TEXT,
             self::COMMON_CATEGORY_NOTICE_INSPECTION => self::COMMON_CATEGORY_NOTICE_INSPECTION_TEXT,
             self::TEACHER_CATEGORY_MEETING => self::TEACHER_CATEGORY_MEETING_TEXT,
             self::TEACHER_CATEGORY_IMAIL => self::TEACHER_CATEGORY_IMAIL_TEXT,
-            self::TEACHER_CATEGORY_MESSAGE => self::TEACHER_CATEGORY_MESSAGE_TEXT,
+            self::COMMON_CATEGORY_MESSAGE => self::COMMON_CATEGORY_MESSAGE_TEXT,
             self::TEACHER_CATEGORY_COURSE => self::TEACHER_CATEGORY_COURSE_TEXT,
             self::TEACHER_CATEGORY_APPLY_STUDENT => self::TEACHER_CATEGORY_APPLY_STUDENT_TEXT,
         ];
@@ -208,14 +208,14 @@ class SystemNotification extends Model
 
     public function categoryUrl() {
         return [
-            self::COMMON_CATEGORY_PIPELINE => 'teacher/ly/oa/index',
+            self::STUDENT_CATEGORY_APPLY => 'teacher/ly/oa/index',
             self::TEACHER_CATEGORY_TASK => 'teacher/ly/oa/tasks',
             self::COMMON_CATEGORY_NOTICE_NOTIFY => 'teacher/ly/oa/notices-center',
             self::COMMON_CATEGORY_NOTICE_NOTICE => 'teacher/ly/oa/notices-center',
             self::COMMON_CATEGORY_NOTICE_INSPECTION => 'teacher/ly/oa/notices-center',
             self::TEACHER_CATEGORY_MEETING => 'teacher/ly/oa/meetings',
             self::TEACHER_CATEGORY_IMAIL => 'teacher/ly/oa/internal-messages',
-            self::TEACHER_CATEGORY_MESSAGE => '',
+            self::COMMON_CATEGORY_MESSAGE => 'teacher/notice/info',
             self::TEACHER_CATEGORY_COURSE => 'teacher/elective-course/manager',
             self::TEACHER_CATEGORY_APPLY_STUDENT => 'teacher/ly/assistant/index',
         ];

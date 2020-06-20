@@ -60,7 +60,7 @@ export default {
             return { src: "notify/tongzhi" };
           case 206:
             return { src: "notify/xiangmu" };
-          case 216:
+          case 306:
             return { src: "notify/xiaoxi" };
           case 302:
             return { src: "notify/gonggao" };

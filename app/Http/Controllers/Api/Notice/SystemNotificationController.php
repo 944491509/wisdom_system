@@ -66,10 +66,8 @@ class SystemNotificationController extends Controller
             $readLogMaxId = $readLog['system_notifications_maxid'];
         }
         $result = pageReturn($result);
-        $list = $result['list'];
-        $unread = $dao->getNewsUnRead($schoolId, $user, $category, $readLogMaxId);
-        $data = [];
-        foreach ($list as $key => $item) {
+
+        foreach ($result['list'] as $key => $item) {
             $item->type = $item->getCategoryText();
             $item->url = $item->getCategoryUrl();
             if($item->id > $readLogMaxId) {
@@ -79,14 +77,8 @@ class SystemNotificationController extends Controller
             }
         }
 
-        $data['unread'] = $unread;
-        $data['list'] = $list;
-
-        $result['list'] = $data;
-
         //设置消息为已读
-        $dao->setNotificationHasRead($user->getSchoolId(), $user);
-
+        $dao->setNotificationHasRead($schoolId, $user);
         return JsonBuilder::Success($result);
     }
 
@@ -101,5 +93,25 @@ class SystemNotificationController extends Controller
         $dao = new SystemNotificationDao();
         $info = $dao->getNotificationInfo($noticeId);
         return JsonBuilder::Success($info);
+    }
+
+
+    /**
+     * 未读消息数
+     * @param Request $request
+     * @return string
+     */
+    public function unreadNews(Request $request) {
+        $user = $request->user();
+        $schoolId = $user->getSchoolId();
+        $dao = new SystemNotificationDao();
+        $category = SystemNotification::teacherPcNewsCategory();
+        $readLog = SystemNotificationsReadLog::where('user_id', $user->id)->first();
+        $readLogMaxId = 0;
+        if(!is_null($readLog)) {
+            $readLogMaxId = $readLog['system_notifications_maxid'];
+        }
+        $unread = $dao->getNewsUnRead($schoolId, $user, $category, $readLogMaxId);
+        return JsonBuilder::Success(['unread'=>$unread]);
     }
 }
