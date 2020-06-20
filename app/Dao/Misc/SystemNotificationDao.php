@@ -138,7 +138,6 @@ class SystemNotificationDao
      */
     public function getNewsUnRead($schoolId, $user, $category, $readLogMaxId) {
         return $this->_build($schoolId, $user, $readLogMaxId, $category)
-            ->select('id')
             ->count();
     }
 
@@ -147,7 +146,7 @@ class SystemNotificationDao
     /**
      * 设置消息为已读
      * @param $schoolId
-     * @param $userId
+     * @param $user
      * @return bool
      */
     public function setNotificationHasRead($schoolId, $user){
