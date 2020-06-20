@@ -4,7 +4,7 @@
       <div class="title">
         <pf-icon :iconsrc="`notify/notify`" text="通知消息" />
       </div>
-      <div class="count">最新{{count}}条</div>
+      <div class="count" v-if="count">最新{{count}}条</div>
     </div>
     <div class="scroll-container" ref="scrollbox">
       <div class="item" v-for="(item) in list" :key="item.id">
@@ -91,8 +91,7 @@ export default {
       this.loading = true;
       axios.get("/api/notification/news-list?page=" + this.page).then(res => {
         if (Util.isAjaxResOk(res)) {
-          this.list = this.list.concat(res.data.data.list.list);
-          this.count = res.data.data.list.unread;
+          this.list = this.list.concat(res.data.data.list);
           if (this.page === res.data.data.lastPage) {
             this.nomore = true;
           }
