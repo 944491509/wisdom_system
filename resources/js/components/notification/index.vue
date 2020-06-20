@@ -2,7 +2,7 @@
   <div class="notification-box">
     <div class="header">
       <div class="title">
-        <pf-icon :iconsrc="`notify/notify`" text="操作日志" />
+        <pf-icon :iconsrc="`notify/notify`" text="通知消息" />
       </div>
       <div class="count">最新{{count}}条</div>
     </div>
@@ -19,10 +19,10 @@
         </div>
         <div class="content-box">
           <div class="content">
-            <span class="text">{{item.title}}</span>
+            <span class="text" v-html="item.title"></span>
             <span class="read" v-if="item.read==='未读'">{{item.read}}</span>
           </div>
-          <div class="content-tip">{{item.content}}</div>
+          <div class="content-tip" v-html="item.content"></div>
         </div>
         <div class="link-info" @click="goDetail(item)">查看详情</div>
       </div>
@@ -54,7 +54,7 @@ export default {
     getIcon() {
       return function(type) {
         switch (type) {
-          case 305:
+          case 118:
             return { src: "notify/shenpi" };
           case 301:
             return { src: "notify/tongzhi" };
