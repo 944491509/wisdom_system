@@ -67,7 +67,7 @@ class SystemNotification extends Model
 
 
     // 类型
-    const COMMON_CATEGORY_PIPELINE_TEXT = '审批';
+    const STUDENT_CATEGORY_APPLY_TEXT = '审批';
     const TEACHER_CATEGORY_TASK_TEXT = '任务';
     const COMMON_CATEGORY_NOTICE_NOTIFY_TEXT = '通知';
     const COMMON_CATEGORY_NOTICE_NOTICE_TEXT = '公告';
@@ -172,7 +172,7 @@ class SystemNotification extends Model
      */
     public static function teacherPcNewsCategory() {
         return [
-            self::COMMON_CATEGORY_PIPELINE,
+            self::STUDENT_CATEGORY_APPLY,
             self::TEACHER_CATEGORY_TASK,
             self::COMMON_CATEGORY_NOTICE_NOTIFY,
             self::COMMON_CATEGORY_NOTICE_NOTICE,
@@ -192,7 +192,7 @@ class SystemNotification extends Model
      */
     public function categoryText() {
         return [
-            self::COMMON_CATEGORY_PIPELINE => self::COMMON_CATEGORY_PIPELINE_TEXT,
+            self::STUDENT_CATEGORY_APPLY => self::STUDENT_CATEGORY_APPLY_TEXT,
             self::TEACHER_CATEGORY_TASK => self::TEACHER_CATEGORY_TASK_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTIFY => self::COMMON_CATEGORY_NOTICE_NOTIFY_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTICE => self::COMMON_CATEGORY_NOTICE_NOTICE_TEXT,
@@ -208,7 +208,7 @@ class SystemNotification extends Model
 
     public function categoryUrl() {
         return [
-            self::COMMON_CATEGORY_PIPELINE => 'teacher/ly/oa/index',
+            self::STUDENT_CATEGORY_APPLY => 'teacher/ly/oa/index',
             self::TEACHER_CATEGORY_TASK => 'teacher/ly/oa/tasks',
             self::COMMON_CATEGORY_NOTICE_NOTIFY => 'teacher/ly/oa/notices-center',
             self::COMMON_CATEGORY_NOTICE_NOTICE => 'teacher/ly/oa/notices-center',
