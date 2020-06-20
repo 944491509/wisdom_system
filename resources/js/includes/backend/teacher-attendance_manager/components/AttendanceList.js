@@ -54,7 +54,7 @@ Vue.component("AttendanceList", {
       label="操作"
       >
       <template slot-scope="scope">
-        <el-button @click="_record(scope.row.id)" type="primary" size="mini">记录</el-button>
+        <el-button @click="_record(scope.row.id, scope.row.title)" type="primary" size="mini">记录</el-button>
         <el-button @click="_holiday_set(scope.row.id)" type="success"  size="mini">节假日</el-button>
         <el-button @click="_clock_set(scope.row.id)" type="primary" size="mini">时间</el-button>
         <el-button @click="_edit(scope.row.id)" type="warning" icon="el-icon-edit" size="mini"></el-button>
@@ -69,9 +69,9 @@ Vue.component("AttendanceList", {
     };
   },
   methods: {
-    _record(attendance_id) {
+    _record(attendance_id, title) {
       console.log('AAAAAA',attendance_id)
-      this.SETOPTIONS({ isShowRecord: true, attendance_id });
+      this.SETOPTIONS({ isShowRecord: true, attendance_id, groupTitle: title});
     },
     async _holiday_set (attendance_id) {
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
