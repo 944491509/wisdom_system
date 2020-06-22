@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Notice;
 
 use App\Dao\Misc\SystemNotificationDao;
+use App\Dao\Pipeline\UserFlowDao;
 use App\Models\Misc\SystemNotification;
 use App\Models\Misc\SystemNotificationsReadLog;
 use App\Utils\JsonBuilder;
@@ -68,6 +69,14 @@ class SystemNotificationController extends Controller
         $result = pageReturn($result);
 
         foreach ($result['list'] as $key => $item) {
+            $userFlowId = $item->getUserFlowId();
+            $item->flow_name = '';
+            if(!is_null($userFlowId)) {
+                $userFlowDao = new UserFlowDao();
+                $userFlow = $userFlowDao->getById($userFlowId);
+                $item->flow_name = $userFlow->flow->name;
+            }
+
             $item->type = $item->getCategoryText();
             $item->url = $item->getCategoryUrl();
             if($item->id > $readLogMaxId) {

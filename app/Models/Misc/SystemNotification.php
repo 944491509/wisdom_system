@@ -45,7 +45,7 @@ class SystemNotification extends Model
 
     const TEACHER_CATEGORY_ATTENDANCE = 201;//教师端值周
     const TEACHER_CATEGORY_OAATTENDANCE = 202;//教师端考勤
-    const TEACHER_CATEGORY_APPLY = 204;//教师端申请
+    const TEACHER_CATEGORY_APPLY = 204;//教师端审批
     const TEACHER_CATEGORY_MEETING = 205;//教师端会议
     const TEACHER_CATEGORY_PROJECT = 206;//教师端项目
     const TEACHER_CATEGORY_TASK = 207;//教师端任务
@@ -67,7 +67,7 @@ class SystemNotification extends Model
 
 
     // 类型
-    const STUDENT_CATEGORY_APPLY_TEXT = '审批';
+    const TEACHER_CATEGORY_APPLY_TEXT = '审批';
     const TEACHER_CATEGORY_TASK_TEXT = '任务';
     const COMMON_CATEGORY_NOTICE_NOTIFY_TEXT = '通知';
     const COMMON_CATEGORY_NOTICE_NOTICE_TEXT = '公告';
@@ -172,16 +172,16 @@ class SystemNotification extends Model
      */
     public static function teacherPcNewsCategory() {
         return [
-            self::STUDENT_CATEGORY_APPLY,
-            self::TEACHER_CATEGORY_TASK,
-            self::COMMON_CATEGORY_NOTICE_NOTIFY,
-            self::COMMON_CATEGORY_NOTICE_NOTICE,
-            self::COMMON_CATEGORY_NOTICE_INSPECTION,
-            self::TEACHER_CATEGORY_MEETING,
-            self::TEACHER_CATEGORY_IMAIL,
-            self::COMMON_CATEGORY_MESSAGE,
-            self::TEACHER_CATEGORY_COURSE,
-            self::TEACHER_CATEGORY_APPLY_STUDENT,
+            self::TEACHER_CATEGORY_APPLY,
+//            self::TEACHER_CATEGORY_TASK,
+//            self::COMMON_CATEGORY_NOTICE_NOTIFY,
+//            self::COMMON_CATEGORY_NOTICE_NOTICE,
+//            self::COMMON_CATEGORY_NOTICE_INSPECTION,
+//            self::TEACHER_CATEGORY_MEETING,
+//            self::TEACHER_CATEGORY_IMAIL,
+//            self::COMMON_CATEGORY_MESSAGE,
+//            self::TEACHER_CATEGORY_COURSE,
+//            self::TEACHER_CATEGORY_APPLY_STUDENT,
         ];
     }
 
@@ -192,7 +192,7 @@ class SystemNotification extends Model
      */
     public function categoryText() {
         return [
-            self::STUDENT_CATEGORY_APPLY => self::STUDENT_CATEGORY_APPLY_TEXT,
+            self::TEACHER_CATEGORY_APPLY => self::TEACHER_CATEGORY_APPLY_TEXT,
             self::TEACHER_CATEGORY_TASK => self::TEACHER_CATEGORY_TASK_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTIFY => self::COMMON_CATEGORY_NOTICE_NOTIFY_TEXT,
             self::COMMON_CATEGORY_NOTICE_NOTICE => self::COMMON_CATEGORY_NOTICE_NOTICE_TEXT,
@@ -235,5 +235,28 @@ class SystemNotification extends Model
     public function getCategoryUrl() {
         $data = $this->categoryUrl();
         return $data[$this->category] ?? '';
+    }
+
+
+    public function getUserFlowId() {
+        if($this->category != self::TEACHER_CATEGORY_APPLY) {
+            return null;
+        }
+        $appExtra = json_decode($this->app_extra,true);
+        $url= $appExtra['param1'];
+        $arr = parse_url($url);
+        $params = $this->convertUrlQuery($arr['query']);
+        return $params['user_flow_id'];
+    }
+
+
+    public function convertUrlQuery($query){
+        $queryParts = explode('&', $query);
+        $params = array();
+        foreach ($queryParts as $param) {
+            $item = explode('=', $param);
+            $params[$item[0]] = $item[1];
+        }
+        return $params;
     }
 }
