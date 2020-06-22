@@ -10,17 +10,20 @@ use App\Utils\UI\Button;
             <div class="card-box">
                 <div class="card-head">
                     <header>导入管理 </header>
-                    <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TASK_EXECUTION]) }}">下载新生导入模板</a>
-                    <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TYPE_NO_IDENTITY]) }}">下载未认证用户导入模板</a>
+                    @if ($type == \App\Models\Importer\ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION)
+                        <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION]) }}">下载导入寄宿信息模板</a>
+                     @else
+                        <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TYPE_NO_IDENTITY]) }}">下载未认证用户导入模板</a>
+                        <a href="{{ route('school_manager.importer.download', ['type' => \App\Models\Importer\ImportTask::IMPORT_TASK_EXECUTION]) }}">下载新生导入模板</a>
+                    @endif
                 </div>
 
                 <div class="card-body">
                     <div class="row">
                         <div class="table-padding col-12">
-                            <a href="{{ route('school_manager.importer.add') }}" class="btn btn-primary " id="btn-create-versions-from">
+                            <a href="{{ route('school_manager.importer.add', ['type' => $type]) }}" class="btn btn-primary " id="btn-create-versions-from">
                                 创建导入任务 <i class="fa fa-plus"></i>
                             </a>
-
                         </div>
 
                         <div class="table-responsive">
@@ -32,6 +35,7 @@ use App\Utils\UI\Button;
                                     <th>文件信息</th>
                                     <th>文件路径</th>
                                     <th>状态</th>
+                                    <th>操作人</th>
                                     <th>创建时间</th>
                                     <th>已导入</th>
                                     <th>未导入</th>
@@ -41,7 +45,7 @@ use App\Utils\UI\Button;
                                 <tbody>
                                 @if(count($tasks) == 0)
                                     <tr>
-                                        <td colspan="9">还没有内容 </td>
+                                        <td colspan="10">还没有内容 </td>
                                     </tr>
                                 @endif
                                 @foreach($tasks as $index=>$task)
@@ -51,6 +55,7 @@ use App\Utils\UI\Button;
                                         <td>{{ $task->file_name }}</td>
                                         <td>{{ $task->path }}</td>
                                         <td>{{ $task->getStatus() }}</td>
+                                        <td>{{ $task->user->name }}</td>
                                         <td>{{ $task->created_at->format('Y-m-d H:i') }}</td>
                                         <td>{{ $task->total }}</td>
                                         <td>{{ $task->surplus }}</td>
