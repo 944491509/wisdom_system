@@ -47,11 +47,11 @@ Vue.component("AttendanceRecord", {
                 </div>
                 <div class="itemDiv border2" @click="clickItem(resultDate.morning.late.list, '上午-迟到')">
                   <p class="itemTop color2">迟到</p>
-                  <p class="itemBtm">{{resultDate.morning ? resultDate.morning.late.count :0}}<span v-if="!resultDate.morning.late.users">人</span><span v-if="resultDate.morning.late.users">次/{{resultDate.morning.late.users ? resultDate.morning.late.users.length : 0}}</span></p>
+                  <p class="itemBtm">{{resultDate.morning ? resultDate.morning.late.count :0}}<span v-if="!resultDate.morning.late.users">人</span><span v-if="resultDate.morning.late.users">次/{{resultDate.morning.late.users ? resultDate.morning.late.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border3" @click="clickItem(resultDate.morning.later.list, '上午-严重迟到')">
                   <p class="itemTop color3">严重迟到</p>
-                  <p class="itemBtm">{{resultDate.morning ? resultDate.morning.later.count :0}}<span v-if="!resultDate.morning.later.users">人</span><span v-if="resultDate.morning.later.users">次/{{resultDate.morning.later.users ? resultDate.morning.later.users.length : 0}}</span></p>
+                  <p class="itemBtm">{{resultDate.morning ? resultDate.morning.later.count :0}}<span v-if="!resultDate.morning.later.users">人</span><span v-if="resultDate.morning.later.users">次/{{resultDate.morning.later.users ? resultDate.morning.later.users.length : 0}}人</span></p>
                 </div>
                 <div class="itemDiv border4" @click="clickItem(resultDate.morning_end.ok.list, '上午-按时下班')" v-if="isMor">
                   <p class="itemTop color4">按时下班</p>
@@ -138,7 +138,7 @@ Vue.component("AttendanceRecord", {
                 width="180">
               </el-table-column>
               <el-table-column
-                v-show="showDate"
+                v-if="showDate"
                 align="center"
                 prop="time"
                 :label="dateLabel"
