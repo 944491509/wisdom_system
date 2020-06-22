@@ -622,7 +622,6 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     });
 
 
-
     Route::prefix('importer')->group(function(){
         Route::any('manager', 'ImporterController@manager')->name('school_manager.importer.manager');
         Route::any('save', 'ImporterController@save')->name('school_manager.importer.save');
