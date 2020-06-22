@@ -38,7 +38,7 @@ class ImporterStudent extends AbstractImporter
         $importDao = new ImporterDao;
         $additionDao = new StudentAdditionInformationDao;
         // 修改任务状态
-//        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
 
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
