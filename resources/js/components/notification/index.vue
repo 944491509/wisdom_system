@@ -54,7 +54,7 @@ export default {
     getIcon() {
       return function(type) {
         switch (type) {
-          case 118:
+          case 204:
             return { src: "notify/shenpi" };
           case 301:
             return { src: "notify/tongzhi" };

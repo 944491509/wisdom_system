@@ -173,15 +173,15 @@ class SystemNotification extends Model
     public static function teacherPcNewsCategory() {
         return [
             self::TEACHER_CATEGORY_APPLY,
-//            self::TEACHER_CATEGORY_TASK,
-//            self::COMMON_CATEGORY_NOTICE_NOTIFY,
-//            self::COMMON_CATEGORY_NOTICE_NOTICE,
-//            self::COMMON_CATEGORY_NOTICE_INSPECTION,
-//            self::TEACHER_CATEGORY_MEETING,
-//            self::TEACHER_CATEGORY_IMAIL,
-//            self::COMMON_CATEGORY_MESSAGE,
-//            self::TEACHER_CATEGORY_COURSE,
-//            self::TEACHER_CATEGORY_APPLY_STUDENT,
+            self::TEACHER_CATEGORY_TASK,
+            self::COMMON_CATEGORY_NOTICE_NOTIFY,
+            self::COMMON_CATEGORY_NOTICE_NOTICE,
+            self::COMMON_CATEGORY_NOTICE_INSPECTION,
+            self::TEACHER_CATEGORY_MEETING,
+            self::TEACHER_CATEGORY_IMAIL,
+            self::COMMON_CATEGORY_MESSAGE,
+            self::TEACHER_CATEGORY_COURSE,
+            self::TEACHER_CATEGORY_APPLY_STUDENT,
         ];
     }
 
