@@ -20,7 +20,7 @@ class StudentProfileDao
      * @return StudentProfile
      */
     public function create($data){
-        return StudentProfile::create($data);
+        return StudentProfile::create($data)->toSql();
     }
 
     /**

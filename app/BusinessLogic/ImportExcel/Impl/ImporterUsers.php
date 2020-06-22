@@ -2,29 +2,27 @@
 
 namespace App\BusinessLogic\ImportExcel\Impl;
 
-use App\Dao\Schools\GradeDao;
+use App\Dao\Importer\ImporterDao;
 use App\Dao\Students\StudentProfileDao;
 use App\Dao\Users\GradeUserDao;
 use App\Dao\Users\UserDao;
 use App\Models\Acl\Role;
-use App\Models\Schools\Grade;
+use App\Models\Importer\ImportLog;
+use App\Models\Importer\ImportTask;
 use App\User;
-use App\Utils\Time\GradeAndYearUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Ramsey\Uuid\Uuid;
 
 
 class ImporterUsers extends AbstractImporter
 {
-    protected $task;
-    protected $data;
 
+    private  $task;
     public function __construct($task)
     {
-        $this->task = $task;
+        $this->task = $task['data'];
+        parent::__construct($task['data']['path']);
     }
 
     public function handle()
@@ -32,155 +30,128 @@ class ImporterUsers extends AbstractImporter
         $userDao = new UserDao;
         $profileDao = new StudentProfileDao;
         $gradeUserDao = new GradeUserDao;
+        $importDao = new ImporterDao;
+        // 修改任务状态
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
+
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
-        $str = "文件数据格式有问题请重新上传, 第";
+
+        // 再次验证文件格式
+        $config = new ImporterConfig($this->fileRelativePath, $this->task['type']);
+        $validation = $config->validation();
+        if (!empty($validation)) {
+            $error = [
+                'task_id' => $this->task['id'],
+                'error_log' => '文件格式错误'
+            ];
+            $this->errorLog($this->task['title'], $error);
+            exit();
+        }
+
+        // 开始循环导入
         foreach($sheetIndexArray as $sheetIndex) {
+
             echo '已拿到第'. ($sheetIndex+1).' sheet的数据 开始循环.....'.PHP_EOL;
             $sheetData = $this->getSheetData($sheetIndex);
-            echo '开始检查文件格式是否正确'.PHP_EOL;
-            // 检查文件格式是否正确
-            foreach ($sheetData[0] as $key => $val) {
-                if ($this->fileFormat()[$key] != $val) {
-                    echo  $str. ($key+1) . "列应该是". $this->fileFormat()[$key];die;
-                }
-            }
-            echo '检查文件格式正确 开始循环....'.PHP_EOL;
-            $student = [];
-            $profile = [];
-//            dd($sheetData[0]);
             unset($sheetData[0]); // 去掉文件头
             foreach ($sheetData as $key => $val) {
-                if ($val[1] == '男') {
-                    $sex = 1;
-                } else {
-                    $sex = 0;
-                }
-
-                // 临时这样写有时间再优化
-                if ($val[9] == '是') {
-                    $createFile = 1; // 是否建档
-                } else {
-                    $createFile = 0;
-                }
-
-                if ($val[10] == '是') {
-                    $specialSupport = 1; // 是否农村低保
-                } else {
-                    $specialSupport = 0;
-                }
-
-                if ($val[11] == '是') {
-                    $veryPoor = 1; // 是否农村特困
-                } else {
-                    $veryPoor = 0;
-                }
-
-                if ($val[12] == '是') {
-                    $disability = 1; // 是否残疾
-                }  else {
-                    $disability = 0;
-                }
 
                 $student = [
                     'uuid' => Uuid::uuid4()->toString(),
                     'name' => $val[0],
-                    'mobile' => $val[8],
-                    'password' => Hash::make(substr($val['3'],-6)),
-                    'type' => Role::VERIFIED_USER_STUDENT,
-                    'status' => User::STATUS_VERIFIED,
+                    'mobile' => $val[1],
+                    'password' => Hash::make(substr($val[5],-6)),
+                    'type' => Role::REGISTERED_USER,
+                    'status' => User::STATUS_WAITING_FOR_MOBILE_TO_BE_VERIFIED,
                 ];
 
                 $profile = [
-                    'uuid' => Uuid::uuid4()->toString(),
-                    'user_id' => '',
-                    'id_number' => $val[3],
-                    'year' => substr($val[7],0,4), // 截取 级
+                    'origin' => 1,
+                    'year' => date('Y'),
                     'serial_number' => '-',
-                    'gender'  => $sex,
-                    'area' => $val[5],
-                    'address_line' => $val[6],
-                    'birthday' => $this->getBirthday($val[3]),
-                    'nation_name' => $val[2],
-                    'create_file' => $createFile,
-                    'special_support' => $specialSupport,
-                    'very_poor' => $veryPoor,
-                    'disability' => $disability
+                    'uuid' => Uuid::uuid4()->toString(),
+                    'gender'  => $val[2] == '男' ? 1 : 2, // 性别
+                    'nation_name' => $val[3],   // 民族
+                    'political_name' => $val[4], // 政治面貌
+                    'id_number' => $val[5], // 身份证号
+                    'student_code' => $val[6], // 学籍号
+                    'country' => $val[7], // 籍贯
+                    'graduate_school' => $val[8], // 毕业学校
+                    'graduate_type' => $val[9], // 学生来源
+                    'source_place_state' => $val[10], // 生源地(省)
+                    'source_place_city' => $val[11], // 生源地(省)
+                    'recruit_type' => $val[12], // 招生方式
+                    'resident_type' => $val[13], // 户口性质
+                    'resident_state' => $val[14], // 户籍所在省
+                    'resident_city' => $val[15], // 户籍所在市
+                    'resident_area' => $val[16], // 户籍所在区
+                    'resident_suburb' => $val[17], // 户籍所在乡镇
+                    'resident_village' => $val[18], // 户籍所在村
+                    'detailed_address' => $val[19], // 户籍详细地址
+                    'current_residence' => $val[20], // 现居住地址
+                    'parent_name' => $val[21], // 监护人
+                    'parent_mobile' => $val[22], // 监护人
+                    'relationship' => $val[23], // 监护人关系
+                    'create_file' => $val[24] == '是' ? 1 : 0 , // 是否建档贫困户
+                    'volunteer' => $val[25], // 报考支援
+                    'examination_site' => $val[26], // 考点
+                    'license_number' => $val[27], // 准考证号
+                    'examination_score' => $val[27], // 考试成绩
                 ];
 
+                $errorArr = [
+                    'task_id' => $this->task['id'],
+                    'number' => 0,
+                    'name' => $student['name'],
+                    'id_number' => $profile['id_number'],
+                ];
                 // 手机号不能为空
                 if (empty($student['mobile']) || strlen($student['mobile'])!= 11 ) {
-                     $this->errorLog($val[0],'手机号格式错误');
+                    $errorArr['error_log'] = '手机号为空或者位数不对';
+                    $this->errorLog($this->task['title'], $errorArr);
                     echo $val[0]."手机号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
                 // 身份证
                 if (empty($profile['id_number']) || strlen($profile['id_number'])!= 18) {
-                     $this->errorLog($val[0],'身份证号格式错误');
-                    echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
+                     $errorArr['error_log'] = '身份证号格式错误';
+                     $this->errorLog($this->task['title'], $errorArr);
+                     echo $val[0]."身份证号为空或者位数不对 跳过".PHP_EOL;
                     continue;
                 }
-
-                $profileResult = $profileDao->getStudentInfoByIdNumber($val[3]);
-                $userResult = $userDao->getUserByMobile($val[8]);
+                $userResult = $userDao->getUserByMobile($student['mobile']);
                 if ($userResult) {
-                    $this->errorLog($val[0],'手机号已经被注册了 跳过此人');
+                    $errorArr['error_log'] = '手机号已经被注册了';
+                    $this->errorLog($this->task['title'], $errorArr);
                     echo $val[0]. "手机号已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
+                $profileResult = $profileDao->getStudentInfoByIdNumber($profile['id_number']);
                 if ($profileResult) {
-                    $this->errorLog($val[0],'身份证已经被注册了 跳过此人');
+                    $errorArr['error_log'] = '身份证号已经被注册了';
+                    $this->errorLog($this->task['title'], $errorArr);
                     echo $val[0]. "身份证已经被注册了 跳过此人".PHP_EOL;
                     continue;
                 }
 
                 DB::beginTransaction();
-                $gradeDao = new GradeDao;
-                $grades = Grade::where('name',$val[14])->first();
-                if (is_null($grades)) {
-                    $this->errorLog($val[0],'找不到班级');
-                    echo $val[0]. "找不到班级 跳过此人".PHP_EOL;
-                    continue;
-                }
-                $major = $grades->major;
-                if (is_null($major)) {
-                    $this->errorLog($val[0],'找不到专业');
-                    echo $val[0]. "找不到专业 跳过此人".PHP_EOL;
-                    continue;
-                }
-                $department = $major->department;
-                if (is_null($department)) {
-                    $this->errorLog($val[0],'找不到系');
-                    echo $val[0]. "找不到系 跳过此人".PHP_EOL;
-                    continue;
-                }
-                $institute =  $department->institute;
-                if (is_null($institute)) {
-                    $this->errorLog($val[0],'找不到学院');
-                    echo $val[0]. "找不到学院 跳过此人".PHP_EOL;
-                    continue;
-                }
                 try{
                     // 创建用户数据
                     // 创建用户班级的关联
                     // 创建用户的档案
-
                     $user = $userDao->createUser($student);
                     $profile['user_id'] = $user->id;
                     $profileDao->create($profile);
                     $gradeData = [
                         'user_id' => $user->id,
                         'name' => $student['name'],
-                        'user_type' => Role::VERIFIED_USER_STUDENT, // 学生
+                        'user_type' => Role::REGISTERED_USER,
                         'school_id' => $this->task['school_id'],
-                        'campus_id' => 1,
-                        'institute_id' => $institute->id,
-                        'department_id' => $department->id,
-                        'major_id' => $major->id,
-                        'grade_id' => $grades->id,
                     ];
                     $gradeUserDao->create($gradeData);
-
+                    // 已导入条
+                    $importDao->increment($this->task['id']);
                     DB::commit();
                     echo $val[0].'----------创建成功'.PHP_EOL;
                 }
@@ -188,75 +159,13 @@ class ImporterUsers extends AbstractImporter
                     DB::rollBack();
                 }
             }
-
         }
 
+        // 统计未导入总数
+        $count = ImportLog::where('task_id', $this->task['id'])->count();
+        // 修改任务状态 和 未导入条数
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE, 'surplus' => $count]);
     }
 
-    /**
-     * 获取 excel 文件
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    public function loadExcelFile()
-    {
-        set_time_limit(0);
-        ini_set('memory_limit', -1);
-        $filePath = config('filesystems.disks.import')['root'].DIRECTORY_SEPARATOR .$this->task['file_path'];
-        $objReader = IOFactory::createReader('Xlsx');
-        $objPHPExcel = $objReader->load($filePath);
-        $worksheet = $objPHPExcel->getAllSheets();
-        $this->data = $worksheet;
-    }
-
-    /**
-     * 错误记录
-     * @param $data
-     * @param $log
-     */
-    public function errorLog($data, $log)
-    {
-        Log::error($data, [$log]);
-        // todo :: 错误记录
-    }
-
-
-    /**
-     * 文件格式标准
-     */
-    public function fileFormat()
-    {
-        return [
-            "姓名",
-            "性别",
-            "民族",
-            "身份证号码",
-            "户籍性质",
-            "户籍所在乡镇",
-            "户籍所在村",
-            "年级",
-            "学生电话",
-            "是否建档立卡",
-            "是否农村低保",
-            "是否农村特困",
-            "是否残疾",
-            "专业",
-            "班级"
-        ];
-    }
-
-
-    /**
-     * 根据身份证 获取 出生日期
-     * @param $idCard
-     * @return string
-     */
-    public function getBirthday($idCard)
-    {
-        $bir = substr($idCard, 6, 8);
-        $year = (int) substr($bir, 0, 4);
-        $month = (int) substr($bir, 4, 2);
-        $day = (int) substr($bir, 6, 2);
-        return $year . "-" . $month . "-" . $day;
-    }
 
 }
