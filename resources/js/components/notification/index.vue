@@ -22,9 +22,9 @@
             <span class="text" v-html="item.title"></span>
             <span class="read" v-if="item.read==='未读'">{{item.read}}</span>
           </div>
-          <div class="content-tip" v-if="[204,213].includes(item.category) && item.username"><span>申请人：</span>{{item.username}}</div>
-          <div class="content-tip" v-if="[204,213].includes(item.category) && item.flow_name"><span>类型：</span>{{item.flow_name}}</div>
+          <!-- <div class="content-tip" v-if="[204,213].includes(item.category) && item.username"><span>申请人：</span>{{item.username}}</div> -->
           <div class="content-tip" v-html="item.content"></div>
+          <div class="content-tip" v-if="[204,213].includes(item.category) && item.flow_name"><span>类型：</span>{{item.flow_name}}</div>
         </div>
         <div class="link-info" @click="goDetail(item)">查看详情</div>
       </div>
