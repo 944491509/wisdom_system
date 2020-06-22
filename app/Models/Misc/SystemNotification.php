@@ -208,7 +208,7 @@ class SystemNotification extends Model
 
     public function categoryUrl() {
         return [
-            self::STUDENT_CATEGORY_APPLY => 'teacher/ly/oa/index',
+            self::TEACHER_CATEGORY_APPLY => 'teacher/ly/oa/index',
             self::TEACHER_CATEGORY_TASK => 'teacher/ly/oa/tasks',
             self::COMMON_CATEGORY_NOTICE_NOTIFY => 'teacher/ly/oa/notices-center',
             self::COMMON_CATEGORY_NOTICE_NOTICE => 'teacher/ly/oa/notices-center',
