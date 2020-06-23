@@ -29,7 +29,7 @@ class SimpleaclController extends Controller
 
     public function lists(Request $request) {
         $dao = new SimpleaclRoleDao();
-        $result = $dao->getPaginated();
+        $result = $dao->getPaginated($request->session()->get('school.id'));
         if ($result) {
             foreach ($result as $val) {
                 if (!empty($val->users)) {
@@ -69,6 +69,7 @@ class SimpleaclController extends Controller
     public function add(Request $request) {
         $dao = new SimpleaclRoleDao();
         $input = $request->get('role');
+        $input['school_id'] = $request->session()->get('school.id');
         $result = $dao->createRole($input);
         return $result->isSuccess() ?
             JsonBuilder::Success('创建成功') :

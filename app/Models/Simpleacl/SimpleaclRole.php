@@ -10,7 +10,7 @@ class SimpleaclRole extends Model
     //
     public $table = 'simpleacl_roles';
     protected $fillable = [
-        'name','type','description'
+        'name','type','description','school_id'
     ];
 
     public function users()
