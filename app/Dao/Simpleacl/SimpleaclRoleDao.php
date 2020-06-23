@@ -19,9 +19,9 @@ class SimpleaclRoleDao
     {
         return SimpleaclRole::find($id);
     }
-    public function getPaginated()
+    public function getPaginated($schoolId)
     {
-        return SimpleaclRole::with(['users', 'permissions'])->orderBy('created_at','desc')->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        return SimpleaclRole::with(['users', 'permissions'])->where('school_id', $schoolId)->orderBy('created_at','desc')->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
     }
     public function createRole($data)
     {
