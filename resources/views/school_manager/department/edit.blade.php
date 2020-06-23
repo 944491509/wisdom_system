@@ -27,7 +27,7 @@ use App\User;
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="department-name-input">系名称</label>
-                                    <input required type="text" class="form-control" id="department-name-input" value="{{ $department->name }}" placeholder="系名称" name="department[name]">
+                                    <input required type="text" class="form-control" id="department-name-input" value="{{ $department->name }}" placeholder="系名称" name="department[name]" required>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -62,7 +62,7 @@ use App\User;
 
                         <div class="form-group">
                             <label for="department-desc-input">简介</label>
-                            <textarea class="form-control" name="department[description]" id="department-desc-input" cols="30" rows="10" placeholder="系简介">{{ $department->description }}</textarea>
+                            <textarea class="form-control" name="department[description]" id="department-desc-input" cols="30" rows="10" placeholder="系简介" required>{{ $department->description }}</textarea>
                         </div>
                         <?php
                         Button::Print(['id'=>'btn-save-department','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
