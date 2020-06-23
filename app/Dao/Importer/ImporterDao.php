@@ -26,9 +26,9 @@ class ImporterDao
         return ImportTask::where('id', $id)->select($field)->first();
     }
 
-    public function getTasks($schoolId)
+    public function getTasks($schoolId, array $type)
     {
-       return ImportTask::where('school_id', $schoolId)->get();
+       return ImportTask::where('school_id', $schoolId)->whereIn('type', $type)->get();
     }
 
 

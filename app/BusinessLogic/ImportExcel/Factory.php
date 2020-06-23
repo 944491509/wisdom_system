@@ -16,7 +16,7 @@ class Factory
         if ($task['adapter'] == 'update_teacher_phone') {
             $instance = new UpdateTeacherPhone; // 修改教师手机号
         } elseif ($task['adapter'] == 'importer_student_accommodation') {
-            $instance = new ImporterStudentAccommodation; // 导入学生住宿信息
+            $instance = new ImporterStudentAccommodation($task); // 导入学生住宿信息
         } elseif ($task['adapter'] == 'import_student') {
             $instance = new ImporterStudent($task); // 导入带专业班级的学生
         } elseif ($task['adapter'] == 'import_users') {
