@@ -16,13 +16,18 @@ use App\Utils\UI\Button;
                         <form action="{{ route('school_manager.importer.save') }}" method="post" id="add-task-form"
                               enctype="multipart/form-data">
                             @csrf
-                            <div class="form-group">
-                                <label for="school-input">导入方式</label>
-                                <select class="form-control" name="task[type]" required v-model="type">
-                                    <option value="0">无专业班级数据</option>
-                                    <option value="1">带专业班级</option>
-                                </select>
-                            </div>
+                            @if ($type == \App\Models\Importer\ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION)
+                               {{--寄宿信息--}}
+                                <input type="hidden" name="task[type]" value="2" >
+                            @else
+                                 <div class="form-group">
+                                    <label for="school-input">导入方式</label>
+                                    <select class="form-control" name="task[type]" required>
+                                        <option value="0">无专业班级数据</option>
+                                        <option value="1">带专业班级</option>
+                                    </select>
+                                </div>
+                            @endif
                             <div class="form-group">
                                 <label for="task-title-input">任务名称</label>
                                 <input required type="text" class="form-control" id="task-title-input"
@@ -35,9 +40,15 @@ use App\Utils\UI\Button;
                             <?php
                         Button::Print(['id'=>'btn-create-questionnaire','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
                         ?>&nbsp;
-                        <?php
-                        Anchor::Print(['text'=>trans('general.return'),'href'=>route('school_manager.importer.manager'),'class'=>'pull-right link-return'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
-                        ?>
+                         @if ($type == \App\Models\Importer\ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION)
+                            <?php
+                               Anchor::Print(['text'=>trans('general.return'),'href'=>route('school_manager.importer.additional'),'class'=>'pull-right link-return'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
+                            ?>
+                            @else
+                             <?php
+                               Anchor::Print(['text'=>trans('general.return'),'href'=>route('school_manager.importer.manager'),'class'=>'pull-right link-return'], Button::TYPE_SUCCESS,'arrow-circle-o-right')
+                             ?>
+                         @endif
                     </form>
                 </div>
             </div>
