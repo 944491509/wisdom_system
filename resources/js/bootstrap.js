@@ -1,4 +1,5 @@
 // window._ = require('lodash');
+import {Message} from 'element-ui';
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -33,10 +34,73 @@ if (token) {
         'Authorization': 'Bearer ' + API_TOKEN.content,
         'Accept': 'application/json',
     };
+    window.axios.interceptors.response.use(function (response) {
+      if(response.status == 200 ){
+        return response;
+      }
+      if(response.status == 401){
+        Message({
+          message: '权限不足',
+          type: 'warning'
+        });
+      }else{
+        Message({
+          message: response.statusText,
+          type: 'warning'
+        });
+      }
+      // 对响应数据做点什么
+      return response;
+    }, function (error) {
+      // 对响应错误做点什么
+      return Promise.reject(error);
+    });
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
+
+$(".page-content-wrapper").on('click','a', function(e){
+  var href = $(this).attr('href');
+
+  if(href && href.indexOf('javascript') == -1){
+    getAuth(href).then(()=>{
+      window.location.href = href;
+    }).catch(res => {
+      if(res.status == 401){
+        Message({
+          message: '权限不足',
+          type: 'warning'
+        });
+      }else{
+        Message({
+          message: res.statusText,
+          type: 'warning'
+        });
+      }
+    })
+    e.preventDefault()
+    return false;
+  }
+})
+function getAuth(href){
+  return new Promise((resolve,reject) =>{
+    $.ajax({
+      type: "GET",
+      cache: false,
+      url: href,
+      dataType: "html",
+      success: function (res) {
+        console.log(res)
+        resolve();
+      },
+      error: function (res) {
+        reject(res)
+      }
+    });
+  })
+
+}
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
