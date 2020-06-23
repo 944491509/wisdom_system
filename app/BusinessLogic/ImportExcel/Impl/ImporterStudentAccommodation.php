@@ -85,14 +85,17 @@ class ImporterStudentAccommodation extends AbstractImporter
                         ];
                     if (empty($info)) { // 没有数据 新增
                         $additionDao->create($infoData);
+                        // 新增导入数量
+                        $importDao->increment($this->task['id']);
                     } else { // 有的数据 更新
                         unset($infoData['user_id']);
                         $additionDao->update($user->id, $infoData);
+                        // 新增导入数量
+                        $importDao->increment($this->task['id']);
                     }
                 }
             }
-            // 新增导入数量
-            $importDao->increment($this->task['id']);
+
             // 统计未导入总数
             $count = ImportLog::where('task_id', $this->task['id'])->count();
             // 修改任务状态 和 未导入条数
@@ -100,7 +103,6 @@ class ImporterStudentAccommodation extends AbstractImporter
             DB::commit();
             echo $val[0] . '----------创建成功' . PHP_EOL;
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             DB::rollBack();
         }
     }
