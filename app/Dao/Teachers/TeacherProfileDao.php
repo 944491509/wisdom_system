@@ -53,6 +53,7 @@ class TeacherProfileDao
      * @return TeacherProfile
      */
     public function createProfile($data){
+//        dd($data);
         return TeacherProfile::create($data);
     }
 
