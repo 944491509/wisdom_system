@@ -8,7 +8,7 @@
                 <div class="banner-item clearfix" v-for="(item2, i2) in item.helper_page">
                     <a :href="item2.url">
                         <dl>
-                            <dt><img :src="item2.icon" alt=""></dt>
+                            <dt><img style="border-radius: 50%;" :src="item2.icon" alt=""></dt>
                             <dd v-html="item2.name" style="color: #414a5a"></dd>
                         </dl>
                     </a>
