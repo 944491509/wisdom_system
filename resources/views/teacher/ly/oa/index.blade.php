@@ -16,7 +16,7 @@
                 <div v-for="item in myflows" :key="item.key" v-if="myflows">
                     <p class="name">
                         <span>@{{ item.name }}</span>
-                        <span @click="close(item.key)">展开</span>
+                        <span @click="close(item.key)" v-show="open !== item.key">展开</span>
                     </p>
                     <el-divider></el-divider>
                     <div class="showFlows" v-if="open === item.key">
