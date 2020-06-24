@@ -25,7 +25,8 @@ if (document.getElementById('teacher-assistant-index-app')) {
                     2: '未通过',
                     3: '已撤回'
                 },
-                tableData: []
+                activeName: 'first',
+                tableData: [],
             }
         },
         created() {
