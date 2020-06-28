@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class ImporterController extends Controller
 {
     /**
-     * 列表
+     * 列表 已认证 未认证
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -23,18 +23,37 @@ class ImporterController extends Controller
     {
         $schoolId = $request->session()->get('school.id');
         $dao = new ImporterDao();
-        $tasks = $dao->getTasks($schoolId);
+        $tasks = $dao->getTasks($schoolId, [ImportTask::IMPORT_TYPE_NO_IDENTITY, ImportTask::IMPORT_TYPE_CERTIFIED]);
         $this->dataForView['tasks'] = $tasks;
+        $this->dataForView['type'] = ImportTask::IMPORT_TYPE_NO_IDENTITY;
         return view('school_manager.importer.list', $this->dataForView);
     }
 
     /**
-     * 添加页面
+     * 寄宿信息
+     * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function add()
+    public function additional(Request $request)
+    {
+        $schoolId = $request->session()->get('school.id');
+        $dao = new ImporterDao();
+        $tasks = $dao->getTasks($schoolId, [ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION]);
+        $this->dataForView['tasks'] = $tasks;
+        $this->dataForView['type'] = ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION;
+        return view('school_manager.importer.list', $this->dataForView);
+    }
+
+
+    /**
+     * 添加页面
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function add(Request $request)
     {
         $this->dataForView['task'] = new ImportTask();
+        $this->dataForView['type'] = $request->get('type');
         return view('school_manager.importer.add', $this->dataForView);
     }
 
@@ -54,12 +73,13 @@ class ImporterController extends Controller
 
         $file = $request->file('source');
 
-        if ('xlsx' != $file->extension()) {
+        if ($file->extension() != 'xlsx') {
             FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '资源文件类型错误');
             return redirect()->back()->withInput();
         } else {
             $path = $file->store('import');
         }
+
         // 验证文件格式
         $fileFormat = new ImporterConfig($path, $data['type']);
         $validation = $fileFormat->validation();
@@ -82,7 +102,11 @@ class ImporterController extends Controller
                 FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER, '无法保存' . $data['title']);
             }
         }
-        return redirect()->route('school_manager.importer.manager');
+        if ($data['type'] == ImportTask::IMPORT_TYPE_ADDITIONAL_INFORMATION) {
+            return redirect()->route('school_manager.importer.additional');
+        } else {
+            return redirect()->route('school_manager.importer.manager');
+        }
     }
 
     /**

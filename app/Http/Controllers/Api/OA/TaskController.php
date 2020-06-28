@@ -68,11 +68,11 @@ class TaskController extends Controller
         if($result->isSuccess()) {
             $taskId = $result->getData()['id'];
             //通知负责人
-            //event(new OaTaskEvent($leader_userid, $taskId)); --成员已经包含了负责人
+//            event(new OaTaskEvent($leader_userid, $taskId)); --成员已经包含了负责人
             //通知成员
-//            foreach ($memberUserIds as $userid) {
-//                event(new OaTaskEvent($userid, $taskId));
-//            }
+            foreach ($memberUserIds as $userid) {
+                event(new OaTaskEvent($userid, $taskId));
+            }
             return JsonBuilder::Success($result->getData());
         } else {
             return JsonBuilder::Error($result->getMessage());

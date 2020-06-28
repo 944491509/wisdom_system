@@ -3,103 +3,108 @@
 
 namespace App\BusinessLogic\ImportExcel\Impl;
 
-use App\Dao\Schools\GradeDao;
+use App\Dao\Importer\ImporterDao;
 use App\Dao\Students\StudentAdditionInformationDao;
-use App\Models\Schools\Grade;
-use App\Models\Users\GradeUser;
-use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Dao\Users\UserDao;
+use App\Models\Importer\ImportLog;
+use App\Models\Importer\ImportTask;
+use Illuminate\Support\Facades\DB;
 
 class ImporterStudentAccommodation extends AbstractImporter
 {
-    protected  $data;
+    protected  $task;
 
-    public function __construct()
+    public function __construct($task)
     {
-
+        $this->task = $task['data'];
+        parent::__construct($task['data']['path']);
     }
 
     public function handle()
     {
+
+        $userDao = new UserDao;
+        $importDao = new ImporterDao;
+
+        $additionDao = new StudentAdditionInformationDao;
+        // 修改任务状态
+        $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_EXECUTION]);
+
         $this->loadExcelFile();
         $sheetIndexArray = $this->getSheetIndexArray();
-        $str = "文件数据格式有问题请重新上传, 第";
-         foreach($sheetIndexArray as $sheetIndex) {
-             echo '已拿到第' . ($sheetIndex + 1) . ' sheet的数据 开始循环.....' . PHP_EOL;
-             $sheetData = $this->getSheetData($sheetIndex);
-             echo '开始检查文件格式是否正确' . PHP_EOL;
-             // 检查文件格式是否正确
-             foreach ($sheetData[0] as $key => $val) {
-                 if ($this->fileFormat()[$key] != $val) {
-                     echo $str . ($key + 1) . "列应该是" . $this->fileFormat()[$key];
-                     die;
-                 }
-             }
-             echo '检查文件格式正确 开始循环....'.PHP_EOL;
-             unset($sheetData[0]); // 去掉文件头
-             foreach ($sheetData as $key => $val) {
 
-                  $grade = Grade::where(['name'=>trim($val['4']), 'school_id'=> 2])->first();
-                  if (empty($grade)) {
-                      echo "没有找到此班级----". $val[4].PHP_EOL;
-                      Log::channel('smslog')->info('没有找到此班级------'.$val[4]);
-                      continue;
-                  }
-                  $gradeUser = GradeUser::where(['grade_id' => $grade->id, 'name' => $val[0]])->first();
-                  if (empty($gradeUser)) {
-                      echo "没有找到此学生----". $val[0].PHP_EOL;
-                      Log::channel('smslog')->info('没有找到此学生------'.$val[0]);
-                      continue;
-                  }
+        // 再次验证文件格式
+        $config = new ImporterConfig($this->fileRelativePath, $this->task['type']);
+        $validation = $config->validation();
+        if (!empty($validation)) {
+            $error = [
+                'task_id' => $this->task['id'],
+                'error_log' => '文件格式错误'
+            ];
+            $this->errorLog($this->task['title'], $error);
+            exit();
+        }
 
-                  $studentAdditionDao = new StudentAdditionInformationDao;
-                  $info = $studentAdditionDao->getStudentAddInfoByUserId($gradeUser->user_id);
-                  $addition = [
-                      'user_id' => $gradeUser->user_id,
-                      'people' => $val[1],
-                      'mobile' => $val[2],
-                      'address' => $val[3]
-                  ];
+        try {
+            DB::beginTransaction();
 
-                  if ($info) {
-                      $result = $studentAdditionDao->update($gradeUser->user_id, $addition);
-                  }else {
-                      $result = $studentAdditionDao->create($addition);
-                  }
-                  if ($result) {
-                      echo "执行成功----". $val[0].PHP_EOL;
-                  } else {
-                      echo "执行失败----". $val[0].PHP_EOL;
-                  }
-             }
-         }
+            // 开始循环导入
+            foreach ($sheetIndexArray as $sheetIndex) {
+                echo '已拿到第' . ($sheetIndex + 1) . ' sheet的数据 开始循环.....' . PHP_EOL;
+                $sheetData = $this->getSheetData($sheetIndex);
+                unset($sheetData[0]); // 去掉文件头
 
+                foreach ($sheetData as $key => $val) {
+                    $errorArr = [
+                        'task_id' => $this->task['id'],
+                        'number' => $key+1,
+                        'name' => $val[0],
+                        'id_number' => '-',
+                    ];
+                    // 手机号不能为空
+                    if (empty($val[1]) || strlen($val[1]) != 11) {
+                        $errorArr['error_log'] = '手机号为空或者位数不对';
+                        $this->errorLog($this->task['title'], $errorArr);
+                        echo $val[0] . "手机号为空或者位数不对 跳过" . PHP_EOL;
+                        continue;
+                    }
+                    // 根据手机号查找学生
+                    $user = $userDao->getUserByMobile($val[1]);
+                    if (empty($user)) {
+                        $errorArr['error_log'] = '根据手机号未找到学生';
+                        $this->errorLog($this->task['title'], $errorArr);
+                        echo $val[0] . "根据手机号未找到学生 跳过" . PHP_EOL;
+                        continue;
+                    }
+                    $info = $additionDao->getStudentAddInfoByUserId($user->id);
+                    $infoData = [
+                            'user_id' => $user->id,
+                            'people' => $val[2],
+                            'mobile' => $val[3],
+                            'address' => $val[4],
+                        ];
+                    if (empty($info)) { // 没有数据 新增
+                        $additionDao->create($infoData);
+                        // 新增导入数量
+                        $importDao->increment($this->task['id']);
+                    } else { // 有的数据 更新
+                        unset($infoData['user_id']);
+                        $additionDao->update($user->id, $infoData);
+                        // 新增导入数量
+                        $importDao->increment($this->task['id']);
+                    }
+                }
+            }
+
+            // 统计未导入总数
+            $count = ImportLog::where('task_id', $this->task['id'])->count();
+            // 修改任务状态 和 未导入条数
+            $importDao->update($this->task['id'], ['status' => ImportTask::IMPORT_TASK_COMPLETE, 'surplus' => $count]);
+            DB::commit();
+            echo $val[0] . '----------创建成功' . PHP_EOL;
+        } catch (\Exception $exception) {
+            DB::rollBack();
+        }
     }
-
-    public function loadExcelFile()
-    {
-        set_time_limit(0);
-        ini_set('memory_limit', -1);
-        $filePath =  'app/Console/Commands/data/18级汇总住宿信息.xlsx';
-        $objReader = IOFactory::createReader('Xlsx');
-        $objPHPExcel = $objReader->load($filePath);
-        $worksheet = $objPHPExcel->getAllSheets();
-        $this->data = $worksheet;
-    }
-
-    /**
-     * 文件格式标准
-     */
-    public function fileFormat()
-    {
-       return [
-           "姓名",
-           "房东姓名",
-           "房东联系电话",
-           "寄宿地址",
-           "班级",
-        ];
-    }
-
 
 }

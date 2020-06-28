@@ -3,6 +3,7 @@
 namespace App\Models\Importer;
 
 use App\Models\School;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class ImportTask extends Model
@@ -33,6 +34,12 @@ class ImportTask extends Model
     {
         return $this->belongsTo(School::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'manager_id');
+    }
+
 
     /**
      * 所有状态

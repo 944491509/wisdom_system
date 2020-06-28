@@ -1,3 +1,15 @@
+<style>
+    .pf-notify-drawer{
+        width: 410px !important;
+        height: calc(100% - 120px) !important;
+        top: 75px !important;
+        right: 15px !important;
+        border-radius: 8px;
+    }
+    .pf-notify-drawer .el-drawer__body{
+        height: 100%;
+    }
+</style>
 <div class="page-header navbar navbar-fixed-top">
     <div class="page-header-inner ">
         <!-- logo start -->
@@ -42,25 +54,21 @@
                 <!-- start notification dropdown -->
                 <li class="dropdown dropdown-extended dropdown-notification" id="notification-app-data-top" data-schoolid="{{ session('school.id') }}">
                     <div id="{{ env('APP_DEBUG', true) ? null : 'header_notification_bar' }}" style="padding-top: 13px;">
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
-                           data-close-others="true">
-                            <i class="fa fa-bell-o"></i>
-                            <span style="margin-top: -4px;" class="badge headerBadgeColor1" v-if="hasNew"> 新 </span>
+                        <a href="javascript:;" @click="notifyDrawer = true">
+                            <el-badge :value="count" :hidden="count?false:true">
+                                <i class="fa fa-bell-o"></i>
+                            </el-badge>
+                            <!-- <span style="margin-top: -4px;" class="badge headerBadgeColor1" v-if="hasNew"> 新 </span> -->
                         </a>
-                        <ul class="dropdown-menu">
-                            <li class="external">
-                                <h3><span class="bold">通知消息</span></h3>
-                                <span class="notification-label purple-bgcolor">最近@{{ pageSize > total ? total : pageSize }}条</span>
-                            </li>
-                            <li>
-                                <ul class="dropdown-menu-list small-slimscroll-style" data-handle-color="#637283">
-                                    <notification-item v-for="(msg, idx) in messages" :key="idx" :message="msg"></notification-item>
-                                </ul>
-                                <div class="dropdown-menu-footer">
-                                    <a href="#"> 所有消息 </a>
-                                </div>
-                            </li>
-                        </ul>
+                        <el-drawer
+                            title=""
+                            :destroy-on-close="true"
+                            :modal-append-to-body="false"
+                            custom-class="pf-notify-drawer"
+                            :visible.sync="notifyDrawer"
+                            :with-header="false">
+                            <Notifications/>
+                        </el-drawer>
                     </div>
                 </li>
 

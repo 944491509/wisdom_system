@@ -129,7 +129,8 @@ require('./includes/backend/teacher_oa_meeting/index'); // 后台,会议
 require('./includes/backend/teacher_oa_meeting/detail'); // 后台,会议详情
 require('./includes/backend/teacher_elective_course_manage/index'); // 后台,oa-task
 require('./includes/backend/school_importer_student.js'); // 后台, exec 导入学生
-require('./includes/backend/facility_form.js'); // 后台, 设备管理
+require('./includes/backend/facility_form.js'); // 后台, exec 导入学生
 require('./common/add_new_student.js'); // 后台,学生档案
 require('./common/school-teacher-form.js'); // 后台,学生档案
 require('./includes/backend/auth_manager/index');  // 权限管理
+
