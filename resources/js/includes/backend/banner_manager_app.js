@@ -220,7 +220,10 @@ $(document).ready(function(){
                   cancelButtonText: '取消',
                   type: 'warning'
               }).then(() => {
-                  window.location.href = '/school_manager/banner/delete?id=' + id;
+                  // window.location.href = '/school_manager/banner/delete?id=' + id;
+                  axios.get('/school_manager/banner/delete?id=' + id).then((res) => {
+                    window.location.reload();
+                  })
               }).catch(() => {
                   this.$message({
                       type: 'info',

@@ -27,7 +27,7 @@ if (document.getElementById("school-time-slots-manager")) {
         mode: "add",
         schoolUuid: "",
         grades: [],
-        schoolid: ""
+        schoolid: "",
       };
     },
     methods: {
@@ -169,6 +169,14 @@ if (document.getElementById("school-time-slots-manager")) {
           });
         });
 
+      },
+      formSave(){
+        axios.post('/school_manager/school/config/update').then(res => {
+          console.log('res', res)
+          if (res.status === 200) {
+            document.getElementById("btn-save-school-config").click()
+          }
+        })
       }
     },
     mounted() {

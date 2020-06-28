@@ -89,9 +89,9 @@
                     <div class="form-group">
                         <label for="config-radio">状态</label>&nbsp&nbsp&nbsp&nbsp
                         <input type="radio" class="form-control-radio" id="config-status-radio-close" value="0"  name="config[apply_status]"
-                                                       @if($config['apply_status'] == 0) checked @endif> 关闭  &nbsp&nbsp&nbsp&nbsp
+                                                    @if($config['apply_status'] == 0) checked @endif> 关闭  &nbsp&nbsp&nbsp&nbsp
                         <input type="radio" class="form-control-radio" id="config-status-radio-open"  value="1"  name="config[apply_status]"
-                               @if($config['apply_status'] == 1) checked @endif> 开启
+                            @if($config['apply_status'] == 1) checked @endif> 开启
 
 
                     </div>
@@ -163,9 +163,12 @@
                     </div>
                     <div class="clearfix"></div>
                     <hr>--}}
+                    <div style="display: none;">
                     <?php
                     Button::Print(['id'=>'btn-save-school-config','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
                     ?>&nbsp;
+                    </div>
+                    <button type="button" class="btn btn-round btn-primary" v-on:click="formSave">保存</button>
                 </form>
             </div>
         </div>
