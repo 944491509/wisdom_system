@@ -72,8 +72,11 @@ class SimpleaclController extends Controller
         $input = $request->get('role');
         $input['school_id'] = $request->session()->get('school.id');
         //非超级管理员不得创建超级组
-        if ($input['type'] == 1 && $request->user()->getCurrentRoleSlug() != Role::SUPER_ADMIN_SLUG) {
-            return JsonBuilder::Error('您没有权限创建超级管理员');
+        if ($input['type'] == 1) {
+            if ($request->user()->getCurrentRoleSlug() != Role::SUPER_ADMIN_SLUG) {
+                return JsonBuilder::Error('您没有权限创建超级管理员');
+            }
+            $input['school_id'] = 0;
         }
         $result = $dao->createRole($input);
         return $result->isSuccess() ?
