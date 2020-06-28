@@ -35,7 +35,15 @@ if (token) {
         'Accept': 'application/json',
     };
     window.axios.interceptors.response.use(function (response) {
+      console.log('进入axios response 拦截')
       if(response.status == 200 ){
+        if(response.data.code && response.data.code != 1000){
+          Message({
+            message: response.data.message,
+            type: 'warning'
+          });
+          return Promise.reject(response);
+        }
         return response;
       }
       if(response.status == 401){
@@ -43,6 +51,7 @@ if (token) {
           message: '权限不足',
           type: 'warning'
         });
+
       }else{
         Message({
           message: response.statusText,
@@ -50,7 +59,7 @@ if (token) {
         });
       }
       // 对响应数据做点什么
-      return response;
+      return Promise.reject(response);
     }, function (error) {
       // 对响应错误做点什么
       return Promise.reject(error);
@@ -60,47 +69,21 @@ if (token) {
 }
 
 
-$(".page-content-wrapper").on('click','a', function(e){
+$(".page-content-wrapper").on('click',"a:not(#consultDeleteBtn)",function(e){
   var href = $(this).attr('href');
-
   if(href && href.indexOf('javascript') == -1){
-    getAuth(href).then(()=>{
+    console.log('进入a 标签 拦截')
+    let aclhref =  href + (href.indexOf('?') == -1? '?onlyacl=1':'&onlyacl=1')
+    window.axios.get(aclhref).then(res => {
       window.location.href = href;
-    }).catch(res => {
-      if(res.status == 401){
-        Message({
-          message: '权限不足',
-          type: 'warning'
-        });
-      }else{
-        Message({
-          message: res.statusText,
-          type: 'warning'
-        });
-      }
+    }).catch(e => {
+      console.log('错误')
     })
-    e.preventDefault()
+    e.preventDefault();
     return false;
   }
 })
-function getAuth(href){
-  return new Promise((resolve,reject) =>{
-    $.ajax({
-      type: "GET",
-      cache: false,
-      url: href,
-      dataType: "html",
-      success: function (res) {
-        console.log(res)
-        resolve();
-      },
-      error: function (res) {
-        reject(res)
-      }
-    });
-  })
 
-}
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

@@ -40,7 +40,7 @@ use App\Utils\UI\Button;
                                         <td>{{ $val['created_at'] }}</td>
                                         <td class="text-center">
                                             {{ Anchor::Print(['text'=>'编辑','href'=>route('school_manager.consult.edit',['id'=>$val['id']])], Button::TYPE_DEFAULT,'edit') }}
-                                            {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','href'=>route('school_manager.consult.delete',['id'=>$val['id']])], Button::TYPE_DANGER,'trash') }}
+                                            {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','id'=>'consultDeleteBtn' ,'href'=>route('school_manager.consult.delete',['id'=>$val['id']])], Button::TYPE_DANGER,'trash') }}
                                         </td>
                                     </tr>
                                 @endforeach
