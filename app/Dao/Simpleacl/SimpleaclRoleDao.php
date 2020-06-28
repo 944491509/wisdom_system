@@ -19,9 +19,13 @@ class SimpleaclRoleDao
     {
         return SimpleaclRole::find($id);
     }
-    public function getPaginated($schoolId)
+    public function getPaginated($schoolId, $isadmin = false)
     {
-        return SimpleaclRole::with(['users', 'permissions'])->where('school_id', $schoolId)->orderBy('created_at','desc')->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        if ($isadmin) {
+            return SimpleaclRole::with(['users', 'permissions'])->whereIn('school_id', [$schoolId, 0])->orderBy('created_at','desc')->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        }else {
+            return SimpleaclRole::with(['users', 'permissions'])->where('school_id', $schoolId)->orderBy('created_at','desc')->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+        }
     }
     public function createRole($data)
     {
