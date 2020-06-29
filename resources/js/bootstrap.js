@@ -72,7 +72,7 @@ if (token) {
         message: message,
         type: 'warning'
       });
-      return error;
+      return Promise.reject(error);
     });
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
