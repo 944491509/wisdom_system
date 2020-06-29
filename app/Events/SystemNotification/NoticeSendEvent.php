@@ -40,7 +40,11 @@ class NoticeSendEvent implements CanSendSystemNotification
      */
     public function getTo(): int
     {
-        return SystemNotification::TO_ALL;//所有人员
+        switch ($this->notice->range) {
+            case Notice::RANGE_ALL: return SystemNotification::TO_ALL;
+            case Notice::RANGE_TEACHER: return SystemNotification::TO_TEACHER;
+            case Notice::RANGE_STUDENT:return SystemNotification::TO_STUDENT;
+        }
     }
 
     /**
