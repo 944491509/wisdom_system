@@ -8,6 +8,10 @@
     }
     .pf-notify-drawer .el-drawer__body{
         height: 100%;
+        flex: initial !important
+    }
+    .notification-count-badge .el-badge__content{
+        border: none !important
     }
 </style>
 <div class="page-header navbar navbar-fixed-top">
@@ -55,7 +59,7 @@
                 <li class="dropdown dropdown-extended dropdown-notification" id="notification-app-data-top" data-schoolid="{{ session('school.id') }}">
                     <div id="{{ env('APP_DEBUG', true) ? null : 'header_notification_bar' }}" style="padding-top: 13px;">
                         <a href="javascript:;" @click="notifyDrawer = true">
-                            <el-badge :value="count" :hidden="count?false:true">
+                            <el-badge :value="count" :hidden="count?false:true" class="notification-count-badge">
                                 <i class="fa fa-bell-o"></i>
                             </el-badge>
                             <!-- <span style="margin-top: -4px;" class="badge headerBadgeColor1" v-if="hasNew"> 新 </span> -->
