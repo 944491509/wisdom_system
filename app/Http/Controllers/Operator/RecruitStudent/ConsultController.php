@@ -7,6 +7,7 @@ use App\Utils\FlashMessageBuilder;
 use App\Dao\RecruitStudent\ConsultDao;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RecruitStudent\ConsultRequest;
+use App\Utils\JsonBuilder;
 use Illuminate\Support\Facades\Storage;
 
 class ConsultController extends Controller
@@ -136,10 +137,9 @@ class ConsultController extends Controller
         $consultDao = new ConsultDao();
         $re = $consultDao->delete($id);
         if($re) {
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,'删除成功');
+            return JsonBuilder::Success('删除成功');
         } else {
-            FlashMessageBuilder::Push($request, FlashMessageBuilder::DANGER,'编辑失败');
+            return JsonBuilder::Error('删除失败');
         }
-        return redirect()->route('school_manager.consult.list');
     }
 }

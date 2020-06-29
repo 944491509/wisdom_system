@@ -86,7 +86,6 @@ $(document).ready(function(){
 
                 axios.post(Constants.API.BANNER.GET_BANNER_ONE, {id:id}).then((res) => {
                   if (Util.isAjaxResOk(res)) {
-                    console.log('1232132',res)
                     // 图片回显
                     let obj = {};
                     obj.name = "";
@@ -182,6 +181,7 @@ $(document).ready(function(){
               this.isshow1=false;
               this.isshow2=false;
               this.bannerFormInfo.app = 0;
+              this.bannerFormInfo.id = 0;
               this.bannerFormInfo.posit = 0;
               this.bannerFormInfo.type = 0;
               this.bannerFormInfo.title = "";
@@ -197,7 +197,7 @@ $(document).ready(function(){
             this.bannerFormInfo.school_id = this.school_id;
 
             let params = {...this.bannerFormInfo}
-            params.id = '';
+            params.id = this.bannerFormInfo.id || '';
             params.type = this.bannerFormInfoType;
             axios.post(Constants.API.BANNER.POST_SAVE_BANNER, params).then((res) => {
               if (Util.isAjaxResOk(res)) {
