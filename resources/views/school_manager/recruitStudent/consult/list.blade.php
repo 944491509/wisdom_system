@@ -4,7 +4,7 @@ use App\Utils\UI\Button;
 ?>
 @extends('layouts.app')
 @section('content')
-      <div class="row">
+      <div class="row" id="recruitStudentConsultList">
         <div class="col-sm-12 col-md-12 col-xl-12">
             <div class="card-box">
                 <div class="card-head">
@@ -40,7 +40,8 @@ use App\Utils\UI\Button;
                                         <td>{{ $val['created_at'] }}</td>
                                         <td class="text-center">
                                             {{ Anchor::Print(['text'=>'编辑','href'=>route('school_manager.consult.edit',['id'=>$val['id']])], Button::TYPE_DEFAULT,'edit') }}
-                                            {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','id'=>'consultDeleteBtn' ,'href'=>route('school_manager.consult.delete',['id'=>$val['id']])], Button::TYPE_DANGER,'trash') }}
+                                            <a href="javascript:void(0)" class="btn btn-round btn-danger" itemid="{{$val['id']}}"  @click="deleteItem"><i class="fa fa-trash"></i>删除</a>
+                                            {{-- {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','id'=>'consultDeleteBtn' ,'href'=>route('school_manager.consult.delete',['id'=>$val['id']])], Button::TYPE_DANGER,'trash') }} --}}
                                         </td>
                                     </tr>
                                 @endforeach
