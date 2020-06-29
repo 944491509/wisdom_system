@@ -11,7 +11,7 @@ if(document.getElementById('recruitStudentConsultList')){
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            axios.get(`/school_manager/consult/delete?id=${itemId}`).then((res) => {
+            window.axios.get(`/school_manager/consult/delete?id=${itemId}`).then((res) => {
               if (res.data.code ? Util.isAjaxResOk(res) : (res.status == 200 )) {
                 this.$message({
                   message: "删除成功, 作息表正在重新加载 ...",
