@@ -42,7 +42,6 @@ if (token) {
             message: response.data.message,
             type: 'warning'
           });
-          return Promise.reject(response);
         }
         return response;
       }
@@ -58,11 +57,17 @@ if (token) {
           type: 'warning'
         });
       }
-      // 对响应数据做点什么
-      return Promise.reject(response);
+      return response;
     }, function (error) {
-      // 对响应错误做点什么
-      return Promise.reject(error);
+      let message = error
+      if(message.indexOf('401') != -1){
+        message = "权限不足"
+      }
+      Message({
+        message: message,
+        type: 'warning'
+      });
+      return error;
     });
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
