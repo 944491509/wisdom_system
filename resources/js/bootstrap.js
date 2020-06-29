@@ -59,9 +59,14 @@ if (token) {
       }
       return response;
     }, function (error) {
-      let message = error
-      if(message.indexOf('401') != -1){
-        message = "权限不足"
+      let message ="";
+      try{
+        message = error.response.data.error.description ;
+        if(error.response.status == 401){
+          message = "权限不足"
+        }
+      }catch(e){
+        message = error.message
       }
       Message({
         message: message,
