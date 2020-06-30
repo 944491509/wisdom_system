@@ -5,6 +5,7 @@ namespace App\Events\SystemNotification;
 use App\Events\CanSendSystemNotification;
 use App\Models\Notices\Notice;
 use App\Models\Misc\SystemNotification;
+use App\Models\Notices\NoticeGrade;
 use App\Models\Notices\NoticeOrganization;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -41,9 +42,9 @@ class NoticeSendEvent implements CanSendSystemNotification
     public function getTo(): int
     {
         switch ($this->notice->range) {
-            case Notice::RANGE_ALL: return SystemNotification::TO_ALL;
-            case Notice::RANGE_TEACHER: return SystemNotification::TO_TEACHER;
-            case Notice::RANGE_STUDENT:return SystemNotification::TO_STUDENT;
+            case Notice::RANGE_ALL: return SystemNotification::TO_ALL;break;
+            case Notice::RANGE_TEACHER: return SystemNotification::TO_TEACHER;break;
+            case Notice::RANGE_STUDENT:return SystemNotification::TO_STUDENT;break;
         }
     }
 
@@ -130,6 +131,16 @@ class NoticeSendEvent implements CanSendSystemNotification
     public function getOrganizationIdArray(): array
     {
         return NoticeOrganization::where('notice_id', '=', $this->notice->id)->pluck('organization_id')->toArray();
+    }
+
+
+    /**
+     * 必须可以拿到班级id
+     * @return array
+     */
+    public function getGradeIdArray(): array
+    {
+        return NoticeGrade::where('notice_id', '=', $this->notice->id)->pluck('grade_id')->toArray();
     }
 
 

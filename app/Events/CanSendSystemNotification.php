@@ -68,4 +68,11 @@ interface CanSendSystemNotification
      */
     public function getOrganizationIdArray() : array ;
 
+
+    /**
+     * 必须可以拿到班级信息
+     * @return array
+     */
+    public function getGradeIdArray() :array ;
+
 }
