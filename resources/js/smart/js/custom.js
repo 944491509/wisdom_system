@@ -73,3 +73,10 @@ $('#year_term').change(function () {
     $('#term').val(term);
 
 });
+
+// 密码框
+$(function () {
+  $("#txtPwd").remove();
+  /*隐藏的密码框显示并且获取焦点 只读属性去掉*/
+  $("#Pwd").show().attr('readonly', false);
+})
