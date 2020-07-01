@@ -491,7 +491,7 @@ Route::prefix('notice')->middleware('auth:api')->group(function () {
     Route::post('/show-notice', 'Api\Notice\NoticeController@noticeList')
         ->name('api.notice.show-notice');
     // 检查类型
-    Route::post('/inspect-list', 'Api\Notice\NoticeController@inspectList')
+    Route::get('/inspect-list', 'Api\Notice\NoticeController@inspectList')
         ->name('api.notice.inspect-list');
 
 });
