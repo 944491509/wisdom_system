@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Dao\Simpleacl\SimpleaclRoleDao;
 use App\Http\Controllers\Controller;
+use App\Models\Acl\Role;
 use App\Models\Simpleacl\SimpleaclPermission;
 use App\Utils\JsonBuilder;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class SimpleaclController extends Controller
 
     public function lists(Request $request) {
         $dao = new SimpleaclRoleDao();
-        $result = $dao->getPaginated();
+        $result = $dao->getPaginated($request->session()->get('school.id'), $request->user()->getCurrentRoleSlug() == Role::SUPER_ADMIN_SLUG);
         if ($result) {
             foreach ($result as $val) {
                 if (!empty($val->users)) {
@@ -69,6 +70,14 @@ class SimpleaclController extends Controller
     public function add(Request $request) {
         $dao = new SimpleaclRoleDao();
         $input = $request->get('role');
+        $input['school_id'] = $request->session()->get('school.id');
+        //非超级管理员不得创建超级组
+        if ($input['type'] == 1) {
+            if ($request->user()->getCurrentRoleSlug() != Role::SUPER_ADMIN_SLUG) {
+                return JsonBuilder::Error('您没有权限创建超级管理员');
+            }
+            $input['school_id'] = 0;
+        }
         $result = $dao->createRole($input);
         return $result->isSuccess() ?
             JsonBuilder::Success('创建成功') :
