@@ -16,11 +16,11 @@ use App\Utils\UI\Button;
                             <input required type="text" class="form-control" value="{{ $user->name }}" placeholder="姓名" name="name">
                         </div>
                         <div class="form-group">
-                            <label>登陆账号</label>
+                            <label>登录账号</label>
                             <input required type="text" class="form-control" value="{{ $user->mobile }}" placeholder="登陆账号" name="mobile" readonly="true">
                         </div>
                         <div class="form-group">
-                            <label>登陆密码</label>
+                            <label>登录密码</label>
                             <input  type="password" class="form-control" value="" placeholder="登陆密码, 为空表示密码不修改" name="password">
                         </div>
 
