@@ -18,12 +18,12 @@ use App\Utils\UI\Button;
                         </div>
                         <div class="form-group">
                             <label>登录账号</label>
-                            <input  required type="text" class="form-control"  placeholder="登陆账号" name="mobile" AUTOCOMPLETE="OFF">
+                            <input  required type="text" class="form-control"  placeholder="登录账号" name="mobile" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
                             <label>登录密码</label>
-                            <input  type="text" class="form-control"  id="txtPwd"  placeholder="登陆密码"  AUTOCOMPLETE="OFF">
-                            <input  required type="password" class="form-control"  id="Pwd"  placeholder="登陆密码" name="password" style="display: none" readonly="true">
+                            <input  type="text" class="form-control"  id="txtPwd"  placeholder="登录密码"  AUTOCOMPLETE="OFF">
+                            <input  required type="password" class="form-control"  id="Pwd"  placeholder="登录密码" name="password" style="display: none" readonly="true">
                         </div>
 
                         <?php
