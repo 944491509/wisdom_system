@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operator;
 use App\Dao\Schools\BuildingDao;
 use App\Dao\Schools\CampusDao;
 use App\Dao\Schools\RoomDao;
+use App\Models\Schools\Facility;
 use App\Utils\FlashMessageBuilder;
 use App\Http\Controllers\Controller;
 use App\Dao\FacilityManage\FacilityDao;
@@ -63,6 +64,9 @@ class FacilityController extends Controller
         $facilityDao = new FacilityDao();
         if($request->isMethod('post')) {
             $all = $request->post('facility');
+            if ($all['card_type'] == Facility::CARD_TYPE_PUBLIC) {
+                unset($all['grade_id']);
+            }
             $result = $facilityDao->save($all);
             if($result) {
                 FlashMessageBuilder::Push($request, FlashMessageBuilder::SUCCESS,'编辑成功');
