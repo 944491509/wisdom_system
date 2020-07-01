@@ -24,7 +24,8 @@ use App\Utils\UI\Button;
                         </div>
                         <div class="form-group">
                             <label>登录密码</label>
-                            <input required type="password" class="form-control" value="" placeholder="登录密码, 必填" name="user[password]">
+                            <input  type="text" class="form-control"  id="txtPwd"  placeholder="登陆密码"  AUTOCOMPLETE="OFF">
+                            <input required type="password" class="form-control" id="Pwd" placeholder="登录密码, 必填" name="user[password]">
                         </div>
                         @include('admin.schools._form')
                         <?php
