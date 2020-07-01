@@ -67,7 +67,7 @@ export default {
 			}
 		};
 	},
-	
+
 	methods: {
     initData() {
       this.visibleform.allOran = false
@@ -97,6 +97,10 @@ export default {
 			return organizansList;
 		},
 		async querySearchAsync(queryString, cb){
+      if(!queryString) {
+        cb([]);
+        return;
+      } ;
 			let organ = await  this.getOrganizansList(0,queryString)
 			organ = organ.filter(e => !e.status)
 			cb(organ || [])

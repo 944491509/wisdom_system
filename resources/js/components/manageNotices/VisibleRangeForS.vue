@@ -15,10 +15,10 @@
 		</el-form-item>
 		<el-form-item label="班级" label-width="60px">
       <el-checkbox-group v-model="selectTags">
-        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :props="props" :show-all-levels="false" v-model="form.tags">
-          <template slot-scope="{ node, data }">
-            <span v-if="node.level == 1">{{ data.name }}</span>
-            <el-checkbox v-else :label="data" :value="data">{{data.name}}</el-checkbox>
+        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :props="props" @change="changeCascader" v-model="form.tags">
+          <template slot-scope="{ node }">
+            <span style="display:block;" @click="hanldeClick(node.data)" v-if="node.level == 1">{{ node.data.name }}</span>
+            <el-checkbox v-else-if="currentNode.year == node.data.year"  @click="changeCascader" :label="node.data" :value="node.data">{{node.data.name}}</el-checkbox>
           </template>
         </el-cascader>
       </el-checkbox-group>
@@ -60,28 +60,38 @@ export default {
 				title:'',
 				tags:[]
       },
+      currentNode: [],
       props: {
         lazy: true,
         value:'year',
 				lazyLoad :async (node, resolve) => {
-          console.log(node)
+          console.log("node",node)
           if(node.level == 0){
-            await this.getYears();
-            resolve(this.years)
+            let years = await this.getYears();
+            resolve(years)
             return;
           }
+
           if(node.level == 1){
-            await this.getGrade(node.data)
-            resolve(this.grades)
+            this.currentNode = node.data;
+            let grades = await this.getGrade(node.data)
+            grades.map(e =>{
+              e.leaf = true
+            })
+            resolve(grades)
           }
-          resolve()
-          
-         
+          resolve([])
+
+
 				}
 			}
 		};
 	},
 	methods: {
+    hanldeClick(data){
+      console.log('handleClick',data)
+      this.currentNode = data;
+    },
     initData() {
       this.form.allOran = false
       this.selectTags = []
@@ -102,7 +112,7 @@ export default {
 					}
 				});
     },
-   
+
     deleteAllTag(){
       this.all = false;
       this.selectTags = [];
@@ -114,21 +124,22 @@ export default {
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
     },
     async getYears(){
-       await axios.get(`/api/notice/school-year?school_id=${this.schoolId}`).then(res => {
-					if (Util.isAjaxResOk(res)) {
-            console.log(res)
-            this.years = res.data.data;
-					}
-				});
+      let res = await axios.get(`/api/notice/school-year?school_id=${this.schoolId}`)
+      if (Util.isAjaxResOk(res)) {
+        console.log(res)
+        this.years = res.data.data;
+        return res.data.data;
+      }
+      return [] ;
     },
     async getGrade(item,keyword =''){
-        await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}&school_id=${this.schoolId}`).then(res => {
-					if (Util.isAjaxResOk(res)) {
-            console.log(res)
-            this.grades = res.data.data;
-					}
-        });
-        return this.grades;
+       let res =  await axios.get(`/api/notice/grade-list?year=${item.year || ''}&keyword=${keyword}&school_id=${this.schoolId}`)
+        if (Util.isAjaxResOk(res)) {
+          console.log(res)
+          this.grades = res.data.data;
+          return res.data.data;
+        }
+        return [] ;
     },
     confrim(){
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
@@ -146,12 +157,15 @@ export default {
     },
     async querySearchAsync(queryString, cb){
       if(!queryString) {
-        cb();
+        cb([]);
         return;
       } ;
 			let items = await  this.getGrade({},queryString)
 			cb(items || [])
-		},
+    },
+    changeCascader(){
+       this.$refs.tags.toggleDropDownVisible()
+    }
 	}
 };
 </script>

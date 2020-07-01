@@ -2,7 +2,7 @@
   <div class="drawer_content">
     <div class="card-body p-3">
       <el-form ref="noticeForm" :model="notice" label-width="80px">
-          <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;">
+          <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;" :rules="[{required: true}]">
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization)">选择教师可见范围</el-button>
               <div class="dayu">
@@ -28,27 +28,17 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="类型">
+          <el-form-item label="类型" :rules="[{required: true}]">
               <el-select v-model="notice.type" placeholder="请选择类型">
                   <el-option v-for="(ty, idx) in types" :label="ty" :value="idx" :key="idx"></el-option>
               </el-select>
-              <!-- <el-select v-show="showInspectTypesSelectorFlag"
-                      v-model="notice.inspect_id"
-                      placeholder="请选择检查类型">
-                  <el-option
-                          v-for="item in inspectTypes"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id">
-                  </el-option>
-              </el-select> -->
           </el-form-item>
 
-          <el-form-item label="标题">
-              <el-input placeholder="必填: 标题" v-model="notice.title"></el-input>
+          <el-form-item label="标题" :rules="[{required: true}]">
+              <el-input placeholder="标题" v-model="notice.title"></el-input>
           </el-form-item>
 
-          <el-form-item label="发布">
+          <el-form-item label="发布" :rules="[{required: true}]">
               <el-switch
                       v-model="notice.status"
                       active-text="发布"
@@ -56,10 +46,10 @@
               </el-switch>
           </el-form-item>
 
-          <el-form-item label="文字说明">
-              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content"></el-input>
+          <el-form-item label="文字说明" :rules="[{required: true}]">
+              <el-input rows="5" placeholder="文字说明" type="textarea" v-model="notice.content"></el-input>
           </el-form-item>
-          <el-form-item label="发布日期">
+          <el-form-item label="发布日期" :rules="[{required: true}]">
               <el-date-picker
                       v-model="notice.release_time"
                       type="datetime"
@@ -70,7 +60,7 @@
           </el-form-item>
 
           <div>
-              <el-form-item label="封面图片">
+              <el-form-item label="封面图片" >
                   <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showFileManagerFlag=true">选择封面图片</el-button>
               </el-form-item>
               <div v-if="notice.image">
@@ -234,14 +224,14 @@ export default {
   },
   methods: {
     tDrawerOpen(val) {
-      this.innerDrawer = true; 
+      this.innerDrawer = true;
       this.showOrganizationsSelectorFlag = true;
       this.$nextTick(() => {
         this.$refs.tDrawer.thandleOpen(val)
       })
     },
     sDrawerOpen(val) {
-      this.innerDrawer = true; 
+      this.innerDrawer = true;
       this.showOrganizationsSelectorFlag = false;
       this.$nextTick(() => {
         this.$refs.sDrawer.shandleOpen(val)
@@ -289,7 +279,7 @@ export default {
       }
       this.form.studentTags = this.notice.grade
       this.form.teacherTags = this.notice.organization
-      
+
     },
     handleClose(done) {
       // this.releaseDrawer = true

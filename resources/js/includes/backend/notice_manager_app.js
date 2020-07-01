@@ -148,7 +148,7 @@ if(document.getElementById('notice-manager-app')){
                 list = list.map(e => {
                   e.rangeList = []
                   Object.entries(e.range).map(([key, arr], i) => {
-                    
+
                     let str = ''
                     arr.map(e => {
                       str = str + e.name + ';'
@@ -196,7 +196,7 @@ if(document.getElementById('notice-manager-app')){
                   this.$message.error('查询详情数据失败！');
               }
             })
-            
+
           },
             loadNotice: function(id){
                 this.isLoading = true;
@@ -252,10 +252,19 @@ if(document.getElementById('notice-manager-app')){
                 this.notice.attachments.push(payload.file);
             },
             newNotice: function(){
-              this.releaseDrawer = true
-              this.$nextTick(() => {
-                this.$refs.childDrawer.addhandleOpen()
+              axios.post(
+                '/school_manager/notice/save-notice',
+                {onlyacl: 1 }
+              ).then(res => {
+                  if(Util.isAjaxResOk(res)){
+                    this.releaseDrawer = true
+                    this.$nextTick(() => {
+                      this.$refs.childDrawer.addhandleOpen()
+                    })
+                  }
+
               })
+
             },
             deleteNotice: function(id){
               console.log(id)
