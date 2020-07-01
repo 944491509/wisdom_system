@@ -17,11 +17,11 @@ use App\Utils\UI\Button;
                         @csrf
                         <div class="form-group">
                             <label>姓名</label>
-                            <input required type="text" class="form-control" value="" placeholder="姓名" name="name">
+                            <input required type="text" class="form-control" value=""  placeholder="姓名" name="name" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
                             <label>登录账号</label>
-                            <input required type="text" class="form-control" value="" placeholder="登陆账号" name="mobile">
+                            <input required type="text" class="form-control"  placeholder="登陆账号" name="mobile" AUTOCOMPLETE="OFF">
                         </div>
                         <div class="form-group">
                             <label>登录密码</label>

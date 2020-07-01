@@ -18,7 +18,6 @@ use App\Utils\UI\Button;
                 <input type="password" style="width:0;height:0;float:left;visibility:hidden"/>
                 <div class="card-body " id="bar-parent">
                     <form action="{{ route('admin.create.school-manager') }}" method="post">
-                        {{--此处是为了欺骗浏览器--}}
                         <div class="form-group">
                             <label>登录账号</label>
                             <input required type="text" class="form-control" placeholder="必填: 登录账号" name="user[mobile]" AUTOCOMPLETE="OFF">
