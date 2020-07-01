@@ -256,7 +256,7 @@ if(document.getElementById('notice-manager-app')){
                 '/school_manager/notice/save-notice',
                 {onlyacl: 1 }
               ).then(res => {
-                  if(Util.isAjaxResOk(res)){
+                  if(res.data == 'ok'){
                     this.releaseDrawer = true
                     this.$nextTick(() => {
                       this.$refs.childDrawer.addhandleOpen()
