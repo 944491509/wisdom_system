@@ -26,12 +26,7 @@ if (dom) {
       };
     },
     created() {
-      const that = this;
-      that.loadLastSixSystemMessage();
-      //   每分钟查询一次
-      window.setInterval(function () {
-        that.loadLastSixSystemMessage();
-      }, 60000)
+      this.loadLastSixSystemMessage();
     },
     methods: {
       loadLastSixSystemMessage: function () {
@@ -50,6 +45,12 @@ if (dom) {
             }
           })
         }
+      },
+      viewNotifications() {
+        this.notifyDrawer = true
+        setTimeout(() => {
+          this.loadLastSixSystemMessage()
+        }, 3000)
       }
     }
   })

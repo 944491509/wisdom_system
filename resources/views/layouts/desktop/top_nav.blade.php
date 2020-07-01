@@ -58,7 +58,7 @@
                 <!-- start notification dropdown -->
                 <li class="dropdown dropdown-extended dropdown-notification" id="notification-app-data-top" data-schoolid="{{ session('school.id') }}">
                     <div id="{{ env('APP_DEBUG', true) ? null : 'header_notification_bar' }}" style="padding-top: 13px;">
-                        <a href="javascript:;" @click="notifyDrawer = true">
+                        <a href="javascript:;" @click="viewNotifications">
                             <el-badge :value="count" :hidden="count?false:true" class="notification-count-badge">
                                 <i class="fa fa-bell-o"></i>
                             </el-badge>
