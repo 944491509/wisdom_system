@@ -488,8 +488,11 @@ Route::prefix('notice')->middleware('auth:api')->group(function () {
     Route::get('/grade-list', 'Api\Notice\NoticeController@gradeList')
         ->name('api.notice.grade-list');
     // 后台管理通知公告列表
-    Route::post('/show-notice', 'Api\Notice\NoticeController@NoticeList')
+    Route::post('/show-notice', 'Api\Notice\NoticeController@noticeList')
         ->name('api.notice.show-notice');
+    // 检查类型
+    Route::get('/inspect-list', 'Api\Notice\NoticeController@inspectList')
+        ->name('api.notice.inspect-list');
 
 });
 

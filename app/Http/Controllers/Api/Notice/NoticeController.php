@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\Notice;
 
 
+use App\Dao\Notice\NoticeInspectDao;
 use App\Dao\Schools\GradeDao;
 use App\Dao\Schools\SchoolDao;
 use App\Events\SystemNotification\NoticeSendEvent;
@@ -182,7 +183,7 @@ class NoticeController extends Controller
      * @return string
      * @throws ValidationException
      */
-    public function NoticeList(NoticeRequest $request) {
+    public function noticeList(NoticeRequest $request) {
         $rules = [
             'school_id' => 'required | int',
         ];
@@ -211,6 +212,24 @@ class NoticeController extends Controller
 
         $return['list'] = $data;
         return JsonBuilder::Success($return);
+    }
+
+
+    /**
+     * 检查标签
+     * @param NoticeRequest $request
+     * @return string
+     * @throws ValidationException
+     */
+    public function inspectList(NoticeRequest $request) {
+        $rules = [
+            'school_id' => 'required | int',
+        ];
+        $this->validate($request,$rules);
+        $schoolId = $request->get('school_id');
+        $dao = new NoticeInspectDao();
+        $list = $dao->getInspectsBySchoolId($schoolId);
+        return JsonBuilder::Success($list);
     }
 
 }
