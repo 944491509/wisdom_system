@@ -43,25 +43,10 @@
               <el-input placeholder="标题" v-model="notice.title"></el-input>
           </el-form-item>
 
-          <el-form-item label="发布" :rules="[{required: true}]">
-              <el-switch
-                      v-model="notice.status"
-                      active-text="发布"
-                      inactive-text="暂不发布">
-              </el-switch>
-          </el-form-item>
+
 
           <el-form-item label="文字说明" :rules="[{required: true}]">
               <el-input rows="5" placeholder="文字说明" type="textarea" v-model="notice.content"></el-input>
-          </el-form-item>
-          <el-form-item label="发布日期" :rules="[{required: true}]">
-              <el-date-picker
-                      v-model="notice.release_time"
-                      type="datetime"
-                      format="yyyy-MM-dd HH:mm:ss"
-                      value-format="yyyy-MM-dd HH:mm:ss"
-                      placeholder="选择日期">
-              </el-date-picker>
           </el-form-item>
 
           <div>
@@ -77,7 +62,7 @@
 
           <div>
               <el-form-item label="附件">
-                  <el-button size="mini" icon="el-icon-document" v-on:click="showAttachmentManagerFlag=true">选择附件</el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showAttachmentManagerFlag=true">选择附件</el-button>
               </el-form-item>
               <div v-if="notice.attachments && notice.attachments.length > 0">
                   <p class=" mb-4" v-for="(atta, idx) in notice.attachments" :key="idx">
@@ -88,6 +73,24 @@
                   </p>
               </div>
           </div>
+          <el-form-item label="立即发布" :rules="[{required: true}]">
+              <el-switch
+                      v-model="notice.status"
+                      active-text="发布"
+                      @change="statusChange"
+                      inactive-text="">
+              </el-switch>
+          </el-form-item>
+          <el-form-item label="定时发布" v-if="!notice.status">
+              <el-date-picker
+                      v-model="notice.release_time"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      placeholder="选择日期">
+              </el-date-picker>
+          </el-form-item>
+
 
           <el-form-item>
               <el-button type="primary" @click="onSubmit">立即保存</el-button>
@@ -231,6 +234,10 @@ export default {
     }
   },
   methods: {
+    statusChange(val){
+      console.log('statusChange')
+      this.notice.release_time = ''
+    },
     getCheckTypes(){
       axios.get("/api/notice/inspect-list?school_id="+this.schoolId).then(res =>{
         if(Util.isAjaxResOk(res)){
@@ -408,13 +415,13 @@ export default {
         });
         return
       }
-      if (!this.notice.release_time) {
-        this.$message({
-          message: '请选择发布时间',
-          type: "warning"
-        });
-        return
-      }
+      // if (!this.notice.release_time) {
+      //   this.$message({
+      //     message: '请选择发布时间',
+      //     type: "warning"
+      //   });
+      //   return
+      // }
       this.isLoading = true;
       axios.post(
           '/school_manager/notice/save-notice',

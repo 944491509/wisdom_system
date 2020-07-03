@@ -14,10 +14,10 @@
 				</el-autocomplete>
 		</el-form-item>
 		<el-form-item label="部门" label-width="60px">
-			<el-cascader style="width:100%;" popper-class="tags_cascader" ref="tags" :props="props" v-model="visibleform.tags" @change="changeTag"></el-cascader>
+			<el-cascader style="width:100%;" popper-class="tags_cascader" ref="tags" :props="props" :disabled="visibleform.allOran" v-model="visibleform.tags" @change="changeTag"></el-cascader>
 		</el-form-item>
 		<el-form-item label="便捷操作" label-width="90px" style="margin-top: 50px;">
-			<el-switch v-model="visibleform.allOran" active-text="所有部门" inactive-text></el-switch>
+			<el-switch v-model="visibleform.allOran" active-text="所有部门" inactive-text @change="switchChange"></el-switch>
 		</el-form-item>
 		<el-form-item label="已选部门" label-width="90px" v-if="!visibleform.allOran"></el-form-item>
 		<el-form-item v-if="!visibleform.allOran">
@@ -83,7 +83,7 @@ export default {
         this.selectTags = val
       }
     },
-		async getOrganizansList( parent_id = 0,queryString) {
+		async getOrganizansList( parent_id = '',queryString) {
 			let organizansList  = [];
 			await axios
 				.post("/Oa/tissue/getOrganization", {
@@ -103,8 +103,7 @@ export default {
         cb([]);
         return;
       } ;
-			let organ = await  this.getOrganizansList(0,queryString)
-			organ = organ.filter(e => !e.status)
+			let organ = await  this.getOrganizansList('',queryString)
 			cb(organ || [])
 		},
 		handleSelect(item){
@@ -130,7 +129,13 @@ export default {
 		confrim(){
       this.$emit('confrim',this.visibleform.allOran ? '0' : this.selectTags)
       this.selectTags = []
-		}
+    },
+    switchChange(val){
+      if(val){
+        this.selectTags = []
+				this.visibleform.tags = []
+      }
+    },
 	}
 };
 </script>
