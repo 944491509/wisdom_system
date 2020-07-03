@@ -227,4 +227,18 @@ class SystemNotificationDao
             ->select($field)
             ->first();
     }
+
+
+    /**
+     * 根据通知公告id查询系统消息
+     * @param $noticeId
+     * @return mixed
+     */
+    public function getNotificationByNoticeId($noticeId) {
+        $map = [
+            'category' => SystemNotification::COMMON_CATEGORY_NOTICE_NOTIFY,
+            'app_extra->param1' => $noticeId
+        ];
+        return SystemNotification::where($map)->first();
+    }
 }

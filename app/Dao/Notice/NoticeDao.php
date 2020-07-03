@@ -6,6 +6,7 @@ use App\Models\Notices\NoticeGrade;
 use App\Utils\JsonBuilder;
 use App\Models\Notices\Notice;
 use App\Dao\NetworkDisk\MediaDao;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notices\NoticeMedia;
 use App\Utils\ReturnData\MessageBag;
@@ -172,11 +173,13 @@ class NoticeDao
         $field = ['notices.id', 'title', 'content', 'type', 'created_at',
             'inspect_id', 'image','status','notice_organizations.notice_id'];
 
+        $now = Carbon::now()->toDateTimeString();
         array_push($organizationId, 0);
         $map = [
-            'notice_organizations.school_id'=>$schoolId,
-            'type'=>$type,
-            'status'=>Notice::STATUS_PUBLISH
+            ['notice_organizations.school_id', '=', $schoolId],
+            ['type', '=', $type],
+            ['release_time', '<', $now],
+            ['status', '<>', Notice::STATUS_DELETE]
         ];
         return NoticeOrganization::join('notices', function ($join) use ($map, $organizationId) {
             $join->on('notice_organizations.notice_id', '=', 'notices.id')
@@ -197,9 +200,11 @@ class NoticeDao
     public function studentGetNotice($type, $gradeId) {
         $field = ['notices.id', 'title', 'content', 'type', 'created_at',
             'inspect_id', 'image','status', 'notice_grades.notice_id'];
+        $now = Carbon::now()->toDateTimeString();
         $map = [
-            'status' => Notice::STATUS_PUBLISH,
-            'type' => $type,
+            ['type', '=', $type],
+            ['release_time', '<', $now],
+            ['status', '<>', Notice::STATUS_DELETE]
         ];
 
         return NoticeGrade::join('notices',function ($join) use($map, $gradeId) {
@@ -362,6 +367,19 @@ class NoticeDao
             $result = $result->whereBetween('release_time', [$data['start_time'], $data['end_time'].' '.'23:59:59']);
         }
         return $result->paginate(ConfigurationTool::DEFAULT_PAGE_SIZE);
+    }
+
+
+    /**
+     * 定时发布通知
+     * @return mixed
+     */
+    public function getTimingSendNotice() {
+        $start = Carbon::parse('- 5 minute')->toDateTimeString();
+        $end = Carbon::now()->toDateTimeString();
+        return Notice::where('status', Notice::STATUS_UNPUBLISHED)
+            ->whereBetween('release_time',[$start, $end])
+            ->get();
     }
 
 

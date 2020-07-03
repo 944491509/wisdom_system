@@ -148,6 +148,9 @@ class NoticeController extends Controller
         if($data['type'] == Notice::TYPE_INSPECTION && empty($data['inspect_id'])) {
             return JsonBuilder::Error('检查类型不能为空');
         }
+        if($data['status'] == Notice::STATUS_UNPUBLISHED && empty($data['release_time'])) {
+            return JsonBuilder::Error('发布时间不能为空');
+        }
 
         $dao = new  NoticeDao;
         if (isset($data['id'])) {
