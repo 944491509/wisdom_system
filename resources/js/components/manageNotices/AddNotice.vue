@@ -81,7 +81,7 @@
                       inactive-text="">
               </el-switch>
           </el-form-item>
-          <el-form-item label="定时发布" v-if="!notice.status">
+          <el-form-item label="定时发布" v-if="!notice.status" :rules="[{required: true}]">
               <el-date-picker
                       v-model="notice.release_time"
                       type="datetime"
@@ -415,13 +415,13 @@ export default {
         });
         return
       }
-      // if (!this.notice.release_time) {
-      //   this.$message({
-      //     message: '请选择发布时间',
-      //     type: "warning"
-      //   });
-      //   return
-      // }
+      if (!this.notice.status && !this.notice.release_time) {
+        this.$message({
+          message: '请选择定时发布时间',
+          type: "warning"
+        });
+        return
+      }
       this.isLoading = true;
       axios.post(
           '/school_manager/notice/save-notice',
