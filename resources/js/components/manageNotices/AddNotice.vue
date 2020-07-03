@@ -33,6 +33,11 @@
                   <el-option v-for="(ty, idx) in types" :label="ty" :value="idx" :key="idx"></el-option>
               </el-select>
           </el-form-item>
+          <el-form-item v-if="notice.type == 3" label="检查类型" :rules="[{required: true}]">
+              <el-select v-model="notice.inspect_id" placeholder="请选择检查类型">
+                  <el-option v-for="(item, idx) in checkedTypes" :label="item.name" :value="item.id" :key="idx"></el-option>
+              </el-select>
+          </el-form-item>
 
           <el-form-item label="标题" :rules="[{required: true}]">
               <el-input placeholder="标题" v-model="notice.title"></el-input>
@@ -174,6 +179,7 @@ export default {
         ],
         files: [{ required: true, message: "请选择附件" }]
       },
+      checkedTypes:[],
       notice:{
         id:'',
         // school_id:'',
@@ -184,6 +190,7 @@ export default {
         note:'',
         inspect_id:'',
         type:'1',
+        inspect_id:'',
         user_id:'',
         status:false,
         attachments:[],
@@ -199,6 +206,7 @@ export default {
       const dom = document.getElementById('app-init-data-holder');
       // this.notice.school_id = dom.dataset.school;
       this.types = JSON.parse(dom.dataset.types);
+      this.checkedTypes =  JSON.parse(dom.dataset.inspecttypes);
   },
   watch: {
     'notice.title': {
@@ -223,6 +231,13 @@ export default {
     }
   },
   methods: {
+    getCheckTypes(){
+      axios.get("/api/notice/inspect-list?school_id="+this.schoolId).then(res =>{
+        if(Util.isAjaxResOk(res)){
+          this.checkedTypes = res.data.data;
+        }
+      })
+    },
     tDrawerOpen(val) {
       this.innerDrawer = true;
       this.showOrganizationsSelectorFlag = true;

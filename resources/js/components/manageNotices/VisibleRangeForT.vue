@@ -14,7 +14,7 @@
 				</el-autocomplete>
 		</el-form-item>
 		<el-form-item label="部门" label-width="60px">
-			<el-cascader style="width:100%;" popper-class="tags_cascader" ref="tags" :props="props" :show-all-levels="false" v-model="visibleform.tags" @change="changeTag"></el-cascader>
+			<el-cascader style="width:100%;" popper-class="tags_cascader" ref="tags" :props="props" v-model="visibleform.tags" @change="changeTag"></el-cascader>
 		</el-form-item>
 		<el-form-item label="便捷操作" label-width="90px" style="margin-top: 50px;">
 			<el-switch v-model="visibleform.allOran" active-text="所有部门" inactive-text></el-switch>
@@ -53,7 +53,8 @@ export default {
 				label:'name',
 				value:'id',
 				multiple: true,
-				leaf:'status',
+        leaf:'status',
+        checkStrictly:true,
 				lazyLoad :async (node, resolve) => {
 					let organizansList = [];
 					if(node.level == 0){
@@ -74,10 +75,11 @@ export default {
       this.selectTags = []
     },
     thandleOpen(val) {
-      if ( val && val[0].organization_id === 0) {
+      if ( val && val[0] && val[0].organization_id === 0) {
         this.visibleform.allOran = true
       } else {
         this.visibleform.allOran = false
+        this.visibleform.tags = val.map(e=>[e.organization_id])
         this.selectTags = val
       }
     },
@@ -114,7 +116,8 @@ export default {
 		},
 		changeTag() {
 			setTimeout(()=>{
-				let tags = this.$refs.tags.getCheckedNodes(true).map(e=>e.data);
+        let tags = this.$refs.tags.getCheckedNodes().map(e=>e.data);
+        console.log(tags)
 				if(tags.length){
 					this.selectTags = tags
 				}
