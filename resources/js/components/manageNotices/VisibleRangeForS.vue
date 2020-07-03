@@ -15,7 +15,7 @@
 		</el-form-item>
 		<el-form-item label="班级" label-width="60px">
       <el-checkbox-group v-model="selectTags">
-        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :props="props" @change="changeCascader" v-model="form.tags">
+        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :disabled="form.allOran" :props="props" @change="changeCascader" v-model="form.tags">
           <template slot-scope="{ node }">
             <span style="display:block;" @click="hanldeClick(node.data)" v-if="node.level == 1">{{ node.data.name }}</span>
             <el-checkbox v-else-if="currentNode.year == node.data.year"  @click="changeCascader" :label="node.data" :value="node.data">{{node.data.name}}</el-checkbox>
@@ -24,7 +24,7 @@
       </el-checkbox-group>
 		</el-form-item>
   	<el-form-item label="便捷操作" label-width="90px" style="margin-top: 50px;">
-			<el-switch v-model="form.allOran" active-text="所有班级" inactive-text></el-switch>
+			<el-switch v-model="form.allOran" active-text="所有班级" inactive-text @change="switchChange"></el-switch>
 		</el-form-item>
     <el-form-item label="已选班级：" v-if="!form.allOran" >
       <template>
@@ -88,6 +88,12 @@ export default {
 		};
 	},
 	methods: {
+    switchChange(val){
+      if(val){
+        this.selectTags = []
+				this.form.tags = []
+      }
+    },
     hanldeClick(data){
       console.log('handleClick',data)
       this.currentNode = data;
@@ -145,7 +151,7 @@ export default {
       this.$emit('confrim',this.form.allOran ? '0' : this.selectTags)
     },
     handleSelect(item){
-			if(!this.selectTags.find(e => e.grade_id == item.grade_id)){
+			if(!this.selectTags.find(e => e.id == item.id)){
 				this.selectTags.push(item);
 				this.form.tags.push(item.id)
 			}
