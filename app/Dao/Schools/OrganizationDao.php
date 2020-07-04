@@ -181,4 +181,20 @@ class OrganizationDao
         $map = ['school_id'=>$schoolId, 'name'=>$name];
         return Organization::where($map)->get();
     }
+
+
+    /**
+     * 搜索组织部门
+     * @param $schoolId
+     * @param $name
+     * @return mixed
+     */
+    public function searchOrganByName($schoolId, $name) {
+    $map = [
+        ['school_id','=',$schoolId],
+        ['name','like', '%'.$name.'%']
+    ];
+    $field = ['id', 'name'];
+    return Organization::where($map)->select($field)->get();
+}
 }
