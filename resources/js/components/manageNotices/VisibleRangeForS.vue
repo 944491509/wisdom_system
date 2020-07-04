@@ -15,7 +15,7 @@
 		</el-form-item>
 		<el-form-item label="班级" label-width="60px">
       <el-checkbox-group v-model="selectTags">
-        <el-cascader style="width:100%;" popper-class="tags_stu_cascader" ref="tags" :disabled="form.allOran" :props="props" @change="changeCascader" v-model="form.tags">
+        <el-cascader style="width:100%;" separator='' popper-class="tags_stu_cascader" ref="tags" :disabled="form.allOran" :props="props" @change="changeCascader" v-model="form.tags">
           <template slot-scope="{ node }">
             <span style="display:block;" @click="hanldeClick(node.data)" v-if="node.level == 1">{{ node.data.name }}</span>
             <el-checkbox v-else-if="currentNode.year == node.data.year"  @click="changeCascader" :label="node.data" :value="node.data">{{node.data.name}}</el-checkbox>
