@@ -97,19 +97,19 @@ export default {
       }
     },
     async searchOrganizansList(queryString) {
-		let organizansList = [];
-		await axios
-			.post("/Oa/tissue/searchOrganization", {
-				school_id: this.schoolId,
-			 	keyword: queryString
-			})
-			.then(res => {
-			if (Util.isAjaxResOk(res)) {
-				organizansList = res.data.data.organ || [];
-			}
-			});
-		return organizansList;
-	},
+      let organizansList = [];
+      await axios
+        .post("/Oa/tissue/searchOrganization", {
+          school_id: this.schoolId,
+          keyword: queryString
+        })
+        .then(res => {
+          if (Util.isAjaxResOk(res)) {
+            organizansList = res.data.data || [];
+          }
+        });
+      return organizansList;
+    },
     async getOrganizansList(parent_id = "", queryString) {
       let organizansList = [];
       await axios
@@ -130,7 +130,8 @@ export default {
         cb([]);
         return;
       }
-      let organ = await this.searchOrganizansList(queryString);
+	  let organ = await this.searchOrganizansList(queryString);
+	  console.log(organ)
       cb(organ || []);
     },
     handleSelect(item) {
