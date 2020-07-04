@@ -140,6 +140,9 @@ class OrganizationController extends Controller
     public function searchOrganization(MyStandardRequest $request) {
         $user = $request->user();
         $schoolId = $user->getSchoolId();
+        if(!is_null($schoolId)) {
+            $schoolId = $request->get('school_id');
+        }
         $keyword = $request->get('keyword');
         $dao = new OrganizationDao();
         $list = $dao->searchOrganByName($schoolId, $keyword);
