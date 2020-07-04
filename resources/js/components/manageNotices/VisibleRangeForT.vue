@@ -100,7 +100,8 @@ export default {
 		let organizansList = [];
 		await axios
 			.post("/Oa/tissue/searchOrganization", {
-			 keyword: queryString
+				school_id: this.schoolId,
+			 	keyword: queryString
 			})
 			.then(res => {
 			if (Util.isAjaxResOk(res)) {
