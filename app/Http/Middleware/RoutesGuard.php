@@ -28,14 +28,17 @@ class RoutesGuard
     {
         $currentRoute = Route::currentRouteName();
         // 获取当前路由的第一个单词, 判断是否是属于被保护的范围
-        $firstWord = $this->getFirstWordOfCurrentRouteName($currentRoute);
+        $routeArr = explode('.',$currentRoute);
+        $firstWord = $routeArr[0] ?? 'n.a';
+        $secWord = $routeArr[1] ?? 'n.a';
         if(in_array($firstWord, array_keys($this->routesPrefixToBeProtected))){
             // 表示属于被保护的路由范畴. 那么检查一下, 当前用户是否登陆
             /**
              * @var User $user
              */
             $user = $request->user();
-            if(!$user || !in_array($user->getCurrentRoleSlug() , $this->routesPrefixToBeProtected[$firstWord])){
+            if(!$user || (!in_array($user->getCurrentRoleSlug() , $this->routesPrefixToBeProtected[$firstWord])
+                    && $secWord != 'simpleacl')){
                 // 当前用户没有登陆, 或者不允许访问所申请的资源, 因此直接导向到home
                 return redirect('/home');
             }

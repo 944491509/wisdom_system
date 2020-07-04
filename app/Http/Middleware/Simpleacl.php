@@ -13,8 +13,13 @@ class Simpleacl
     {
         $currentRoute = Route::currentRouteName();
         $needcheckRoute = Auth::user()->allPermissions();
+        $onlyAcl = $request->get('onlyacl', '');
         if (!in_array($currentRoute, $needcheckRoute)) {
-            return $next($request);
+            if ($onlyAcl) {
+                return response()->json('ok');
+            }else {
+                return $next($request);
+            }
         }
         if (!in_array($currentRoute, Auth::user()->aclPermissions())) {
             Log::info('simpleacl:', ['route' => $currentRoute, 'user' => Auth::user()->id]);
@@ -31,6 +36,10 @@ class Simpleacl
             return abort(401);
         }
 
-        return $next($request);
+        if ($onlyAcl) {
+            return response()->json('ok');
+        }else {
+            return $next($request);
+        }
     }
 }

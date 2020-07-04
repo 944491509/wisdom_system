@@ -10,6 +10,9 @@ Route::prefix('tissue')->middleware('auth:api')->group(function () {
     // 获取组织和人员
     Route::post('/getOrganization','Api\School\OrganizationController@getOrganization')
         ->name('oa.tissue.getOrganization');
+    Route::post('/searchOrganization','Api\School\OrganizationController@searchOrganization')
+        ->name('oa.tissue.searchOrganization');
+
 });
 
 // 项目管理
