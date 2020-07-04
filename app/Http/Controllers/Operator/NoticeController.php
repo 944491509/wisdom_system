@@ -11,6 +11,7 @@ use App\Dao\Notice\NoticeInspectDao;
 use App\Models\Notices\Notice;
 use App\Utils\FlashMessageBuilder;
 use App\Utils\JsonBuilder;
+use Carbon\Carbon;
 
 class NoticeController extends Controller
 {
@@ -141,13 +142,20 @@ class NoticeController extends Controller
         unset($data['grade_id']);
 
 
-        if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
-            return JsonBuilder::Error('封面图不能为空');
-        }
+//        if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
+//            return JsonBuilder::Error('封面图不能为空');
+//        }
 
         if($data['type'] == Notice::TYPE_INSPECTION && empty($data['inspect_id'])) {
             return JsonBuilder::Error('检查类型不能为空');
         }
+//        if($data['status'] == Notice::STATUS_UNPUBLISHED ) {
+//            if(empty($data['release_time'])) {
+//                return JsonBuilder::Error('发布时间不能为空');
+//            }
+//        } else {
+//            $data['release_time'] = Carbon::now()->toDateTimeString();
+//        }
 
         $dao = new  NoticeDao;
         if (isset($data['id'])) {
@@ -155,7 +163,7 @@ class NoticeController extends Controller
         } else {
             $result = $dao->add($data, $selectedOrganizations, $gradeIds);
         }
-        if ($result->isSuccess() && $result->getData()->status) {
+        if ($result->isSuccess() && $result->getData()->status == Notice::STATUS_PUBLISH) {
             event(new NoticeSendEvent($result->getData()));
         }
         return $result->isSuccess() ? JsonBuilder::Success() : JsonBuilder::Error($result->getMessage());

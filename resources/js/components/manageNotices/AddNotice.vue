@@ -2,7 +2,7 @@
   <div class="drawer_content">
     <div class="card-body p-3">
       <el-form ref="noticeForm" :model="notice" label-width="80px">
-          <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;">
+          <el-form-item label="可见范围" style="border-top: 1px solid #EAEDF2;border-bottom: 1px solid #eaedf2;" :rules="[{required: true}]">
             <div class="selectBlock">
               <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="tDrawerOpen(notice.organization)">选择教师可见范围</el-button>
               <div class="dayu">
@@ -28,49 +28,29 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="类型">
+          <el-form-item label="类型" :rules="[{required: true}]">
               <el-select v-model="notice.type" placeholder="请选择类型">
                   <el-option v-for="(ty, idx) in types" :label="ty" :value="idx" :key="idx"></el-option>
               </el-select>
-              <!-- <el-select v-show="showInspectTypesSelectorFlag"
-                      v-model="notice.inspect_id"
-                      placeholder="请选择检查类型">
-                  <el-option
-                          v-for="item in inspectTypes"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id">
-                  </el-option>
-              </el-select> -->
+          </el-form-item>
+          <el-form-item v-if="notice.type == 3" label="检查类型" :rules="[{required: true}]">
+              <el-select v-model="notice.inspect_id" placeholder="请选择检查类型">
+                  <el-option v-for="(item, idx) in checkedTypes" :label="item.name" :value="item.id" :key="idx"></el-option>
+              </el-select>
           </el-form-item>
 
-          <el-form-item label="标题">
-              <el-input placeholder="必填: 标题" v-model="notice.title"></el-input>
+          <el-form-item label="标题" :rules="[{required: true}]">
+              <el-input placeholder="标题" v-model="notice.title"></el-input>
           </el-form-item>
 
-          <el-form-item label="发布">
-              <el-switch
-                      v-model="notice.status"
-                      active-text="发布"
-                      inactive-text="暂不发布">
-              </el-switch>
-          </el-form-item>
 
-          <el-form-item label="文字说明">
-              <el-input rows="5" placeholder="选填: 通知内容" type="textarea" v-model="notice.content"></el-input>
-          </el-form-item>
-          <el-form-item label="发布日期">
-              <el-date-picker
-                      v-model="notice.release_time"
-                      type="datetime"
-                      format="yyyy-MM-dd HH:mm:ss"
-                      value-format="yyyy-MM-dd HH:mm:ss"
-                      placeholder="选择日期">
-              </el-date-picker>
+
+          <el-form-item label="文字说明" :rules="[{required: true}]">
+              <el-input rows="5" placeholder="文字说明" type="textarea" v-model="notice.content" maxlength="1000" show-word-limit></el-input>
           </el-form-item>
 
           <div>
-              <el-form-item label="封面图片">
+              <el-form-item label="封面图片" >
                   <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showFileManagerFlag=true">选择封面图片</el-button>
               </el-form-item>
               <div v-if="notice.image">
@@ -82,7 +62,7 @@
 
           <div>
               <el-form-item label="附件">
-                  <el-button size="mini" icon="el-icon-document" v-on:click="showAttachmentManagerFlag=true">选择附件</el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-document" v-on:click="showAttachmentManagerFlag=true">选择附件</el-button>
               </el-form-item>
               <div v-if="notice.attachments && notice.attachments.length > 0">
                   <p class=" mb-4" v-for="(atta, idx) in notice.attachments" :key="idx">
@@ -93,7 +73,25 @@
                   </p>
               </div>
           </div>
+          <el-form-item label="立即发布">
+              <el-switch
+                      v-model="notice.status"
+                      active-text="发布"
+                      @change="statusChange"
+                      inactive-text="">
+              </el-switch>
+          </el-form-item>
+          <el-form-item label="定时发布" v-if="!notice.status">
+              <el-date-picker
+                      v-model="notice.release_time"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      placeholder="选择日期">
+              </el-date-picker>
+          </el-form-item>
 
+          <div style="margin-bottom: 26px;margin-top: -20px;font-size: 12px;color: #287bd0;margin-left: 14px;">注: 不选择发布，则默认内容保存，需要手动发布</div>
           <el-form-item>
               <el-button type="primary" @click="onSubmit">立即保存</el-button>
               <el-button>取消</el-button>
@@ -184,6 +182,7 @@ export default {
         ],
         files: [{ required: true, message: "请选择附件" }]
       },
+      checkedTypes:[],
       notice:{
         id:'',
         // school_id:'',
@@ -194,6 +193,7 @@ export default {
         note:'',
         inspect_id:'',
         type:'1',
+        inspect_id:'',
         user_id:'',
         status:false,
         attachments:[],
@@ -209,6 +209,7 @@ export default {
       const dom = document.getElementById('app-init-data-holder');
       // this.notice.school_id = dom.dataset.school;
       this.types = JSON.parse(dom.dataset.types);
+      this.checkedTypes =  JSON.parse(dom.dataset.inspecttypes);
   },
   watch: {
     'notice.title': {
@@ -233,15 +234,26 @@ export default {
     }
   },
   methods: {
+    statusChange(val){
+      console.log('statusChange')
+      this.notice.release_time = ''
+    },
+    getCheckTypes(){
+      axios.get("/api/notice/inspect-list?school_id="+this.schoolId).then(res =>{
+        if(Util.isAjaxResOk(res)){
+          this.checkedTypes = res.data.data;
+        }
+      })
+    },
     tDrawerOpen(val) {
-      this.innerDrawer = true; 
+      this.innerDrawer = true;
       this.showOrganizationsSelectorFlag = true;
       this.$nextTick(() => {
         this.$refs.tDrawer.thandleOpen(val)
       })
     },
     sDrawerOpen(val) {
-      this.innerDrawer = true; 
+      this.innerDrawer = true;
       this.showOrganizationsSelectorFlag = false;
       this.$nextTick(() => {
         this.$refs.sDrawer.shandleOpen(val)
@@ -289,7 +301,7 @@ export default {
       }
       this.form.studentTags = this.notice.grade
       this.form.teacherTags = this.notice.organization
-      
+
     },
     handleClose(done) {
       // this.releaseDrawer = true
@@ -403,13 +415,13 @@ export default {
         });
         return
       }
-      if (!this.notice.release_time) {
-        this.$message({
-          message: '请选择发布时间',
-          type: "warning"
-        });
-        return
-      }
+      // if (!this.notice.status && !this.notice.release_time) {
+      //   this.$message({
+      //     message: '请选择定时发布时间',
+      //     type: "warning"
+      //   });
+      //   return
+      // }
       this.isLoading = true;
       axios.post(
           '/school_manager/notice/save-notice',
