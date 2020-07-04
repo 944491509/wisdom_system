@@ -46,7 +46,7 @@
 
 
           <el-form-item label="文字说明" :rules="[{required: true}]">
-              <el-input rows="5" placeholder="文字说明" type="textarea" v-model="notice.content"></el-input>
+              <el-input rows="5" placeholder="文字说明" type="textarea" v-model="notice.content" maxlength="1000" show-word-limit></el-input>
           </el-form-item>
 
           <div>
@@ -73,7 +73,7 @@
                   </p>
               </div>
           </div>
-          <el-form-item label="立即发布" :rules="[{required: true}]">
+          <el-form-item label="立即发布">
               <el-switch
                       v-model="notice.status"
                       active-text="发布"
@@ -81,7 +81,7 @@
                       inactive-text="">
               </el-switch>
           </el-form-item>
-          <el-form-item label="定时发布" v-if="!notice.status" :rules="[{required: true}]">
+          <el-form-item label="定时发布" v-if="!notice.status">
               <el-date-picker
                       v-model="notice.release_time"
                       type="datetime"
@@ -91,7 +91,7 @@
               </el-date-picker>
           </el-form-item>
 
-
+          <div style="margin-bottom: 26px;margin-top: -20px;font-size: 12px;color: #287bd0;margin-left: 14px;">注: 不选择发布，则默认内容保存，需要手动发布</div>
           <el-form-item>
               <el-button type="primary" @click="onSubmit">立即保存</el-button>
               <el-button>取消</el-button>
@@ -415,13 +415,13 @@ export default {
         });
         return
       }
-      if (!this.notice.status && !this.notice.release_time) {
-        this.$message({
-          message: '请选择定时发布时间',
-          type: "warning"
-        });
-        return
-      }
+      // if (!this.notice.status && !this.notice.release_time) {
+      //   this.$message({
+      //     message: '请选择定时发布时间',
+      //     type: "warning"
+      //   });
+      //   return
+      // }
       this.isLoading = true;
       axios.post(
           '/school_manager/notice/save-notice',

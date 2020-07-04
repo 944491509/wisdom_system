@@ -142,20 +142,20 @@ class NoticeController extends Controller
         unset($data['grade_id']);
 
 
-        if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
-            return JsonBuilder::Error('封面图不能为空');
-        }
+//        if($data['type'] == Notice::TYPE_NOTICE && empty($data['image'])) {
+//            return JsonBuilder::Error('封面图不能为空');
+//        }
 
         if($data['type'] == Notice::TYPE_INSPECTION && empty($data['inspect_id'])) {
             return JsonBuilder::Error('检查类型不能为空');
         }
-        if($data['status'] == Notice::STATUS_UNPUBLISHED ) {
-            if(empty($data['release_time'])) {
-                return JsonBuilder::Error('发布时间不能为空');
-            }
-        } else {
-            $data['release_time'] = Carbon::now()->toDateTimeString();
-        }
+//        if($data['status'] == Notice::STATUS_UNPUBLISHED ) {
+//            if(empty($data['release_time'])) {
+//                return JsonBuilder::Error('发布时间不能为空');
+//            }
+//        } else {
+//            $data['release_time'] = Carbon::now()->toDateTimeString();
+//        }
 
         $dao = new  NoticeDao;
         if (isset($data['id'])) {
