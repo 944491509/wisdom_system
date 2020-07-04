@@ -10,7 +10,7 @@ use App\Utils\UI\Button;
         <div class="card-head">
           <header>{{ $pageTitle }}</header>
         </div>
-        <div class="card-body">
+        <div class="card-body" id="notificationsList">
           <div class="row">
             <div class="col-12 mb-2">
               <form action="{{ route('admin.notifications.list') }}" method="get"  id="add-building-form">
@@ -49,7 +49,9 @@ use App\Utils\UI\Button;
                     <td>{{ $val->created_at }}</td>
                     <td class="text-center">
                       {{ Anchor::Print(['text'=>'编辑','class'=>'btn btn-primary','href'=>route('admin.notifications.edit',['uuid'=>$val['uuid']])], Button::TYPE_DEFAULT,'edit') }}
-                      {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','href'=>route('admin.notifications.delete',['uuid'=>$val['uuid']])], Button::TYPE_DANGER,'trash') }}
+
+                      <a  href="javascript:void(0)" class="btn btn-round btn-danger" itemid="{{$val['uuid']}}"  @click="deleteItem" class="btn btn-round btn-danger"><i class="fa fa-trash"></i>删除</a>
+                      {{-- {{ Anchor::Print(['text'=>'删除','class'=>'btn-delete-room btn-need-confirm','href'=>route('admin.notifications.delete',['uuid'=>$val['uuid']])], Button::TYPE_DANGER,'trash') }} --}}
                     </td>
                   </tr>
                 @endforeach

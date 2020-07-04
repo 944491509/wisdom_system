@@ -112,7 +112,16 @@ export default {
 		editBookHandler: function(book) {
 			this.$emit("book-edit", { book: book });
 		},
-		deleteHandler: function(book) {
+		deleteHandler: async function(book) {
+      // /teacher/textbook/delete
+      let onlyacl =  await axios.post(
+        '/teacher/textbook/delete',
+        {
+          onlyacl:1
+        }
+      )
+      if(onlyacl.data != 'ok') return;
+
 			this.$confirm("此操作将永久删除该教材, 是否继续?", "提示", {
 				confirmButtonText: "确定",
 				cancelButtonText: "取消",

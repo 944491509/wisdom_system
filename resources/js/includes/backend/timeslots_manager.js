@@ -31,9 +31,12 @@ if (document.getElementById("school-time-slots-manager")) {
       };
     },
     methods: {
-      editTimeSlotHandler: function (payload) {
+      editTimeSlotHandler: async function (payload) {
+
         this.mode = payload.type;
         if (payload.type == "add") {
+          // let onlyacl =  await addTimeSlot({onlyacl:1})
+          // if(onlyacl.data != 'ok') return;
           this.currentTimeSlot = {
             id: "",
             from: "",
@@ -47,6 +50,9 @@ if (document.getElementById("school-time-slots-manager")) {
           return;
         }
         if (payload.type == "edit") {
+          // let onlyacl =  await saveTimeSlot({onlyacl:1})
+          // if(onlyacl.data != 'ok') return;
+
           const keys = Object.keys(payload.timeSlot);
           keys.forEach(key => {
             this.currentTimeSlot[key] = payload.timeSlot[key];
