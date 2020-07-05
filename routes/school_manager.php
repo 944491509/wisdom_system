@@ -186,6 +186,9 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     // 批量领取
     Route::post('textbook-submit', 'TextbookController@submit')
         ->name('school_manager.textbook.submit');
+    // 编辑
+    Route::post('textbook-save', 'TextbookController@save')
+        ->name('school_manager.textbook.save');
 
 
     // 校历事件类型标签
