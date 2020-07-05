@@ -214,8 +214,8 @@ if (document.getElementById("textbook-manager-app")) {
       addNewTextbook: async function() {
         // /api/textbook/save
         let onlyacl =  await axios.post(
-          '/api/textbook/save',
-          {onlyacl: 1 }
+          '/school_manager/textbook-save',
+          {onlyacl:1}
         )
         if(onlyacl.data != 'ok') return;
 
@@ -226,8 +226,8 @@ if (document.getElementById("textbook-manager-app")) {
       editBookAction: async function(payload) {
         //  /api/textbook/save
         let onlyacl =  await axios.post(
-          '/api/textbook/save',
-          {onlyacl: 1 }
+          '/school_manager/textbook-save',
+          {onlyacl:1}
         )
         if(onlyacl.data != 'ok') return;
 
