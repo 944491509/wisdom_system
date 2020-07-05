@@ -69,11 +69,24 @@ Vue.component("AttendanceList", {
     };
   },
   methods: {
-    _record(attendance_id, title) {
+    async _record(attendance_id) {
+      // /school_manager/teacher-attendance/load-clockins-daycount
+      let onlyacl =  await axios.post(
+        '/school_manager/teacher-attendance/load-clockins-daycount',
+        {onlyacl: 1 }
+      )
+      if(onlyacl.data != 'ok') return;
       console.log('AAAAAA',attendance_id)
       this.SETOPTIONS({ isShowRecord: true, attendance_id, groupTitle: title});
     },
     async _holiday_set (attendance_id) {
+      // /school_manager/teacher-attendance/load-attendance
+      let onlyacl =  await axios.post(
+        '/school_manager/teacher-attendance/load-attendance',
+        {onlyacl: 1 }
+      )
+      if(onlyacl.data != 'ok') return;
+
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       const exceptiondays = res.exceptiondays.map(({day}) => (day))
       this.SETOPTIONOBJ({
@@ -85,6 +98,11 @@ Vue.component("AttendanceList", {
       this.SETOPTIONS({ visibleHolidaySet: true,attendance_id,exceptiondays });
     },
     async _edit(attendance_id) {
+      let onlyacl =  await axios.post(
+        '/school_manager/teacher-attendance/save-exceptionday',
+        {onlyacl: 1 }
+      )
+      if(onlyacl.data != 'ok') return;
       this.SETOPTIONS({ visibleFormDrawer: true, isEditFormLoading: true,isCreated:false });
       if(!this.organizations.length) {
         let [, orgs] = await catchErr(_load_all({ school_id:this.schoolIdx }));
@@ -109,6 +127,12 @@ Vue.component("AttendanceList", {
       res && this.SETOPTIONS({ formData, isEditFormLoading: false,isCreated:false,teacherName:"" });
     },
     async _clock_set(attendance_id) {
+      let onlyacl =  await axios.post(
+        '/school_manager/teacher-attendance/load-attendance',
+        {onlyacl: 1 }
+      )
+      if(onlyacl.data != 'ok') return;
+
       this.SETOPTIONS({ visibleClockDrawer: true, isEditFormLoading: true });
       const [err, res] = await catchErr(_load_attendance({ attendance_id }));
       if (err) return false;
