@@ -7,7 +7,7 @@
                     <header>评价模板</header>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body" id="evaluateContentList">
                     <div class="row">
                         <div class="row table-padding">
                             <div class="col-md-6 col-sm-6 col-6">
@@ -39,7 +39,8 @@
                                             <td> {{ $val->created_at }}</td>
                                             <td class="text-center">
                                             {{ \App\Utils\UI\Anchor::Print(['text'=>'编辑','class'=>'btn-edit-evaluate','href'=>route('school_manager.evaluate.content-edit',['id'=>$val->id])], \App\Utils\UI\Button::TYPE_DEFAULT,'edit') }}
-                                            {{ \App\Utils\UI\Anchor::Print(['text'=>'删除','class'=>'btn-delete-evaluate btn-need-confirm','href'=>route('school_manager.evaluate.content-delete',['id'=>$val->id])], \App\Utils\UI\Button::TYPE_DANGER,'trash') }}
+                                            {{-- {{ \App\Utils\UI\Anchor::Print(['text'=>'删除','class'=>'btn-delete-evaluate btn-need-confirm','href'=>route('school_manager.evaluate.content-delete',['id'=>$val->id])], \App\Utils\UI\Button::TYPE_DANGER,'trash') }} --}}
+                                            <a  href="javascript:void(0)" class="btn btn-round btn-danger" itemid="{{$val['id']}}"  @click="deleteItem" class="btn btn-round btn-danger"><i class="fa fa-trash"></i>删除</a>
                                         </td>
                                         </tr>
                                     @endforeach

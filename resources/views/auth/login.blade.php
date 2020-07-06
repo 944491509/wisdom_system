@@ -40,7 +40,7 @@
                     </label>
                 </div>
                 <div class="container-login100-form-btn">
-                    <button class="login100-form-btn">
+                    <button class="login100-form-btn" onclick="localStorage.setItem('initLogin', '1')">
                         登录
                     </button>
                 </div>

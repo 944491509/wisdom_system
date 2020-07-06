@@ -27,13 +27,16 @@ if (document.getElementById("school-time-slots-manager")) {
         mode: "add",
         schoolUuid: "",
         grades: [],
-        schoolid: ""
+        schoolid: "",
       };
     },
     methods: {
-      editTimeSlotHandler: function (payload) {
+      editTimeSlotHandler: async function (payload) {
+
         this.mode = payload.type;
         if (payload.type == "add") {
+          // let onlyacl =  await addTimeSlot({onlyacl:1})
+          // if(onlyacl.data != 'ok') return;
           this.currentTimeSlot = {
             id: "",
             from: "",
@@ -47,6 +50,9 @@ if (document.getElementById("school-time-slots-manager")) {
           return;
         }
         if (payload.type == "edit") {
+          // let onlyacl =  await saveTimeSlot({onlyacl:1})
+          // if(onlyacl.data != 'ok') return;
+
           const keys = Object.keys(payload.timeSlot);
           keys.forEach(key => {
             this.currentTimeSlot[key] = payload.timeSlot[key];
@@ -169,6 +175,14 @@ if (document.getElementById("school-time-slots-manager")) {
           });
         });
 
+      },
+      formSave(){
+        axios.post('/school_manager/school/config/update').then(res => {
+          console.log('res', res)
+          if (res.status === 200) {
+            document.getElementById("btn-save-school-config").click()
+          }
+        })
       }
     },
     mounted() {
