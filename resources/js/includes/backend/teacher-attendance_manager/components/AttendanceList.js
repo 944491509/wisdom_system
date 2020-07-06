@@ -80,9 +80,9 @@ Vue.component("AttendanceList", {
       this.SETOPTIONS({ isShowRecord: true, attendance_id, groupTitle: title});
     },
     async _holiday_set (attendance_id) {
-      // /school_manager/teacher-attendance/load-attendance
+      // /school_manager/teacher-attendance/save-exceptionday
       let onlyacl =  await axios.post(
-        '/school_manager/teacher-attendance/load-attendance',
+        '/school_manager/teacher-attendance/save-exceptionday',
         {onlyacl: 1 }
       )
       if(onlyacl.data != 'ok') return;
@@ -127,8 +127,9 @@ Vue.component("AttendanceList", {
       res && this.SETOPTIONS({ formData, isEditFormLoading: false,isCreated:false,teacherName:"" });
     },
     async _clock_set(attendance_id) {
+      // /school_manager/teacher-attendance/save-clocksets
       let onlyacl =  await axios.post(
-        '/school_manager/teacher-attendance/load-attendance',
+        '/school_manager/teacher-attendance/save-clocksets',
         {onlyacl: 1 }
       )
       if(onlyacl.data != 'ok') return;
