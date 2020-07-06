@@ -166,4 +166,44 @@ class TextbookController extends Controller
         return redirect()->route('school_manager.textbook.users',['user_id'=>$userId, 'year'=>$year]);
     }
 
+
+    /**
+     * 编辑教材 添加和保存
+     * @param TextbookRequest $request
+     * @return string
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function save(TextbookRequest $request) {
+        $all = $request->all();
+        $rules = [
+            'name' => 'required',
+            'edition' => 'required',
+            'author' => 'required',
+            'press' => 'required',
+            'type' => 'required | int',
+            'purchase_price' => 'required',
+            'price' => 'required',
+            'year' => 'required | int',
+            'term' => 'required | int',
+            'school_id' => 'required | int',
+        ];
+        unset($all['type_text']);
+        unset($all['term_text']);
+
+        $this->validate($request,$rules);
+        $textbookDao = new TextbookDao();
+        if(empty($all['id'])) {
+            $result = $textbookDao->create($all);
+        } else {
+            $result = $textbookDao->editById($all);
+        }
+
+        $msg = $result->getMessage();
+        if($result->isSuccess()) {
+            $data = $result->getData();
+            return JsonBuilder::Success(['id'=>$data['id']], $msg);
+        } else {
+            return JsonBuilder::Error($msg);
+        }
+    }
 }

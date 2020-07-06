@@ -1,4 +1,5 @@
 // window._ = require('lodash');
+import {Message} from 'element-ui';
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -33,9 +34,65 @@ if (token) {
         'Authorization': 'Bearer ' + API_TOKEN.content,
         'Accept': 'application/json',
     };
+    window.axios.interceptors.response.use(function (response) {
+      console.log('进入axios response 拦截')
+      if(response.status == 200 ){
+        if(response.data.code && response.data.code != 1000){
+          Message({
+            message: response.data.message,
+            type: 'warning'
+          });
+        }
+        return response;
+      }
+      if(response.status == 401){
+        Message({
+          message: '权限不足',
+          type: 'warning'
+        });
+
+      }else{
+        Message({
+          message: response.statusText,
+          type: 'warning'
+        });
+      }
+      return response;
+    }, function (error) {
+      let message ="";
+      try{
+        message = error.response.data.error.description ;
+        if(error.response.status == 401){
+          message = "权限不足"
+        }
+      }catch(e){
+        message = error.message
+      }
+      Message({
+        message: message,
+        type: 'warning'
+      });
+      return Promise.reject(error);
+    });
 } else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
+
+
+$(".page-content-wrapper").on('click',"a:not(#consultDeleteBtn)",function(e){
+  var href = $(this).attr('href');
+  if(href && href.indexOf('javascript') == -1){
+    console.log('进入a 标签 拦截')
+    let aclhref =  href + (href.indexOf('?') == -1? '?onlyacl=1':'&onlyacl=1')
+    window.axios.get(aclhref).then(res => {
+      window.location.href = href;
+    }).catch(e => {
+      console.log('错误')
+    })
+    e.preventDefault();
+    return false;
+  }
+})
 
 
 /**

@@ -211,13 +211,26 @@ if (document.getElementById("textbook-manager-app")) {
         // 显示对话框
         this.showConnectedCoursesFlag = true;
       },
-      addNewTextbook: function() {
+      addNewTextbook: async function() {
+        // /api/textbook/save
+        let onlyacl =  await axios.post(
+          '/school_manager/textbook-save',
+          {onlyacl:1}
+        )
+        if(onlyacl.data != 'ok') return;
+
         this.showTextbookFormFlag = true;
         this.resetForm();
       },
       // 编辑课本
-      editBookAction: function(payload) {
-        console.log();
+      editBookAction: async function(payload) {
+        //  /api/textbook/save
+        let onlyacl =  await axios.post(
+          '/school_manager/textbook-save',
+          {onlyacl:1}
+        )
+        if(onlyacl.data != 'ok') return;
+
         this.textbookModel = payload.book;
         delete this.textbookModel.courses;
         this.showTextbookFormFlag = true;
