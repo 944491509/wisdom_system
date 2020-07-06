@@ -56,6 +56,15 @@ class SystemNotificationController extends Controller
      */
     public function newsList(Request $request) {
         $user = $request->user();
+        if($user->isSchoolManager()) {
+            $data = [
+                'currentPage' => 0,
+                'lastPage'    => 0,
+                'total'       => 0,
+                'list'        => [],
+            ];
+            return JsonBuilder::Success($data);
+        }
         $dao = new SystemNotificationDao();
         $category = SystemNotification::teacherPcNewsCategory();
         $schoolId = $user->getSchoolId();
@@ -112,6 +121,9 @@ class SystemNotificationController extends Controller
      */
     public function unreadNews(Request $request) {
         $user = $request->user();
+        if($user->isSchoolManager()) {
+            return JsonBuilder::Success(['unread'=>0]);
+        }
         $schoolId = $user->getSchoolId();
         $dao = new SystemNotificationDao();
         $category = SystemNotification::teacherPcNewsCategory();
