@@ -160,9 +160,23 @@ class SystemNotification extends Model
         }
         return $category;
     }
+
+    /**
+     * 教师组织关联消息
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function systemNotificationsOrganizations()
     {
         return $this->hasMany(SystemNotificationsOrganization::class, 'system_notifications_id');
+    }
+
+
+    /**
+     * 学生班级关联消息
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function systemNotificationsGrades() {
+        return $this->hasMany(SystemNotificationsGrades::class,'system_notifications_id');
     }
 
 

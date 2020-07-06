@@ -80,7 +80,7 @@ class NotificationsController extends Controller
           ]
         );
         $systemNotificationDao = new SystemNotificationDao();
-        $result = $systemNotificationDao->create($addData,[]);
+        $result = $systemNotificationDao->create($addData,[],[]);
         if($result) {
             //为什么不用InternalMessage操作
             Push::dispatch($addData['title'], $addData['content'], $addData['app_extra'], $addData['school_id'], $addData['to'], []);
