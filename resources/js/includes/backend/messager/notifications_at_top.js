@@ -26,12 +26,7 @@ if (dom) {
       };
     },
     created() {
-      const that = this;
-      that.loadLastSixSystemMessage();
-      //   每分钟查询一次
-      window.setInterval(function () {
-        that.loadLastSixSystemMessage();
-      }, 60000)
+      this.loadLastSixSystemMessage();
     },
     methods: {
       loadLastSixSystemMessage: function () {
@@ -40,16 +35,25 @@ if (dom) {
             if (Util.isAjaxResOk(res)) {
               // 检查是不是有新的消息
               if (res.data.data.unread !== this.count && res.data.data.unread > this.count) {
-                this.$notify.info({
-                  title: '消息',
-                  message: `你有${res.data.data.unread - this.count}条新消息`,
-                  duration: 0
-                });
+                if(window.localStorage.getItem('initLogin')){
+                  this.$notify.info({
+                    title: '消息',
+                    message: `你有${res.data.data.unread - this.count}条新消息`,
+                    duration: 0
+                  });
+                  window.localStorage.removeItem('initLogin')
+                }
               }
               this.count = res.data.data.unread
             }
           })
         }
+      },
+      viewNotifications() {
+        this.notifyDrawer = true
+        setTimeout(() => {
+          this.loadLastSixSystemMessage()
+        }, 3000)
       }
     }
   })
