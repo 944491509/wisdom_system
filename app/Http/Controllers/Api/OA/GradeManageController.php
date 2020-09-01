@@ -48,16 +48,8 @@ class GradeManageController extends Controller
             $grades = $dao->getAllGradesByAdviserId($teacher->id);
             foreach ($grades as $key => $val) {
                 $data[$key]['grade_id'] = $val->grade->id ?? '';
-                $data[$key]['name']     = $val->grade->name ?? '';
-
-<<<<<<< HEAD
                 $data[$key]['name'] = $val->grade->name ?? '';
-
                 $data[$key]['image'] = [];
-
-=======
-                $data[$key]['image'] = [];
->>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
                 foreach ($val->grade->gradeResource as $k => $v) {
                     $data[$key]['image'][$k]['image_id'] = $v->id;
                     $data[$key]['image'][$k]['path']     = $v->path;
@@ -120,16 +112,10 @@ class GradeManageController extends Controller
         $yearManger = $teacher->yearManger;
         if ($yearManger) {
             // 年级主任
-<<<<<<< HEAD
-            $gradeDao   = new GradeDao;
-            $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId(), $yearManger->year);
-            $grades     = [];
-=======
             $gradeDao = new GradeDao;
             $yearGrades = $gradeDao->gradeListByYear($teacher->getSchoolId() ,$yearManger->year);
 
             $grades = [];
->>>>>>> c8aac9882c08b76d27b72a0b42f4efd7d884556a
             foreach ($yearGrades as $key => $value) {
                 $grades[] = $value->GradeManager;
             }
