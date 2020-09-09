@@ -278,7 +278,6 @@ class SchoolConfiguration extends Model
         $startDate = Carbon::parse($year.'-01-01');
 
         $week = $startDate->weeksInYear;
-
         // 工作周
         for ($i = 1; $i <= $week; $i++){
 
@@ -290,13 +289,18 @@ class SchoolConfiguration extends Model
             );
             $startDate = $startDate->addWeek();
         }
+        // 下一年再加5周
+        for ($i = 1; $i <=5; $i++) {
+            $weeks->push(
+                new CalendarWeek('第' . $i . '周',
+                    $startDate->startOfWeek()->toDateString(),
+                    $startDate->endOfWeek()->toDateString()
+                )
+            );
+            $startDate = $startDate->addWeek();
+        }
 
-        $weeks->push(
-            new CalendarWeek('第' . 1 . '周',
-                $startDate->startOfWeek()->toDateString(),
-                $startDate->endOfWeek()->toDateString()
-            )
-        );
+
 
 
         return $weeks;
