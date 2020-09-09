@@ -64,7 +64,7 @@ class Major extends Model
     }
 
     public function grades(){
-        return $this->hasMany(Grade::class);
+        return $this->hasMany(Grade::class)->orderByDesc('year')->orderBy('category_code');
     }
 
     public function plans()
