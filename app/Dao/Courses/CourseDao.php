@@ -546,7 +546,7 @@ class CourseDao
             $map[] = ['term', '=', $data['term']];
         }
         if(!empty($data['keyword'])) {
-            $map[] = ['name', 'like', $data['keyword'].'%'];
+            $map[] = ['name', 'like', '%'.$data['keyword'].'%'];
         }
 
         $return = Course::where($map)
