@@ -30,7 +30,7 @@ use App\Utils\UI\Button;
                         </div>
                          <div class="form-group">
                             <label for="max-employees">学校Logo</label>
-                            <input required type="file" class="form-control" id="max-employees" value="" placeholder="学校Logo, 0表示无上限" name="logo">
+                            <input required type="file" class="form-control" id="max-employees" value="" placeholder="学校Logo" name="logo">
                             <img src="{{$school->logo}}" alt="">
                          </div>
                         <?php
