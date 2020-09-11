@@ -132,12 +132,12 @@ class TeacherDataImporter extends Command
                 $gu->user_id = $u->id;
                 $gu->name = $u->name;
                 $gu->user_type = Role::TEACHER;
-                $gu->school_id = 1;
+                $gu->school_id = 2;
                 $gu->campus_id = 1;
-                $gu->institute_id = 508;
+                $gu->institute_id = 0;
                 $gu->department_id = 0;
                 $gu->grade_id = 0;
-                $gu->last_updated_by = 1;
+                $gu->last_updated_by = 0;
                 $gu->save();
                 echo 'GU added'.PHP_EOL;
             }
