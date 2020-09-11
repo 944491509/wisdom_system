@@ -102,6 +102,18 @@ class FacilityController extends Controller
         return redirect()->route('school_manager.facility.list');
     }
 
+    /**
+     * 上传班牌视频
+     * @param MonitoringRequest $request
+     */
+    public function video(MonitoringRequest $request)
+    {
+        return view('school_manager.facility.video', $this->dataForView);
+    }
+
+
+
+
 
     /**
      * 根据校区获取建筑列表

@@ -132,12 +132,12 @@ class TeacherDataImporter extends Command
                 $gu->user_id = $u->id;
                 $gu->name = $u->name;
                 $gu->user_type = Role::TEACHER;
-                $gu->school_id = 1;
+                $gu->school_id = 2;
                 $gu->campus_id = 1;
-                $gu->institute_id = 508;
+                $gu->institute_id = 0;
                 $gu->department_id = 0;
                 $gu->grade_id = 0;
-                $gu->last_updated_by = 1;
+                $gu->last_updated_by = 0;
                 $gu->save();
                 echo 'GU added'.PHP_EOL;
             }
@@ -179,10 +179,10 @@ class TeacherDataImporter extends Command
 
                 $profile->user_id = $user->id;
                 $profile->serial_number = substr($data[2],10);
-                $profile->group_name = $data[8]??'n.a';
+//                $profile->group_name = $data[8]??'n.a';
                 $profile->education = $data[7]??null;
                 $profile->joined_at = $joinAt ? $joinAt->format('Y-m-d'):null;
-                $profile->title = $data[11]??null;
+                $profile->title = $data[11]??'无';
                 $profile->gender = $data[1] === '男' ? 1 : 2;
                 $profile->id_number = $data[2];
                 $profile->birthday = GradeAndYearUtil::IdNumberToBirthday($data[2])->getData();
@@ -193,8 +193,8 @@ class TeacherDataImporter extends Command
                 $profile->final_education = $data[9]??null;
                 $profile->final_major = $data[10]??null;
                 $profile->title_start_at = $data[12]??null;
-                $profile->title1_at = $data[15]??null;
-                $profile->title1_hired_at = $data[16]??null;
+//                $profile->title1_at = $data[15]??null;
+//                $profile->title1_hired_at = $data[16]??null;
                 $profile->hired_at = $data[14]??null;
                 $profile->hired = $data[13]=='是'?true:false;
                 $profile->notes = $data[17]??null;
