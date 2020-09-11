@@ -29,7 +29,7 @@ $years = range(2014, $currentYear+1);
 </div>
 <div class="form-group">
     <label for="grade-desc-input">简介</label>
-    <textarea required class="form-control" name="grade[description]" id="grade-desc-input" cols="30" rows="10" placeholder="班级简介">{{ $grade->description }}</textarea>
+    <textarea  class="form-control" name="grade[description]" id="grade-desc-input" cols="30" rows="10" placeholder="班级简介">{{ $grade->description }}</textarea>
 </div>
 <?php
 Button::Print(['id'=>'btn-save-grade','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
