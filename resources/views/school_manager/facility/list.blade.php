@@ -15,6 +15,11 @@
                                     创建 <i class="fa fa-plus"></i>
                                 </a>
                             </div>
+                            <div class="col-md-6 col-sm-6 col-6">
+                                <a href="{{ route('school_manager.facility.video') }}" class="btn btn-primary">
+                                    设置班牌视频 <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
                         </div>
                         <div class="table-responsive">
                             <table
