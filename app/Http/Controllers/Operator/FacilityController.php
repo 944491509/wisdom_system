@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Operator;
 use App\Dao\Schools\BuildingDao;
 use App\Dao\Schools\CampusDao;
 use App\Dao\Schools\RoomDao;
+use App\Models\School;
 use App\Models\Schools\Facility;
 use App\Utils\FlashMessageBuilder;
 use App\Http\Controllers\Controller;
 use App\Dao\FacilityManage\FacilityDao;
 use App\Http\Requests\FacilityManage\MonitoringRequest;
 use App\Utils\JsonBuilder;
+use Illuminate\Support\Facades\Storage;
+
 
 class FacilityController extends Controller
 {
@@ -55,7 +58,7 @@ class FacilityController extends Controller
         $campus = $campusDao->getCampusesBySchool($schoolId,$field);
         $this->dataForView['campus'] = $campus;
         $this->dataForView['type'] = $facilityDao->getType();
-    return view('school_manager.facility.add', $this->dataForView);
+        return view('school_manager.facility.add', $this->dataForView);
 
     }
 
@@ -108,7 +111,41 @@ class FacilityController extends Controller
      */
     public function video(MonitoringRequest $request)
     {
+        $school = new School();
+        $schoolId = $request->getSchoolId();
+        if($request->isMethod('post')) {
+            $file = $request->file('video');
+            $fileName = $file->getClientOriginalName();
+            $path = $file->storeAs('public/school/video',$fileName);
+            $path = Storage::url($path);
+            $school->where(['id'=>$schoolId])->update(['video'=>$path]);
+        }
+        $school = $school->where(['id'=>$schoolId])->first();
+        $this->dataForView['video'] = $school['video'];
         return view('school_manager.facility.video', $this->dataForView);
+    }
+
+    /**
+     * 验证文件是否合法
+     */
+    public function upload($file) {
+        // 1.是否上传成功
+        if (! $file->isValid()) {
+            return false;
+        }
+
+        // 2.是否符合文件类型 getClientOriginalExtension 获得文件后缀名
+        $fileExtension = $file->getClientOriginalExtension();
+        if(! in_array($fileExtension, ['mp4'])) {
+            return false;
+        }
+        // 3.判断大小是否符合 2M
+        $tmpFile = $file->getRealPath();
+        // 5.每天一个文件夹,分开存储, 生成一个随机文件名
+        $fileName = date('Y_m_d').'/'.md5(time()) .mt_rand(0,9999).'.'. $fileExtension;
+        if (Storage::disk('public')->put($fileName, file_get_contents($tmpFile)) ){
+            return Storage::url($fileName);
+        }
     }
 
 
