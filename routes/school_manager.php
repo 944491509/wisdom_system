@@ -153,7 +153,7 @@ Route::prefix('school_manager')->middleware('simpleacl')->group(function () {
     Route::any('facility/add','FacilityController@add')->name('school_manager.facility.add');     // 添加设备
     Route::any('facility/edit','FacilityController@edit')->name('school_manager.facility.edit');  // 编辑设备
     Route::get('facility/delete','FacilityController@delete')->name('school_manager.facility.delete'); // 删除设备
-    Route::get('facility/video','FacilityController@video')->name('school_manager.facility.video'); // 删除设备
+    Route::any('facility/video','FacilityController@video')->name('school_manager.facility.video'); // 删除设备
     Route::get('facility/getBuildingList','FacilityController@getBuildingList')->name('school_manager.facility.getBuildingList'); // 获取建筑列表
     Route::get('facility/getRoomList','FacilityController@getRoomList')->name('school_manager.facility.getRoomList');  // 获取教室列表
 
