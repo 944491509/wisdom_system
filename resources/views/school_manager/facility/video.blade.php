@@ -10,13 +10,14 @@ use App\Utils\UI\Button;
         <div class="col-sm-12 col-md-12 col-xl-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('school_manager.facility.video') }}" method="post" >
+                    <form action="{{ route('school_manager.facility.video') }}" method="post" enctype="multipart/form-data">
+                        @csrf
                         <div class="form-group">
                             <label for="facility-name-input">视频</label>
                             <input required type="file" class="form-control" id="max-employees" value="" placeholder="班牌视频" name="video">
                         </div>
                         <div>
-                            <video src="movie.ogg" controls="controls"></video>
+                            <video src="{{$video}}" controls="controls" style="width: 800px;height: auto" ></video>
                         </div>
                         <?php
                         Button::Print(['id'=>'btn-create-facility','text'=>trans('general.submit')], Button::TYPE_PRIMARY);
